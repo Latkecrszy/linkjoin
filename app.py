@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, abort, render_template, redirect, url_for
 from flask_pymongo import PyMongo
-import jinja2, json, os, dotenv, datetime, pytz
+import jinja2, json, os, dotenv, datetime, dateutil.tz
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
@@ -21,7 +21,7 @@ def open():
         links = mongo.db.links
         links = links.find()
         links = [{str(i): str(j) for i, j in link.items() if i != "_id"} for link in links]
-        date = pytz.timezone("America/Los_Angeles").localize(datetime.datetime.now())
+        date = datetime.datetime.now(dateutil.tz.gettz("America/Los_Angeles"))
         day = date.strftime("%A").lower()
         hour = int(date.strftime("%I"))
         minute = int(date.strftime("%M"))
