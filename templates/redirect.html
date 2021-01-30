@@ -15,8 +15,8 @@
                     var password = "{{ password }}";
                     var day = user_links[i]["day"];
                     console.log(day);
-                    var hour = user_links[i]["time"].split(":")[0].toString();
-                    var minute = user_links[i]["time"].split(":")[1].toString();
+                    var hour = parseInt(user_links[i]["time"].split(":")[0]);
+                    var minute = parseInt(user_links[i]["time"].split(":")[1]);
                     console.log(hour);
                     console.log("{{ hour }}");
                     console.log(minute);
