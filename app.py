@@ -26,6 +26,10 @@ def open():
         hour = int(date.strftime("%I"))
         minute = int(date.strftime("%M"))
         amorpm = date.strftime("%p").lower()
+        print(day)
+        print(hour)
+        print(minute)
+        print(amorpm)
         print(links)
         return render_template("redirect.html", num=len(links), user_links=links, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute, amorpm=amorpm)
     else:
