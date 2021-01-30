@@ -1,0 +1,5 @@
+flask
+datetime
+jinja2
+python-dotenv
+flask_pymongo

@@ -1,0 +1,38 @@
+<html>
+    <body onload="NewTab()"><button>Click me to activate!</button></body>
+    <script>
+        function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+   }
+    </script>
+    <script>
+            async function NewTab() {
+                console.log("I have triggered");
+                for (var i=0; i<{{ num }}; i++) {
+                    console.log({{ user_links|tojson|safe }});
+                    var user_links = {{ user_links|tojson|safe }};
+                    var username = "{{ username }}";
+                    var password = "{{ password }}";
+                    var day = user_links[i]["day"];
+                    console.log(day);
+                    var hour = user_links[i]["time"].split(":")[0].toString();
+                    var minute = user_links[i]["time"].split(":")[1].toString();
+                    console.log(minute);
+                    var amorpm = user_links[i]["amorpm"];
+                    var link = user_links[i]["link"];
+
+                    if ( user_links[i]["username"] == username) {
+                        if ( user_links[i]["password"] == password) {
+                            console.log("Logged in");
+                            if (day == "{{ day }}" && parseInt(hour) == parseInt("{{ hour }}") && parseInt(minute) == parseInt("{{ minute }}") && amorpm == "{{ amorpm }}") {
+                                console.log("Time has come");
+                                window.open(link, name="_blank");
+                            }
+                        }
+                    }
+                }
+                await sleep(60000);
+                location.reload()
+            }
+        </script>
+</html>
