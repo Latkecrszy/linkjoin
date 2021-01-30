@@ -21,7 +21,7 @@ def open():
         links = mongo.db.links
         links = links.find()
         links = [{str(i): str(j) for i, j in link.items() if i != "_id"} for link in links]
-        date = pytz.timezone('America/Log Angeles').localize(datetime.datetime.now())
+        date = pytz.timezone('America/Los Angeles').localize(datetime.datetime.now())
         day = date.strftime("%A").lower()
         hour = int(date.strftime("%I"))
         minute = int(date.strftime("%M"))
