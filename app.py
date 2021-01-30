@@ -29,7 +29,8 @@ def open():
 
         print(links)
         return render_template("redirect.html", num=len(links), user_links=links, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute, amorpm=amorpm)
-
+    else:
+        return jsonify({"You are not logged in": ":("})
 
 
 

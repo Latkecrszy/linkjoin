@@ -17,10 +17,12 @@
                     console.log(day);
                     var hour = user_links[i]["time"].split(":")[0].toString();
                     var minute = user_links[i]["time"].split(":")[1].toString();
+                    console.log(hour);
+                    console.log("{{ hour }}");
                     console.log(minute);
+                    console.log("{{ minute }}")
                     var amorpm = user_links[i]["amorpm"];
                     var link = user_links[i]["link"];
-
                     if ( user_links[i]["username"] == username) {
                         if ( user_links[i]["password"] == password) {
                             console.log("Logged in");
