@@ -17,10 +17,12 @@
                     console.log(day);
                     var hour = parseInt(user_links[i]["time"].split(":")[0]);
                     var minute = parseInt(user_links[i]["time"].split(":")[1]);
+                    var correctMinute = parseInt("{{ minute }}");
+                    var correctHour = parseInt("{{ hour }}");
                     console.log(hour);
-                    console.log("{{ hour }}");
+                    console.log(correctHour);
                     console.log(minute);
-                    console.log("{{ minute }}");
+                    console.log(correctMinute);
                     var amorpm = user_links[i]["amorpm"];
                     var link = user_links[i]["link"];
                     if ( user_links[i]["username"] == username) {
