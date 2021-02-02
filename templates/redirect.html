@@ -7,35 +7,18 @@
     </script>
     <script>
             async function NewTab() {
-                console.log("I have triggered");
                 for (var i=0; i<{{ num }}; i++) {
-                    console.log({{ user_links|tojson|safe }});
-                    var user_links = {{ user_links|tojson|safe }};
-                    var username = "{{ username }}";
-                    var password = "{{ password }}";
-                    var day = user_links[i]["day"];
-                    console.log(day);
-                    var hour = parseInt(user_links[i]["time"].split(":")[0]);
-                    var minute = parseInt(user_links[i]["time"].split(":")[1]);
-                    var correctMinute = parseInt("{{ minute }}");
-                    var correctHour = parseInt("{{ hour }}");
-                    console.log(hour);
-                    console.log(correctHour);
-                    console.log(minute);
-                    console.log(correctMinute);
-                    var amorpm = user_links[i]["amorpm"];
-                    var link = user_links[i]["link"];
-                    if ( user_links[i]["username"] == username) {
-                        if ( user_links[i]["password"] == password) {
-                            console.log("Logged in");
-                            if (day == "{{ day }}" && parseInt(hour) == parseInt("{{ hour }}") && parseInt(minute) == parseInt("{{ minute }}") && amorpm == "{{ amorpm }}") {
-                                console.log("Time has come");
-                                window.open(link, name="_blank");
-                            }
+                    const user_links = {{ user_links|tojson|safe }}
+                    const links = links[i]
+                    const hour = parseInt(links["time"].split(":")[0])
+                    const minute = parseInt(links["time"].split(":")[1])
+                    if (links["username"] == "{{ username }}" && links["password"] == "{{ password }}") {
+                        if (links["day"] == "{{ day }}" && hour == parseInt("{{ hour }}") && minute == parseInt("{{ minute }}") && links["amorpm"] == "{{ amorpm }}") {
+                            window.open(links["link"], name="_blank")
                         }
                     }
                 }
-                await sleep(60000);
+                await sleep(60000)
                 location.reload()
             }
         </script>

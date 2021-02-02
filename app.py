@@ -11,6 +11,14 @@ def main():
     return render_template("website.html")
 
 
+@app.route("/login")
+def main():
+    if request.cookies.get('login_info'):
+        return redirect("/add")
+    else:
+        return render_template("login.html")
+
+
 @app.route("/open")
 def open():
     mongo = PyMongo(app)
@@ -26,36 +34,12 @@ def open():
         hour = int(date.strftime("%I"))
         minute = int(date.strftime("%M"))
         amorpm = date.strftime("%p").lower()
-        print(day)
-        print(hour)
-        print(minute)
-        print(amorpm)
-        print(links)
         return render_template("redirect.html", num=len(links), user_links=links, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute, amorpm=amorpm)
     else:
         return jsonify({"You are not logged in": ":("})
 
 
-
-@app.route("/testmongo")
-def testmongo():
-    mongo = PyMongo(app)
-    login_info = json.loads(request.cookies.get('login_info'))
-    login_db = mongo.db.login
-    authorized = login_db.find_one({"username": login_info['username'], "password": login_info['password']})
-    print(authorized)
-    if authorized:
-        links = mongo.db.links
-        print(links)
-        user_links = links.find()
-        print(user_links)
-        for link in user_links:
-            if link['username'] == login_info['username'] and link['password'] == login_info['password']:
-                print(link)
-    return make_response({"stuff": "happened"})
-
-
-@app.route("/add", methods=['POST'])
+@app.route("/add", methods=['POST', 'GET'])
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
