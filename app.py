@@ -12,7 +12,7 @@ def main():
 
 
 @app.route("/login")
-def main():
+def Login():
     if request.cookies.get('login_info'):
         return redirect("/add")
     else:

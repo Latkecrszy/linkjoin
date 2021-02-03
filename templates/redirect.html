@@ -9,7 +9,7 @@
             async function NewTab() {
                 for (var i=0; i<{{ num }}; i++) {
                     const user_links = {{ user_links|tojson|safe }}
-                    const links = links[i]
+                    const links = user_links[i]
                     const hour = parseInt(links["time"].split(":")[0])
                     const minute = parseInt(links["time"].split(":")[1])
                     if (links["username"] == "{{ username }}" && links["password"] == "{{ password }}") {
