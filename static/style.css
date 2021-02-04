@@ -1,0 +1,90 @@
+header {
+    background: #212121;
+    height: 8vh;
+    min-height: 50px;
+    box-shadow: 4px 8px 18px black;
+
+}
+
+.login {
+    height: 6vh;
+    background-color: #fbd974;
+    border-radius: 5px;
+    border: 0px solid;
+    min-height: 35px;
+    min-width: 70px;
+    font-size: 20px;
+    float: right;
+    margin-right: 10px;
+    margin-top: 7;
+    display: inline-block;
+}
+
+.login:hover {
+    background-color: #FFC100;
+}
+
+html {
+    background-color: #303030;
+}
+
+.login_link {
+    color: #4B5358;
+    text-decoration: none;
+}
+
+.login_link:hover {
+    color: #161316;
+}
+
+.login_box {
+    padding-top: 3vh;
+    background-color: #FFC100;
+    height: 65vh;
+    box-shadow: 15px 15px #646464;
+    width: 30vw;
+    border-radius: 10px;
+    margin: auto;
+    align-items: center;
+    min-width: 186px;
+}
+
+.login_page {
+    padding-top: 15vh;
+}
+
+.username {
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 0px solid;
+    width: 7.5vw;
+}
+
+.password {
+    box-sizing: border-box;
+    border-radius: 4px;
+    width: 7.5vw;
+    border: 0px solid;
+
+}
+
+.submit {
+    margin-top: 2vh;
+    background-color: #BCF4F5;
+    border: 0px solid;
+    width: 8vw;
+    height: 5vh;
+    font-size: 3vh;
+}
+
+.login_text {
+    text-align: center;
+    font-size: 4.5vh;
+    color: #161316;
+}
+
+.login_container {
+    align-items: center;
+    text-align: center;
+    box-align: center;
+}
