@@ -1,9 +1,26 @@
-<html>
+<html class="login_page">
+    <head>
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+    </head>
     <body>
         <form method="POST" action="/add">
-            <input type="text" name="username" id="username" value="Username">
-            <input type="password" name="password" id="password" value="Password">
-            <input type="submit" name="login" id="login">
+
+            <div class="login_box">
+                <div class="login_text" style="font-family: Raleway;"><strong>LOG IN TO START LINKING!</strong></div>
+                <div class="login_container">
+                    <p class="username_text" style="font-family: Raleway;">Username:</p>
+                    <input type="text" name="username" id="username" class="username"><br>
+                    <p class="password_text" style="font-family: Raleway;">Password:</p>
+                    <input type="password" name="password" id="password" class="password"><br>
+                    <input type="submit" name="login" id="login" class="submit" value="Log me in!" style="font-family: Raleway;">
+                </div>
+            </div>
+
+
         </form>
     </body>
 </html>

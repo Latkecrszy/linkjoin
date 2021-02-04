@@ -2,8 +2,24 @@
     <body onload="NewTab()"><button>Click me to activate!</button></body>
     <script>
         function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-   }
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function getCookie(cname) {
+              var name = cname + "=";
+              var decodedCookie = decodeURIComponent(document.cookie);
+              var ca = decodedCookie.split(';');
+              for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                  c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                  return c.substring(name.length, c.length);
+                }
+              }
+              return "";
+        }
     </script>
     <script>
             async function NewTab() {
@@ -12,7 +28,8 @@
                     const links = user_links[i]
                     const hour = parseInt(links["time"].split(":")[0])
                     const minute = parseInt(links["time"].split(":")[1])
-                    if (links["username"] == "{{ username }}" && links["password"] == "{{ password }}") {
+                    var loginInfo = JSON.parse(atob(getCookie("login_info")));
+                    if (links["username"] == loginInfo.username && loginInfo.password == "{{ password }}") {
                         if (links["day"] == "{{ day }}" && hour == parseInt("{{ hour }}") && minute == parseInt("{{ minute }}") && links["amorpm"] == "{{ amorpm }}") {
                             window.open(links["link"], name="_blank")
                         }

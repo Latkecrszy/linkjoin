@@ -1,5 +1,12 @@
 <html>
+    <head>
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+    </head>
     <body>
-        <div><p>Welcome to LinkJoin! Click <a href="/login">here</a> to get signed up or logged in!</p></div>
+
+        <header>
+            <button class="login"><a href="/login" class="login_link">Sign In</a></button>
+            <button class="login"><a href="/signup" class="login_link">Sign Up</a></button>
+        </header>
     </body>
 </html>

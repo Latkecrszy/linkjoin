@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, abort, render_template, redirect, url_for
 from flask_pymongo import PyMongo
-import jinja2, json, os, dotenv, datetime, dateutil.tz
+import jinja2, json, os, dotenv, datetime, dateutil.tz, base64
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
@@ -22,7 +22,8 @@ def Login():
 @app.route("/open")
 def open():
     mongo = PyMongo(app)
-    login_info = json.loads(request.cookies.get('login_info'))
+    login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+    print(login_info)
     login_db = mongo.db.login
     authorized = login_db.find_one({"username": login_info['username'], "password": login_info['password']})
     if authorized:
@@ -43,20 +44,29 @@ def open():
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
-    mongo = PyMongo(app)
-    login_db = mongo.db.login
-    login_info = {'username': username, 'password': password}
-    if login_db.find_one({'username': username}) is None:
-        login_db.insert_one(login_info)
-        print('created account')
-    else:
-        authorization = login_db.find_one(login_info)
-        if authorization is None:
-            print('incorrect password')
-        else:
-            print('logged in')
     response = make_response(render_template("register_link.html"))
-    response.set_cookie('login_info', json.dumps({key: value for key, value in login_info.items() if key != "_id"}))
+    if username is not None:
+        mongo = PyMongo(app)
+        login_db = mongo.db.login
+        login_info = {'username': username, 'password': password}
+        if login_db.find_one({'username': username}) is None:
+            login_db.insert_one(login_info)
+            print('created account')
+        else:
+            authorization = login_db.find_one(login_info)
+            if authorization is None:
+                print('incorrect password')
+            else:
+                print('logged in')
+        cookie = {key: value for key, value in login_info.items() if key != "_id"}
+        print(cookie)
+        cookie = json.dumps(cookie)
+        print(cookie)
+        cookie = str.encode(cookie)
+        print(cookie)
+        cookie = base64.b64encode(cookie)
+        print(cookie)
+        response.set_cookie('login_info', cookie)
     return response
 
 
@@ -65,7 +75,7 @@ def register_link():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
-        login_info = json.loads(request.cookies.get('login_info'))
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_db.insert_one({"username": login_info['username'], 'password': login_info['password'], 'day': request.form.get("day"), 'time': request.form.get("time"), 'amorpm': request.form.get("amorpm"), 'timezone': request.form.get("timezone"), 'link': request.form.get("link")})
         return redirect("/open")
     else:
