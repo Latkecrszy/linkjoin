@@ -12,7 +12,7 @@ header {
     border-radius: 5px;
     border: 0px solid;
     min-height: 35px;
-    min-width: 70px;
+    min-width: 186px;
     font-size: 20px;
     float: right;
     margin-right: 10px;
@@ -43,10 +43,10 @@ html {
     height: 65vh;
     box-shadow: 15px 15px #646464;
     width: 30vw;
+    min-width: 264px;
     border-radius: 10px;
     margin: auto;
     align-items: center;
-    min-width: 186px;
 }
 
 .login_page {
@@ -57,14 +57,17 @@ html {
     box-sizing: border-box;
     border-radius: 4px;
     border: 0px solid;
-    width: 7.5vw;
+    width: 136px;
+    height: 19.14px;
 }
 
 .password {
     box-sizing: border-box;
     border-radius: 4px;
-    width: 7.5vw;
+    width: 136px;
     border: 0px solid;
+    height: 19.14px;
+    margin-bottom: 5vh;
 
 }
 
@@ -72,14 +75,18 @@ html {
     margin-top: 2vh;
     background-color: #BCF4F5;
     border: 0px solid;
-    width: 8vw;
-    height: 5vh;
+    width: 140px;
+    height: 45px;
     font-size: 3vh;
+    transition: all 0.5s;
+    cursor: pointer;
+
 }
+
 
 .login_text {
     text-align: center;
-    font-size: 4.5vh;
+    font-size: 29px;
     color: #161316;
 }
 
@@ -87,4 +94,8 @@ html {
     align-items: center;
     text-align: center;
     box-align: center;
+}
+
+.username_text {
+    font-size: 19.14;
 }
