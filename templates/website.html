@@ -1,12 +1,15 @@
 <html>
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&display=swap" rel="stylesheet">
     </head>
     <body>
-
-        <header>
-            <button class="login"><a href="/login" class="login_link">Sign In</a></button>
-            <button class="login"><a href="/signup" class="login_link">Sign Up</a></button>
-        </header>
+        <div class="header">
+            <button class="login_button"><a href="/login" class="login_link">Sign In</a></button>
+            <button class="login_button"><a href="/signup" class="login_link">Sign Up</a></button>
+        </div>
+        <div class="linkjoin" style="font-family: Arvo">LinkJoin</div>
+       <div class="slogan" style="font-family: Arvo">Never be late again</div>
     </body>
 </html>
