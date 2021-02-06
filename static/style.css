@@ -22,21 +22,21 @@
     margin-top: 7;
     display: inline-block;
     animation: move_buttons;
-    animation-duration: 8s;
+    animation-duration: 1.5s;
     animation-iteration-count: 1;
-    animation-timing-function: ease-in;
+    animation-timing-function: linear;
 }
 
 @keyframes move_buttons {
     from {
-        right: 101vw; float: right;
+        opacity: 0;
     }
     to {
-        right: 0.4vw; float: right;
+        opacity; 1;
     }
 }
 
-.login:hover {
+.login_button:hover {
     background-color: #FFC100;
 }
 
@@ -117,12 +117,11 @@ html {
 }
 
 .linkjoin {
-    font-size: 6vh;
-    top: -50px;
+    font-size: 7vh;
+    top: -53px;
     text-align: center;
     animation-name: move_text;
-    animation-duration: 5s;
-    animation-delay: 3s;
+    animation-duration: 1.5s;
     animation-iteration-count: 1;
     animation-direction: forwards;
     animation-fill-mode: forwards;
@@ -143,9 +142,8 @@ html {
     align-items: center;
     animation: move_slogan;
     position: relative;
-    animation-duration: 5s;
-    animation-delay: 5s;
-    opacity: 1;
+    animation-duration: 1.5s;
+    opacity: 0;
     animation-fill-mode: forwards;
 
 
@@ -166,7 +164,7 @@ html {
 
 @keyframes move_text {
     from {
-        font-size: 6vh;
+        font-size: 7vh;
     }
     to {
         font-size: 20vh; left:0px; top:0px; color: #9AD2CB;
