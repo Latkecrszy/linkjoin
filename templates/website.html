@@ -2,14 +2,20 @@
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
     </head>
     <body>
         <div class="header">
             <button class="login_button"><a href="/login" class="login_link">Sign In</a></button>
             <button class="login_button"><a href="/signup" class="login_link">Sign Up</a></button>
         </div>
-        <div class="linkjoin" style="font-family: Arvo">LinkJoin</div>
-       <div class="slogan" style="font-family: Arvo">Never be late again</div>
+        <div class="linkjoin" style="font-family: Nunito;">LinkJoin</div>
+        <div class="slogan" style="font-family: Poppins;">Never be late again</div>
+        <div class="whatis" style="font-family: Raleway;">What is LinkJoin?</div>
+        <div class="whatis_content" style="font-family: Raleway;">
+            LinkJoin is a site that can schedule your meetings for you. Now that everything is virtual, you have likely come across a common problem. It's hard to remember things! That's the beauty of LinkJoin. Just head to <a href="/add" style="text-decoration: none; color: #CDF5FE;">this page</a> and set a day and time for your meeting link to open. That's it! From there, LinkJoin will automatically start meetings for you, and you can get to everything on time.
+        </div>
     </body>
 </html>

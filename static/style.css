@@ -54,15 +54,20 @@ html {
 }
 
 .login_box {
-    padding-top: 3vh;
+    padding-top: 4vh;
     background-color: #FFC100;
     height: 65vh;
-    box-shadow: 15px 15px #646464;
+    /*box-shadow: 15px 15px #646464;*/
     width: 30vw;
     min-width: 264px;
     border-radius: 10px;
     margin: auto;
     align-items: center;
+    left: 200px;
+    animation: pop_out;
+    animation-duration: 1s;
+    animation-direction: forwards;
+    animation-fill-mode: forwards;
 }
 
 .login_page {
@@ -73,6 +78,7 @@ html {
     box-sizing: border-box;
     border-radius: 4px;
     border: 0px solid;
+    padding-top: 23px;
     width: 136px;
     height: 19.14px;
 }
@@ -80,10 +86,11 @@ html {
 .password {
     box-sizing: border-box;
     border-radius: 4px;
-    width: 136px;
+    width: 10vw;
+    padding-top: 23px;
     border: 0px solid;
     height: 19.14px;
-    margin-bottom: 5vh;
+    margin-bottom: 7vh;
 
 }
 
@@ -91,14 +98,26 @@ html {
     margin-top: 2vh;
     background-color: #BCF4F5;
     border: 0px solid;
-    width: 140px;
+    width: 10vw;
     height: 45px;
     font-size: 19.4px;
     transition: all 0.5s;
     cursor: pointer;
-
+    opacity: 0;
+    animation: appear;
+    animation-duration: 1.5s;
+    animation-direction: forwards;
+    animation-fill-mode: forwards;
 }
 
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 
 .login_text {
     text-align: center;
@@ -114,6 +133,7 @@ html {
 
 .username_text {
     font-size: 19.14;
+    padding-top: 3vh;
 }
 
 .linkjoin {
@@ -144,6 +164,7 @@ html {
     position: relative;
     animation-duration: 1.5s;
     opacity: 0;
+    color: #fbd974;
     animation-fill-mode: forwards;
 
 
@@ -158,6 +179,7 @@ html {
     }
     to {
         padding-top: 0;
+        top: -5vh;
         opacity: 1;
     }
 }
@@ -182,4 +204,36 @@ html {
   80%  {color: #2DE1C2;}
   90%  {color: #5C573E;}
   100% {font-size: 20vh; left:0px; top:0px; color: #9AD2CB;}*/
+}
+
+.whatis {
+    color:  #CADBC8;
+    padding-top: 5vh;
+    width: 500px;
+    text-align: center;
+    margin: auto;
+    font-size: 3vw;
+}
+
+.whatis_content {
+    color:  #CADBC8;
+    width: 50vw;
+    text-align: center;
+    margin: auto;
+    font-size: 1.5vw;
+    line-height: 2.5vw;
+}
+
+@keyframes pop_out {
+    from {
+        box-shadow: none;
+        margin-top: 4vh;
+        left: 200px;
+    }
+    to {
+        box-shadow: 15px 15px #646464;
+        margin-top: 3vh;
+        left: 0px;
+
+    }
 }
