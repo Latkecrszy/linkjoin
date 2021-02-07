@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+    </head>
+    <body onload="loadLinks()" id="body">
+        <div class="column" id="monday">
+            <div class="day">Monday</div>
+        </div>
+    </body>
+    <script>
+        function loadLinks() {
+            var days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+            for (var x = 0; x < 8, x++) {
+                var body = document.getElementById("body")
+                var column = document.createElement('div')
+                column.setAttribute('class', 'column')
+                column.setAttribute('id', days[x]
+                body.appendChild(column)
+                var day = document.createElement('div')
+                day.setAttribute('class', 'day')
+                day.innerHTML = days[x]
+                column.appendChild(day)
+                for (var i = 0; i < parseInt("{{num}}"); i++) {
+                    var button = document.createElement('button')
+                    button.setAttribute('class', 'link_event')
+                    button.setAttribute('id', i.toString())
+                    var func = 'expand('+i.toString()+')'
+                    button.setAttribute('onClick', func)
+                    const links = {{ links|tojson|safe }}
+                    button.innerHTML = links[i]['name']
+                    column.appendChild(button)
+                }
+            }
+        }
+        function expand(x) {
+            var element = document.getElementById(x.toString())
+            if (element.classList.contains("link_event")) {
+                element.setAttribute('class', 'link_event_hidden')
+            }
+            else {
+                element.setAttribute('class', 'link_event')
+            }
+            console.log(element.classList.contains("link_event"))
+        }
+    </script>
+</html>
