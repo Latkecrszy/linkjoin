@@ -1,30 +1,55 @@
 .header {
-    background: #212121;
     height: 8vh;
     min-height: 50px;
-    box-shadow: 4px 8px 18px black;
+    /*box-shadow: 4px 8px 18px black;*/
     position: relative;
 
 }
 
 
-.login_button {
+.button {
     position: relative;
-    height: 6vh;
-    background-color: #fbd974;
-    border-radius: 5px;
-    border: 0px solid;
-    min-height: 35px;
-    min-width: 90px;
-    font-size: 20px;
+    text-align: center;
+    vertical-align: center;
     float: right;
-    margin-right: 10px;
-    margin-top: 7;
+    border-radius: 70px;
+    margin-top: 10px;
+    background-color: #142539;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    color: white;
+    height: 50px;
+    width: 110px;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0.01em;
     display: inline-block;
-    animation: move_buttons;
+    animation: appear;
     animation-duration: 1.5s;
     animation-iteration-count: 1;
     animation-timing-function: linear;
+}
+
+.login {
+    border: 2px solid white;
+    margin-right: 30px;
+}
+
+.login:hover {
+    background-color: #2B8FD8;
+
+}
+
+.signup {
+    border: none;
+    margin-right: 10px;
+}
+
+.logo {
+    float: left;
+    height: 100px;
+    width: 175px;
 }
 
 @keyframes move_buttons {
@@ -36,12 +61,8 @@
     }
 }
 
-.login_button:hover {
-    background-color: #FFC100;
-}
-
 html {
-    background-color: #303030;
+    background-color: #142539;
 }
 
 .login_link {
@@ -139,41 +160,6 @@ html {
     padding-top: 3vh;
 }
 
-.linkjoin {
-    font-size: 7vh;
-    top: -53px;
-    text-align: center;
-    animation-name: move_text;
-    animation-duration: 1.5s;
-    animation-iteration-count: 1;
-    animation-direction: forwards;
-    animation-fill-mode: forwards;
-    position: relative;
-    color: #9AD2CB;
-
-}
-
-.slogan {
-    font-size: 5vh;
-    text-align: center;
-    text-align: center;
-    height: 8vh;
-    padding-top: 101vh;
-    width: 30vw;
-    position: relative;
-    margin: auto;
-    align-items: center;
-    animation: move_slogan;
-    position: relative;
-    animation-duration: 1.5s;
-    opacity: 0;
-    color: #fbd974;
-    animation-fill-mode: forwards;
-
-
-    /*box-shadow: 8px 8px 18px black;*/
-
-}
 
 @keyframes move_slogan {
     from {
@@ -194,38 +180,8 @@ html {
     to {
         font-size: 20vh; left:0px; top:0px; color: #9AD2CB;
     }
-  /*0%   {font-size: 10vh; left:0px; top:0px;}
-  10%  {color: red;}
-  20%  {color: orange;}
-  25%  {font-size: 14vh; left:200px; top:0px;}
-  30%  {color: yellow;}
-  40%  {color: green;}
-  50%  {font-size: 20vh; left:200px; top:200px; color: blue;}
-  60%  {color: purple;}
-  70%  {color: pink;}
-  75%  {font-size: 24vh; left:0px; top:200px;}
-  80%  {color: #2DE1C2;}
-  90%  {color: #5C573E;}
-  100% {font-size: 20vh; left:0px; top:0px; color: #9AD2CB;}*/
 }
 
-.whatis {
-    color:  #CADBC8;
-    padding-top: 5vh;
-    width: 500px;
-    text-align: center;
-    margin: auto;
-    font-size: 3vw;
-}
-
-.whatis_content {
-    color:  #CADBC8;
-    width: 50vw;
-    text-align: center;
-    margin: auto;
-    font-size: 1.5vw;
-    line-height: 2.5vw;
-}
 
 @keyframes pop_out {
     from {
@@ -244,13 +200,157 @@ html {
 .column {
     float: left;
     background-color: #091b30;
-    width: 13vw;
+    width: 17vw;
+    margin: 3vw;
+    text-align: center;
+    border-radius: 5px;
+    animation: expand;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    padding-bottom: 20px;
+    align-items: right;
+    height: 20vh;
+    padding-top: 20px;
+}
+
+@keyframes expand {
+    from {
+        border-bottom: solid #4B99E0 0;
+    }
+    to {
+        border-bottom: solid #26376e 50px;
+    }
 }
 
 .link_event {
     background-color: green;
+    position: relative;
 }
 
 .link_event_hidden {
     background-color: blue;
 }
+
+.day {
+    font-size: 30px;
+    color: #F5FBEF;
+    padding-bottom: 10px;
+}
+
+.circle {
+  border-radius: 100px;
+  behavior: url(PIE.htc);
+  width: 50px;
+  height: 50px;
+  background: #4B99E0;
+  color: white;
+  border: none;
+  text-align: center;
+  top: 75px;
+  margin-left: 121px;
+  position: relative;
+  font: 40px Arial, sans-serif;
+  animation: appear;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+svg {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.container {
+    display: inline-block;
+    position: absolute;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: middle;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+.text_container {
+    font-style: normal;
+    width: 40vw;
+    margin-left: 50px;
+    margin-top: 70px;
+    color: white;
+    text-align: left;
+    letter-spacing: 0.01em;
+}
+
+.intro {
+    font-size: 44px;
+    line-height: 57px;
+
+}
+
+.description {
+    margin-top: 10px;
+    font-family: Roboto;
+    font-size: 18px;
+    line-height: 31px;
+}
+
+.get_started {
+    border-radius: 84px;
+    font-family: Montserrat;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 27px;
+    padding: 20px, 36px, 20px, 40px;
+    width: 321.21px;
+    height: 67px;
+    background-color: #2B8FD8;
+    border: none;
+    margin-top: 35px;
+    color: white;
+    vertical-align: center;
+
+}
+
+.footer_text {
+    left: 10px;
+    display: inline;
+    position: relative;
+}
+
+.footer_line {
+    margin-bottom: 10px;
+}
+
+.footer {
+    opacity: 0.5;
+    position: relative;
+    color: white;
+    top: 110px;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 17px;
+    letter-spacing: 0em;
+    text-align: left;
+    display: inline-block;
+    margin-left: 25px;
+}
+
+.footer_image {
+    height: 15px;
+    width: 15px;
+    display: inline;
+    position: relative;
+    margin-left: 25px;
+
+}
+

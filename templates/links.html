@@ -3,44 +3,61 @@
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
     </head>
     <body onload="loadLinks()" id="body">
-        <div class="column" id="monday">
-            <div class="day">Monday</div>
-        </div>
     </body>
     <script>
         function loadLinks() {
-            var days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-            for (var x = 0; x < 8, x++) {
-                var body = document.getElementById("body")
-                var column = document.createElement('div')
-                column.setAttribute('class', 'column')
-                column.setAttribute('id', days[x]
+            let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
+            for (const day of days) {
+                let body = document.getElementById("body")
+                let column = document.createElement('div')
+                let button = document.createElement('button')
+                button.classList.add("circle")
+                button.innerText = "+"
+
+                column.classList.add("column")
+                column.id = day
                 body.appendChild(column)
-                var day = document.createElement('div')
-                day.setAttribute('class', 'day')
-                day.innerHTML = days[x]
-                column.appendChild(day)
-                for (var i = 0; i < parseInt("{{num}}"); i++) {
-                    var button = document.createElement('button')
-                    button.setAttribute('class', 'link_event')
-                    button.setAttribute('id', i.toString())
-                    var func = 'expand('+i.toString()+')'
-                    button.setAttribute('onClick', func)
-                    const links = {{ links|tojson|safe }}
-                    button.innerHTML = links[i]['name']
-                    column.appendChild(button)
+                let div_day = document.createElement('div')
+                div_day.classList.add("day")
+                div_day.innerText = day
+                column.appendChild(div_day)
+                column.appendChild(button)
+                const links = JSON.parse('{{ links|tojson|safe }}')
+                for (let i = 0; i < parseInt("{{num}}"); i++) {
+                    if (day.toLowerCase() == links[i]['day']) {
+                        let link_event = document.createElement('button')
+                        link_event.classList.add("link_event_hidden")
+                        link_event.id = links[i]['name']
+                        link_event.setAttribute('onClick', `expand('${links[i]['name'].toString()}', '${links[i]['link'].toString()}', '${links[i]['time'].toString()}')`)
+                        link_event.innerText = links[i]['name']
+                        console.log("appending")
+                        column.appendChild(link_event)
+                        console.log("appended")
+                    }
                 }
             }
         }
-        function expand(x) {
-            var element = document.getElementById(x.toString())
+
+        function expand(name, link, time) {
+            let element = document.getElementById(name)
             if (element.classList.contains("link_event")) {
-                element.setAttribute('class', 'link_event_hidden')
+                element.classList.add("link_event_hidden")
+                element.classList.remove("link_event")
+                element.innerText = name
+                console.log("invisible")
             }
             else {
-                element.setAttribute('class', 'link_event')
+                element.classList.add("link_event")
+                element.classList.remove("link_event_hidden")
+                let time_div = document.createElement('div')
+                let link_div = document.createElement('div')
+                time_div.name = "time"
+                time_div.innerText = time
+                link_div.name = "link"
+                link_div.innerText = link
+                element.append(time_div, link_div)
+                console.log("visible")
             }
-            console.log(element.classList.contains("link_event"))
         }
     </script>
 </html>

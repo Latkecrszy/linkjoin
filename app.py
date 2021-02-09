@@ -99,7 +99,5 @@ def links():
     return render_template("links.html", links=links_list, num=len(links_list))
 
 
-
-
 if __name__ == "__main__":
     app.run()

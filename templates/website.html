@@ -3,19 +3,39 @@
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     <body>
-        <div class="header">
-            <button class="login_button"><a href="/login" class="login_link">Sign In</a></button>
-            <button class="login_button"><a href="/signup" class="login_link">Sign Up</a></button>
-        </div>
-        <div class="linkjoin" style="font-family: Nunito;">LinkJoin</div>
-        <div class="slogan" style="font-family: Poppins;">Never be late again</div>
-        <div class="whatis" style="font-family: Raleway;">What is LinkJoin?</div>
-        <div class="whatis_content" style="font-family: Raleway;">
-            LinkJoin is a site that can schedule your meetings for you. Now that everything is virtual, you have likely come across a common problem. It's hard to remember things! That's the beauty of LinkJoin. Just head to <a href="/add" style="text-decoration: none; color: #CDF5FE;">this page</a> and set a day and time for your meeting link to open. That's it! From there, LinkJoin will automatically start meetings for you, and you can get to everything on time.
-        </div>
+    <div class="container">
+        <svg viewBox="0 0 500 500"
+            preserveAspectRatio="xMinYMin meet">
+
+            <path d="M225, 0 C300, 100 150,
+                250 600, 600 L0, 500 L0, 0 Z"
+                style="stroke:none; fill:#091B30;">
+            </path>
+        </svg>
+    </div>
+    <div class="header">
+        <button class="button login">Login <img src="https://cdn.discordapp.com/attachments/716377034728931331/808776968392015893/Vector_7.png" height="12px" width="8px" style="top: 0.5px; position: relative;"></button>
+        <button class="button signup">Sign Up</button>
+        <button class="button signup" style="left: 10px;">About Us</button>
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808794416936386570/Will_it_work.png" class="logo">
+    </div>
+    <div class="text_container">
+        <div class="intro" style="font-family: Montserrat; font-weight: 700;"><b>Being on time has never been so easy.</b></div>
+        <div class="description" style="font-family: Roboto; font-weight: 400;">LinkJoin helps you join meetings automatically at exactly the right moment, even if you're not at the computer. And the best part is, it’s totally free!</div>
+        <button class="get_started" style="font-family: Montserrat; font-weight: 600;">Get Started. It's free  <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+    </div>
+    <!--<img src="https://cdn.discordapp.com/attachments/716377034728931331/808768032520142868/A_whole_year-bro_1.png" style="float: right; display: inline;">-->
+    <div class="footer">
+        <div class="footer_line">
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="footer_image"><div class="footer_text">Crafted by Latkecrszy#7777</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759569580687380/Vector_4.png" class="footer_image"><div class="footer_text">Join the Discord</div></div><br>
+        <div class="footer_line">
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759513695649843/Vector_3.png" class="footer_image"><div class="footer_text">Contribute on Github</div>
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759659640127548/Vector_5.png" class="footer_image"><div class="footer_text">Buy me a Coffee</div></div>
+    </div>
     </body>
 </html>
