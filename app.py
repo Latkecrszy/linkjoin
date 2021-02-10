@@ -13,10 +13,12 @@ def main():
 
 @app.route("/login")
 def Login():
-    if request.cookies.get('login_info'):
-        return redirect("/add")
-    else:
-        return render_template("login.html")
+    return render_template("login.html")
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
 
 
 @app.route("/open")
@@ -42,10 +44,9 @@ def open():
 
 @app.route("/add", methods=['POST', 'GET'])
 def login():
-    username = request.form.get("username")
+    username = request.form.get("email")
     password = request.form.get("password")
     response = make_response(render_template("register_link.html"))
-    print(f"username: {username}")
     if username is not None:
         mongo = PyMongo(app)
         login_db = mongo.db.login

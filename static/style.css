@@ -2,8 +2,20 @@
     height: 8vh;
     min-height: 50px;
     /*box-shadow: 4px 8px 18px black;*/
+    margin-bottom: 50px;
     position: relative;
+    top: 1px;
+    width: 98vw;
 
+}
+
+.header_login {
+    height: 8vh;
+    min-height: 50px;
+    margin-bottom: 50px;
+    position: absolute;
+    top: 1px;
+    width: 98vw;
 }
 
 
@@ -48,8 +60,10 @@
 
 .logo {
     float: left;
-    height: 100px;
-    width: 175px;
+    height: 50px;
+    width: 50px;
+    margin-top: 22px;
+    margin-left: 10px;
 }
 
 @keyframes move_buttons {
@@ -361,13 +375,12 @@ body {
     font-weight: 500;
     line-height: 32px;
     letter-spacing: 0.01em;
-    text-align: left;
     float: left;
     color: white;
     text-align: left;
-    margin-top: 20px;
+    margin-top: 30px;
     position: relative;
-    left: 10px;
+    margin-left: 10px;
 }
 
 .img_container {
@@ -378,9 +391,10 @@ body {
     float: right;
     position: absolute;
     vertical-align: center;
+    top: 50px;
 }
 
-.linkjoin_login {
+.linkjoin_signup {
     font-family: Montserrat;
     font-size: 45px;
     font-style: normal;
@@ -446,3 +460,71 @@ body {
     margin-right: 150px;
     margin-top: 50px;
 }
+
+.icon {
+    float: right;
+    width: 17px;
+    height: 15px;
+    position: absolute;
+    left: 40px;
+}
+
+.password {
+    width: 440px;
+    font-size: 15px;
+    font-family: Montserrat;
+    height: 59px;
+    padding: 16px 61px 16px 28px;
+    background-color: white;
+    opacity: 0.2;
+    border: none;
+    border-radius: 7px;
+    float: right;
+    margin-top: 15px;
+    position: relative;
+    margin-right: 27px;
+    type: password;
+}
+
+.submit {
+    height: 64px;
+    width: 177px;
+    border-radius: 84px;
+    padding: 20px, 36px, 20px, 36px;
+    background-color: #2B8FD8;
+    color: white;
+    float: left;
+    left: 20px;
+    position: relative;
+}
+
+.already {
+    float: right;
+    color: white;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    margin-top: 27px;
+    margin-right: 15px;
+}
+
+.header_links {
+    background-color: #142539;
+    height: 15vh;
+    width: 100vw;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+}
+
+.plus_button {
+    align: center;
+    margin-top: 55px;
+    position: absolute;
+    margin-left: 47vw;
+}
+

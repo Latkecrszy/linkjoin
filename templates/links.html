@@ -1,63 +1,17 @@
-<html>
+<html style="background-color: #091B30">
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
-    <body onload="loadLinks()" id="body">
+    <body>
+        <div class="header_links">
+            <div class="button signup">Help</div>
+            <div class="button signup">About Us</div>
+        </div>
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" class="plus_button">
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png" height="450px" width="450px" style="margin-top: 15vh; margin-left: 37vw; opacity: 0.5;">
     </body>
-    <script>
-        function loadLinks() {
-            let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
-            for (const day of days) {
-                let body = document.getElementById("body")
-                let column = document.createElement('div')
-                let button = document.createElement('button')
-                button.classList.add("circle")
-                button.innerText = "+"
-
-                column.classList.add("column")
-                column.id = day
-                body.appendChild(column)
-                let div_day = document.createElement('div')
-                div_day.classList.add("day")
-                div_day.innerText = day
-                column.appendChild(div_day)
-                column.appendChild(button)
-                const links = JSON.parse('{{ links|tojson|safe }}')
-                for (let i = 0; i < parseInt("{{num}}"); i++) {
-                    if (day.toLowerCase() == links[i]['day']) {
-                        let link_event = document.createElement('button')
-                        link_event.classList.add("link_event_hidden")
-                        link_event.id = links[i]['name']
-                        link_event.setAttribute('onClick', `expand('${links[i]['name'].toString()}', '${links[i]['link'].toString()}', '${links[i]['time'].toString()}')`)
-                        link_event.innerText = links[i]['name']
-                        console.log("appending")
-                        column.appendChild(link_event)
-                        console.log("appended")
-                    }
-                }
-            }
-        }
-
-        function expand(name, link, time) {
-            let element = document.getElementById(name)
-            if (element.classList.contains("link_event")) {
-                element.classList.add("link_event_hidden")
-                element.classList.remove("link_event")
-                element.innerText = name
-                console.log("invisible")
-            }
-            else {
-                element.classList.add("link_event")
-                element.classList.remove("link_event_hidden")
-                let time_div = document.createElement('div')
-                let link_div = document.createElement('div')
-                time_div.name = "time"
-                time_div.innerText = time
-                link_div.name = "link"
-                link_div.innerText = link
-                element.append(time_div, link_div)
-                console.log("visible")
-            }
-        }
-    </script>
 </html>
