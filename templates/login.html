@@ -1,26 +1,31 @@
 <html class="login_page">
     <head>
-        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+       <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400;800&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     <body>
-        <form method="POST" action="/add">
+    <div class="container">
+        <svg viewBox="0 0 500 500"
+            preserveAspectRatio="xMinYMin meet">
 
-            <div class="login_box">
-                <div class="login_text" style="font-family: Raleway;"><strong>LOG IN TO START LINKING!</strong></div>
-                <div class="login_container">
-                    <p class="username_text" style="font-family: Raleway;">Username:</p>
-                    <input type="text" name="username" id="username" class="username" required><br>
-                    <p class="username_text" style="font-family: Raleway;">Password:</p>
-                    <input type="password" name="password" id="password" class="password" required><br>
-                    <input type="submit" name="login" id="login" class="submit" value="Log me in!" style="font-family: Raleway;">
-                </div>
-            </div>
+            <path d="M200, 0 C300, 200 150,
+                100 350, 600 L0, 300 L0, 0 Z"
+                style="stroke:none; fill:#091B30;">
+            </path>
+        </svg>
+    </div>
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808794416936386570/Will_it_work.png" height="300" width="535">
+        <div class="linkjoin_login"><strong>LinkJoin</strong></div>
+        <div class="slogan_login">Never be late again</div>
+        <div class="form_box">
+            <div class="create_account">Create an Account</div>
+            <form method="POST" action="/add">
+                <input type="text" name="email" class="email" id="email" placeholder="Email">
+            </form>
+        </div>
 
-
-        </form>
     </body>
 </html>

@@ -331,9 +331,8 @@ body {
 
 .footer {
     opacity: 0.5;
-    position: relative;
+    position: absolute;
     color: white;
-    top: 110px;
     font-family: Montserrat;
     font-size: 14px;
     font-style: normal;
@@ -343,6 +342,7 @@ body {
     text-align: left;
     display: inline-block;
     margin-left: 25px;
+    bottom: 15px;
 }
 
 .footer_image {
@@ -354,3 +354,95 @@ body {
 
 }
 
+.linkjoin {
+    font-family: Montserrat;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    float: left;
+    color: white;
+    text-align: left;
+    margin-top: 20px;
+    position: relative;
+    left: 10px;
+}
+
+.img_container {
+    height: 1261.5997314453125px;
+    width: 1047.2327880859375px;
+    left: 800px;
+    border-radius: 0px;
+    float: right;
+    position: absolute;
+    vertical-align: center;
+}
+
+.linkjoin_login {
+    font-family: Montserrat;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    float: left;
+    color: white;
+    position: absolute;
+    left: 165px;
+
+}
+
+.slogan_login {
+    font-family: Montserrat;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    float: left;
+    color: white;
+    position: absolute;
+    left: 157px;
+    opacity: 0.7;
+    top: 450px;
+}
+
+.create_account {
+    color: white;
+}
+
+.email {
+    width: 440px;
+    font-size: 15px;
+    font-family: Montserrat;
+    height: 59px;
+    padding: 16px 61px 16px 28px;
+    background-color: white;
+    opacity: 0.2;
+    border: none;
+    border-radius: 7px;
+    float: right;
+    margin-top: 15px;
+    position: relative;
+    margin-right: 27px;
+}
+
+.form_box {
+    font-family: Montserrat;
+    font-size: 41px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 55px;
+    letter-spacing: 0.01em;
+    text-align: center;
+    left: 8px;
+    width: 500px;
+    top: 0px;
+    letter: 1%;
+    float: right;
+    position: relative;
+    margin-right: 150px;
+    margin-top: 50px;
+}
