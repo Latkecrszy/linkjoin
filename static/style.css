@@ -525,6 +525,217 @@ body {
     align: center;
     margin-top: 55px;
     position: absolute;
-    margin-left: 47vw;
+    margin-left: 45vw;
 }
 
+.click_the_plus {
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.01em;
+    text-align: center;
+    color: white;
+
+}
+
+.footer_links {
+    height: 60px;
+    width: 960px;
+    left: 286px;
+    margin-top: 50px;
+    position: absolute;
+    border-radius: 72px;
+    padding: 22px, 56px, 22px, 56px;
+    background-color: 142539;
+
+}
+
+.footer_link {
+    top: 10px;
+    display: inline;
+    font-family: Montserrat;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 15px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: white;
+    opacity: 1;
+}
+
+.links_footer_image {
+    height: 15px;
+    width: 15px;
+    display: inline;
+    margin-right: 10px;
+    margin-left: 15px;
+    margin-top: 20px;
+}
+
+.popup {
+    background-color: #091B30;
+    border-radius: 4px;
+    padding: 40px 64px;
+    color: white;
+    width: 400px;
+    text-align: center;
+    height: 60vh;
+    position: absolute;
+    top: 100px;
+    left: 500px;
+
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.popup_schedule {
+    font-family: Montserrat;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    text-align: left;
+}
+
+.meeting_title {
+    border-bottom: 2px solid white;
+    background-color: #091B30;
+    font-family: Montserrat;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: left;
+    padding-bottom: 5px;
+    color: white;
+    float: left;
+    animation: grow;
+    animation-fill-mode: forwards;
+    animation-duration: 1.5s;
+}
+
+@keyframes grow {
+    from {width: 10px;}
+
+    to {width: 350px;}
+}
+
+.meeting_title::placeholder {
+    font-size: 14px;
+    opacity: 0.42;
+}
+
+.blurred {
+    opacity: 0.2;
+}
+
+.repeats {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    margin-top: 50px;
+    float: left;
+    margin-right: 10px;
+}
+
+.repeats_text {
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    top: 50px;
+    height: 30px;
+    position: relative;
+}
+
+.select {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 2px solid white;
+    background-color: #091B30;
+    margin-top: 50px;
+    margin-right: 20px;
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    color: white;
+    appearance:none;
+}
+
+.select::-ms-expand {
+    display: none;
+}
+
+.select:after {
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    color: white;
+}
+
+.selected {
+    background-color: #2B8FD8;
+}
+
+.deselected {
+    background-color: #142539;
+}
+
+.day_select {
+    float: left;
+    border-radius: 100px;
+    height: 46px;
+    width: 46px;
+    border: 0px solid;
+    color: white;
+    text-align: center;
+    font-family: Roboto;
+    font-size: 18px;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.buttons {
+    margin-top: 30px;
+    margin-right: 20px;
+}
+
+.create_meeting {
+    width: 150px;
+    height: 56px;
+    background-color: #2B8FD8;
+    border-radius: 84px;
+    padding: 16px 36px 16px 20px;
+    font-family: Montserrat;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.01em;
+    text-align: center;
+    align-items: center;
+    border: 0px solid;
+    color: white;
+    margin-top: 35px;
+    float: right;
+
+}

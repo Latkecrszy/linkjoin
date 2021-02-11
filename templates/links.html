@@ -1,4 +1,4 @@
-<html style="background-color: #091B30">
+<html style="background-color: #091B30" id="html">
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -7,11 +7,100 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     <body>
+        <div id="main_page">
         <div class="header_links">
-            <div class="button signup">Help</div>
-            <div class="button signup">About Us</div>
+            <div class="button signup" style="top: 26%;">Help</div>
+            <div class="button signup" style="top: 26%;">About Us</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;">
         </div>
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" class="plus_button">
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png" height="450px" width="450px" style="margin-top: 15vh; margin-left: 37vw; opacity: 0.5;">
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" onclick="popUp()" class="plus_button">
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png" height="400px" width="400px" style="margin-top: 15vh; margin-left: 38vw;">
+        <div class="click_the_plus">Click the <b>+</b> button to start scheduling your meetings!</div>
+
+        <div class="footer_links" style="text-align: center; ">
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="links_footer_image"><div class="footer_link">Crafted by Latkecrszy#7777</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759569580687380/Vector_4.png" class="links_footer_image"><div class="footer_link">Join the Discord</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759513695649843/Vector_3.png" class="links_footer_image"><div class="footer_link">Contribute on Github</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759659640127548/Vector_5.png" class="links_footer_image"><div class="footer_link">Buy me a Coffee</div>
+            <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image"><div class="footer_text"><a href="https://storyset.com/work" style="text-decoration: none; color: white;">Illustration by Freepik Storyset</a></div>
+        </div>
+
+        </div>
+        <div class="popup hidden" id="popup">
+            <form>
+                <a href="/links"><img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;"></a>
+                <div class="popup_schedule">Schedule a new meeting</div>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" placeholder="Meeting Link" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163833901842472/access_time.png" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" required>
+                <hr style="position: absolute; background-color: white; opacity: 0.2; color: white; top: 230px;" width="77%">
+                <input onclick="check()" type="checkbox" name="repeats" id="repeats" class="repeats" checked="checked"><div class="repeats_text" id="repeats_text">Repeats</div>
+                <div id="days">
+                    <!--Store date of last occurrence and check if it has been that amount of time since then.-->
+                    <select class="select" id="select">
+                        <option value="day">Day</option>
+                        <option value="week" selected>Week</option>
+                        <option value="2 weeks">2 Weeks</option>
+                        <option value="month">Month</option>
+                    </select>
+                    <div class="buttons">
+                        <button class="day_select selected" style="left: 15px;" onclick="change_color('m')" id="m">M</button>
+                        <button class="day_select deselected" onclick="change_color('t')" id="t">T</button>
+                        <button class="day_select deselected" onclick="change_color('w')" id="w">W</button>
+                        <button class="day_select deselected" onclick="change_color('th')" id="th">T</button>
+                        <button class="day_select deselected" onclick="change_color('f')" id="f">F</button>
+                        <button class="day_select deselected" onclick="change_color('s')" id="s">S</button>
+                        <button class="day_select deselected" onclick="change_color('su')" id="su">S</button>
+                    </div>
+                    <button type="submit" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
+                </div>
+                <div id="dates">
+
+                </div>
+            </form>
+        </div>
     </body>
+    <script>
+        function popUp() {
+            console.log("working")
+            element = document.getElementById("popup")
+            element.classList.remove("hidden")
+            main = document.getElementById("main_page")
+            html.style.background = "#040E1A"
+            main.classList.add("blurred")
+            check()
+        }
+
+        function hide() {
+            element = document.getElementById("popup")
+            element.classList.add("hidden")
+        }
+
+        function check() {
+            checkbox = document.getElementById("repeats")
+            if (checkbox.checked) {
+                document.getElementById("repeats_text").innerText += " every"
+                document.getElementById("dates").classList.add("hidden")
+                document.getElementById("days").classList.remove("hidden")
+            }
+            else {
+                document.getElementById("repeats_text").innerText = "Repeats"
+                document.getElementById("dates").classList.remove("hidden")
+                document.getElementById("days").classList.add("hidden")
+            }
+        }
+
+        function change_color(day) {
+            day_button = document.getElementById(day)
+            console.log(day_button)
+            if (day_button.classList.contains("selected")) {
+                day_button.classList.remove("selected")
+                day_button.classList.add("deselected")
+            }
+            else {
+                 day_button.classList.add("selected")
+                 day_button.classList.remove("deselected")
+            }
+        }
+    </script>
 </html>
