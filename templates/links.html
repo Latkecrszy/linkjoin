@@ -8,16 +8,16 @@
     </head>
     <body>
         <div id="main_page">
-        <div class="header_links">
+        <div class="header_links" id="header">
             <div class="button signup" style="top: 26%;">Help</div>
             <div class="button signup" style="top: 26%;">About Us</div>
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;">
+            <a href="/"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
         </div>
         <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" onclick="popUp()" class="plus_button">
         <img src="https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png" height="400px" width="400px" style="margin-top: 15vh; margin-left: 38vw;">
         <div class="click_the_plus">Click the <b>+</b> button to start scheduling your meetings!</div>
 
-        <div class="footer_links" style="text-align: center; ">
+        <div class="footer_links" style="text-align: center;">
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="links_footer_image"><div class="footer_link">Crafted by Latkecrszy#7777</div>
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759569580687380/Vector_4.png" class="links_footer_image"><div class="footer_link">Join the Discord</div>
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759513695649843/Vector_3.png" class="links_footer_image"><div class="footer_link">Contribute on Github</div>
@@ -27,8 +27,8 @@
 
         </div>
         <div class="popup hidden" id="popup">
-            <form>
-                <a href="/links"><img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;"></a>
+            <form id="create">
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
                 <div class="popup_schedule">Schedule a new meeting</div>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" placeholder="Meeting Link" required>
@@ -65,21 +65,26 @@
             console.log("working")
             element = document.getElementById("popup")
             element.classList.remove("hidden")
-            main = document.getElementById("main_page")
+            document.getElementById("main_page").classList.add("blurred")
             html.style.background = "#040E1A"
-            main.classList.add("blurred")
             check()
         }
 
         function hide() {
             element = document.getElementById("popup")
             element.classList.add("hidden")
+            document.getElementById("main_page").classList.remove("blurred")
+            html.style.background = "#091B30"
+            document.getElementById("header").style.background = "#142539"
+
         }
 
         function check() {
             checkbox = document.getElementById("repeats")
             if (checkbox.checked) {
-                document.getElementById("repeats_text").innerText += " every"
+                if (document.getElementById("repeats_text").innerText.contains("every") == false) {
+                    document.getElementById("repeats_text").innerText += " every"
+                }
                 document.getElementById("dates").classList.add("hidden")
                 document.getElementById("days").classList.remove("hidden")
             }
