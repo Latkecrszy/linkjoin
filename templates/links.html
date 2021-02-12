@@ -6,17 +6,15 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
-    <body>
+    <body onload="load_links()">
         <div id="main_page">
-        <div class="header_links" id="header">
+        <div class="header_links" id="header" style="margin-bottom: 100px;">
             <div class="button signup" style="top: 26%;">Help</div>
             <div class="button signup" style="top: 26%;">About Us</div>
             <a href="/"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
         </div>
         <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" onclick="popUp()" class="plus_button">
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png" height="400px" width="400px" style="margin-top: 15vh; margin-left: 38vw;">
-        <div class="click_the_plus">Click the <b>+</b> button to start scheduling your meetings!</div>
-
+        <div id="insert_things"></div>
         <div class="footer_links" style="text-align: center;">
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="links_footer_image"><div class="footer_link">Crafted by Latkecrszy#7777</div>
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759569580687380/Vector_4.png" class="links_footer_image"><div class="footer_link">Join the Discord</div>
@@ -27,12 +25,12 @@
 
         </div>
         <div class="popup hidden" id="popup">
-            <form id="create">
+            <form id="create" action="/added" method="POST">
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
                 <div class="popup_schedule">Schedule a new meeting</div>
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" placeholder="Meeting Link" required>
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163833901842472/access_time.png" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" id="link" name="link" placeholder="Meeting Link" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163833901842472/access_time.png" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" id="time" name="time" required>
                 <hr style="position: absolute; background-color: white; opacity: 0.2; color: white; top: 230px;" width="77%">
                 <input onclick="check()" type="checkbox" name="repeats" id="repeats" class="repeats" checked="checked"><div class="repeats_text" id="repeats_text">Repeats</div>
                 <div id="days">
@@ -44,15 +42,15 @@
                         <option value="month">Month</option>
                     </select>
                     <div class="buttons">
-                        <button class="day_select selected" style="left: 15px;" onclick="change_color('m')" id="m">M</button>
-                        <button class="day_select deselected" onclick="change_color('t')" id="t">T</button>
-                        <button class="day_select deselected" onclick="change_color('w')" id="w">W</button>
-                        <button class="day_select deselected" onclick="change_color('th')" id="th">T</button>
-                        <button class="day_select deselected" onclick="change_color('f')" id="f">F</button>
-                        <button class="day_select deselected" onclick="change_color('s')" id="s">S</button>
-                        <button class="day_select deselected" onclick="change_color('su')" id="su">S</button>
+                        <button type="button" class="day_select selected" style="left: 15px;" onclick="change_color('Mon')" id="Mon">M</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Tue')" id="Tue">T</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Wed')" id="Wed">W</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Thu')" id="Thu">T</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Fri')" id="Fri">F</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Sat')" id="Sat">S</button>
+                        <button type="button" class="day_select deselected" onclick="change_color('Sun')" id="Sun">S</button>
                     </div>
-                    <button type="submit" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
+                    <button type="submit" onclick="register_buttons()" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
                 </div>
                 <div id="dates">
 
@@ -81,8 +79,9 @@
 
         function check() {
             checkbox = document.getElementById("repeats")
+            console.log(checkbox.checked)
             if (checkbox.checked) {
-                if (document.getElementById("repeats_text").innerText.contains("every") == false) {
+                if (document.getElementById("repeats_text").innerText.includes("every") == false) {
                     document.getElementById("repeats_text").innerText += " every"
                 }
                 document.getElementById("dates").classList.add("hidden")
@@ -106,6 +105,107 @@
                  day_button.classList.add("selected")
                  day_button.classList.remove("deselected")
             }
+        }
+
+        function register_buttons() {
+            buttons = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            for (const button of buttons) {
+                button_input = document.createElement('input')
+                button_input.type = 'text'
+                button_input.name = button
+                button_input.style.opacity = 0
+                if (document.getElementById(button).classList.contains("selected")) {
+                    button_input.value = "true"
+                }
+                else {
+                    button_input.value = "false"
+                }
+                form = document.getElementById("create")
+                form.appendChild(button_input)
+            }
+        }
+
+        function load_links() {
+            const links = JSON.parse('{{ links|tojson|safe }}')
+            if (links.toString() == '') {
+                const plus = document.createElement("img")
+                const plus_attributes = {"height": "75px", "width": "75px", "onclick": "popUp()", "class": "plus_button", "src": "https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png"}
+                for (const attr in plus_attributes) {
+                    plus.setAttribute(attr, plus_attributes[attr])
+                }
+                const image = document.createElement("img");
+                const image_attributes = {"src": "https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png", "height": "400px", "width": "400px", "style": "margin-top: 15vh; margin-left: 38vw;"}
+                for (const attribute in image_attributes) {
+                    image.setAttribute(attribute, image_attributes[attribute])
+                }
+                const click_plus = document.createElement("div")
+                click_plus.classList.add("click_the_plus")
+                click_plus.innerText = "Click the + button to start scheduling your meetings!"
+                insert = document.getElementById("insert_things")
+                insert.appendChild(plus)
+                insert.appendChild(image)
+                insert.appendChild(click_plus)
+            }
+            else {
+                let iterator = 0;
+                for (const link of links) {
+                    console.log(link["name"])
+                    link_event = document.createElement("div")
+                    link_event.classList.add("link_event")
+                    if (iterator == 0) {
+                        link_event.style.margin = "180px 0 0 10vw"
+                        console.log("changed style")
+                    }
+                    let time_div = document.createElement("div")
+                    time_div.classList.add("time")
+                    let time = link["time"]
+                    let time_list = time.split(":")
+                    let pm = "am"
+                    if (parseInt(time_list[0]) > 12) {
+                        time_list[0] = parseInt(time_list[0]) - 12
+                        pm = "pm"
+                    }
+                    time = time_list.join(":")
+                    time += " "+pm
+                    time_div.innerText = time
+                    link_event.appendChild(time_div)
+                    let name = document.createElement("div")
+                    let name_container = document.createElement("div")
+                    name_container.classList.add("name_container")
+                    name.classList.add("link_event_title")
+                    name.innerText = link["name"]
+                    if (link["active"] == "true") {
+                        name.style.color = "#2B8FD8"
+                    }
+                    else {
+                        name.style.color = "#B7C0C7"
+                    }
+                    name_container.appendChild(name)
+                    let join_now = document.createElement("div")
+                    join_now.classList.add("join_now")
+                    join_now.innerText = "Click to join the room now"
+                    name_container.appendChild(join_now)
+                    redirect_to = `redirect("${link["link"]}")`
+                    name_container.setAttribute("onclick", redirect_to)
+                    link_event.appendChild(name_container)
+                    let days = document.createElement("div")
+                    days.classList.add("days")
+                    let days_list = link["days"].replaceAll("'", '"')
+                    days_list = JSON.parse(days_list)
+                    console.log(link["days"])
+                    days.innerText = days_list.join(", ")
+                    link_event.appendChild(days)
+                    document.createElement("switch")
+
+                    document.getElementById("insert_things").appendChild(link_event)
+                    iterator += 1
+
+                }
+            }
+            console.log(links.toString())
+        }
+        function redirect(redirect_to) {
+            window.open(redirect_to)
         }
     </script>
 </html>

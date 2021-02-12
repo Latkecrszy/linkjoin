@@ -237,12 +237,78 @@ html {
 }
 
 .link_event {
-    background-color: green;
+    background-color: #142539;
+    border-radius: 1px;
+    width: 75vw;
+    padding: 25px 30px 28px;
+    margin-top: 20px;
     position: relative;
+    margin-left: 10vw;
+    height: 40px;
+
+}
+.time {
+    font-family: Montserrat;
+    font-size: 28px;
+    display: inline;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 38px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    color: white;
+    width: 150px;
 }
 
-.link_event_hidden {
-    background-color: blue;
+.link_event_title {
+    font-family: Montserrat;
+    font-size: 16px;
+    display: block;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    width: 100px;
+    height: 25px;
+}
+
+.name_container {
+    display: inline;
+    left: 18vw;
+    bottom: 35px;
+    position: relative;
+    box-shadow: 4px 8px 18px black;
+}
+
+.join_now {
+    font-family: Montserrat;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 16px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    color: white;
+    opacity: 0.2;
+    width: 170px;
+
+}
+
+.days {
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    text-align: left;
+    color: white;
+    display: inline;
+    bottom: 70px;
+    left: 45vw;
+    float: left;
+    position: relative;
 }
 
 .day {
@@ -516,6 +582,7 @@ body {
     height: 15vh;
     width: 100vw;
     position: absolute;
+    margin-bottom: 50px;
     top: 0px;
     left: 0px;
     right: 0px;
@@ -523,7 +590,7 @@ body {
 
 .plus_button {
     align: center;
-    margin-top: 55px;
+    top: 55px;
     position: absolute;
     margin-left: 45vw;
 }

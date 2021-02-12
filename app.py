@@ -78,8 +78,9 @@ def register_link():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.insert_one({"username": login_info['username'], 'password': login_info['password'], 'day': request.form.get("day"), 'time': request.form.get("time"), 'amorpm': request.form.get("amorpm"), 'timezone': request.form.get("timezone"), 'link': request.form.get("link"), 'name': request.form.get('name')})
-        return redirect("/open")
+        print([day for day in dict(request.form) if day in ["m", "t", "w", "th", "f", "s", "su"] and request.form.get(day) == "true"])
+        links_db.insert_one({"username": login_info['username'], 'password': login_info['password'], 'days': [day for day in dict(request.form) if day in ["m", "t", "w", "th", "f", "s", "su"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name')})
+        return redirect("/links")
     else:
         print(request.cookies)
         return make_response({"it": "didn't work"})
@@ -94,7 +95,6 @@ def links():
         links_list = links_db.find({"username": login_info['username'], 'password': login_info['password']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
         print(links_list)
-        print(type(links_list))
     else:
         return redirect("/login")
     return render_template("links.html", links=links_list, num=len(links_list))
