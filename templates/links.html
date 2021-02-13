@@ -196,7 +196,9 @@
                     days.innerText = days_list.join(", ")
                     link_event.appendChild(days)
                     document.createElement("switch")
-
+                    if (link['active'] == "false") {
+                        link_event.style.opacity = 0.5
+                    }
                     document.getElementById("insert_things").appendChild(link_event)
                     iterator += 1
 
