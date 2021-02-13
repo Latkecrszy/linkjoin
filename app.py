@@ -25,21 +25,20 @@ def signup():
 def open():
     mongo = PyMongo(app)
     login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-    print(login_info)
     login_db = mongo.db.login
     authorized = login_db.find_one({"username": login_info['username'], "password": login_info['password']})
     if authorized:
-        links = mongo.db.links
-        links = links.find()
-        links = [{str(i): str(j) for i, j in link.items() if i != "_id"} for link in links]
+        links_db = mongo.db.links
+        links_list = links_db.find({"username": login_info['username'], 'password': login_info['password']})
+        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
+                      for link in links_list]
         date = datetime.datetime.now(dateutil.tz.gettz("America/Los_Angeles"))
-        day = date.strftime("%A").lower()
-        hour = int(date.strftime("%I"))
+        day = date.strftime("%a").capitalize()
+        hour = int(date.strftime("%H"))
         minute = int(date.strftime("%M"))
-        amorpm = date.strftime("%p").lower()
-        return render_template("redirect.html", num=len(links), user_links=links, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute, amorpm=amorpm)
+        return render_template("redirect.html", num=len(links_list), user_links=links_list, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute)
     else:
-        return jsonify({"You are not logged in": ":("})
+        return redirect("/login")
 
 
 @app.route("/add", methods=['POST', 'GET'])
@@ -95,7 +94,6 @@ def links():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_list = links_db.find({"username": login_info['username'], 'password': login_info['password']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
-        print(links_list)
     else:
         return redirect("/login")
     return render_template("links.html", links=links_list, num=len(links_list))

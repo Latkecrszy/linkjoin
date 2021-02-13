@@ -1,42 +1,42 @@
 <html>
-    <body onload="NewTab()"><button>Click me to activate!</button></body>
+    <head>
+        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    </head>
+    <body onload="NewTab()">
+
+    </body>
     <script>
         function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
+          return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        function getCookie(cname) {
-              var name = cname + "=";
-              var decodedCookie = decodeURIComponent(document.cookie);
-              var ca = decodedCookie.split(';');
-              for(var i = 0; i <ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                  c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                  return c.substring(name.length, c.length);
-                }
-              }
-              return "";
-        }
-    </script>
-    <script>
-            async function NewTab() {
-                for (var i=0; i<{{ num }}; i++) {
-                    const user_links = {{ user_links|tojson|safe }}
-                    const links = user_links[i]
-                    const hour = parseInt(links["time"].split(":")[0])
-                    const minute = parseInt(links["time"].split(":")[1])
-                    var loginInfo = JSON.parse(atob(getCookie("login_info")));
-                    if (links["username"] == loginInfo.username && loginInfo.password == "{{ password }}") {
-                        if (links["day"] == "{{ day }}" && hour == parseInt("{{ hour }}") && minute == parseInt("{{ minute }}") && links["amorpm"] == "{{ amorpm }}") {
-                            window.open(links["link"], name="_blank")
-                        }
+        async function NewTab() {
+            const user_links = {{ user_links|tojson|safe }}
+            let minute = parseInt("{{ minute }}")
+            let day = "{{ day }}"
+            let hour = parseInt("{{ hour }}")
+            while (true) {
+                for (const link of user_links) {
+                    let link_hour = parseInt(link["time"].split(":")[0])
+                    let link_minute = parseInt(link["time"].split(":")[1])
+                    if (link["days"].includes(day) && hour == link_hour && minute == link_minute) {
+                        window.open(link["link"])
                     }
                 }
                 await sleep(60000)
-                location.reload()
+                minute += 1
+                if (minute >= 60) {
+                    minute -= 60
+                    hour += 1
+                    if (hour > 24) {
+                        location.reload()
+                    }
+                }
             }
-        </script>
+        }
+    </script>
 </html>
