@@ -60,7 +60,7 @@
     </body>
     <script>
         function popUp() {
-            console.log("working")
+
             element = document.getElementById("popup")
             element.classList.remove("hidden")
             document.getElementById("main_page").classList.add("blurred")
@@ -79,7 +79,6 @@
 
         function check() {
             checkbox = document.getElementById("repeats")
-            console.log(checkbox.checked)
             if (checkbox.checked) {
                 if (document.getElementById("repeats_text").innerText.includes("every") == false) {
                     document.getElementById("repeats_text").innerText += " every"
@@ -96,7 +95,6 @@
 
         function change_color(day) {
             day_button = document.getElementById(day)
-            console.log(day_button)
             if (day_button.classList.contains("selected")) {
                 day_button.classList.remove("selected")
                 day_button.classList.add("deselected")
@@ -120,8 +118,7 @@
                 else {
                     button_input.value = "false"
                 }
-                form = document.getElementById("create")
-                form.appendChild(button_input)
+                document.getElementById("create").appendChild(button_input)
             }
         }
 
@@ -149,12 +146,10 @@
             else {
                 let iterator = 0;
                 for (const link of links) {
-                    console.log(link["name"])
                     link_event = document.createElement("div")
                     link_event.classList.add("link_event")
                     if (iterator == 0) {
                         link_event.style.margin = "180px 0 0 10vw"
-                        console.log("changed style")
                     }
                     let time_div = document.createElement("div")
                     time_div.classList.add("time")
@@ -192,22 +187,46 @@
                     days.classList.add("days")
                     let days_list = link["days"].replaceAll("'", '"')
                     days_list = JSON.parse(days_list)
-                    console.log(link["days"])
                     days.innerText = days_list.join(", ")
                     link_event.appendChild(days)
-                    document.createElement("switch")
+                    let activate_switch = document.createElement("button")
+                    activate_switch.classList.add("switch")
+                    activate_switch.onclick = `activate("${link["link"]})`
                     if (link['active'] == "false") {
                         link_event.style.opacity = 0.5
+                        activate_switch.style.background = "#2B8FD8"
+                        activate_switch.style.color = "white"
+                        activate_switch.innerText = "Activate"
                     }
+                    else {
+                        link_event.style.opacity = 1
+                        activate_switch.style.background = "#B7C0C7"
+                        activate_switch.style.color = "black"
+                        activate_switch.innerText = "Deactivate"
+                    }
+                    link_event.appendChild(activate_switch)
+                    dot_menu = document.createElement("img")
+                    dot_menu.src = "https://cdn.discordapp.com/attachments/716377034728931331/809964654922956820/Vector_19.png"
+                    dot_menu.onclick = `open_menu("${iterator}")`
+                    dot_menu.classList.add("dot_menu")
+                    link_event.appendChild(dot_menu)
                     document.getElementById("insert_things").appendChild(link_event)
                     iterator += 1
 
                 }
             }
-            console.log(links.toString())
         }
         function redirect(redirect_to) {
             window.open(redirect_to)
+        }
+
+        function activate(link, action) {
+            if (action == "activate") {
+                let xhr = new XMLHttpRequest()
+                xhr.open("POST", "linkjoin.xyz/activate", true)
+                xhr.setRequestHeader('Content-Type', 'application/json')
+                xhr.send(JSON.stringify({"key": "value"}))
+            }
         }
     </script>
 </html>

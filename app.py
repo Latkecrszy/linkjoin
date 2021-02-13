@@ -78,8 +78,9 @@ def register_link():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        print([day for day in dict(request.form) if day in ["m", "t", "w", "th", "f", "s", "su"] and request.form.get(day) == "true"])
-        links_db.insert_one({"username": login_info['username'], 'password': login_info['password'], 'days': [day for day in dict(request.form) if day in ["m", "t", "w", "th", "f", "s", "su"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name')})
+        print([request.form.get(day) for day in dict(request.form)])
+        print([day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == "true"])
+        links_db.insert_one({"username": login_info['username'], 'password': login_info['password'], 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
         return redirect("/links")
     else:
         print(request.cookies)
