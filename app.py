@@ -45,7 +45,7 @@ def open():
 def login():
     username = request.form.get("email")
     password = request.form.get("password")
-    response = make_response(render_template("register_link.html"))
+    response = make_response(render_template("links.html"))
     if username is not None:
         mongo = PyMongo(app)
         login_db = mongo.db.login
@@ -60,13 +60,9 @@ def login():
             else:
                 print('logged in')
         cookie = {key: value for key, value in login_info.items() if key != "_id"}
-        print(cookie)
         cookie = json.dumps(cookie)
-        print(cookie)
         cookie = str.encode(cookie)
-        print(cookie)
         cookie = base64.b64encode(cookie)
-        print(cookie)
         response.set_cookie('login_info', cookie)
     return response
 
