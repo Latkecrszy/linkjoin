@@ -6,7 +6,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
-    <body onload="load_links()">
+    <body onload="load_links()" style="overflow-x: hidden;">
         <div id="main_page">
         <div class="header_links" id="header" style="margin-bottom: 100px;">
             <div class="button signup" style="top: 26%;">Help</div>
@@ -149,7 +149,7 @@
                     link_event = document.createElement("div")
                     link_event.classList.add("link_event")
                     if (iterator == 0) {
-                        link_event.style.margin = "180px 0 0 10vw"
+                        link_event.style.margin = "80px 0 0 10vw"
                     }
                     let time_div = document.createElement("div")
                     time_div.classList.add("time")

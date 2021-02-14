@@ -76,6 +76,7 @@
 
 html {
     background-color: #142539;
+    overflow-x: hidden;
 }
 
 .login_link {
@@ -391,6 +392,31 @@ body {
 
 }
 
+.explanation_title {
+    font-size: 60px;
+    color: white;
+    text-align: center;
+    font-family: Montserrat;
+    display: inline;
+    position: relative;
+}
+
+.info {
+    margin-top: 300px;
+}
+
+.explanation {
+    font-size: 30px;
+    color: white;
+    text-align: center;
+    width: 40vw;
+    margin-top: 30px;
+    font-family: Roboto;
+    line-height: 1.4;
+    opacity: 0.7;
+    display: inline;
+}
+
 .description {
     margin-top: 10px;
     font-family: Roboto;
@@ -427,7 +453,6 @@ body {
 
 .footer {
     opacity: 0.5;
-    position: absolute;
     color: white;
     font-family: Montserrat;
     font-size: 14px;
@@ -439,6 +464,7 @@ body {
     display: inline-block;
     margin-left: 25px;
     bottom: 15px;
+    margin-top: 125vh;
 }
 
 .footer_image {
@@ -596,12 +622,9 @@ body {
 .header_links {
     background-color: #142539;
     height: 15vh;
-    width: 100vw;
-    position: absolute;
-    margin-bottom: 50px;
-    top: 0px;
-    left: 0px;
-    right: 0px;
+    width: 100%;
+    position: relative;
+
 }
 
 .plus_button {

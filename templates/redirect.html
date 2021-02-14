@@ -7,6 +7,13 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     <body onload="NewTab()">
+        <div class="header_links" id="header">
+            <div onclick="redirect('help')" class="button signup" style="top: 26%;">Help</div>
+            <div onclick="redirect('about')" class="button signup" style="top: 26%;">About Us</div>
+            <div onclick="redirect('links')" class="button signup" style="top: 26%;">Links</div>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;" onclick="redirect('')">
+        </div>
+        <img src="https://cdn.discordapp.com/attachments/716377034728931331/810197835848220742/Work_time-amico.png" height="600px" width="600px" style="margin-left: 30vw;  position: relative; bottom: 75px;">
 
     </body>
     <script>
@@ -37,6 +44,10 @@
                     }
                 }
             }
+        }
+
+        function redirect(redirect_to) {
+            window.open("/"+redirect_to)
         }
     </script>
 </html>
