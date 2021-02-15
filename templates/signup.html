@@ -24,12 +24,15 @@
         <div class="slogan_login" style="margin-top: 30px;">Never be late again</div>
         <div class="form_box">
             <div class="create_account">Create an Account</div>
-            <form method="POST" action="/login_error">
+            <form method="POST" action="/signup_error">
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/808871432427667506/Screen_Shot_2021-02-09_at_5.26.13_PM.png" class="icon" style="top: 91px;">
                 <input type="text" name="email" class="email" id="email" placeholder="Email" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/808871989649080410/Vector_13.png" class="icon" style="top: 165px;">
                 <input name="password" class="password" id="password" placeholder="Password" type="password" required>
                 <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+                {% if error == "email_in_use" %}
+                    <div class="error" style="left: 90px;">This email is already associated with an account</div>
+                {% endif %}
             </form>
         </div>
 

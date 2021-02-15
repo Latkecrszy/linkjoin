@@ -31,7 +31,7 @@
                 <input name="password" class="password" id="password" placeholder="Password" type="password" required>
                 <button type="submit" class="submit" id="submit" name="submit">Log In <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
                 {% if error == "username_not_found" %}
-                    <div class="error" style="left: 130px;">No account is associated with that email.</div>
+                    <div class="error" style="left: 130px;">No account is associated with this email</div>
                 {% elif error == "incorrect_password" %}
                     <div class="error">Incorrect Password</div>
                 {% endif %}

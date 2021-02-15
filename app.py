@@ -17,7 +17,7 @@ def Login():
 
 
 @app.route("/signup")
-def signup():
+def Signup():
     return render_template("signup.html", error=None)
 
 
@@ -26,10 +26,10 @@ def open():
     mongo = PyMongo(app)
     login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
     login_db = mongo.db.login
-    authorized = login_db.find_one({"username": login_info['username'], "password": login_info['password']})
+    authorized = login_db.find_one({"username": login_info['username'].lower(), "password": login_info['password']})
     if authorized:
         links_db = mongo.db.links
-        links_list = links_db.find({"username": login_info['username'], 'password': login_info['password']})
+        links_list = links_db.find({"username": login_info['username'].lower(), 'password': login_info['password']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
                       for link in links_list]
         date = datetime.datetime.now(dateutil.tz.gettz("America/Los_Angeles"))
@@ -46,13 +46,30 @@ def login():
     response = make_response(redirect("/links"))
     mongo = PyMongo(app)
     login_db = mongo.db.login
-    login_info = {'username': request.form.get("email"), 'password': request.form.get("password")}
-    if login_db.find_one({'username': request.form.get("email")}) is None:
+    login_info = {'username': request.form.get("email").lower(), 'password': request.form.get("password")}
+    if login_db.find_one({'username': request.form.get("email").lower()}) is None:
         return render_template("login.html", error="username_not_found")
-    print(f"This: {login_db.find_one({'username': request.form.get('email')})}")
+    print(f"This: {login_db.find_one({'username': request.form.get('email').lower()})}")
     authorization = login_db.find_one(login_info)
     if authorization is None:
         return render_template("login.html", error="incorrect_password")
+    cookie = {key: value for key, value in login_info.items() if key != "_id"}
+    cookie = json.dumps(cookie)
+    cookie = str.encode(cookie)
+    cookie = base64.b64encode(cookie)
+    response.set_cookie('login_info', cookie)
+    return response
+
+
+@app.route("/signup_error", methods=["POST"])
+def signup():
+    response = make_response(redirect("/links"))
+    mongo = PyMongo(app)
+    login_db = mongo.db.login
+    login_info = {'username': request.form.get("email").lower(), 'password': request.form.get("password")}
+    if login_db.find_one({'username': request.form.get("email").lower()}) is not None:
+        return render_template("signup.html", error="email_in_use")
+    login_db.insert_one({'username': request.form.get("email").lower(), 'password': request.form.get("password")})
     cookie = {key: value for key, value in login_info.items() if key != "_id"}
     cookie = json.dumps(cookie)
     cookie = str.encode(cookie)

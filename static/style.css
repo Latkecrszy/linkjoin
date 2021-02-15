@@ -629,7 +629,7 @@ body {
 
 .plus_button {
     align: center;
-    top: 55px;
+    top: 10vh;
     position: absolute;
     margin-left: 45vw;
 }
