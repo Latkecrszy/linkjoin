@@ -13,12 +13,12 @@ def main():
 
 @app.route("/login")
 def Login():
-    return render_template("login.html")
+    return render_template("login.html", error=None)
 
 
 @app.route("/signup")
 def signup():
-    return render_template("signup.html")
+    return render_template("signup.html", error=None)
 
 
 @app.route("/open")
@@ -41,29 +41,23 @@ def open():
         return redirect("/login")
 
 
-@app.route("/add", methods=['POST', 'GET'])
+@app.route("/login_error", methods=['POST'])
 def login():
-    username = request.form.get("email")
-    password = request.form.get("password")
-    response = make_response(render_template("links.html"))
-    if username is not None:
-        mongo = PyMongo(app)
-        login_db = mongo.db.login
-        login_info = {'username': username, 'password': password}
-        if login_db.find_one({'username': username}) is None:
-            login_db.insert_one(login_info)
-            print('created account')
-        else:
-            authorization = login_db.find_one(login_info)
-            if authorization is None:
-                print('incorrect password')
-            else:
-                print('logged in')
-        cookie = {key: value for key, value in login_info.items() if key != "_id"}
-        cookie = json.dumps(cookie)
-        cookie = str.encode(cookie)
-        cookie = base64.b64encode(cookie)
-        response.set_cookie('login_info', cookie)
+    response = make_response(redirect("/links"))
+    mongo = PyMongo(app)
+    login_db = mongo.db.login
+    login_info = {'username': request.form.get("email"), 'password': request.form.get("password")}
+    if login_db.find_one({'username': request.form.get("email")}) is None:
+        return render_template("login.html", error="username_not_found")
+    print(f"This: {login_db.find_one({'username': request.form.get('email')})}")
+    authorization = login_db.find_one(login_info)
+    if authorization is None:
+        return render_template("login.html", error="incorrect_password")
+    cookie = {key: value for key, value in login_info.items() if key != "_id"}
+    cookie = json.dumps(cookie)
+    cookie = str.encode(cookie)
+    cookie = base64.b64encode(cookie)
+    response.set_cookie('login_info', cookie)
     return response
 
 

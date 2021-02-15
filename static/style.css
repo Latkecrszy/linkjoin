@@ -846,3 +846,41 @@ body {
     float: right;
 
 }
+
+.error {
+    font-size: 12px;
+    opacity: 0.7;
+    color: red;
+    position: absolute;
+    top: 30px;
+    left: 180px;
+}
+
+.where_it_happens {
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: white;
+    font-family: Montserrat;
+    text-align: center;
+    width: 700px;
+    left: 400px;
+    bottom: 75px;
+    position: relative;
+}
+
+.enable {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: white;
+    opacity: 0.7;
+    font-family: Montserrat;
+    text-align: center;
+    width: 600px;
+    left: 450px;
+    bottom: 60px;
+    position: relative;
+}
