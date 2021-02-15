@@ -32,6 +32,8 @@
                 <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
                 {% if error == "email_in_use" %}
                     <div class="error" style="left: 90px;">This email is already associated with an account</div>
+                {% elif error == "invalid_email" %}
+                    <div class="error" style="left: 200px;">Invalid email</div>
                 {% endif %}
             </form>
         </div>

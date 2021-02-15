@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, abort, render_template, redirect, url_for
 from flask_pymongo import PyMongo
-import jinja2, json, os, dotenv, datetime, dateutil.tz, base64
+import jinja2, json, os, dotenv, datetime, dateutil.tz, base64, re
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
@@ -66,7 +66,10 @@ def signup():
     response = make_response(redirect("/links"))
     mongo = PyMongo(app)
     login_db = mongo.db.login
-    login_info = {'username': request.form.get("email").lower(), 'password': request.form.get("password")}
+    email = request.form.get("email").lower()
+    if not re.search(".+@[a-z+._\-!#$%&'*=?^`{|}~]+[.][a-z]+", email):
+        return render_template("signup.html", error="invalid_email")
+    login_info = {'username': email, 'password': request.form.get("password")}
     if login_db.find_one({'username': request.form.get("email").lower()}) is not None:
         return render_template("signup.html", error="email_in_use")
     login_db.insert_one({'username': request.form.get("email").lower(), 'password': request.form.get("password")})
