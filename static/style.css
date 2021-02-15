@@ -437,8 +437,6 @@ body {
     border: none;
     margin-top: 35px;
     color: white;
-    vertical-align: center;
-
 }
 
 .footer_text {
@@ -462,9 +460,12 @@ body {
     letter-spacing: 0em;
     text-align: left;
     display: inline-block;
-    margin-left: 25px;
     bottom: 15px;
-    margin-top: 125vh;
+    margin-top: 50vh;
+    float: left;
+    margin-right: 100px;
+    margin-left: 100px;
+    position: relative;
 }
 
 .footer_image {
