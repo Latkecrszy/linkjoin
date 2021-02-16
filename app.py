@@ -108,5 +108,40 @@ def links():
     return render_template("links.html", links=links_list, num=len(links_list))
 
 
+@app.route("/delete", methods=["POST", "GET"])
+def delete():
+    name = request.args.get("link")
+    name = name.replace("%20", " ")
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        links_db.find_one_and_delete({"username": login_info['username'], 'password': login_info['password'], "name": name})
+        return redirect("/links")
+    return redirect("/login")
+
+
+@app.route("/update", methods=["POST"])
+def update():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        links_db.find_one_and_replace({"username": login_info['username'], 'password': login_info['password'], 'name': request.args.get('prev_name')}, {"username": login_info['username'], 'password': login_info['password'],
+                             'days': [day for day in dict(request.form) if
+                                      day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
+                                          day) == 'true'], 'time': request.form.get("time"),
+                             'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+        return redirect("/links")
+
+
+@app.route("/deactivate")
+def deactivate():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    if request.cookies.get('login_info'):
+        pass
+
+
 if __name__ == "__main__":
     app.run()

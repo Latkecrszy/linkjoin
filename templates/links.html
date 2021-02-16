@@ -28,10 +28,15 @@
         </div>
 
         </div>
+        <div class="popup hidden" id="popup_delete">
+            <div>Are you sure you want to delete this meeting?</div>
+            <a href="/links"><button style="background-color: #2B8FD8; height: 50px; width: 80px; border: 0px solid; border-radius: 3px;">No</button></a>
+            <a id="delete_button"><button style="background-color: #A40606; height: 50px; width: 80px; border: 0px solid; border-radius: 3px;">Yes</button></a>
+        </div>
         <div class="popup hidden" id="popup">
             <form id="create" action="/added" method="POST">
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
-                <div class="popup_schedule">Schedule a new meeting</div>
+                <div class="popup_schedule" id="popup_schedule">Schedule a new meeting</div>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" id="link" name="link" placeholder="Meeting Link" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163833901842472/access_time.png" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" id="time" name="time" required>
@@ -46,7 +51,7 @@
                         <option value="month">Month</option>
                     </select>
                     <div class="buttons">
-                        <button type="button" class="day_select selected" style="left: 15px;" onclick="change_color('Mon')" id="Mon">M</button>
+                        <button type="button" class="day_select deselected" style="left: 15px;" onclick="change_color('Mon')" id="Mon">M</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Tue')" id="Tue">T</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Wed')" id="Wed">W</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Thu')" id="Thu">T</button>
@@ -54,10 +59,7 @@
                         <button type="button" class="day_select deselected" onclick="change_color('Sat')" id="Sat">S</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Sun')" id="Sun">S</button>
                     </div>
-                    <button type="submit" onclick="register_buttons()" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
-                </div>
-                <div id="dates">
-
+                    <button type="submit" id="submit" onclick="register_buttons()" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
                 </div>
             </form>
         </div>
@@ -69,6 +71,13 @@
             element.classList.remove("hidden")
             document.getElementById("main_page").classList.add("blurred")
             html.style.background = "#040E1A"
+            document.getElementById("name").value = null
+            document.getElementById("link").value = null
+            document.getElementById("submit").innerHTML = null
+            document.getElementById("submit").innerText = "Create"
+            document.getElementById("create").action = "/added"
+            document.getElementById("popup_schedule").innerText = "Schedule a new meeting"
+
             check()
         }
 
@@ -87,12 +96,9 @@
                 if (document.getElementById("repeats_text").innerText.includes("every") == false) {
                     document.getElementById("repeats_text").innerText += " every"
                 }
-                document.getElementById("dates").classList.add("hidden")
-                document.getElementById("days").classList.remove("hidden")
             }
             else {
                 document.getElementById("repeats_text").innerText = "Repeats"
-                document.getElementById("dates").classList.remove("hidden")
                 document.getElementById("days").classList.add("hidden")
             }
         }
@@ -154,6 +160,7 @@
                 for (const link of links) {
                     link_event = document.createElement("div")
                     link_event.classList.add("link_event")
+                    link_event.id = iterator.toString()
                     if (iterator == 0) {
                         link_event.style.margin = "80px 0 0 10vw"
                     }
@@ -200,25 +207,44 @@
                     activate_switch.onclick = `activate("${link["link"]})`
                     if (link['active'] == "false") {
                         link_event.style.opacity = 0.5
-                        activate_switch.style.background = "#2B8FD8"
-                        activate_switch.style.color = "white"
+                        activate_switch.style.background = "#B7C0C7"
+                        activate_switch.style.color = "black"
                         activate_switch.innerText = "Activate"
                     }
                     else {
                         link_event.style.opacity = 1
-                        activate_switch.style.background = "#B7C0C7"
-                        activate_switch.style.color = "black"
+                        activate_switch.style.background = "#2B8FD8"
+                        activate_switch.style.color = "white"
                         activate_switch.innerText = "Deactivate"
                     }
                     link_event.appendChild(activate_switch)
-                    dot_menu = document.createElement("img")
-                    dot_menu.src = "https://cdn.discordapp.com/attachments/716377034728931331/809964654922956820/Vector_19.png"
-                    dot_menu.onclick = `open_menu("${iterator}")`
-                    dot_menu.classList.add("dot_menu")
-                    link_event.appendChild(dot_menu)
+                    let edit = document.createElement("button")
+                    edit.classList.add("edit")
+                    console.log(link)
+                    edit.addEventListener("click", function() {
+                        link_event = document.getElementById(iterator.toString())
+                        element = document.getElementById("popup")
+                        element.classList.remove("hidden")
+                        document.getElementById("main_page").classList.add("blurred")
+                        html.style.background = "#040E1A"
+                        check()
+                        document.getElementById("name").value = link["name"]
+                        document.getElementById("link").value = link["link"]
+                        document.getElementById("submit").innerText = "Update"
+                        document.getElementById("create").action = "/update?prev_name="+link["name"]
+                        document.getElementById("popup_schedule").innerText = "Edit your meeting"
+                    })
+                    edit.innerText = "Edit"
+                    link_event.appendChild(edit)
+                    let delete_button = document.createElement("button")
+                    delete_button.classList.add("delete")
+                    delete_button.innerText = "Delete"
+                    delete_button.addEventListener("click", function() {
+                        document.getElementById("popup_delete").classList.remove("hidden")
+                        document.getElementById("delete_button").href = `/delete?link=${link['name']}`})
+                    link_event.appendChild(delete_button)
                     document.getElementById("insert_things").appendChild(link_event)
                     iterator += 1
-
                 }
             }
         }
@@ -235,9 +261,7 @@
             }
         }
 
-        function close() {
-            console.log("worked")
-            document.getElementById("warning").remove()
-        }
+
+
     </script>
 </html>

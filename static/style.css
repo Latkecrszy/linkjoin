@@ -287,16 +287,16 @@ html {
     font-size: 10px;
     font-style: normal;
     font-weight: 600;
-    line-height: 22px;
+    line-height: 20px;
     letter-spacing: 0.01em;
     display: inline;
-    position: relative;
     border: 0px solid;
     border-radius: 5px;
+    position: relative;
     bottom: 70px;
     text-align: center;
     float: right;
-    right: 10vw;
+    right: 9vw;
 }
 
 .join_now {
@@ -898,4 +898,45 @@ body {
     background-color: red;
     color: black;
     border: 0px solid;
+}
+
+.edit {
+    height: 20px;
+    color: #0A2E36;
+    background-color: #27FB6B;
+    font-family: Montserrat;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    display: inline;
+    border: 0px solid;
+    border-radius: 5px;
+    position: relative;
+    bottom: 70px;
+    text-align: center;
+    float: right;
+
+    right: 12vw;
+}
+
+.delete {
+    height: 20px;
+    color: white;
+    background-color: #A40606;
+    font-family: Montserrat;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    display: inline;
+    border: 0px solid;
+    border-radius: 5px;
+    position: relative;
+    bottom: 70px;
+    text-align: center;
+    float: right;
+    left: 4vw;
 }
