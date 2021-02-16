@@ -5,6 +5,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
+        <link rel="apple-touch-icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
+        <title>LinkJoin</title>
     </head>
     <body onload="NewTab()">
         <div class="header_links" id="header">
@@ -26,15 +29,47 @@
           return new Promise(resolve => setTimeout(resolve, ms));
         }
 
+        function nextDay(day) {
+            days = {"1": "Mon", "2": "Tue", "3": "Wed", "4": "Thu", "5": "Fri", "6": "Sat", "7": "Sun"}
+            for (const day_num in days) {
+                if (days[day_num] == day) {
+                    if (parseInt(day_num) == 7) {
+                        console.log("Mon")
+                        return "Mon"
+                    }
+                    else {
+                        console.log(days[parseInt(day_num)+1])
+                        return days[parseInt(day_num)+1]
+                    }
+                }
+            }
+        }
+
         async function NewTab() {
+            let diff = timeDifference()
             const user_links = {{ user_links|tojson|safe }}
             let minute = parseInt("{{ minute }}")
             let day = "{{ day }}"
             let hour = parseInt("{{ hour }}")
+            console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
+            hour += Math.floor(parseInt(diff)/60)
+            console.log(nextDay)
+            if (hour > 24) {
+                day = nextDay(day)
+                hour -= 24
+            }
+            minute += parseInt(diff) % 60
+            if (minute >= 60) {
+                minute -= 60
+                hour += 1
+            }
+            console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
+            // convert the python to use UTC time and patch this up to work with whatever local time they have and only refresh once a day or never.
             while (true) {
                 for (const link of user_links) {
                     let link_hour = parseInt(link["time"].split(":")[0])
                     let link_minute = parseInt(link["time"].split(":")[1])
+                    console.log(`day: ${day}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
                     if (link["days"].includes(day) && hour == link_hour && minute == link_minute) {
                         window.open(link["link"])
                     }
@@ -45,14 +80,26 @@
                     minute -= 60
                     hour += 1
                     if (hour > 24) {
-                        location.reload()
+                        day = nextDay(day)
+                        hour -= 24
                     }
                 }
+                console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
             }
         }
 
         function redirect(redirect_to) {
             window.open("/"+redirect_to)
         }
+
+        function timeDifference() {
+            let date = new Date()
+            let difference = date.getTimezoneOffset()
+            console.log(difference)
+            return difference-(difference*2)
+        }
+
+
+
     </script>
 </html>

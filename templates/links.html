@@ -5,6 +5,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
+        <link rel="apple-touch-icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
+        <title>LinkJoin</title>
     </head>
     <body onload="load_links()" style="overflow-x: hidden;">
         <div id="main_page">
@@ -29,7 +32,7 @@
             <form id="create" action="/added" method="POST">
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
                 <div class="popup_schedule">Schedule a new meeting</div>
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" maxlength="14" required>
+                <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163871435620352/Vector_16.png" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163852201590824/Vector_17.png" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" id="link" name="link" placeholder="Meeting Link" required>
                 <img src="https://cdn.discordapp.com/attachments/716377034728931331/809163833901842472/access_time.png" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" id="time" name="time" required>
                 <hr style="position: absolute; background-color: white; opacity: 0.2; color: white; top: 230px;" width="77%">
@@ -230,6 +233,11 @@
                 xhr.setRequestHeader('Content-Type', 'application/json')
                 xhr.send(JSON.stringify({"key": "value"}))
             }
+        }
+
+        function close() {
+            console.log("worked")
+            document.getElementById("warning").remove()
         }
     </script>
 </html>

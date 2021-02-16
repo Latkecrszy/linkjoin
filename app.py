@@ -32,13 +32,12 @@ def open():
         links_list = links_db.find({"username": login_info['username'].lower(), 'password': login_info['password']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
                       for link in links_list]
-        date = datetime.datetime.now(dateutil.tz.gettz("America/Los_Angeles"))
+        date = datetime.datetime.utcnow()
         day = date.strftime("%a").capitalize()
         hour = int(date.strftime("%H"))
         minute = int(date.strftime("%M"))
         return render_template("redirect.html", num=len(links_list), user_links=links_list, username=login_info['username'], password=login_info['password'], day=day, hour=hour, minute=minute)
-    else:
-        return redirect("/login")
+    return redirect("/login")
 
 
 @app.route("/login_error", methods=['POST'])

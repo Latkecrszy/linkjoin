@@ -268,7 +268,7 @@ html {
     line-height: 22px;
     letter-spacing: 0.01em;
     text-align: left;
-    width: 130px;
+    width: 300px;
     height: 25px;
 }
 
@@ -884,4 +884,18 @@ body {
     left: 450px;
     bottom: 60px;
     position: relative;
+}
+
+.this_page {
+    border-radius: 2px;
+    background-color: red;
+    opacity: 0.5;
+    color: white;
+
+}
+
+.x {
+    background-color: red;
+    color: black;
+    border: 0px solid;
 }
