@@ -1,4 +1,4 @@
-argon2
+argon2-cffi~=20.1.0
 bson==0.5.10
 click==7.1.2
 DateTime==4.3
