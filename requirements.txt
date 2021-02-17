@@ -1,3 +1,4 @@
+argon2
 bson==0.5.10
 click==7.1.2
 DateTime==4.3
