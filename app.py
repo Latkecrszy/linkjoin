@@ -90,11 +90,13 @@ def signup():
 def register_link():
     mongo = PyMongo(app)
     links_db = mongo.db.links
+    id_db = mongo.db.id
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         print([request.form.get(day) for day in dict(request.form)])
         print([day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == "true"])
-        links_db.insert_one({"username": login_info['username'], 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+        links_db.insert_one({"username": login_info['username'], "id": int(id_db.find_one({"_id": "id"}['id'])), 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+        id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     else:
         print(request.cookies)
@@ -109,9 +111,10 @@ def links():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_list = links_db.find({"username": login_info['username']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
+        link_names = [link['name'] for link in links_list]
     else:
         return redirect("/login")
-    return render_template("links.html", links=links_list, num=len(links_list))
+    return render_template("links.html", links=links_list, num=len(links_list), link_names=link_names)
 
 
 @app.route("/delete", methods=["POST", "GET"])
@@ -166,6 +169,21 @@ def activate():
         links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "true"}})
         return redirect("/links")
     return redirect("/login")
+
+
+@app.route("/giveid")
+def giveid():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    id_db = mongo.db.id
+    for document in links_db.find():
+        doc = dict(document)
+        print(id_db.find_one({"_id": "id"}))
+        doc['id'] = int(dict(id_db.find_one({"_id": "id"}))['id'])
+        links_db.find_one_and_replace(dict(document), doc)
+        id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
+    return make_response({"done": "it"})
+
 
 
 if __name__ == "__main__":

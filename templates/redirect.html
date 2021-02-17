@@ -61,11 +61,14 @@
                 minute -= 60
                 hour += 1
             }
+            console.log(hour)
+            console.log(minute)
+            console.log(day)
             while (true) {
                 for (const link of user_links) {
                     let link_hour = parseInt(link["time"].split(":")[0])
                     let link_minute = parseInt(link["time"].split(":")[1])
-                    console.log(`day: ${day}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
+                    console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
                     if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
                         window.open(link["link"])
                     }
