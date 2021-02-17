@@ -630,9 +630,9 @@ body {
 
 .plus_button {
     align: center;
-    top: 10vh;
+    top: 65%;
     position: absolute;
-    margin-left: 45vw;
+    margin-left: 27vw;
 }
 
 .click_the_plus {
@@ -946,4 +946,15 @@ body {
     font-size: 12px;
     font-family: Montserrat;
     text-align: center;
+}
+
+.alert {
+    background-color: #A40606;
+    color: white;
+    font-weight: 400;
+    font-size: 16px;
+    font-family: Montserrat;
+    border-radius: 4px;
+    padding: 5px;
+    margin-bottom: 5px;
 }

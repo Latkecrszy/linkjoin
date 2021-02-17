@@ -10,14 +10,17 @@
         <title>LinkJoin</title>
     </head>
     <body onload="load_links()" style="overflow-x: hidden;">
+    <div class="alert">You must be on <a href="/open" target="_blank" style="text-decoration: none; color: #FFFD82"><strong><b>the open links page</b></strong></a> for your meetings to open.
+            <button onclick="this.parentElement.style.display='none';" style="background-color: #A40606; border: 0px none; float: right; color: white; font-size: 16px;">×</button></div>
         <div id="main_page">
         <div class="header_links" id="header">
             <a href="/help"><div class="button signup" style="top: 26%;">Help</div></a>
             <a href="/help"><div class="button signup" style="top: 26%;">About Us</div></a>
             <a href="/open"><div class="button signup" style="top: 26%;">Open Links</div></a>
             <a href="/"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809162338724610108/Frame_123.png" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
+            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" onclick="popUp()" class="plus_button">
+
         </div>
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png" height="75px" width="75px" onclick="popUp()" class="plus_button">
         <div id="insert_things"></div>
         <div class="footer_links" style="text-align: center;">
             <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="links_footer_image"><div class="footer_link">Crafted by Latkecrszy#7777</div>
@@ -28,10 +31,10 @@
         </div>
 
         </div>
-        <div class="popup hidden" id="popup_delete">
-            <div>Are you sure you want to delete this meeting?</div>
-            <a href="/links"><button style="background-color: #2B8FD8; height: 50px; width: 80px; border: 0px solid; border-radius: 3px;">No</button></a>
-            <a id="delete_button"><button style="background-color: #A40606; height: 50px; width: 80px; border: 0px solid; border-radius: 3px;">Yes</button></a>
+        <div class="popup hidden" id="popup_delete" style="box-shadow: 4px 8px 18px black;">
+            <div style="font-size: 26px; font-family: Montserrat; color: white; margin-bottom: 30px;">Are you sure you want to delete this meeting?</div>
+            <a href="/links"><button style="background-color: #2B8FD8; height: 30px; width: 50px; border: 0px solid; border-radius: 3px; margin-right: 20px;">No</button></a>
+            <a id="delete_button"><button style="background-color: #A40606; height: 30px; width: 50px; border: 0px solid; border-radius: 3px; color: white;">Yes</button></a>
         </div>
         <div class="popup hidden" id="popup">
             <form id="create" action="/added" method="POST">
