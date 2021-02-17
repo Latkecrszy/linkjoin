@@ -148,9 +148,10 @@ def deactivate():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     name = request.args.get('link').replace("%20", " ")
+    print(name)
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({"username": login_info['username'], "password": login_info['password'], 'name': name}, {"$set": {"active": "false"}})
+        print(links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "false"}}))
         return redirect("/links")
     return redirect("/login")
 
@@ -162,7 +163,7 @@ def activate():
     name = request.args.get('link').replace("%20", " ")
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({"username": login_info['username'], "password": login_info['password'], 'name': name}, {"$set": {"active": "true"}})
+        links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "true"}})
         return redirect("/links")
     return redirect("/login")
 
