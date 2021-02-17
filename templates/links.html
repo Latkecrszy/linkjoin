@@ -139,11 +139,6 @@
             const links = JSON.parse('{{ links|tojson|safe }}')
             if (links.toString() == '') {
                 document.getElementById("header").style.margin = "0 0 0 0"
-                const plus = document.createElement("img")
-                const plus_attributes = {"height": "75px", "width": "75px", "onclick": "popUp()", "class": "plus_button", "src": "https://cdn.discordapp.com/attachments/716377034728931331/808915414515712030/Group_103.png"}
-                for (const attr in plus_attributes) {
-                    plus.setAttribute(attr, plus_attributes[attr])
-                }
                 const image = document.createElement("img");
                 const image_attributes = {"src": "https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png", "height": "430px", "width": "450px", "style": "margin-top: -1vh; margin-left: 36vw;"}
                 for (const attribute in image_attributes) {
@@ -153,7 +148,6 @@
                 click_plus.classList.add("click_the_plus")
                 click_plus.innerText = "Click the + button to start scheduling your meetings!"
                 insert = document.getElementById("insert_things")
-                insert.appendChild(plus)
                 insert.appendChild(image)
                 insert.appendChild(click_plus)
             }

@@ -652,9 +652,9 @@ body {
     width: 960px;
     margin-left: 16vw;
     margin-top: 50px;
+    margin-bottom: 15px;
     position: relative;
     border-radius: 72px;
-    bottom: 20px;
     padding: 22px, 56px, 22px, 56px;
     background-color: 142539;
 
