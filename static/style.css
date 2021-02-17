@@ -280,24 +280,7 @@ html {
     box-shadow: 4px 8px 18px black;
 }
 
-.switch {
-    height: 20px;
-    color: white;
-    font-family: Montserrat;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: 0.01em;
-    display: inline;
-    border: 0px solid;
-    border-radius: 5px;
-    position: relative;
-    bottom: 70px;
-    text-align: center;
-    float: right;
-    right: 9vw;
-}
+
 
 .join_now {
     font-family: Montserrat;
@@ -320,12 +303,13 @@ html {
     font-weight: 500;
     line-height: 22px;
     letter-spacing: 0.01em;
-    text-align: left;
+    text-align: center;
     color: white;
     display: inline;
     bottom: 70px;
-    left: 45vw;
+    left: 30vw;
     float: left;
+    width: 400px;
     position: relative;
 }
 
@@ -918,7 +902,7 @@ body {
     text-align: center;
     float: right;
 
-    right: 12vw;
+    right: 8vw;
 }
 
 .delete {
@@ -939,6 +923,25 @@ body {
     text-align: center;
     float: right;
     left: 4vw;
+}
+
+.switch {
+    height: 20px;
+    color: white;
+    font-family: Montserrat;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    display: inline;
+    border: 0px solid;
+    border-radius: 5px;
+    position: relative;
+    bottom: 70px;
+    text-align: center;
+    float: right;
+    right: 7vw;
 }
 
 .same_name {
@@ -965,4 +968,8 @@ button:focus{
 
 input:focus {
     outline: none;
+}
+
+button:hover {
+    cursor: pointer;
 }
