@@ -690,7 +690,7 @@ body {
     color: white;
     width: 400px;
     text-align: center;
-    height: 60vh;
+    height: 400px;
     position: absolute;
     top: 100px;
     left: 500px;
@@ -832,7 +832,7 @@ body {
     height: 56px;
     background-color: #2B8FD8;
     border-radius: 84px;
-    padding: 16px 36px 16px 20px;
+    padding: 16px 36px 16px 33px;
     font-family: Montserrat;
     font-size: 18px;
     font-style: normal;
@@ -957,4 +957,12 @@ body {
     border-radius: 4px;
     padding: 5px;
     margin-bottom: 5px;
+}
+
+button:focus{
+    outline: none
+}
+
+input:focus {
+    outline: none;
 }
