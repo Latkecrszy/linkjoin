@@ -125,22 +125,41 @@ def delete():
 def update():
     mongo = PyMongo(app)
     links_db = mongo.db.links
+    name = request.args.get('prev_name').replace("%20", " ")
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_replace({"username": login_info['username'], 'password': login_info['password'], 'name': request.args.get('prev_name')}, {"username": login_info['username'], 'password': login_info['password'],
+        links_db.find_one_and_replace({"username": login_info['username'], 'password': login_info['password'], 'name': name}, {"username": login_info['username'], 'password': login_info['password'],
                              'days': [day for day in dict(request.form) if
                                       day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
                                           day) == 'true'], 'time': request.form.get("time"),
                              'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
         return redirect("/links")
+    return redirect("/login")
 
 
 @app.route("/deactivate")
 def deactivate():
     mongo = PyMongo(app)
     links_db = mongo.db.links
+    name = request.args.get('link').replace("%20", " ")
     if request.cookies.get('login_info'):
-        pass
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        links_db.find_one_and_update({"username": login_info['username'], "password": login_info['password'], 'name': name}, {"$set": {"active": "false"}})
+        return redirect("/links")
+    return redirect("/login")
+
+
+@app.route("/activate")
+def activate():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    name = request.args.get('link').replace("%20", " ")
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        links_db.find_one_and_update({"username": login_info['username'], "password": login_info['password'], 'name': name}, {"$set": {"active": "true"}})
+        return redirect("/links")
+    return redirect("/login")
+
 
 
 if __name__ == "__main__":

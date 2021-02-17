@@ -51,9 +51,7 @@
             let minute = parseInt("{{ minute }}")
             let day = "{{ day }}"
             let hour = parseInt("{{ hour }}")
-            console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
             hour += Math.floor(parseInt(diff)/60)
-            console.log(nextDay)
             if (hour > 24) {
                 day = nextDay(day)
                 hour -= 24
@@ -63,14 +61,12 @@
                 minute -= 60
                 hour += 1
             }
-            console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-            // convert the python to use UTC time and patch this up to work with whatever local time they have and only refresh once a day or never.
             while (true) {
                 for (const link of user_links) {
                     let link_hour = parseInt(link["time"].split(":")[0])
                     let link_minute = parseInt(link["time"].split(":")[1])
                     console.log(`day: ${day}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-                    if (link["days"].includes(day) && hour == link_hour && minute == link_minute) {
+                    if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
                         window.open(link["link"])
                     }
                 }
