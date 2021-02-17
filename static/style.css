@@ -726,7 +726,7 @@ body {
     float: left;
     animation: grow;
     animation-fill-mode: forwards;
-    animation-duration: 1.5s;
+    animation-duration: 0.1s;
 }
 
 @keyframes grow {
@@ -939,4 +939,11 @@ body {
     text-align: center;
     float: right;
     left: 4vw;
+}
+
+.same_name {
+    color: red;
+    font-size: 12px;
+    font-family: Montserrat;
+    text-align: center;
 }
