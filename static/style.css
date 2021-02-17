@@ -244,8 +244,8 @@ html {
     margin-top: 20px;
     margin-left: 10vw;
     height: 40px;
-
 }
+
 .time {
     font-family: Montserrat;
     font-size: 28px;
@@ -427,6 +427,10 @@ body {
     left: 10px;
     display: inline;
     position: relative;
+}
+
+.footer_text:hover {
+    color: #0AFFED;
 }
 
 .footer_line {
@@ -619,6 +623,10 @@ body {
     margin-left: 27vw;
 }
 
+.plus_button:hover {
+    cursor: pointer;
+}
+
 .click_the_plus {
     font-family: Montserrat;
     font-size: 16px;
@@ -656,6 +664,10 @@ body {
     text-align: left;
     color: white;
     opacity: 1;
+}
+
+.footer_link:hover {
+    color: #0AFFED;
 }
 
 .links_footer_image {
@@ -972,4 +984,9 @@ input:focus {
 
 button:hover {
     cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: white;
 }
