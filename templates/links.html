@@ -121,7 +121,7 @@
 
         function register_buttons() {
             buttons = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-            const link_names = {{ link_names }}
+            const link_names = JSON.parse('{{ link_names|tojson|safe }}')
             for (const button of buttons) {
                 button_input = document.createElement('input')
                 button_input.type = 'text'
