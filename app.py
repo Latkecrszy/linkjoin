@@ -40,7 +40,7 @@ def open():
         day = date.strftime("%a").capitalize()
         hour = int(date.strftime("%H"))
         minute = int(date.strftime("%M"))
-        return render_template("redirect.html", num=len(links_list), user_links=links_list, day=day, hour=hour, minute=minute)
+        return render_template("redirect.html", num=len(links_list), user_links=links_list, day=day, hour=hour, minute=minute, username=login_info['username'])
     return redirect("/login")
 
 
@@ -116,7 +116,7 @@ def links():
         link_names = [link['name'] for link in links_list]
     else:
         return redirect("/login")
-    return render_template("links.html", links=links_list, num=len(links_list), link_names=link_names, username=login_info['username'])
+    return render_template("links.html", links=links_list, num=len(links_list), link_names=link_names)
 
 
 @app.route("/delete", methods=["POST", "GET"])
