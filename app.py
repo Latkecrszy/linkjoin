@@ -194,5 +194,11 @@ def giveid():
     return make_response({"done": "it"})
 
 
+@app.route("/oldlinks")
+def oldlinks():
+    pass
+
+
+
 if __name__ == "__main__":
     app.run()

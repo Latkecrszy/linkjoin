@@ -156,6 +156,7 @@ async function load_links(username) {
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("create").action = "/update?id="+link["id"]
                 document.getElementById("popup_schedule").innerText = "Edit your meeting"
+                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
             })
             edit.innerText = "Edit"
