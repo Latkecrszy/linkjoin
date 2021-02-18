@@ -62,7 +62,8 @@
         }
 
         async function NewTab() {
-            const user_links = fetch('https://linkjoin.xyz/db').then(function(response) {return response.json()})
+            let username = "{{ username }}"
+            const user_links = fetch(`https://linkjoin.xyz/db?username=${username}`).then(function(response) {return response.json()})
             console.log(user_links)
             let diff = timeDifference()
             //const user_links = {{ user_links|tojson|safe }}
