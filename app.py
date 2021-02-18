@@ -2,10 +2,12 @@ from flask import Flask, make_response, jsonify, request, abort, render_template
 from flask_pymongo import PyMongo
 import jinja2, json, os, dotenv, datetime, dateutil.tz, base64, re, argon2
 from argon2 import PasswordHasher
+from flask_cors import CORS
 ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
+cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz"]}})
 
 
 @app.route("/")
@@ -169,6 +171,17 @@ def activate():
         links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "true"}})
         return redirect("/links")
     return redirect("/login")
+
+
+@app.route("/db", methods=["GET", "POST"])
+def db():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    username = request.args.get("username")
+    links_list = links_db.find({"username": username})
+    links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password" and i != "id"} for
+                  link in links_list]
+    return make_response(jsonify(links_list))
 
 
 

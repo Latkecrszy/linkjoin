@@ -62,8 +62,10 @@
         }
 
         async function NewTab() {
+            const user_links = fetch('https://linkjoin.xyz/db').then(function(response) {return response.json()})
+            console.log(user_links)
             let diff = timeDifference()
-            const user_links = {{ user_links|tojson|safe }}
+            //const user_links = {{ user_links|tojson|safe }}
             let minute = parseInt("{{ minute }}")
             let day = "{{ day }}"
             let hour = parseInt("{{ hour }}")
