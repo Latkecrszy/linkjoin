@@ -87,6 +87,7 @@ async function load_links(username) {
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
         for (const link of links) {
+            console.log(link)
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
