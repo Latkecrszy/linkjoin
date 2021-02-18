@@ -32,15 +32,11 @@ def open():
     login_db = mongo.db.login
     authorized = login_db.find_one({"username": login_info['username'].lower()})
     if authorized:
-        links_db = mongo.db.links
-        links_list = links_db.find({"username": login_info['username'].lower()})
-        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
-                      for link in links_list]
         date = datetime.datetime.utcnow()
         day = date.strftime("%a").capitalize()
         hour = int(date.strftime("%H"))
         minute = int(date.strftime("%M"))
-        return render_template("redirect.html", num=len(links_list), user_links=links_list, day=day, hour=hour, minute=minute, username=login_info['username'])
+        return render_template("redirect.html", day=day, hour=hour, minute=minute, username=login_info['username'])
     return redirect("/login")
 
 
@@ -121,13 +117,11 @@ def links():
 
 @app.route("/delete", methods=["POST", "GET"])
 def delete():
-    name = request.args.get("link")
-    name = name.replace("%20", " ")
     mongo = PyMongo(app)
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_delete({"username": login_info['username'], "name": name})
+        links_db.find_one_and_delete({"username": login_info['username'], 'id': int(request.args.get("id"))})
         return redirect("/links")
     return redirect("/login")
 
@@ -136,14 +130,13 @@ def delete():
 def update():
     mongo = PyMongo(app)
     links_db = mongo.db.links
-    name = request.args.get('prev_name').replace("%20", " ")
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_replace({"username": login_info['username'], 'name': name}, {"username": login_info['username'],
+        links_db.find_one_and_replace({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"username": login_info['username'],
                              'days': [day for day in dict(request.form) if
                                       day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
                                           day) == 'true'], 'time': request.form.get("time"),
-                             'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+                             'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true", 'id': int(request.args.get("id"))})
         return redirect("/links")
     return redirect("/login")
 
@@ -152,11 +145,9 @@ def update():
 def deactivate():
     mongo = PyMongo(app)
     links_db = mongo.db.links
-    name = request.args.get('link').replace("%20", " ")
-    print(name)
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        print(links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "false"}}))
+        print(links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"$set": {"active": "false"}}))
         return redirect("/links")
     return redirect("/login")
 
@@ -165,10 +156,9 @@ def deactivate():
 def activate():
     mongo = PyMongo(app)
     links_db = mongo.db.links
-    name = request.args.get('link').replace("%20", " ")
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({"username": login_info['username'], 'name': name}, {"$set": {"active": "true"}})
+        links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"$set": {"active": "true"}})
         return redirect("/links")
     return redirect("/login")
 
@@ -183,6 +173,20 @@ def db():
                   link in links_list]
     return make_response(jsonify(links_list))
 
+
+@app.route("/giveid")
+def giveid():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    id_db = mongo.db.id
+    for document in links_db.find():
+        if 'id' not in dict(document).keys():
+            print(dict(document))
+            doc = dict(document)
+            doc['id'] = int(dict(id_db.find_one({"_id": "id"}))['id'])
+            links_db.find_one_and_replace(dict(document), doc)
+            id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
+    return make_response({"done": "it"})
 
 
 if __name__ == "__main__":

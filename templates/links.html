@@ -213,7 +213,7 @@
                         activate_switch.style.color = "black"
                         activate_switch.innerText = "Activate"
                         activate_switch.addEventListener("click", function() {
-                        location.href = "/activate?link="+link["name"]})
+                        location.href = "/activate?id="+link["id"]})
                     }
                     else {
                         link_event.style.opacity = 1
@@ -221,7 +221,9 @@
                         activate_switch.style.color = "white"
                         activate_switch.innerText = "Deactivate"
                         activate_switch.addEventListener("click", function() {
-                        location.href = "/deactivate?link="+link["name"]})
+                        console.log(link['id'])
+                        console.log(link)
+                        location.href = "/deactivate?id="+link["id"]})
                     }
                     link_event.appendChild(activate_switch)
                     let edit = document.createElement("button")
@@ -237,7 +239,7 @@
                         document.getElementById("name").value = link["name"]
                         document.getElementById("link").value = link["link"]
                         document.getElementById("submit").innerText = "Update"
-                        document.getElementById("create").action = "/update?prev_name="+link["name"]
+                        document.getElementById("create").action = "/update?id="+link["id"]
                         document.getElementById("popup_schedule").innerText = "Edit your meeting"
 
                     })
@@ -248,7 +250,7 @@
                     delete_button.innerText = "Delete"
                     delete_button.addEventListener("click", function() {
                         document.getElementById("popup_delete").classList.remove("hidden")
-                        document.getElementById("delete_button").href = `/delete?link=${link['name']}`})
+                        document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
                     link_event.appendChild(delete_button)
                     if (link['active'] == "false") {
                         link_event.opacity = 0.6
