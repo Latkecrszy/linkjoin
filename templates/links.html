@@ -168,7 +168,10 @@
                     let time = link["time"]
                     let time_list = time.split(":")
                     let pm = "am"
-                    if (parseInt(time_list[0]) > 12) {
+                    if (parseInt(time_list[0]) == 12) {
+                        pm = "pm"
+                    }
+                    else if (parseInt(time_list[0]) > 11) {
                         time_list[0] = parseInt(time_list[0]) - 12
                         pm = "pm"
                     }

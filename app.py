@@ -95,7 +95,7 @@ def register_link():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         print([request.form.get(day) for day in dict(request.form)])
         print([day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == "true"])
-        links_db.insert_one({"username": login_info['username'], "id": int(id_db.find_one({"_id": "id"}['id'])), 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+        links_db.insert_one({"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']), 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     else:
