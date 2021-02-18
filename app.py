@@ -110,9 +110,10 @@ def links():
         links_list = links_db.find({"username": login_info['username']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
         link_names = [link['name'] for link in links_list]
+        return render_template("links.html", username=login_info['username'], link_names=link_names)
     else:
         return redirect("/login")
-    return render_template("links.html", links=links_list, num=len(links_list), link_names=link_names)
+
 
 
 @app.route("/delete", methods=["POST", "GET"])
