@@ -51,24 +51,6 @@ function sleep(ms) {
       console.log(minute)
       console.log(day)
       setInterval(async function() {
-          let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-          let user_links = await start_json.json()
-          console.log(user_links)
-          for (const link of user_links) {
-              let link_hour = parseInt(link["time"].split(":")[0])
-              let link_minute = parseInt(link["time"].split(":")[1])
-              console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-              if (link_minute > 1) {
-                  if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
-                      window.open(link["link"])
-                  }
-              }
-              else {
-                  if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
-                          window.open(link["link"])
-                  }
-              }
-          }
           minute += 1
           if (minute >= 60) {
               minute -= 60
@@ -78,6 +60,18 @@ function sleep(ms) {
                   hour -= 24
               }
           }
+          let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+          let user_links = await start_json.json()
+          console.log(user_links)
+          for (const link of user_links) {
+              let link_hour = parseInt(link["time"].split(":")[0])
+              let link_minute = parseInt(link["time"].split(":")[1])
+              console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
+              if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
+                          window.open(link["link"])
+              }
+          }
+
           console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
       }, 60000)
   }
