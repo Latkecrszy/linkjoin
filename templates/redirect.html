@@ -77,7 +77,7 @@
             console.log(hour)
             console.log(minute)
             console.log(day)
-            while (true) {
+            setInterval(async function() {
                 let username = "{{ username }}"
                 let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
                 let user_links = await start_json.json()
@@ -90,7 +90,6 @@
                         window.open(link["link"])
                     }
                 }
-                await sleep(60000)
                 minute += 1
                 if (minute >= 60) {
                     minute -= 60
@@ -101,7 +100,7 @@
                     }
                 }
                 console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-            }
+            }, 60000)
         }
 
         function redirect(redirect_to) {
