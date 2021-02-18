@@ -171,20 +171,6 @@ def activate():
     return redirect("/login")
 
 
-@app.route("/giveid")
-def giveid():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    id_db = mongo.db.id
-    for document in links_db.find():
-        doc = dict(document)
-        print(id_db.find_one({"_id": "id"}))
-        doc['id'] = int(dict(id_db.find_one({"_id": "id"}))['id'])
-        links_db.find_one_and_replace(dict(document), doc)
-        id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
-    return make_response({"done": "it"})
-
-
 
 if __name__ == "__main__":
     app.run()
