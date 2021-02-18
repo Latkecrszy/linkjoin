@@ -67,8 +67,11 @@
             let fetch_link = `https://linkjoin.xyz/db?username=${username}`
             console.log(fetch_link)
             let json;
+            let json2;
             fetch(fetch_link).then(response => {json = JSON.stringify(response)})
+            fetch(fetch_link).then(response => {json2 = JSON.parse(response)})
             console.log(json)
+            console.log(json2)
             let replaced_result = json.replaceAll("'", '"')
             console.log(replaced_result.toString())
             let user_links = JSON.parse(replaced_result.toString())
