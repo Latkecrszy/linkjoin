@@ -133,6 +133,10 @@ def update():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        print([day for day in dict(request.form) if
+                                      day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
+                                          day) == 'true'])
+        print(dict(request.form))
         links_db.find_one_and_replace({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"username": login_info['username'],
                              'days': [day for day in dict(request.form) if
                                       day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
