@@ -30,9 +30,9 @@ function sleep(ms) {
 
   async function NewTab(username, minute, day, hour) {
       let diff = timeDifference()
-      let minute = parseInt(minute)
-      let day = day
-      let hour = parseInt(hour)
+      minute = parseInt(minute)
+      day = day
+      hour = parseInt(hour)
       hour += Math.floor(parseInt(diff)/60)
       if (hour > 24) {
           day = nextDay(day)
