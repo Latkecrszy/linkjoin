@@ -45,6 +45,22 @@
             }
         }
 
+        function prevDay(day) {
+            days = {"1": "Mon", "2": "Tue", "3": "Wed", "4": "Thu", "5": "Fri", "6": "Sat", "7": "Sun"}
+            for (const day_num in days) {
+                if (days[day_num] == day) {
+                    if (parseInt(day_num) == 1) {
+                        console.log("Sun")
+                        return "Sun"
+                    }
+                    else {
+                        console.log(days[parseInt(day_num)-1])
+                        return days[parseInt(day_num)-1]
+                    }
+                }
+            }
+        }
+
         async function NewTab() {
             let diff = timeDifference()
             const user_links = {{ user_links|tojson|safe }}
@@ -55,6 +71,10 @@
             if (hour > 24) {
                 day = nextDay(day)
                 hour -= 24
+            }
+            else if (hour < 1) {
+                day = prevDay(day)
+                hour += 24
             }
             minute += parseInt(diff) % 60
             if (minute >= 60) {
