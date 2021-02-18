@@ -66,14 +66,10 @@
             console.log(username)
             let fetch_link = `https://linkjoin.xyz/db?username=${username}`
             console.log(fetch_link)
-            let json;
-            fetch(fetch_link).then(response => {json = JSON.stringify(response)})
-            fetch(fetch_link).then(response => {json = console.log(response)})
+            let start_json = fetch(fetch_link)
+            let json = await start_json.json()
             console.log(json)
-            console.log(json2)
-            let replaced_result = json.replaceAll("'", '"')
-            console.log(replaced_result.toString())
-            let user_links = JSON.parse(replaced_result.toString())
+            let user_links = json
             console.log(user_links)
             console.log(typeof user_links);
             let diff = timeDifference()
