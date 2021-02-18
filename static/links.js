@@ -49,22 +49,6 @@ function change_color(day) {
     }
 }
 
-function register_buttons(link_names) {
-    buttons = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    for (const button of buttons) {
-        button_input = document.createElement('input')
-        button_input.type = 'text'
-        button_input.name = button
-        button_input.style.opacity = 0
-        if (document.getElementById(button).classList.contains("selected")) {
-            button_input.value = "true"
-        }
-        else {
-            button_input.value = "false"
-        }
-        document.getElementById("create").appendChild(button_input)
-    }
-}
 
 async function load_links(username) {
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)

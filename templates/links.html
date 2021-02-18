@@ -62,9 +62,28 @@
                         <button type="button" class="day_select deselected" onclick="change_color('Fri')" id="Fri">F</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Sat')" id="Sat">S</button>
                     </div>
-                    <button type="submit" id="submit" onclick="register_buttons(JSON.parse('{{ link_names|tojson|safe }}'))" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
+                    <button type="submit" id="submit" onclick="register_buttons()" class="create_meeting"><img src="https://cdn.discordapp.com/attachments/716377034728931331/809479855980413058/Vector_18.png" height="15px" width="15px"> &nbsp Create</button>
                 </div>
             </form>
         </div>
     </body>
+    <script>
+        function register_buttons() {
+            buttons = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            for (const button of buttons) {
+                button_input = document.createElement('input')
+                button_input.type = 'text'
+                button_input.name = button
+                button_input.style.opacity = 0
+                if (document.getElementById(button).classList.contains("selected")) {
+                    button_input.value = "true"
+                }
+                else {
+                    button_input.value = "false"
+                }
+                document.getElementById("create").appendChild(button_input)
+            }
+        }
+
+    </script>
 </html>
