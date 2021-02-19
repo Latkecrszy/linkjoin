@@ -9,12 +9,13 @@
     </body>
     <script>
         async function loadLinks() {
-            let username = "{{ username }}"
-            let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-            let links = await start_json.json()
+            //let username = "{{ username }}"
+            //let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+            let links = [{"active":"true","days":["Mon","Thu"],"id":26,"link":"https://walnutcreeksd.zoom.us/j/87229641091?pwd=NWhtajBpNlpoUjBxNWVSWnZPcG9XZz09","name":"Science Mon/Thu","time":"08:25","username":"setharaphael7@gmail.com"},{"active":"true","days":["Mon","Thu"],"id":27,"link":"https://walnutcreeksd.zoom.us/j/83118316701?pwd=SHdYZWJPeHAzbkRrOFg2SFZUOGlaUT09","name":"History Mon/Thu","time":"09:47","username":"setharaphael7@gmail.com"},{"active":"true","days":["Mon","Thu"],"id":28,"link":"https://walnutcreeksd.zoom.us/j/82544317183?pwd=M0MrRG80SVh3QmxaY2s3QnZuM2NoUT09","name":"English Mon/Thu","time":"11:09","username":"setharaphael7@gmail.com"},{"active":"true","days":["Mon","Thu"],"id":29,"link":"https://walnutcreeksd.zoom.us/j/87542503502?pwd=eHQ1YzRWbjN3Uk02UVViY3BoRlhGZz09","name":"Spanish Mon/Thu","time":"13:04","username":"setharaphael7@gmail.com"},{"active":"true","days":["Tue","Fri"],"id":30,"link":"https://walnutcreeksd.zoom.us/j/89759522312?pwd=NThhbngyYUI5N0xnK3R6aVdka2JmQT09","name":"Math Tue/Fri","time":"09:20","username":"setharaphael7@gmail.com"},{"active":"true","days":["Tue","Fri"],"id":31,"link":"https://walnutcreeksd.zoom.us/j/81971699878?pwd=NGtxN3V4elpTY2JkSXZhczJPWmxaZz09","name":"PE Tue/Fri","time":"11:09","username":"setharaphael7@gmail.com"},{"active":"true","days":["Tue","Fri"],"id":32,"link":"https://walnutcreeksd.zoom.us/j/84813626315?pwd=amtGWWExaHM3RXozbFdGbnlFQmx5UT09","name":"Jazz Band Tue/Fri","time":"13:04","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":33,"link":"https://us02web.zoom.us/j/87152015165?pwd=ZUhEbTFic0ZwRFdzS3owWTR0QU5wdz09","name":"Math Olympiads","time":"08:50","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":34,"link":"https://walnutcreeksd.zoom.us/j/87229641091?pwd=NWhtajBpNlpoUjBxNWVSWnZPcG9XZz09","name":"Science Wed","time":"09:55","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":35,"link":"https://walnutcreeksd.zoom.us/j/82993589856?pwd=WjJpNVZZZURXWW1qY0I3TC94cjExZz09","name":"Math Wed","time":"10:30","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":36,"link":"https://walnutcreeksd.zoom.us/j/83118316701?pwd=SHdYZWJPeHAzbkRrOFg2SFZUOGlaUT09","name":"History Wed","time":"11:05","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":49,"link":"https://walnutcreeksd.zoom.us/j/81971699878?pwd=NGtxN3V4elpTY2JkSXZhczJPWmxaZz09","name":"PE Wed","time":"12:10","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":38,"link":"https://walnutcreeksd.zoom.us/j/82544317183?pwd=M0MrRG80SVh3QmxaY2s3QnZuM2NoUT09","name":"English Wed","time":"12:45","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":39,"link":"https://walnutcreeksd.zoom.us/j/84813626315?pwd=amtGWWExaHM3RXozbFdGbnlFQmx5UT09","name":"Jazz Band Wed","time":"13:20","username":"setharaphael7@gmail.com"},{"active":"true","days":["Wed"],"id":40,"link":"https://walnutcreeksd.zoom.us/j/87542503502?pwd=eHQ1YzRWbjN3Uk02UVViY3BoRlhGZz09","name":"Spanish Wed","time":"13:55","username":"setharaphael7@gmail.com"},{"active":"true","days":["Tue"],"id":41,"link":"https://us04web.zoom.us/j/75020754454?pwd=ZGo2U3E0aTBVaW9yQjJDa2VLaHM4UT09","name":"Liam Tutoring Tue","time":"15:15","username":"setharaphael7@gmail.com"},{"active":"true","days":["Tue"],"id":42,"link":"https://us04web.zoom.us/j/76912859407?pwd=OWgveGxQaXE0L2hseFNDcGcxL0drQT09","name":"Keegan Tutoring Tue","time":"16:00","username":"setharaphael7@gmail.com"},{"active":"true","days":["Sat"],"id":43,"link":"https://us04web.zoom.us/j/75020754454?pwd=ZGo2U3E0aTBVaW9yQjJDa2VLaHM4UT09","name":"Liam Tutoring Sat","time":"11:15","username":"setharaphael7@gmail.com"},{"active":"true","days":["Sat"],"id":44,"link":"https://us04web.zoom.us/j/76912859407?pwd=OWgveGxQaXE0L2hseFNDcGcxL0drQT09","name":"Keegan Tutoring Sat","time":"10:30","username":"setharaphael7@gmail.com"},{"active":"true","days":["Thu"],"id":52,"link":"https://hurb.gg","name":"My Test Meeting","time":"14:10","username":"setharaphael7@gmail.com"},{"active":"true","days":["Thu"],"id":53,"link":"https://us04web.zoom.us/j/79607761072?pwd=eXVVbkJrdEcwdUI0MXladGJteE9Tdz09","name":"Nerd Meet!","time":"14:30","username":"setharaphael7@gmail.com"}]
             console.log(links)
             let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
             let day_translations = {"Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu", "Friday": "Fri", "Saturday": "Sat", "Sunday": "Sun"}
+            let iterator = 1
             for (const day of days) {
                 let body = document.getElementById("body")
                 let column = document.createElement('div')
@@ -28,27 +29,30 @@
                 div_day.classList.add("day")
                 div_day.innerText = day
                 column.appendChild(div_day)
-                column.appendChild(button)
+
                 console.log(day)
+
                 for (const link of links) {
                     console.log(link)
                     console.log(day_translations[day])
                     console.log(link['days'])
-                    if (JSON.parse(link['days'].replaceAll("'", '"')).includes(day_translations[day])) {
+                    if (link['days'].includes(day_translations[day])) {
 
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_style_2")
-                        link_event.id = link['name']
-                        link_event.setAttribute('onClick', `expand('${link['name'].toString()}', '${link['link'].toString()}', '${link['time'].toString()}')`)
+                        link_event.id = iterator.toString()
+                        link_event.setAttribute('onClick', `expand('${link['name'].toString()}', '${link['link'].toString()}', '${link['time'].toString()}', '${iterator.toString()}')`)
                         link_event.innerText = link['name']
                         column.appendChild(link_event)
+                        iterator++
                     }
                 }
+                column.appendChild(button)
             }
         }
 
-        function expand(name, link, time) {
-            let element = document.getElementById(name)
+        function expand(name, link, time, id) {
+            let element = document.getElementById(id)
             if (element.classList.contains("link_event")) {
                 element.classList.add("link_event_hidden")
                 element.classList.remove("link_event")

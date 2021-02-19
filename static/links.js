@@ -119,9 +119,10 @@ async function load_links(username) {
             days_list = JSON.parse(days_list)
             days.innerText = days_list.join(", ")
             link_event.appendChild(days)
+            let buttons = document.createElement("div")
+            buttons.classList.add("buttons")
             let activate_switch = document.createElement("button")
             activate_switch.classList.add("switch")
-
             if (link['active'] == "false") {
                 link_event.style.opacity = 0.5
                 activate_switch.style.background = "#B7C0C7"
@@ -140,7 +141,7 @@ async function load_links(username) {
                 console.log(link)
                 location.href = "/deactivate?id="+link["id"]})
             }
-            link_event.appendChild(activate_switch)
+            buttons.appendChild(activate_switch)
             let edit = document.createElement("button")
             edit.classList.add("edit")
             console.log(link)
@@ -160,7 +161,7 @@ async function load_links(username) {
 
             })
             edit.innerText = "Edit"
-            link_event.appendChild(edit)
+            buttons.appendChild(edit)
             let delete_button = document.createElement("button")
             delete_button.classList.add("delete")
             delete_button.innerText = "Delete"
@@ -168,10 +169,12 @@ async function load_links(username) {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 document.getElementById("popup_delete").classList.remove("hidden")
                 document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
-            link_event.appendChild(delete_button)
+            buttons.appendChild(delete_button)
+            link_event.appendChild(buttons)
             if (link['active'] == "false") {
                 link_event.opacity = 0.6
             }
+
             document.getElementById("insert_things").appendChild(link_event)
             iterator += 1
         }

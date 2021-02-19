@@ -304,25 +304,6 @@ html {
     padding-bottom: 10px;
 }
 
-.circle {
-  border-radius: 100px;
-  behavior: url(PIE.htc);
-  width: 50px;
-  height: 50px;
-  background: #4B99E0;
-  color: white;
-  border: none;
-  text-align: center;
-  top: 75px;
-  margin-left: 121px;
-  position: relative;
-  font: 40px Arial, sans-serif;
-  animation: appear;
-  animation-duration: 1.5s;
-  animation-fill-mode: forwards;
-  opacity: 0;
-}
-
 svg {
     display: inline-block;
     position: absolute;
@@ -874,62 +855,26 @@ body {
 
 .edit {
     height: 20px;
-    color: #0A2E36;
-    background-color: #27FB6B;
-    font-family: Montserrat;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: 0.01em;
     display: inline;
     border: 0px solid;
     border-radius: 5px;
-    position: relative;
-    bottom: 70px;
     text-align: center;
-    float: right;
-
-    right: 8vw;
 }
 
 .delete {
     height: 20px;
-    color: white;
-    background-color: #A40606;
-    font-family: Montserrat;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: 0.01em;
     display: inline;
     border: 0px solid;
     border-radius: 5px;
-    position: relative;
-    bottom: 70px;
     text-align: center;
-    float: right;
-    left: 4vw;
 }
 
 .switch {
     height: 20px;
-    color: white;
-    font-family: Montserrat;
-    font-size: 10px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    letter-spacing: 0.01em;
     display: inline;
     border: 0px solid;
     border-radius: 5px;
-    position: relative;
-    bottom: 70px;
     text-align: center;
-    float: right;
-    right: 7vw;
 }
 
 .same_name {
@@ -974,6 +919,7 @@ a {
     border-radius: 2px;
     background-color: #2B8FD8;
     align: center;
+    margin-bottom: 20px;
 }
 
 .column {
@@ -998,4 +944,39 @@ a {
     to {
         border-bottom: solid #26376E 50px;
     }
+}
+
+.circle {
+  border-radius: 100px;
+  behavior: url(PIE.htc);
+  width: 50px;
+  height: 50px;
+  background: #4B99E0;
+  color: white;
+  border: none;
+  text-align: center;
+  top: 120%;
+  margin-left: 121px;
+  position: relative;
+  font: 40px Arial, sans-serif;
+  animation: appear;
+  animation-duration: 1.5s;
+  animation-fill-mode: forwards;
+  opacity: 0;
+}
+
+.buttons {
+    float: right;
+    margin-right: 5%;
+    padding: 20px;
+    color: white;
+    font-family: Montserrat;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    position: relative;
+    bottom: 70px;
+    text-align: center;
 }
