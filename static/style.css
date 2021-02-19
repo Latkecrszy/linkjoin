@@ -860,8 +860,8 @@ body {
     background-color: #27FB6B;
     border-radius: 5px;
     text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .delete {
@@ -871,8 +871,8 @@ body {
     background-color: #A40606;
     border-radius: 5px;
     text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .switch {
@@ -881,8 +881,8 @@ body {
     border: 0px solid;
     border-radius: 5px;
     text-align: center;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .same_name {
