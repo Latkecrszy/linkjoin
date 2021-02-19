@@ -975,7 +975,7 @@ a {
 
 .buttons {
     float: right;
-    right: -5%;
+    right: 5%;
     color: white;
     font-family: Montserrat;
     font-size: 10px;
