@@ -857,6 +857,7 @@ body {
     height: 20px;
     display: inline;
     border: 0px solid;
+    background-color: #27FB6B;
     border-radius: 5px;
     text-align: center;
     margin-left: 10px;
@@ -867,6 +868,7 @@ body {
     height: 20px;
     display: inline;
     border: 0px solid;
+    background-color: #A40606;
     border-radius: 5px;
     text-align: center;
     margin-left: 10px;
@@ -973,7 +975,7 @@ a {
 
 .buttons {
     float: right;
-    margin-right: 5%;
+    right: -5%;
     color: white;
     font-family: Montserrat;
     font-size: 10px;
@@ -982,6 +984,6 @@ a {
     line-height: 20px;
     letter-spacing: 0.01em;
     position: relative;
-    bottom: 150px;
+    bottom: 100px;
     text-align: center;
 }
