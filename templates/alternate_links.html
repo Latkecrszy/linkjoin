@@ -9,6 +9,9 @@
     </body>
     <script>
         async function loadLinks() {
+            let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+            let links = await start_json.json()
+            console.log(links)
             let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
             let username = "{{ username }}"
             let day_translations = {"Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu", "Friday": "Fri", "Saturday": "Sat", "Sunday": "Sun"}
@@ -26,8 +29,6 @@
                 div_day.innerText = day
                 column.appendChild(div_day)
                 column.appendChild(button)
-                let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-                let links = await start_json.json()
                 console.log(day)
                 for (const link of links) {
                     console.log(link)
