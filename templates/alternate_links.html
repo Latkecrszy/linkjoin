@@ -26,7 +26,7 @@
                 let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
                 let links = await start_json.json()
                 for (const link of links) {
-                    if (day == day_translations[link['day']]) {
+                    if (link['day'] == day_translations[day]) {
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_hidden")
                         link_event.id = link['name']
