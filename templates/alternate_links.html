@@ -25,8 +25,11 @@
                 column.appendChild(button)
                 let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
                 let links = await start_json.json()
+                console.log(day)
                 for (const link of links) {
+                    console.log(link)
                     if (link['day'] == day_translations[day]) {
+                        console.log(link['day'])
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_hidden")
                         link_event.id = link['name']
