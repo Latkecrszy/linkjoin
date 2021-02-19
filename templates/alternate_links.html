@@ -9,11 +9,11 @@
     </body>
     <script>
         async function loadLinks() {
+            let username = "{{ username }}"
             let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
             let links = await start_json.json()
             console.log(links)
             let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
-            let username = "{{ username }}"
             let day_translations = {"Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu", "Friday": "Fri", "Saturday": "Sat", "Sunday": "Sun"}
             for (const day of days) {
                 let body = document.getElementById("body")
