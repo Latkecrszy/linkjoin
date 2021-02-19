@@ -859,6 +859,8 @@ body {
     border: 0px solid;
     border-radius: 5px;
     text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .delete {
@@ -867,6 +869,8 @@ body {
     border: 0px solid;
     border-radius: 5px;
     text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .switch {
@@ -875,6 +879,8 @@ body {
     border: 0px solid;
     border-radius: 5px;
     text-align: center;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .same_name {
@@ -968,7 +974,6 @@ a {
 .buttons {
     float: right;
     margin-right: 5%;
-    padding: 20px;
     color: white;
     font-family: Montserrat;
     font-size: 10px;
@@ -977,6 +982,6 @@ a {
     line-height: 20px;
     letter-spacing: 0.01em;
     position: relative;
-    bottom: 70px;
+    bottom: 150px;
     text-align: center;
 }
