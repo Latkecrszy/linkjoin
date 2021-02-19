@@ -1,6 +1,9 @@
 <html>
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     <body onload="loadLinks()" id="body">
     </body>
@@ -33,7 +36,7 @@
                     if (JSON.parse(link['days'].replaceAll("'", '"')).includes(day_translations[day])) {
 
                         let link_event = document.createElement('button')
-                        link_event.classList.add("link_event_hidden")
+                        link_event.classList.add("link_event_style_2")
                         link_event.id = link['name']
                         link_event.setAttribute('onClick', `expand('${link['name'].toString()}', '${link['link'].toString()}', '${link['time'].toString()}')`)
                         link_event.innerText = link['name']

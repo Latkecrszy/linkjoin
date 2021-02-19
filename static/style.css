@@ -990,3 +990,10 @@ a {
     text-decoration: none;
     color: white;
 }
+
+.link_event_style_2 {
+    width: 95%;
+    height: 100px;
+    background-color: #2B8FD8;
+    align: center;
+}
