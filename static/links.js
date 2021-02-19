@@ -165,9 +165,9 @@ async function load_links(username) {
             delete_button.classList.add("delete")
             delete_button.innerText = "Delete"
             delete_button.addEventListener("click", function() {
+                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 document.getElementById("popup_delete").classList.remove("hidden")
                 document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
-                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
             link_event.appendChild(delete_button)
             if (link['active'] == "false") {
                 link_event.opacity = 0.6
