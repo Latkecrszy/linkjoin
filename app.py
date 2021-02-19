@@ -2,12 +2,16 @@ from flask import Flask, make_response, jsonify, request, abort, render_template
 from flask_pymongo import PyMongo
 import jinja2, json, os, dotenv, datetime, dateutil.tz, base64, re, argon2
 from argon2 import PasswordHasher
-from flask_cors import CORS
 ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
-cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz"]}})
+if os.environ.get("IS_HEROKU"):
+    from flask_cors import CORS
+    cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz"]}})
+    print("CORS is working!")
+else:
+    print("No CORS")
 
 
 @app.route("/")
@@ -194,9 +198,19 @@ def giveid():
     return make_response({"done": "it"})
 
 
-@app.route("/oldlinks")
-def oldlinks():
-    pass
+@app.route("/otherlinks")
+def otherlinks():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        links_list = links_db.find({"username": login_info['username']})
+        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
+                      for link in links_list]
+        link_names = [link['name'] for link in links_list]
+        return render_template("alternate_links.html", username=login_info['username'], link_names=link_names)
+    else:
+        return redirect("/login")
 
 
 

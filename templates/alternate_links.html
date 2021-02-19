@@ -5,8 +5,10 @@
     <body onload="loadLinks()" id="body">
     </body>
     <script>
-        function loadLinks() {
+        async function loadLinks() {
             let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "Every Day"]
+            let username = "{{ username }}"
+            //let day_translations = {"Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday", "Thu", "Friday", "Fri", "Saturday", "Sat", "Sunday": "Sun"}
             for (const day of days) {
                 let body = document.getElementById("body")
                 let column = document.createElement('div')
@@ -21,17 +23,16 @@
                 div_day.innerText = day
                 column.appendChild(div_day)
                 column.appendChild(button)
-                const links = JSON.parse('{{ links|tojson|safe }}')
-                for (let i = 0; i < parseInt("{{num}}"); i++) {
-                    if (day.toLowerCase() == links[i]['day']) {
+                let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+                let links = await start_json.json()
+                for (const link of links) {
+                    if (day == day_translations[link['day']]) {
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_hidden")
-                        link_event.id = links[i]['name']
-                        link_event.setAttribute('onClick', `expand('${links[i]['name'].toString()}', '${links[i]['link'].toString()}', '${links[i]['time'].toString()}')`)
-                        link_event.innerText = links[i]['name']
-                        console.log("appending")
+                        link_event.id = link['name']
+                        link_event.setAttribute('onClick', `expand('${link['name'].toString()}', '${link['link'].toString()}', '${link['time'].toString()}')`)
+                        link_event.innerText = link['name']
                         column.appendChild(link_event)
-                        console.log("appended")
                     }
                 }
             }
