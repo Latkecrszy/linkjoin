@@ -30,7 +30,7 @@
                     console.log(link)
                     console.log(day_translations[day])
                     console.log(link['days'])
-                    if (JSON.parse(link['days'].replaceAll("'", '"')).contains(day_translations[day])) {
+                    if (JSON.parse(link['days'].replaceAll("'", '"')).includes(day_translations[day])) {
 
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_hidden")
