@@ -28,8 +28,9 @@
                 console.log(day)
                 for (const link of links) {
                     console.log(link)
-                    if (link['day'] == day_translations[day]) {
-                        console.log(link['day'])
+                    console.log(day_translations[day])
+                    if (link['days'].contains(day_translations[day])) {
+                        console.log(link['days'])
                         let link_event = document.createElement('button')
                         link_event.classList.add("link_event_hidden")
                         link_event.id = link['name']
