@@ -283,9 +283,9 @@ html {
     color: white;
     display: inline;
     bottom: 70px;
-    left: 30vw;
+    left: 42%;
     float: left;
-    width: 400px;
+    width: 270px;
     position: relative;
 }
 
@@ -973,7 +973,7 @@ a {
   opacity: 0;
 }
 
-.buttons {
+.buttons_container {
     float: right;
     right: 5%;
     color: white;

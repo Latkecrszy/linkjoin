@@ -120,7 +120,7 @@ async function load_links(username) {
             days.innerText = days_list.join(", ")
             link_event.appendChild(days)
             let buttons = document.createElement("div")
-            buttons.classList.add("buttons")
+            buttons.classList.add("buttons_container")
             let activate_switch = document.createElement("button")
             activate_switch.classList.add("switch")
             if (link['active'] == "false") {
