@@ -506,15 +506,16 @@ svg {
 
 .header_links {
     background-color: #142539;
-    height: 15vh;
+    height: 80px;
     width: 100%;
     position: relative;
+    padding-bottom: 15px;
 
 }
 
 .plus_button {
     align: center;
-    top: 65%;
+    top: 60%;
     position: absolute;
     margin-left: 27vw;
 }
