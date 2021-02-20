@@ -1,6 +1,7 @@
 <html style="background-color: #091B30; overflow: visible;" id="html">
     <head>
         <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -53,7 +54,7 @@
                         <option value="2 weeks">2 Weeks</option>
                         <option value="month">Month</option>
                     </select>
-                    <div class="buttons">
+                    <div style="margin-top: 30px; margin-right: 20px;">
                         <button type="button" class="day_select deselected" style="left: 15px;" onclick="change_color('Sun')" id="Sun">S</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Mon')" id="Mon">M</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Tue')" id="Tue">T</button>

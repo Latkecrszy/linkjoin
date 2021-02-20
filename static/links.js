@@ -122,7 +122,7 @@ async function load_links(username) {
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
             let activate_switch = document.createElement("button")
-            activate_switch.classList.add("switch")
+            activate_switch.classList.add("function_button")
             if (link['active'] == "false") {
                 link_event.style.opacity = 0.5
                 activate_switch.style.background = "#B7C0C7"
@@ -143,7 +143,8 @@ async function load_links(username) {
             }
             buttons.appendChild(activate_switch)
             let edit = document.createElement("button")
-            edit.classList.add("edit")
+            edit.classList.add("function_button")
+            edit.style.background = "#27FB6B"
             console.log(link)
             edit.addEventListener("click", function() {
                 link_event = document.getElementById(iterator.toString())
@@ -163,7 +164,9 @@ async function load_links(username) {
             edit.innerText = "Edit"
             buttons.appendChild(edit)
             let delete_button = document.createElement("button")
-            delete_button.classList.add("delete")
+            delete_button.classList.add("function_button")
+            delete_button.style.background = "#A40606"
+            delete_button.style.color = "white"
             delete_button.innerText = "Delete"
             delete_button.addEventListener("click", function() {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})

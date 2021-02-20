@@ -6,7 +6,6 @@
     position: relative;
     top: 1px;
     width: 98vw;
-
 }
 
 
@@ -56,15 +55,6 @@
     margin-left: 10px;
 }
 
-@keyframes move_buttons {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity; 1;
-    }
-}
-
 html {
     background-color: #142539;
     overflow-x: hidden;
@@ -79,64 +69,9 @@ html {
     color: #161316;
 }
 
-.login_box {
-    padding-top: 4vh;
-    background-color: #FFC100;
-    height: 65vh;
-    /*box-shadow: 15px 15px #646464;*/
-    width: 30vw;
-    min-width: 264px;
-    border-radius: 10px;
-    margin: auto;
-    align-items: center;
-    left: 200px;
-    animation: pop_out;
-    animation-duration: 1s;
-    animation-direction: forwards;
-    animation-fill-mode: forwards;
-}
 
 .login_page {
     padding-top: 15vh;
-}
-
-.username {
-    box-sizing: border-box;
-    border-radius: 4px;
-    border: 0px solid;
-    padding-top: 23px;
-    width: 50%;
-    height: 7%;
-    font-size: 100%
-}
-
-.password {
-    box-sizing: border-box;
-    border-radius: 4px;
-    width: 50%;
-    padding-top: 23px;
-    border: 0px solid;
-    height: 7%;
-    margin-bottom: 7vh;
-    font-size: 100%
-
-}
-
-.submit {
-    margin-top: 2vh;
-    background-color: #BCF4F5;
-    border: 0px solid;
-    width: 52%;
-    height: 45px;
-    font-size: 19.4px;
-    transition: all 0.5s;
-    cursor: pointer;
-    opacity: 0;
-    animation: appear;
-    animation-duration: 1.5s;
-    animation-direction: forwards;
-    animation-fill-mode: forwards;
-    border-radius: 15px;
 }
 
 @keyframes appear {
@@ -163,43 +98,6 @@ html {
 .username_text {
     font-size: 22px;
     padding-top: 3vh;
-}
-
-
-@keyframes move_slogan {
-    from {
-        padding-top: 100vh;
-        opacity: 0.05;
-    }
-    to {
-        padding-top: 0;
-        top: -5vh;
-        opacity: 1;
-    }
-}
-
-@keyframes move_text {
-    from {
-        font-size: 7vh;
-    }
-    to {
-        font-size: 20vh; left:0px; top:0px; color: #9AD2CB;
-    }
-}
-
-
-@keyframes pop_out {
-    from {
-        box-shadow: none;
-        margin-top: 4vh;
-        left: 200px;
-    }
-    to {
-        box-shadow: 15px 15px #646464;
-        margin-top: 3vh;
-        left: 0px;
-
-    }
 }
 
 
@@ -247,8 +145,6 @@ html {
     box-shadow: 4px 8px 18px black;
 }
 
-
-
 .join_now {
     font-family: Montserrat;
     font-size: 12px;
@@ -260,7 +156,6 @@ html {
     color: white;
     opacity: 0.2;
     width: 170px;
-
 }
 
 .days {
@@ -310,11 +205,6 @@ svg {
     color: white;
     text-align: left;
     letter-spacing: 0.01em;
-
-}
-
-.info {
-    margin-top: 300px;
 }
 
 .footer_text {
@@ -325,45 +215,6 @@ svg {
 
 .footer_text:hover {
     color: #0AFFED;
-}
-
-.footer {
-    opacity: 0.5;
-    color: white;
-    font-family: Montserrat;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 17px;
-    letter-spacing: 0em;
-    text-align: left;
-    display: inline-block;
-    bottom: 15px;
-    float: left;
-}
-
-.footer_image {
-    height: 15px;
-    width: 15px;
-    display: inline;
-    position: relative;
-    margin-left: 25px;
-
-}
-
-.linkjoin {
-    font-family: Montserrat;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 32px;
-    letter-spacing: 0.01em;
-    float: left;
-    color: white;
-    text-align: left;
-    margin-top: 30px;
-    position: relative;
-    margin-left: 10px;
 }
 
 .img_container {
@@ -404,7 +255,6 @@ svg {
     position: relative;
     top: 60vh;
     right: 30.5vw;
-
 }
 
 .header_links {
@@ -436,7 +286,6 @@ svg {
     letter-spacing: 0.01em;
     text-align: center;
     color: white;
-
 }
 
 .footer_links {
@@ -449,7 +298,6 @@ svg {
     border-radius: 72px;
     padding: 22px, 56px, 22px, 56px;
     background-color: 142539;
-
 }
 
 .footer_link {
@@ -527,7 +375,6 @@ svg {
 
 @keyframes grow {
     from {width: 10px;}
-
     to {width: 350px;}
 }
 
@@ -618,11 +465,6 @@ svg {
     margin-left: 8px;
 }
 
-.buttons {
-    margin-top: 30px;
-    margin-right: 20px;
-}
-
 .create_meeting {
     width: 150px;
     height: 56px;
@@ -641,7 +483,6 @@ svg {
     color: white;
     margin-top: 35px;
     float: right;
-
 }
 
 .where_it_happens {
@@ -673,44 +514,13 @@ svg {
     position: relative;
 }
 
-.this_page {
-    border-radius: 2px;
-    background-color: red;
-    opacity: 0.5;
-    color: white;
-
-}
-
 .x {
     background-color: red;
     color: black;
     border: 0px solid;
 }
 
-.edit {
-    height: 20px;
-    display: inline;
-    border: 0px solid;
-    background-color: #27FB6B;
-    border-radius: 5px;
-    text-align: center;
-    margin-left: 15px;
-    margin-right: 15px;
-}
-
-.delete {
-    color: white;
-    height: 20px;
-    display: inline;
-    border: 0px solid;
-    background-color: #A40606;
-    border-radius: 5px;
-    text-align: center;
-    margin-left: 15px;
-    margin-right: 15px;
-}
-
-.switch {
+.function_button {
     height: 20px;
     display: inline;
     border: 0px solid;
@@ -718,13 +528,6 @@ svg {
     text-align: center;
     margin-left: 15px;
     margin-right: 15px;
-}
-
-.same_name {
-    color: red;
-    font-size: 12px;
-    font-family: Montserrat;
-    text-align: center;
 }
 
 .alert {
@@ -738,76 +541,6 @@ svg {
     margin-bottom: 5px;
 }
 
-button:focus{
-    outline: none
-}
-
-input:focus {
-    outline: none;
-}
-
-button:hover {
-    cursor: pointer;
-}
-
-a {
-    text-decoration: none;
-    color: white;
-}
-
-.link_event_style_2 {
-    width: 90%;
-    height: 50px;
-    border: 0px solid;
-    border-radius: 2px;
-    background-color: #2B8FD8;
-    align: center;
-    margin-bottom: 20px;
-}
-
-.column {
-    float: left;
-    background-color: #091b30;
-    width: 17vw;
-    margin: 3vw;
-    text-align: center;
-    border-radius: 5px;
-    animation: expand;
-    animation-duration: 2s;
-    animation-fill-mode: forwards;
-    padding-bottom: 20px;
-    align-items: center;
-    padding-top: 20px;
-}
-
-@keyframes expand {
-    from {
-        border-bottom: solid #4B99E0 0;
-    }
-    to {
-        border-bottom: solid #26376E 50px;
-    }
-}
-
-.circle {
-  border-radius: 100px;
-  behavior: url(PIE.htc);
-  width: 50px;
-  height: 50px;
-  background: #4B99E0;
-  color: white;
-  border: none;
-  text-align: center;
-  top: 120%;
-  margin-left: 121px;
-  position: relative;
-  font: 40px Arial, sans-serif;
-  animation: appear;
-  animation-duration: 1.5s;
-  animation-fill-mode: forwards;
-  opacity: 0;
-}
-
 .buttons_container {
     float: right;
     right: 5%;
@@ -817,16 +550,7 @@ a {
     font-style: normal;
     font-weight: 600;
     line-height: 20px;
-    letter-spacing: 0.01em;
     position: relative;
     bottom: 68px;
     text-align: center;
-}
-
-.logo_words_container {
-    top: 20px;
-    box-shadow: 4px 8px solid white;
-    display: inline;
-
-    height: 200px;
 }

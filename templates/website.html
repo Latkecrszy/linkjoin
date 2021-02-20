@@ -21,7 +21,7 @@
     </head>
     <script>
         function footer_disappear() {
-            document.getElementById("footer").style.opacity = 0;
+            document.getElementById(").style.opacity = 0;
             setInterval(function() {
                 if (document.body.scrollTop >= 1000 || window.scrollY == 0) {
                     document.getElementById("footer").style.opacity = 0.5;
@@ -45,12 +45,10 @@
         <div class="linkjoin">LinkJoin</div>
     </div>
     <div class="left_content">
-        <div class="text_container">
-            <div style="font-weight: 700; font-size: 44px; line-height: 57px;"><b>Being on time has never been so easy.</b></div>
-            <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
-            <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-            <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-        </div>
+        <div style="font-weight: 700; font-size: 44px; line-height: 57px;"><b>Being on time has never been so easy.</b></div>
+        <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
+        <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+        <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
             What is LinkJoin?
         </div>
