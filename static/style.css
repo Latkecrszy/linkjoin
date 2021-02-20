@@ -312,72 +312,18 @@ svg {
     z-index: -1;
 }
 
-body {
-    overflow: scroll;
-}
-
 .text_container {
     font-style: normal;
     width: 40vw;
     margin-left: 50px;
-    margin-top: 70px;
     color: white;
     text-align: left;
     letter-spacing: 0.01em;
 
 }
 
-.intro {
-    font-size: 44px;
-    line-height: 57px;
-
-}
-
-.explanation_title {
-    font-size: 60px;
-    color: white;
-    text-align: center;
-    font-family: Montserrat;
-    display: inline;
-    position: relative;
-}
-
 .info {
     margin-top: 300px;
-}
-
-.explanation {
-    font-size: 30px;
-    color: white;
-    text-align: center;
-    width: 40vw;
-    margin-top: 30px;
-    font-family: Roboto;
-    line-height: 1.4;
-    opacity: 0.7;
-    display: inline;
-}
-
-.description {
-    margin-top: 10px;
-    font-family: Roboto;
-    font-size: 18px;
-    line-height: 31px;
-}
-
-.get_started {
-    border-radius: 84px;
-    font-family: Montserrat;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 27px;
-    padding: 20px, 36px, 20px, 40px;
-    width: 321.21px;
-    height: 67px;
-    background-color: #2B8FD8;
-    border: none;
-    margin-top: 35px;
-    color: white;
 }
 
 .footer_text {
@@ -388,10 +334,6 @@ body {
 
 .footer_text:hover {
     color: #0AFFED;
-}
-
-.footer_line {
-    margin-bottom: 10px;
 }
 
 .footer {
@@ -406,11 +348,7 @@ body {
     text-align: left;
     display: inline-block;
     bottom: 15px;
-    margin-top: 50vh;
     float: left;
-    margin-right: 100px;
-    margin-left: 100px;
-    position: relative;
 }
 
 .footer_image {

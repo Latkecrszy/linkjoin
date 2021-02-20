@@ -1,0 +1,62 @@
+button:focus{
+    outline: none
+}
+
+input:focus {
+    outline: none;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.footer_text {
+    left: 10px;
+    display: inline;
+    position: relative;
+}
+
+.footer_text:hover {
+    color: #0AFFED;
+}
+
+.footer {
+    opacity: 0.5;
+    color: white;
+    font-family: Montserrat;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 17px;
+    letter-spacing: 0em;
+    text-align: left;
+    display: block;
+    bottom: 10px;
+    float: left;
+    position: fixed;
+}
+
+.footer_image {
+    height: 15px;
+    width: 15px;
+    display: inline;
+    position: relative;
+    margin-left: 25px;
+
+}
+
+.header {
+    height: 8vh;
+    min-height: 50px;
+    /*box-shadow: 4px 8px 18px black;*/
+    margin-bottom: 50px;
+    position: relative;
+    top: 1px;
+    width: 98vw;
+
+}
