@@ -50,30 +50,36 @@ function sleep(ms) {
       console.log(hour)
       console.log(minute)
       console.log(day)
-      setInterval(async function() {
-          minute += 1
-          if (minute >= 60) {
-              minute -= 60
-              hour += 1
-              if (hour > 24) {
-                  day = nextDay(day)
-                  hour -= 24
+      count = 0
+      while (true) {
+          setInterval(async function() {
+              count += 1
+              minute += 1
+              if (minute >= 60) {
+                  minute -= 60
+                  hour += 1
+                  if (hour > 24) {
+                      day = nextDay(day)
+                      hour -= 24
+                  }
               }
-          }
-          let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-          let user_links = await start_json.json()
-          console.log(user_links)
-          for (const link of user_links) {
-              let link_hour = parseInt(link["time"].split(":")[0])
-              let link_minute = parseInt(link["time"].split(":")[1])
-              console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-              if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
-                          window.open(link["link"])
+              let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+              let user_links = await start_json.json()
+              console.log(user_links)
+              for (const link of user_links) {
+                  let link_hour = parseInt(link["time"].split(":")[0])
+                  let link_minute = parseInt(link["time"].split(":")[1])
+                  console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
+                  if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
+                              window.open(link["link"])
+                  }
               }
-          }
-
-          console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-      }, 60000)
+              console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
+              if (count == 60) {
+                location.reload()
+              }
+          }, 60000)
+      }
   }
 
   function redirect(redirect_to) {
