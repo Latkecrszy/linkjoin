@@ -29,8 +29,8 @@
             }, 1000)
         }
     </script>
-    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em;" onscroll="footer_disappear()">
-    <svg viewBox="0 0 500 230" preserveAspectRatio="xMinYMin meet" style="z-index: -1; height: 1000%; width: 110vw; position: fixed;">
+    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em; margin: 0;" onscroll="footer_disappear()">
+    <svg viewBox="0 0 500 230" preserveAspectRatio="xMinYMin meet">
             <path d="M235, 0 C300, 200 150,
                 100 350, 600 L0, 300 L0, 0 Z"
                 style="stroke:none; fill:#091B30;">
@@ -48,7 +48,7 @@
         <div style="font-weight: 700; font-size: 44px; line-height: 57px;"><b>Being on time has never been so easy.</b></div>
         <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
         <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-        <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+        <a href="#scroll_to"><button class="get_started" style="background-color: #142539; box-shadow: 10px 10px 10px #091B30;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
             What is LinkJoin?
         </div>
@@ -63,7 +63,7 @@
         </div>
     </div>
     <div class="right_content">
-        <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;">
+        <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;" id="calendar_guy">
         <div class="explanation_title" style="float: right; margin-right: 2vw; display: inline; margin-top: -100px;">
             How does it work?
         </div>

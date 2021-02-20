@@ -71,3 +71,9 @@
     margin-left: 10px;
     margin-right: 10px;
 }
+
+@media (max-width: 710px) {
+    #calendar_guy {
+        display: none;
+    }
+}

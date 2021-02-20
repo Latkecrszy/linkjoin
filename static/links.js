@@ -71,7 +71,6 @@ async function load_links(username) {
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
         for (const link of links) {
-            console.log(link)
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
@@ -137,15 +136,12 @@ async function load_links(username) {
                 activate_switch.style.color = "white"
                 activate_switch.innerText = "Deactivate"
                 activate_switch.addEventListener("click", function() {
-                console.log(link['id'])
-                console.log(link)
                 location.href = "/deactivate?id="+link["id"]})
             }
             buttons.appendChild(activate_switch)
             let edit = document.createElement("button")
             edit.classList.add("function_button")
             edit.style.background = "#27FB6B"
-            console.log(link)
             edit.addEventListener("click", function() {
                 link_event = document.getElementById(iterator.toString())
                 element = document.getElementById("popup")
