@@ -1,0 +1,124 @@
+.linkjoin_signup {
+    font-family: Montserrat;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    color: white;
+    margin-top: 40px;
+    margin-left: 50px;
+}
+
+.slogan_login {
+    font-family: Montserrat;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 32px;
+    letter-spacing: 0.01em;
+    float: left;
+    color: white;
+    opacity: 0.7;
+    margin-top: 15px;
+    margin-left: 38px;
+}
+
+.header_login {
+    height: 8vh;
+    min-height: 50px;
+    margin-bottom: 50px;
+    position: absolute;
+    top: 1px;
+    width: 98vw;
+}
+
+.already {
+    float: right;
+    color: white;
+    font-family: Montserrat;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: 0.01em;
+    margin-top: 27px;
+    margin-right: 15px;
+}
+
+.icon {
+    float: right;
+    width: 17px;
+    height: 15px;
+    position: absolute;
+    left: 40px;
+}
+
+.submit {
+    height: 64px;
+    width: 177px;
+    border-radius: 84px;
+    background-color: #2B8FD8;
+    font-weight: 800;
+    color: white;
+    font-size: 19px;
+    font-family: Montserrat;
+    border: none;
+    float: left;
+    margin-top: 40px;
+    margin-left: 30px;
+}
+
+.error {
+    font-size: 12px;
+    opacity: 0.7;
+    color: red;
+    position: absolute;
+    top: 30px;
+    left: 180px;
+}
+
+.form_box {
+    font-family: Montserrat;
+    font-size: 41px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 55px;
+    letter-spacing: 0.01em;
+    text-align: center;
+    width: 500px;
+    float: right;
+    margin-right: 150px;
+    margin-top: 50px;
+    display: inline;
+    position: absolute;
+    top: 130px;
+    right: -40px;
+}
+
+.email {
+    width: 440px;
+    font-size: 15px;
+    font-family: Montserrat;
+    height: 65px;
+    padding: 16px 61px 16px 28px;
+    background-color: white;
+    opacity: 0.3;
+    border: none;
+    border-radius: 7px;
+    margin-top: 30px;
+}
+
+.password {
+    width: 440px;
+    font-size: 15px;
+    font-family: Montserrat;
+    height: 65px;
+    padding: 16px 61px 16px 28px;
+    background-color: white;
+    opacity: 0.3;
+    border: none;
+    border-radius: 7px;
+    type: password;
+    margin-top: 20px;
+}

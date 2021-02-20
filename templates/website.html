@@ -3,43 +3,53 @@
         <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-        <title>LinkJoin</title>
-        <link rel="shortcut icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
-        <link rel="apple-touch-icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
+        <title>LinkJoin | Auto Join Zoom Meetings With Ease</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <script data-ad-client="ca-pub-6523615305039224" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://linkjoin.xyz">
         <meta property="og:title" content="LinkJoin | Never Be Late Again">
         <meta property="og:description" content="LinkJoin opens your meetings for you right on time, even if you're not at the computer!">
-        <meta property="og:image" content="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png">
+        <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
         <meta name="description" content="LinkJoin is a site that automatically opens your meetings for you! Never be late again, with LinkJoin.">
         <meta name=”robots” content="index, follow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
     </head>
-    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em;">
+    <script>
+        function footer_disappear() {
+            document.getElementById("footer").style.opacity = 0;
+            setInterval(function() {
+                if (document.body.scrollTop >= 1000 || window.scrollY == 0) {
+                    document.getElementById("footer").style.opacity = 0.5;
+                }
+            }, 1000)
+        }
+    </script>
+    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em;" onscroll="footer_disappear()">
     <svg viewBox="0 0 500 230" preserveAspectRatio="xMinYMin meet" style="z-index: -1; height: 1000%; width: 110vw; position: fixed;">
             <path d="M235, 0 C300, 200 150,
                 100 350, 600 L0, 300 L0, 0 Z"
                 style="stroke:none; fill:#091B30;">
             </path>
         </svg>
-    <div class="header">
-        <a href="/login"><button class="button" style="font-family: Montserrat; border: 2px solid white; margin-right: 30px;">Log In <img src="https://cdn.discordapp.com/attachments/716377034728931331/808776968392015893/Vector_7.png" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a>
-        <a href="/signup"><button class="button" style="font-family: Montserrat; width: 80px; border: none; margin-right: 30px;">Sign Up</button></a>
+    <div class="header" id="header">
+        <a href="/login"><button class="button login" style="font-family: Montserrat; border: 2px solid white; margin-right: 30px;">Log In <img src="https://cdn.discordapp.com/attachments/716377034728931331/808776968392015893/Vector_7.png" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a>
+        <a href="/signup"><button class="button" style="font-family: Montserrat; width: 100px; border: none; margin-right: 30px;">Sign Up</button></a>
         <a href="/links"><button class="button" style="font-family: Montserrat; width: 50px; border: none; margin-right: 30px;">Links</button></a>
-        <a href="/about"><button class="button" style="font-family: Montserrat; width: 90px; border: none; margin-right: 30px;">About Us</button></a>
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808908185611403274/Screen_Shot_2021-02-09_at_7.52.12_PM.png" class="logo">
+        <a href="/about"><button class="button" style="font-family: Montserrat; width: 110px; border: none; margin-right: 30px;">About Us</button></a>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <div class="linkjoin">LinkJoin</div>
     </div>
     <div class="left_content">
         <div class="text_container">
             <div style="font-weight: 700; font-size: 44px; line-height: 57px;"><b>Being on time has never been so easy.</b></div>
             <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
-            <a href="/signup"><button class="get_started">Get started. It's free. <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-            <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="https://cdn.discordapp.com/attachments/716377034728931331/810925872138682398/Vector_22.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+            <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+            <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         </div>
         <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
             What is LinkJoin?
@@ -55,45 +65,23 @@
         </div>
     </div>
     <div class="right_content">
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808768032520142868/A_whole_year-bro_1.png" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;">
-        <div class="explanation_title" style="float: right; margin-right: 2vw; margin-top: -10vh;">
+        <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;">
+        <div class="explanation_title" style="float: right; margin-right: 2vw; display: inline; margin-top: -100px;">
             How does it work?
         </div>
-        <div class="explanation" style="float: right; margin-right: 2vw;">
+        <div class="explanation" style="float: right; margin-right: 2vw; display: inline;">
             Here at LinkJoin, we provide only the best of service. That's why we use expertly trained snakes (pythons, to be specific) to click the buttons in our HQ that open your meetings right on time! Don't worry, they're very accurate.
         </div>
     </div>
-    <div class="footer">
+    <div class="footer" id="footer">
         <div style="margin-bottom: 10px;">
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759433991684146/Vector_2.png" class="footer_image"><div class="footer_text">Crafted by Latkecrszy#7777</div>
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759569580687380/Vector_4.png" class="footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_text">Join the Discord</div></a></div><br>
+            <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image"><div class="footer_text">Crafted by Latkecrszy#7777</div>
+            <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_text">Join the Discord</div></a></div><br>
         <div style="margin-bottom: 10px;">
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759513695649843/Vector_3.png" class="footer_image"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_text">Contribute on Github</div></a>
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808759659640127548/Vector_5.png" class="footer_image"><div class="footer_text">Buy me a Coffee</div>
-            <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image"><a href="https://storyset.com/work" style="text-decoration: none;"><div class="footer_text">Illustration by Freepik Storyset</div></a>
+            <img src="{{ url_for('static', filename='images/github.png') }}" class="footer_image"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_text">Contribute on Github</div></a>
+            <img src="{{ url_for('static', filename='images/coffee.png') }}" class="footer_image"><div class="footer_text">Buy me a Coffee</div>
+            <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image" style="border-radius: 1px;"><a href="https://storyset.com/work" style="text-decoration: none;"><div class="footer_text">Illustration by Freepik Storyset</div></a>
         </div>
     </div>
-    <!--<div class="img_container">
-        <img src="https://cdn.discordapp.com/attachments/716377034728931331/808768032520142868/A_whole_year-bro_1.png" height="650" width="550">
-    </div>
-    <div class="text_container">
-        <div class="intro" style="font-family: Montserrat; font-weight: 700;"><b>Being on time has never been so easy.</b></div>
-        <div class="description" style="font-family: Roboto; font-weight: 400;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
-        <a href="/signup"><button class="get_started" style="font-family: Montserrat; font-weight: 600;">Get started. It's free. <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-        <a href="#scroll_to"><button class="get_started" style="background-color: #142539;">Learn more <img src="https://cdn.discordapp.com/attachments/716377034728931331/810925872138682398/Vector_22.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-    </div>
-    <div class="info">
-    <div class="howto" id="howto">
-        <div class="explanation_title" style="margin-left: 2.5vw; top: 50px;" >
-            How do I get started?
-        </div>
-        <div class="explanation" style="margin-left: 50px; float: left; margin-top: 80px;">
-            Just head over to <a href="/signup" style="text-decoration: none; color: #2B8FD8;">the signup page</a> and create an account. From there, you'll be redirected to <a href="/links" style="text-decoration: none; color: #2B8FD8;">the links page</a> to start scheduling your meetings!
-        </div>
-        </div>
-    </div>-->
-    <!--<img src="https://cdn.discordapp.com/attachments/716377034728931331/808768032520142868/A_whole_year-bro_1.png" style="float: right; display: inline;">-->
-
     </body>
-
 </html>

@@ -1,6 +1,7 @@
 <html class="login_page" style="overflow: visible;">
     <head>
-       <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -9,38 +10,36 @@
         <link rel="apple-touch-icon" href="https://cdn.discordapp.com/attachments/716377034728931331/811066926910144532/Frame_106.png" class="logo">
         <title>LinkJoin</title>
     </head>
-    <body style="overflow: hidden;">
-    <svg viewBox="0 0 500 500"
-            preserveAspectRatio="xMinYMin meet">
-
+    <body style="overflow: visible;">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet" style="position: fixed; z-index: -1;">
             <path d="M235, 0 C300, 200 150,
-                100 350, 600 L0, 300 L0, 0 Z"
-                style="stroke:none; fill:#091B30;">
+                  100 350, 600 L0, 300 L0, 0 Z"
+                  style="stroke:none; fill:#091B30;">
             </path>
         </svg>
         <div class="header_login">
-            <a href="/login"><button class="button login">Log In <img src="https://cdn.discordapp.com/attachments/716377034728931331/808776968392015893/Vector_7.png" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a><div class="already">Already have an account?</div>
-            <a href="/"><img src="https://cdn.discordapp.com/attachments/716377034728931331/808904704435683348/Vector_15.png" height="20px" width="20px" style="margin: 30px;"></a>
+            <a href="/login"><button class="button login" style="border: 2px solid white; font-family: Montserrat;">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a><div class="already">Already have an account?</div>
+            <a href="/"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="margin: 30px;"></a>
         </div>
-        <div style="width: 200px; display: inline; box-shadow: 4px 8px 5px white; top: 48vh; right: 16.5vw;">
-            <img src="https://cdn.discordapp.com/attachments/716377034728931331/808908185611403274/Screen_Shot_2021-02-09_at_7.52.12_PM.png" height="300" width="300" style="float: left; margin-left: 100px;">
-            <div class="linkjoin_signup" style="margin-top: 30px;"><strong>LinkJoin</strong></div>
+        <div class="left_content" style="padding-left: 10vw; padding-top: 20vh;">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" height="280" width="280">
+            <div class="linkjoin_signup"><strong>LinkJoin</strong></div>
             <div class="slogan_login">Never be late again</div>
         </div>
-        <div class="form_box">
-            <div class="create_account">Create an Account</div>
-            <form method="POST" action="/signup_error">
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/808871432427667506/Screen_Shot_2021-02-09_at_5.26.13_PM.png" class="icon" style="top: 91px;">
-                <input type="text" name="email" class="email" id="email" placeholder="Email" required>
-                <img src="https://cdn.discordapp.com/attachments/716377034728931331/808871989649080410/Vector_13.png" class="icon" style="top: 165px;">
-                <input name="password" class="password" id="password" placeholder="Password" type="password" required>
-                <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
-                {% if error == "email_in_use" %}
-                    <div class="error" style="left: 90px;">This email is already associated with an account</div>
-                {% elif error == "invalid_email" %}
-                    <div class="error" style="left: 200px;">Invalid email</div>
-                {% endif %}
-            </form>
+        <div class="right_content" style="padding-left: 100px;">
+            <div class="form_box">
+                <div style="color: white;">Create an Account</div>
+                <form method="POST" action="/signup_error">
+                    <input type="text" name="email" class="email" id="email" placeholder="Email" required>
+                    <input name="password" class="password" id="password" placeholder="Password" type="password" required>
+                    <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="https://cdn.discordapp.com/attachments/716377034728931331/808756764127920198/Vector_1.png" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+                    {% if error == "email_in_use" %}
+                        <div class="error" style="left: 90px;">This email is already associated with an account</div>
+                    {% elif error == "invalid_email" %}
+                        <div class="error" style="left: 200px;">Invalid email</div>
+                    {% endif %}
+                </form>
+            </div>
         </div>
 
     </body>

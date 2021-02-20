@@ -3,7 +3,7 @@
     width: 40vw;
     text-align: center;
     display: block;
-    margin-top: 28vh;
+    margin-top: 50vh;
 }
 
 .explanation {
@@ -61,24 +61,6 @@
     margin-top: 35px;
     color: white;
     display: block;
-}
-
-.left_content {
-    float: left;
-    height: 120%;
-    width: 50vw;
-    padding-left: 40px;
-    display: inline;
-    font-family: Montserrat;
-}
-
-.right_content {
-    float: right;
-    height: 100%;
-    width: 50vw;
-    padding-right: 15px;
-    display: inline;
-    font-family: Montserrat;
 }
 
 .logo {

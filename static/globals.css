@@ -1,14 +1,10 @@
-button:focus{
-    outline: none
-}
+button:focus{outline: none;}
 
-input:focus {
-    outline: none;
-}
+input:focus {outline: none;}
 
-button:hover {
-    cursor: pointer;
-}
+html {background-color: #142539;}
+
+button:hover {cursor: pointer;}
 
 a {
     text-decoration: none;
@@ -21,9 +17,7 @@ a {
     position: relative;
 }
 
-.footer_text:hover {
-    color: #0AFFED;
-}
+.footer_text:hover {color: #0AFFED;}
 
 .footer {
     opacity: 0.5;
@@ -47,7 +41,6 @@ a {
     display: inline;
     position: relative;
     margin-left: 25px;
-
 }
 
 .header {
@@ -58,5 +51,43 @@ a {
     position: relative;
     top: 1px;
     width: 98vw;
+}
 
+.left_content {
+    float: left;
+    height: 150%;
+    width: 50vw;
+    padding-left: 40px;
+    display: inline;
+    font-family: Montserrat;
+}
+
+.right_content {
+    float: right;
+    height: 100%;
+    width: 50vw;
+    padding-right: 15px;
+    display: inline;
+    font-family: Montserrat;
+}
+
+.button {
+    text-align: center;
+    vertical-align: center;
+    float: right;
+    border-radius: 70px;
+    margin-top: 10px;
+    background-color: #142539;
+    font-size: 16px;
+    font-style: normal;
+    height: 50px;
+    width: 110px;
+    font-weight: 600;
+    line-height: 22px;
+    display: inline-block;
+    color: white;
+}
+
+.login:hover {
+    background-color: #2B8FD8;
 }
