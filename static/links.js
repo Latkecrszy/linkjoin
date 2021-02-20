@@ -56,7 +56,7 @@ async function load_links(username) {
     if (links.toString() == '') {
         document.getElementById("header").style.margin = "0 0 0 0"
         const image = document.createElement("img");
-        const image_attributes = {"src": "https://cdn.discordapp.com/attachments/716377034728931331/808917653422735420/Time_management-cuate.png", "height": "430px", "width": "450px", "style": "margin-top: -1vh; margin-left: 36vw;"}
+        const image_attributes = {"src": "{{ url_for('static', filename='images/links_loader.png') }}", "height": "430px", "width": "450px", "style": "margin-top: -1vh; margin-left: 36vw;"}
         for (const attribute in image_attributes) {
             image.setAttribute(attribute, image_attributes[attribute])
         }
