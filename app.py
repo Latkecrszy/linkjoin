@@ -7,8 +7,7 @@ ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
-cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz"]}})
-
+cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
 
 @app.route("/")
 def main():

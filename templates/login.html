@@ -32,7 +32,7 @@
                 <form method="POST" action="/login_error">
                     <input type="text" name="email" class="email" id="email" placeholder="Email" required>
                     <input name="password" class="password" id="password" placeholder="Password" type="password" required>
-                    <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+                    <button type="submit" class="submit" id="submit" name="submit">Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
                     {% if error == "username_not_found" %}
                     <div class="error" style="left: 130px;">No account is associated with this email</div>
                     {% elif error == "incorrect_password" %}
