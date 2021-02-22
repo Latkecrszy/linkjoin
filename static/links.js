@@ -79,11 +79,8 @@ async function load_links(username, sort) {
             }
             console.log(link_list)
             for (const day in link_list) {
-                for (const key of link_list[day]) {
-                    console.log(day)
-                    console.log(key)
-                    console.log(link_list[day])
-                    final.push(link_list[day])
+                for (let key of link_list[day]) {
+                    final.push(key)
                 }
             }
         }
