@@ -97,6 +97,7 @@ function sleep(ms) {
           if (iteration == 61) {
             location.reload()
           }
+          console.log(iteration)
           
       }, 60000)
   }
