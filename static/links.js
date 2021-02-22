@@ -50,7 +50,7 @@ function change_color(day) {
 }
 
 
-async function load_links(username) {
+async function load_links(username, sort) {
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() == '') {
@@ -68,17 +68,22 @@ async function load_links(username) {
         insert.appendChild(click_plus)
     }
     else {
-        let sort = "{{ sort }}"
+        console.log(sort)
         let final = []
         if (sort == "day") {
             console.log("day sorting")
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
             for (const link_info of links) {
-                link_list[link_info['day']].push(link_info)
+                console.log(JSON.parse(link_info["days"].replaceAll("'", '"')))
+                link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
             }
-            for (const day of link_list) {
+            console.log(link_list)
+            for (const day in link_list) {
                 for (const key of link_list[day]) {
-                    final.push(link_list[day][key])
+                    console.log(day)
+                    console.log(key)
+                    console.log(link_list[day])
+                    final.push(link_list[day])
                 }
             }
         }
@@ -99,6 +104,7 @@ async function load_links(username) {
             final = links
             console.log("not sorting")
         }
+        console.log(final)
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
         for (const link of final) {
