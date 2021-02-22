@@ -32,7 +32,7 @@ async function NewTab(username, minute, day, hour) {
     let date = new Date()
     day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
     hour = parseInt(date.getHours())
-    minute = parseInt(date.getMintes())
+    minute = parseInt(date.getMinutes())
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let user_links = await start_json.json()
     console.log(user_links)
