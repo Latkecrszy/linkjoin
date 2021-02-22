@@ -68,9 +68,37 @@ async function load_links(username) {
         insert.appendChild(click_plus)
     }
     else {
+        let sort = "{{ sort }}"
+        let final = []
+        if (sort == "day") {
+            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            for (const link_info of links) {
+                link_list[link_info['day']].push(link_info)
+            }
+            for (const day of link_list) {
+                for (const key of link_list[day]) {
+                    final.push(link_list[day][key])
+                }
+            }
+        }
+        else if (sort == "time") {
+            let times = []
+            let link_time_list = {}
+            for (const link_info of links) {
+                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                link_time_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+            }
+            times = times.sort((a, b) => a - b)
+            for (const link_time of times) {
+                final.push(link_time_list[link_time])
+            }
+        }
+        else {
+            final = links
+        }
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
-        for (const link of links) {
+        for (const link of final) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()

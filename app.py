@@ -109,7 +109,8 @@ def links():
         links_list = links_db.find({"username": login_info['username']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
         link_names = [link['name'] for link in links_list]
-        return render_template("links.html", username=login_info['username'], link_names=link_names)
+        sort = request.args.get("sort") if request.args.get("sort") else "no"
+        return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
 
