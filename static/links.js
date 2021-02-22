@@ -80,7 +80,6 @@ async function load_links(username, sort) {
             console.log(link_list)
             for (const day in link_list) {
                 for (let key of link_list[day]) {
-                    key =
                     console.log("day:")
                     console.log(day)
                     console.log("key:")
@@ -112,7 +111,7 @@ async function load_links(username, sort) {
         console.log(final)
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
-        for (const link of final) {
+        for (let link of final) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
