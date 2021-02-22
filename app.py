@@ -28,6 +28,7 @@ def Signup():
 def open():
     login_info = request.cookies.get('login_info')
     if login_info:
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         return render_template("redirect.html", username=login_info['username'])
     return redirect("/login")
 
@@ -208,18 +209,6 @@ def otherlinks():
         return render_template("alternate_links.html", username=login_info['username'], link_names=link_names)
     else:
         return redirect("/login")
-
-
-@app.route("/gimmelinks")
-def gimmelinks():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-    links_list = links_db.find({"username": login_info['username']})
-    links_list = [{i: j for i, j in dict(link).items() if i != "_id"} for link in links_list]
-    print(links_list)
-    return make_response(jsonify(links_list))
-
 
 
 if __name__ == "__main__":
