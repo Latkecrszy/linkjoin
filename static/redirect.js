@@ -94,10 +94,11 @@ function sleep(ms) {
               }
           }
           console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
+          console.log(iteration)
           if (iteration == 61) {
             location.reload()
           }
-          console.log(iteration)
+
           
       }, 60000)
   }
