@@ -31,11 +31,7 @@ def open():
     login_db = mongo.db.login
     authorized = login_db.find_one({"username": login_info['username'].lower()})
     if authorized:
-        date = datetime.datetime.utcnow()
-        day = date.strftime("%a").capitalize()
-        hour = int(date.strftime("%H"))
-        minute = int(date.strftime("%M"))
-        return render_template("redirect.html", day=day, hour=hour, minute=minute, username=login_info['username'])
+        return render_template("redirect.html", username=login_info['username'])
     return redirect("/login")
 
 

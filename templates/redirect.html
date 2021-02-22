@@ -11,7 +11,7 @@
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
         <title>LinkJoin</title>
     </head>
-    <body onload="NewTab('{{ username }}', '{{ minute }}', '{{ day }}', '{{ hour }}')" style="align-items: center;">
+    <body onload="NewTab('{{ username }}')" style="align-items: center;">
         <div class="header_links" id="header">
             <div onclick="redirect('help')" class="button signup" style="top: 26%;">Help</div>
             <div onclick="redirect('about')" class="button signup" style="top: 26%;">About Us</div>
