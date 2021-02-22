@@ -26,11 +26,8 @@ def Signup():
 
 @app.route("/open")
 def open():
-    mongo = PyMongo(app)
-    login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-    login_db = mongo.db.login
-    authorized = login_db.find_one({"username": login_info['username'].lower()})
-    if authorized:
+    login_info = request.cookies.get('login_info')
+    if login_info:
         return render_template("redirect.html", username=login_info['username'])
     return redirect("/login")
 
@@ -85,10 +82,14 @@ def register_link():
     links_db = mongo.db.links
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
+        if "https" not in request.form.get("link"):
+            link = f"https://{request.form.get('link')}"
+        else:
+            link = request.form.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         print([request.form.get(day) for day in dict(request.form)])
         print([day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == "true"])
-        links_db.insert_one({"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']), 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true"})
+        links_db.insert_one({"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']), 'days': [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'], 'time': request.form.get("time"), 'link': link, 'name': request.form.get('name'), "active": "true"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     else:
@@ -133,11 +134,15 @@ def update():
                                       day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
                                           day) == 'true'])
         print(dict(request.form))
+        if "https" not in request.form.get("link"):
+            link = f"https://{request.form.get('link')}"
+        else:
+            link = request.form.get("link")
         links_db.find_one_and_replace({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"username": login_info['username'],
                              'days': [day for day in dict(request.form) if
                                       day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(
                                           day) == 'true'], 'time': request.form.get("time"),
-                             'link': request.form.get("link"), 'name': request.form.get('name'), "active": "true", 'id': int(request.args.get("id"))})
+                             'link': link, 'name': request.form.get('name'), "active": "true", 'id': int(request.args.get("id"))})
         return redirect("/links")
     return redirect("/login")
 
