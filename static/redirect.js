@@ -29,36 +29,10 @@ function sleep(ms) {
   }
 
   async function NewTab(username, minute, day, hour) {
-      let diff = timeDifference()
-      minute = parseInt(minute)
-      day = day
-      hour = parseInt(hour)
-      hour += Math.floor(parseInt(diff)/60)
-      if (hour > 24) {
-          day = nextDay(day)
-          hour -= 24
-      }
-      else if (hour < 1) {
-          day = prevDay(day)
-          hour += 24
-      }
-      minute += parseInt(diff) % 60
-      if (minute >= 60) {
-          minute -= 60
-          hour += 1
-      }
-      console.log(hour)
-      console.log(minute)
-      console.log(day)
-      let iteration = 0
-      if (minute >= 60) {
-          minute -= 60
-          hour += 1
-          if (hour > 24) {
-              day = nextDay(day)
-              hour -= 24
-          }
-      }
+      let date = new Date()
+      let day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
+      let hour = parseInt(date.getHours())
+      let minute = parseInt(date.getMintes())
       let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
       let user_links = await start_json.json()
       console.log(user_links)
@@ -66,22 +40,16 @@ function sleep(ms) {
           let link_hour = parseInt(link["time"].split(":")[0])
           let link_minute = parseInt(link["time"].split(":")[1])
           console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-          if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
+          if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
                       window.open(link["link"])
           }
       }
       console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
       setInterval(async function() {
-          iteration += 1
-          minute += 1
-          if (minute >= 60) {
-              minute -= 60
-              hour += 1
-              if (hour > 24) {
-                  day = nextDay(day)
-                  hour -= 24
-              }
-          }
+          let date = new Date()
+          let day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
+          let hour = parseInt(date.getHours())
+          let minute = parseInt(date.getMintes())
           let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
           let user_links = await start_json.json()
           console.log(user_links)
@@ -94,12 +62,6 @@ function sleep(ms) {
               }
           }
           console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-          console.log(iteration)
-          if (iteration == 61) {
-            location.reload()
-          }
-
-          
       }, 60000)
   }
 
