@@ -28,16 +28,33 @@ function sleep(ms) {
       }
   }
 
-  async function NewTab(username, minute, day, hour) {
-        let date = new Date()
-        let day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
-        let hour = parseInt(date.getHours())
-        let minute = parseInt(date.getMintes())
-        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-        let user_links = await start_json.json()
+async function NewTab(username, minute, day, hour) {
+    let date = new Date()
+    day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
+    hour = parseInt(date.getHours())
+    minute = parseInt(date.getMintes())
+    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let user_links = await start_json.json()
+    console.log(user_links)
+    let link_hour;
+    let link_minute;
+    for (const link of user_links) {
+        link_hour = parseInt(link["time"].split(":")[0])
+        link_minute = parseInt(link["time"].split(":")[1])
+        console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
+        if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
+            window.open(link["link"])
+        }
+    }
+    console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
+    setInterval(async function() {
+        date = new Date()
+        day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
+        hour = parseInt(date.getHours())
+        minute = parseInt(date.getMintes())
+        start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        user_links = await start_json.json()
         console.log(user_links)
-        let link_hour;
-        let link_minute;
         for (const link of user_links) {
             link_hour = parseInt(link["time"].split(":")[0])
             link_minute = parseInt(link["time"].split(":")[1])
@@ -47,25 +64,8 @@ function sleep(ms) {
             }
         }
         console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-        setInterval(async function() {
-            date = new Date()
-            day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
-            hour = parseInt(date.getHours())
-            minute = parseInt(date.getMintes())
-            start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-            user_links = await start_json.json()
-            console.log(user_links)
-            for (const link of user_links) {
-                link_hour = parseInt(link["time"].split(":")[0])
-                link_minute = parseInt(link["time"].split(":")[1])
-                console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-                if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
-                    window.open(link["link"])
-                }
-            }
-            console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-        }, 60000)
-    }
+    }, 60000)
+}
 
   function redirect(redirect_to) {
       window.open("/"+redirect_to)
