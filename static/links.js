@@ -55,17 +55,9 @@ async function load_links(username, sort) {
     let links = await start_json.json()
     if (links.toString() == '') {
         document.getElementById("header").style.margin = "0 0 0 0"
-        const image = document.createElement("img");
-        const image_attributes = {"src": "{{ url_for('static', filename='images/links_loader.png') }}", "height": "430px", "width": "450px", "style": "margin-top: -1vh; margin-left: 36vw;"}
-        for (const attribute in image_attributes) {
-            image.setAttribute(attribute, image_attributes[attribute])
-        }
-        const click_plus = document.createElement("div")
-        click_plus.classList.add("click_the_plus")
-        click_plus.innerText = "Click the + button to start scheduling your meetings!"
-        insert = document.getElementById("insert_things")
-        insert.appendChild(image)
-        insert.appendChild(click_plus)
+        document.getElementById("disappear").classList.remove("hidden")
+        document.getElementById("footer_links").style.bottom = "-5px"
+        document.getElementById("footer_links").style.position = "absolute"
     }
     else {
         console.log(sort)
