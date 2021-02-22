@@ -71,6 +71,7 @@ async function load_links(username) {
         let sort = "{{ sort }}"
         let final = []
         if (sort == "day") {
+            console.log("day sorting")
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
             for (const link_info of links) {
                 link_list[link_info['day']].push(link_info)
@@ -83,6 +84,7 @@ async function load_links(username) {
         }
         else if (sort == "time") {
             let times = []
+            console.log("time sorting")
             let link_time_list = {}
             for (const link_info of links) {
                 times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
@@ -95,6 +97,7 @@ async function load_links(username) {
         }
         else {
             final = links
+            console.log("not sorting")
         }
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
