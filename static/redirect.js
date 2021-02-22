@@ -44,7 +44,7 @@ async function NewTab(username) {
             console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
             if (link["days"].includes(day) && parseInt(date.getHours()) == link_hour && parseInt(date.getMinutes()) == link_minute && link["active"] == "true") {
                 window.open(link["link"])
-                sleep(60000)
+                await sleep(60000)
             }
         }
         console.log(`day: ${day}, hour: ${parseInt(date.getHours())}, minute: ${parseInt(date.getMinutes())}`)
