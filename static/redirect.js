@@ -47,7 +47,7 @@ async function NewTab(username, minute, day, hour) {
         }
     }
     console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-    setInterval(async function() {
+    while (true) {
         date = new Date()
         day = {0: "Mon", 1: "Tue", 2: "Wed", 3: "Thu", 4: "Fri", 5: "Sat", 6: "Sun"}[parseInt(date.getDay())]
         hour = parseInt(date.getHours())
@@ -61,10 +61,12 @@ async function NewTab(username, minute, day, hour) {
             console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
             if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
                 window.open(link["link"])
+                sleep(60000)
             }
         }
         console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-    }, 60000)
+        sleep(15000)
+    }
 }
 
   function redirect(redirect_to) {
