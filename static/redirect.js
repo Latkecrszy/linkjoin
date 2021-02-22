@@ -89,12 +89,12 @@ function sleep(ms) {
               let link_hour = parseInt(link["time"].split(":")[0])
               let link_minute = parseInt(link["time"].split(":")[1])
               console.log(`days: ${link["days"]}, link_hour: ${link_hour}, link_minute: ${link_minute}`)
-              if (link["days"].includes(day) && hour == link_hour && minute == link_minute && link["active"] == "true") {
+              if (link["days"].includes(day) && hour == link_hour && minute == link_minute-1 && link["active"] == "true") {
                           window.open(link["link"])
               }
           }
           console.log(`day: ${day}, hour: ${hour}, minute: ${minute}`)
-          if (iteration == 1) {
+          if (iteration == 61) {
             location.reload()
           }
           
