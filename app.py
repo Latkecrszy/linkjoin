@@ -107,7 +107,7 @@ def links():
         links_list = links_db.find({"username": login_info['username']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
         link_names = [link['name'] for link in links_list]
-        sort = request.args.get("sort") if request.args.get("sort") else "no"
+        sort = request.cookies.get("sort") if request.cookies.get("sort") else "no"
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
@@ -179,21 +179,6 @@ def db():
     links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "password"} for
                   link in links_list]
     return make_response(jsonify(links_list))
-
-
-@app.route("/giveid")
-def giveid():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    id_db = mongo.db.id
-    for document in links_db.find():
-        if 'id' not in dict(document).keys():
-            print(dict(document))
-            doc = dict(document)
-            doc['id'] = int(dict(id_db.find_one({"_id": "id"}))['id'])
-            links_db.find_one_and_replace(dict(document), doc)
-            id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
-    return make_response({"done": "it"})
 
 
 @app.route("/otherlinks")

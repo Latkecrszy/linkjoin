@@ -23,7 +23,7 @@
         function footer_disappear() {
             document.getElementById("footer").style.opacity = 0;
             setInterval(function() {
-                if (document.body.scrollTop >= 1000 || window.scrollY == document.body.) {
+                if (document.body.scrollTop >= 1000 || window.scrollY == 0) {
                     document.getElementById("footer").style.opacity = 0.5;
                 }
             }, 1000)
