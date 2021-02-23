@@ -108,7 +108,7 @@ async function load_links(username, sort) {
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
             if (iterator == 0) {
-                link_event.style.margin = "80px 0 0 10vw"
+                link_event.style.margin = "-25px 0 0 10vw"
             }
             let time_div = document.createElement("div")
             time_div.classList.add("time")
@@ -206,7 +206,6 @@ async function load_links(username, sort) {
             if (link['active'] == "false") {
                 link_event.opacity = 0.6
             }
-
             document.getElementById("insert_things").appendChild(link_event)
             iterator += 1
         }
@@ -214,4 +213,8 @@ async function load_links(username, sort) {
 }
 function redirect(redirect_to) {
     window.open(redirect_to)
+}
+
+function sort() {
+    location.href = "/sort?sort="+document.getElementById("sort").value.toString()
 }

@@ -107,7 +107,8 @@ def links():
         links_list = links_db.find({"username": login_info['username']})
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
         link_names = [link['name'] for link in links_list]
-        sort = request.cookies.get("sort") if request.cookies.get("sort") else "no"
+        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day'] else "no"
+        print(sort)
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
@@ -194,6 +195,13 @@ def otherlinks():
         return render_template("alternate_links.html", username=login_info['username'], link_names=link_names)
     else:
         return redirect("/login")
+
+
+@app.route("/sort")
+def sort():
+    response = make_response(redirect("/links"))
+    response.set_cookie("sort", json.dumps({"sort": request.args.get("sort")}))
+    return response
 
 
 if __name__ == "__main__":
