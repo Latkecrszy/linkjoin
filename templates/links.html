@@ -1,6 +1,6 @@
-<html style="background-color: #091B30; overflow: visible;" id="html">
+<html style="background-color: #091B30; overflow: visible;">
     <head>
-        <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
             <button onclick="this.parentElement.style.display='none';" style="background-color: #A40606; border: 0px none; float: right; color: white; font-size: 16px;">×</button></div>
         <div id="main_page">
             <div class="header_links" id="header">
-                <a href="/help"><div class="button signup" style="top: 26%;">Help</div></a>
-                <a href="/about"><div class="button signup" style="top: 26%;">About Us</div></a>
-                <a href="/open"><div class="button signup" style="top: 26%;">Open Links</div></a>
+                <a href="/help"><div class="button" style="margin-top: 32px;">Help</div></a>
+                <a href="/about"><div class="button" style="margin-top: 32px;">About Us</div></a>
+                <a href="/open"><div class="button" style="margin-top: 32px;">Open Links</div></a>
                 <a href="/"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp()" class="plus_button">
                 <div class="hidden" id="disappear">
