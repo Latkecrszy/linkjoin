@@ -122,25 +122,24 @@ html {
     text-align: left;
     color: white;
     width: 150px;
+    float: left;
 }
 
 .link_event_title {
     font-family: Montserrat;
     font-size: 16px;
-    display: block;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 22px;
     letter-spacing: 0.01em;
-    text-align: left;
+    text-align: center;
     width: 300px;
-    height: 25px;
+    position: relative;
+    right: 150px;
+    top: 10px;
 }
 
 .name_container {
     display: inline;
-    left: 18vw;
-    bottom: 35px;
+    left: 12vw;
+    bottom: 5px;
     position: relative;
     box-shadow: 4px 8px 18px black;
 }
@@ -168,20 +167,11 @@ html {
     text-align: center;
     color: white;
     display: inline;
-    bottom: 70px;
+    bottom: 50px;
     left: 42%;
     float: left;
     width: 270px;
     position: relative;
-}
-
-.dot_menu {
-    float: right;
-    bottom: 65px;
-    width: 5px;
-    position: relative;
-    height: 15px;
-    left: 70px;
 }
 
 .day {
@@ -332,13 +322,12 @@ svg {
     border-radius: 4px;
     padding: 40px 64px;
     color: white;
+    height: 500px;
     width: 400px;
     text-align: center;
-    height: 400px;
-    position: absolute;
     top: 100px;
     left: 500px;
-
+    position: absolute;
 }
 
 .hidden {
@@ -543,7 +532,7 @@ svg {
 
 .buttons_container {
     float: right;
-    right: 5%;
+    right: 3%;
     color: white;
     font-family: Montserrat;
     font-size: 10px;
@@ -551,6 +540,41 @@ svg {
     font-weight: 600;
     line-height: 20px;
     position: relative;
-    bottom: 68px;
+    bottom: 45px;
     text-align: center;
+}
+
+.add_field {
+    border-radius: 100px;
+    border: 1px solid #2B8FD8;
+    height: 21px;
+    width: 21px;
+    background-color: #091B30;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.date_input {
+    border-bottom: 2px solid white;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-color: #091B30;
+    color: white;
+    font-family: Roboto;
+    font-size: 16px;
+    display: inline-block;
+    position: relative;
+    margin-top: 20px;
+    height: 30px;
+}
+
+#dates {
+    height: auto;
+    border-radius: 4px;
+    margin-top: -100px;
+    width: 125%;
+    margin-left: -16%;
+    background-color: #091B30;
+    padding: 15px;
 }

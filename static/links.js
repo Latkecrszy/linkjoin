@@ -8,9 +8,7 @@ function popUp() {
     document.getElementById("link").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
-    document.getElementById("create").action = "/added"
     document.getElementById("popup_schedule").innerText = "Schedule a new meeting"
-    html.style.overflow = "hidden"
     check()
 }
 
@@ -29,11 +27,14 @@ function check() {
     if (checkbox.checked) {
         if (document.getElementById("repeats_text").innerText.includes("every") == false) {
             document.getElementById("repeats_text").innerText += " every"
+            document.getElementById("days").classList.remove("hidden")
+            document.getElementById("dates").classList.add("hidden")
         }
     }
     else {
         document.getElementById("repeats_text").innerText = "Repeats"
         document.getElementById("days").classList.add("hidden")
+        document.getElementById("dates").classList.remove("hidden")
     }
 }
 
@@ -64,21 +65,20 @@ async function load_links(username, sort) {
         let final = []
         if (sort == "day") {
             console.log("day sorting")
-            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
-                console.log(JSON.parse(link_info["days"].replaceAll("'", '"')))
-                link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
+                if (link_info['recurring'] == "true") {
+                    console.log(JSON.parse(link_info["days"].replaceAll("'", '"')))
+                    link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
+                }
+                else {
+                    link_list['dates'].push(link_info)
+                }
+
             }
             console.log(link_list)
             for (const day in link_list) {
                 for (let key of link_list[day]) {
-                    console.log("day:")
-                    console.log(day)
-                    console.log("key:")
-                    console.log(key)
-                    console.log("link_list[day]:")
-                    console.log(link_list[day])
-                    console.log("link_list[day]:")
                     final.push(key)
                 }
             }
@@ -100,7 +100,6 @@ async function load_links(username, sort) {
             final = links
             console.log("not sorting")
         }
-        console.log(final)
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;
         for (let link of final) {
@@ -147,9 +146,22 @@ async function load_links(username, sort) {
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
-            let days_list = link["days"].replaceAll("'", '"')
-            days_list = JSON.parse(days_list)
-            days.innerText = days_list.join(", ")
+            if (link["recurring"] == "true") {
+                let days_list = link["days"].replaceAll("'", '"')
+                days_list = JSON.parse(days_list)
+                days.innerText = days_list.join(", ")
+            }
+            else {
+                let dates_list = []
+                let months = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
+                console.log(link['dates'])
+                for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
+                    console.log(date_info)
+                    console.log(date_info["month"])
+                    dates_list.push(`${months[date_info["month"].toString()]} ${parseInt(date_info["day"])}, ${date_info["year"]}`)
+                }
+                days.innerText = dates_list.join("; ")
+            }
             link_event.appendChild(days)
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
@@ -185,7 +197,7 @@ async function load_links(username, sort) {
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
                 document.getElementById("submit").innerText = "Update"
-                document.getElementById("create").action = "/update?id="+link["id"]
+                document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("popup_schedule").innerText = "Edit your meeting"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
@@ -217,4 +229,62 @@ function redirect(redirect_to) {
 
 function sort() {
     location.href = "/sort?sort="+document.getElementById("sort").value.toString()
+}
+
+function add_field() {
+    let date_input = document.createElement("input")
+    date_input.type = "date"
+    date_input.classList.add("date_input")
+    date_input.style.display = "inline-block"
+    date_input.style.float = "left"
+    date_input.style.marginRight = "15px"
+    let today = new Date().toISOString().split('T')[0]
+    date_input.min = today
+    document.getElementById("insert").appendChild(date_input)
+}
+
+function register_link(parameter) {
+    let form_element = document.getElementById("create")
+    let name = document.getElementById("name").value
+    let link = document.getElementById("link").value
+    let time = document.getElementById("time").value
+    let url;
+    if (!document.getElementById("repeats").checked) {
+        console.log("not checked")
+        let dates = [document.getElementById("date").value]
+        console.log("children:")
+        console.log(document.getElementById("insert").children)
+        console.log(document.getElementById("insert").children.length)
+        for (let x = 0; x < document.getElementById("insert").children.length; x++) {
+            let element = document.getElementById("insert").children[x];
+            dates.push(element.value)
+        }
+        if (parameter == "register") {
+            url = `/register?name=${name}&link=${link}&time=${time}&repeats=false&dates=${dates}`
+        }
+        else {
+            url = `/update?name=${name}&link=${link}&time=${time}&repeats=false&dates=${dates}&id=${parameter}`
+        }
+
+
+    }
+    else {
+        let days = []
+        for (let x = 0; x < document.getElementById("buttons").children.length; x++) {
+            if (document.getElementById("buttons").children[x].classList.contains("selected")) {
+                days.push(document.getElementById("buttons").children[x].id)
+            }
+        }
+        // TO DO: Make links page able to show dates, not just days. Make redirect page able to recognize dates.
+        console.log(days)
+        if (parameter == "register") {
+            url = `/register?name=${name}&link=${link}&time=${time}&repeats=true&days=${days}`
+        }
+        else {
+            url = `/update?name=${name}&link=${link}&time=${time}&repeats=true&days=${days}&id=${parameter}`
+        }
+    }
+    console.log(url)
+    console.log(parameter)
+    location.href = url
 }

@@ -46,10 +46,9 @@
             </select>
             <div id="insert_things"></div>
             <div class="footer_links" id="footer_links" style="text-align: center;">
-                <img src="{{ url_for('static', filename='images/heart.png') }}" class="links_footer_image"><div class="footer_link">Crafted by Seth Raphael</div>
+                <img src="{{ url_for('static', filename='images/heart.png') }}" class="links_footer_image"><div class="footer_link" style="cursor: pointer;">Crafted by Seth Raphael</div>
                 <img src="{{ url_for('static', filename='images/discord.png') }}" class="links_footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_link">Join the Discord</div></a>
                 <img src="{{ url_for('static', filename='images/github.png') }}" class="links_footer_image"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_link">Contribute on Github</div></a>
-                <img src="{{ url_for('static', filename='images/coffee.png') }}" class="links_footer_image"><div class="footer_link">Buy me a Coffee</div>
                 <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image"><a href="https://storyset.com/work" style="text-decoration: none; color: white;"><div class="footer_text">Illustration by Freepik Storyset</div></a>
             </div>
         </div>
@@ -59,7 +58,7 @@
             <a id="delete_button"><button style="background-color: #A40606; height: 30px; width: 50px; border: 0px solid; border-radius: 3px; color: white;">Yes</button></a>
         </div>
         <div class="popup hidden" id="popup">
-            <form id="create" action="/added" method="POST" autocomplete="off">
+            <form id="create" autocomplete="off" onsubmit="register_link()">
                 <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
                 <div class="popup_schedule" id="popup_schedule">Schedule a new meeting</div>
                 <img src="{{ url_for('static', filename='images/name.png') }}" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
@@ -69,12 +68,9 @@
                 <input onclick="check()" type="checkbox" name="repeats" id="repeats" class="repeats" checked="checked"><div class="repeats_text" id="repeats_text">Repeats</div>
                 <div id="days">
                     <select class="select" id="select">
-                        <option value="day">Day</option>
                         <option value="week" selected>Week</option>
-                        <option value="2 weeks">2 Weeks</option>
-                        <option value="month">Month</option>
                     </select>
-                    <div style="margin-top: 30px; margin-right: 20px;">
+                    <div style="margin-top: 30px; margin-right: 20px;" id="buttons">
                         <button type="button" class="day_select deselected" style="left: 15px;" onclick="change_color('Sun')" id="Sun">S</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Mon')" id="Mon">M</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Tue')" id="Tue">T</button>
@@ -83,28 +79,17 @@
                         <button type="button" class="day_select deselected" onclick="change_color('Fri')" id="Fri">F</button>
                         <button type="button" class="day_select deselected" onclick="change_color('Sat')" id="Sat">S</button>
                     </div>
-                    <button type="submit" id="submit" onclick="register_buttons()" class="create_meeting">Create</button>
                 </div>
+                <div id="dates" class="hidden">
+                    <div style="width: 230px; box-shadow: box-shadow: 10px 10px 18px white; margin-left: 40%;">
+                        <input type="date" id="date" class="date_input">
+                        <div id="insert" style="display: inline; position: absolute; top: 270px; left: 70px; width: 400px;"></div>
+                        <button type="button" onclick="add_field()" class="add_field"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="10px" width="10px" style="position: relative; right: 1px;"></button>
+                    </div>
+                </div>
+                <button type="button" id="submit" onclick="register_link('register')" class="create_meeting">Create</button>
+
             </form>
         </div>
     </body>
-    <script>
-        function register_buttons() {
-            buttons = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-            for (const button of buttons) {
-                button_input = document.createElement('input')
-                button_input.type = 'text'
-                button_input.name = button
-                button_input.style.opacity = 0
-                if (document.getElementById(button).classList.contains("selected")) {
-                    button_input.value = "true"
-                }
-                else {
-                    button_input.value = "false"
-                }
-                document.getElementById("create").appendChild(button_input)
-            }
-        }
-
-    </script>
 </html>
