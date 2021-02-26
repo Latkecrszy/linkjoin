@@ -23,9 +23,10 @@
         function footer_disappear() {
             document.getElementById("footer").style.opacity = 0;
             setInterval(function() {
-                if (document.body.scrollTop >= 1000 || window.scrollY == 0) {
+                if (document.body.scrollTop >= window.innerHeight+420 || window.scrollY == 0) {
                     document.getElementById("footer").style.opacity = 0.5;
                 }
+                console.log(window.innerHeight)
             }, 1000)
         }
     </script>
@@ -71,7 +72,12 @@
             Here at LinkJoin, we provide only the best of service. That's why we use expertly trained snakes (pythons, to be specific) to click the buttons in our HQ that open your meetings right on time! Don't worry, they're very accurate.
         </div>
     </div>
-    <div class="footer" id="footer">
+    <!--<form action="/contact_submit" method="post" id="contact" class="contact">
+        <input type="text" name="name" id="name" placeholder="First and last name">
+        <input type="text" name="email" id="email" placeholder="Email address"><br>
+        <textarea class="message" id="message" name="message" placeholder="What do you want us to know?"></textarea>
+    </form>-->
+    <div class="footer" id="footer" style="position: fixed;">
         <div style="margin-bottom: 10px;">
             <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image"><div class="footer_text" style="cursor: pointer;">Crafted by Seth Raphael</div>
             <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_text">Join the Discord</div></a></div><br>

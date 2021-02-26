@@ -1,6 +1,6 @@
-from flask import Flask, make_response, jsonify, request, abort, render_template, redirect, url_for
+from flask import Flask, make_response, jsonify, request, render_template, redirect
 from flask_pymongo import PyMongo
-import jinja2, json, os, dotenv, datetime, dateutil.tz, base64, re, argon2, ast
+import json, os, dotenv, base64, re, argon2
 from argon2 import PasswordHasher
 from flask_cors import CORS
 ph = PasswordHasher()
@@ -8,6 +8,7 @@ app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
+
 
 @app.route("/")
 def main():
@@ -32,7 +33,6 @@ def open():
         return render_template("redirect.html", username=login_info['username'])
     return redirect("/login")
 
-
 @app.route("/login_error", methods=['POST'])
 def login():
     response = make_response(redirect("/links"))
@@ -47,8 +47,7 @@ def login():
         ph.verify(authorization['password'], request.form.get("password"))
     except argon2.exceptions.VerifyMismatchError:
         return render_template("login.html", error="incorrect_password")
-    cookie = {key: value for key, value in login_info.items() if key != "_id"}
-    cookie = json.dumps(cookie)
+    cookie = json.dumps({key: value for key, value in login_info.items() if key != "_id"})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie)
@@ -62,7 +61,7 @@ def signup():
     mongo = PyMongo(app)
     login_db = mongo.db.login
     email = request.form.get("email").lower()
-    if not re.search(".+@[a-z+._\-!#$%&'*=?^`{|}~]+[.][a-z]+", email):
+    if not re.search("^[^@ ]+@[^@ ]+\.[^@ .]{2,}$", email):
         return render_template("signup.html", error="invalid_email")
     login_info = {'username': email, 'password': request.form.get("password")}
     if login_db.find_one({'username': request.form.get("email").lower()}) is not None:
@@ -77,30 +76,6 @@ def signup():
     return response
 
 
-@app.route("/added", methods=["POST"])
-def register_link():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    id_db = mongo.db.id
-    if request.cookies.get('login_info'):
-        if "https" not in request.form.get("link"):
-            link = f"https://{request.form.get('link')}"
-        else:
-            link = request.form.get("link")
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        # Make it have a dates attribute which is a list of dictionaries containing time, month, day, and year.
-        if request.form.get("repeats"):
-            links_db.insert_one({"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']), 'days':  [day for day in dict(request.form) if day in ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] and request.form.get(day) == 'true'],  'time': request.form.get("time"), 'link': link, 'name': request.form.get('name'), "active": "true", "recurring": "true"})
-        else:
-            print("else")
-            print(request.form.get(""))
-        id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
-        return redirect("/links")
-    else:
-        print(request.cookies)
-        return make_response({"it": "didn't work"})
-
-
 @app.route("/register")
 def register():
     mongo = PyMongo(app)
@@ -113,10 +88,7 @@ def register():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        # Make it have a dates attribute which is a list of dictionaries containing time, month, day, and year.
         if request.args.get("repeats") == "true":
-            # Finish turning this into an endpoint rather than a form submitter. Use javascript to iterate through the
-            # days and pass then into the args as a strinigifed list.
             links_db.insert_one(
                 {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                  'days': request.args.get("days").split(","),
@@ -130,8 +102,7 @@ def register():
                  "recurring": "false"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
-    else:
-        return redirect("/login")
+    return redirect("/login")
 
 
 @app.route("/links")
@@ -140,11 +111,9 @@ def links():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_list = links_db.find({"username": login_info['username']})
-        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_list]
+        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
         sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day'] else "no"
-        print(sort)
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
@@ -172,10 +141,7 @@ def update():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        # Make it have a dates attribute which is a list of dictionaries containing time, month, day, and year.
         if request.args.get("repeats") == "true":
-            # Finish turning this into an endpoint rather than a form submitter. Use javascript to iterate through the
-            # days and pass then into the args as a strinigifed list.
             links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
                 {"username": login_info['username'], "id": int(request.args.get("id")),
                  'days': request.args.get("days").split(","),
