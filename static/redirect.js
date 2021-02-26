@@ -40,7 +40,7 @@ async function NewTab(username) {
         let link_minute;
         for (const link of user_links) {
             console.log(link)
-            if (parseInt(date.getHours()) == parseInt(link["time"].split(":")[0]) && parseInt(date.getMinutes()) == parseInt(link["time"].split(":")[1])) {
+            if (parseInt(date.getHours()) == parseInt(link["time"].split(":")[0]) && parseInt(date.getMinutes()) == parseInt(link["time"].split(":")[1]) && link['active'] == "true") {
                 if (link['recurring'] == "true") {
                     if (link['days'].includes(day)) {
                         window.open(link["link"])
