@@ -72,8 +72,18 @@
     margin-right: 10px;
 }
 
-@media (max-width: 710px) {
+@media (max-width: 750px) {
     #calendar_guy {
         display: none;
     }
+}
+
+.contact {
+    box-shadow: 4px 8px 10px black;
+    background-color: #091B30;
+    width: 60vw;
+    height: 400px;
+    position: absolute;
+    top: 1600px;
+    left: 20vw;
 }
