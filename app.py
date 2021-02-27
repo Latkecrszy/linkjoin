@@ -33,6 +33,7 @@ def open():
         return render_template("redirect.html", username=login_info['username'])
     return redirect("/login")
 
+
 @app.route("/login_error", methods=['POST'])
 def login():
     response = make_response(redirect("/links"))

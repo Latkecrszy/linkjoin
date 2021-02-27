@@ -33,7 +33,6 @@ async function NewTab(username) {
         let date = new Date()
         console.log(date.getDay())
         let day = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}[parseInt(date.getDay())]
-
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
         let user_links = await start_json.json()
         let link_hour;
@@ -70,11 +69,4 @@ async function NewTab(username) {
 
   function redirect(redirect_to) {
       window.open("/"+redirect_to)
-  }
-
-  function timeDifference() {
-      let date = new Date()
-      let difference = date.getTimezoneOffset()
-      console.log(difference)
-      return difference-(difference*2)
   }

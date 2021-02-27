@@ -9,17 +9,18 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <script src="{{ url_for('static', filename='links.js') }}"></script>
+        <script src="{{ url_for('static', filename='redirect.js') }}"></script>
         <title>LinkJoin</title>
     </head>
     <body onload="load_links('{{ username }}', '{{ sort }}')" style="overflow-x: hidden; overflow-y: auto;">
-    <div class="alert">You must be on <a href="/open" target="_blank" style="text-decoration: none; color: #FFFD82"><strong><b>the open links page</b></strong></a> for your meetings to open.
+    <div class="alert" style="text-align: center;">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open for your meeting to start.
             <button onclick="this.parentElement.style.display='none';" style="background-color: #A40606; border: 0px none; float: right; color: white; font-size: 16px;">×</button></div>
         <div id="main_page">
             <div class="header_links" id="header">
-                <a href="/help"><div class="button" style="margin-top: 32px;">Help</div></a>
-                <a href="/about"><div class="button" style="margin-top: 32px;">About Us</div></a>
-                <a href="/open"><div class="button" style="margin-top: 32px;">Open Links</div></a>
-                <a href="/"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
+                <a href="/help" target="_blank"><div class="button" style="margin-top: 32px;">Help</div></a>
+                <a href="/about" target="_blank"><div class="button" style="margin-top: 32px;">About Us</div></a>
+                <a href="/login" target="_blank"><div class="button" style="margin-top: 32px; width: 150px;">Switch Account</div></a>
+                <a href="/" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" style="margin-top: 20px; margin-left: 20px;"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp()" class="plus_button">
                 <div class="hidden" id="disappear">
                     <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin-top: 5vh; margin-left: 36vw;">
@@ -63,7 +64,7 @@
                 <div class="popup_schedule" id="popup_schedule">Schedule a new meeting</div>
                 <img src="{{ url_for('static', filename='images/name.png') }}" class="links_footer_image" style="float: left;"><input type="text" name="name" id="name" class="meeting_title" placeholder="Meeting Title" style="display: block;" required>
                 <img src="{{ url_for('static', filename='images/link.png') }}" height="10px" width="20px" style="position: absolute; right: 433px; top: 137px;"><input type="text" class="meeting_title" style="margin-left: 37px;" id="link" name="link" placeholder="Meeting Link" required>
-                <img src="{{ url_for('static', filename='images/time.png') }}" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" id="time" name="time" required>
+                <img src="{{ url_for('static', filename='images/time.png') }}" class="links_footer_image" style="position: absolute; right: 430px; top: 169px;"><input type="time" style="margin-left: 37px;" class="meeting_title" id="time" name="time" placeholder="hour:min am/pm" required>
                 <hr style="position: absolute; background-color: white; opacity: 0.2; color: white; top: 230px;" width="77%">
                 <input onclick="check()" type="checkbox" name="repeats" id="repeats" class="repeats" checked="checked"><div class="repeats_text" id="repeats_text">Repeats</div>
                 <div id="days">
@@ -82,7 +83,7 @@
                 </div>
                 <div id="dates" class="hidden">
                     <div style="width: 230px; box-shadow: box-shadow: 10px 10px 18px white; margin-left: 40%;">
-                        <input type="date" id="date" class="date_input">
+                        <input type="date" id="date" class="date_input" placeholder="yyyy mm dd">
                         <div id="insert" style="display: inline; position: absolute; top: 270px; left: 70px; width: 400px;"></div>
                         <button type="button" onclick="add_field()" class="add_field"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="10px" width="10px" style="position: relative; right: 1px;"></button>
                     </div>

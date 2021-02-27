@@ -3,7 +3,7 @@ function popUp() {
     element = document.getElementById("popup")
     element.classList.remove("hidden")
     document.getElementById("main_page").classList.add("blurred")
-    html.style.background = "#040E1A"
+    document.getElementsByTagName("html")[0].style.background = "#040E1A"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("submit").innerHTML = null
@@ -16,8 +16,8 @@ function hide() {
     element = document.getElementById("popup")
     element.classList.add("hidden")
     document.getElementById("main_page").classList.remove("blurred")
-    html.style.background = "#091B30"
-    html.style.overflow = "auto"
+    document.getElementsByTagName("html")[0].style.background = "#091B30"
+    document.getElementsByTagName("html")[0].style.overflow = "auto"
     document.getElementById("header").style.background = "#142539"
 
 }
@@ -192,7 +192,7 @@ async function load_links(username, sort) {
                 element = document.getElementById("popup")
                 element.classList.remove("hidden")
                 document.getElementById("main_page").classList.add("blurred")
-                html.style.background = "#040E1A"
+                document.getElementsByTagName("html")[0].style.background = "#040E1A"
                 check()
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
@@ -222,6 +222,7 @@ async function load_links(username, sort) {
             iterator += 1
         }
     }
+    await NewTab(username)
 }
 function redirect(redirect_to) {
     window.open(redirect_to)
