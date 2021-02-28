@@ -116,8 +116,8 @@ svg {
     height: 60px;
     width: 960px;
     margin-left: 16vw;
-    margin-top: 50px;
-    margin-bottom: 15px;
+    margin-top: 100px;
+    margin-bottom: -20px;
     position: relative;
     border-radius: 72px;
     padding: 22px, 56px, 22px, 56px;
