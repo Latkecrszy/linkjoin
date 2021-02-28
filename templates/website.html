@@ -30,13 +30,13 @@
             }, 1000)
         }
     </script>
-    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em; margin: 0;" onscroll="footer_disappear()">
+    <body style="scroll-behavior: smooth; color: white; font-family: Montserrat; letter-spacing: 0.01em; margin: 0;">
     <svg viewBox="0 0 500 230" preserveAspectRatio="xMinYMin meet">
-            <path d="M235, 0 C300, 200 150,
-                100 350, 600 L0, 300 L0, 0 Z"
-                style="stroke:none; fill:#091B30;">
-            </path>
-        </svg>
+        <path d="M235, 0 C300, 200 150,
+              100 350, 600 L0, 300 L0, 0 Z"
+              style="stroke:none; fill:#091B30;">
+        </path>
+    </svg>
     <div class="header" id="header">
         <a href="/login"><button class="button login" style="font-family: Montserrat; border: 2px solid white; margin-right: 30px;">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a>
         <a href="/signup"><button class="button" style="font-family: Montserrat; width: 100px; border: none; margin-right: 30px;">Sign Up</button></a>
@@ -45,9 +45,9 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <div class="linkjoin">LinkJoin</div>
     </div>
-    <div class="left_content">
-        <div style="font-weight: 700; font-size: 44px; line-height: 57px;"><b>Being on time has never been so easy.</b></div>
-        <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
+    <div class="left_content" style="margin-left: 50px;">
+        <div style="font-weight: bold; font-size: 44px; line-height: 57px; width: 500px;">Being on time has never been so easy.</div>
+        <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px; width: 450px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
         <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         <a href="#scroll_to"><button class="get_started" style="background-color: #142539; box-shadow: 10px 10px 10px #091B30;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
@@ -72,12 +72,7 @@
             Here at LinkJoin, we provide only the best of service. That's why we use expertly trained snakes (pythons, to be specific) to click the buttons in our HQ that open your meetings right on time! Don't worry, they're very accurate.
         </div>
     </div>
-    <!--<form action="/contact_submit" method="post" id="contact" class="contact">
-        <input type="text" name="name" id="name" placeholder="First and last name">
-        <input type="text" name="email" id="email" placeholder="Email address"><br>
-        <textarea class="message" id="message" name="message" placeholder="What do you want us to know?"></textarea>
-    </form>-->
-    <div class="footer" id="footer" style="position: fixed;">
+    <div class="footer" id="footer" style="position: absolute">
         <div style="margin-bottom: 10px;">
             <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image"><div class="footer_text" style="cursor: pointer;">Crafted by Seth Raphael</div>
             <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_text">Join the Discord</div></a></div><br>
