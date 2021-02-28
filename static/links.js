@@ -136,13 +136,15 @@ async function load_links(username, sort) {
             else {
                 name.style.color = "#B7C0C7"
             }
-            name_container.appendChild(name)
             let join_now = document.createElement("div")
             join_now.classList.add("join_now")
             join_now.innerText = "Click to join the room now"
+            name.setAttribute("onclick", `window.open("${link['link']}")`)
+            join_now.setAttribute("onclick", `window.open("${link['link']}")`)
+            name_container.appendChild(name)
+
             name_container.appendChild(join_now)
-            redirect_to = `redirect("${link["link"]}")`
-            name_container.setAttribute("onclick", redirect_to)
+
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
