@@ -27,7 +27,7 @@
                     <div class="click_the_plus">Click the + button to start scheduling your meetings!</div>
                 </div>
             </div>
-            <div style="margin-left: 40px; margin-top: -20px; font-size: 20px;">Sort:</div>
+            <div style="margin-left: 40px; margin-top: -20px; font-size: 20px;">Sort By:</div>
             <select onchange="sort()" id="sort">
                 {% if sort == "no" %}
                     <option value="none" selected>None</option>
@@ -75,6 +75,10 @@
                 <div id="days">
                     <select class="select" id="select">
                         <option value="week" selected>Week</option>
+                        <option value="2 weeks">2 Weeks</option>
+                        <option value="month">Month</option>
+                        <!--store number of occurrences it has occurred for and number of weeks in between occurrences.-->
+                        <option value="2 months">2 Months</option>
                     </select>
                     <div style="margin-top: 30px; margin-right: 20px;" id="buttons">
                         <button type="button" class="day_select deselected" style="left: 15px;" onclick="change_color('Sun')" id="Sun">S</button>

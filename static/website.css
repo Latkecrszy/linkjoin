@@ -86,11 +86,11 @@
         margin-top: 1px;
     }
     #words_2 {
-        transform: translateY(calc(1500px - 100vw * 1.3));
+        transform: translateY(calc(1700px - 100vw * 1.3));
         /*margin-top: calc(1075px - 100%);*/
     }
     #words_3 {
-        transform: translateY(calc(1700px - 100vw * 1.3));
+        transform: translateY(calc(1900px - 100vw * 1.3));
         /*margin-top: calc(1225px - 100%);*/
     }
 }

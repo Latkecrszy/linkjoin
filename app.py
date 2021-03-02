@@ -214,5 +214,21 @@ def sort():
     return response
 
 
+@app.route("/reassign")
+def reassign():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    for document in links_db.find():
+        document = dict(document)
+        if document['recurring'] == "true":
+            document['repeat'] = "week"
+            print("recurring")
+        else:
+            document['repeat'] = "none"
+            print("non-recurring")
+        document.pop('recurring')
+        print(document)
+    return make_response({"stuff": "happened"})
+
 if __name__ == "__main__":
     app.run()

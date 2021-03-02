@@ -143,8 +143,8 @@
     height: 21px;
     width: 21px;
     background-color: #091B30;
-    display: inline-block;
     margin-left: 10px;
+    display: inline-block;
 }
 
 .date_input {
