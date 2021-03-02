@@ -58,11 +58,3 @@ function change_keep_on() {
     }
     console.log(keep_on)
 }
-let inactive = 0
-while (true) {
-    await sleep(6000)
-    inactive += 1
-    if (inactive == 120) {
-        location.reload()
-    }
-}
