@@ -13,7 +13,7 @@
         <title>LinkJoin</title>
     </head>
     <body onload="load_links('{{ username }}', '{{ sort }}')" style="overflow-x: hidden; overflow-y: auto;">
-    <div class="alert" style="text-align: center;">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open for your meeting to start.
+    <div class="alert" style="text-align: center;">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open for your meetings to start.
             <button onclick="this.parentElement.style.display='none';" style="background-color: #A40606; border: 0px none; float: right; color: white; font-size: 16px;">×</button></div>
         <div id="main_page">
             <div class="header_links" id="header">
@@ -27,8 +27,8 @@
                     <div class="click_the_plus">Click the + button to start scheduling your meetings!</div>
                 </div>
             </div>
-            <div style="margin-left: 25px; margin-top: -20px; font-size: 20px;">Sort:</div>
-            <select style="margin-left: 25px; margin-top: 15px; border-radius: 3px; background-color: #2B8FD8; color: white; border: none; padding: 5px;" onchange="sort()" id="sort">
+            <div style="margin-left: 40px; margin-top: -20px; font-size: 20px;">Sort:</div>
+            <select onchange="sort()" id="sort">
                 {% if sort == "no" %}
                     <option value="none" selected>None</option>
                 {% else %}
@@ -44,6 +44,11 @@
                 {% else %}
                     <option value="time">Time</option>
                 {% endif %}
+            </select>
+            <div style="margin-left: 40px; margin-top: 20px; font-size: 20px; width: 120px;">Keep Device On:</div>
+            <select id="keep_on" onchange="change_keep_on()">
+                <option name="Yes">Yes</option>
+                <option name="No" selected>No</option>
             </select>
             <div id="insert_things"></div>
             <div class="footer_links" id="footer_links" style="text-align: center;">

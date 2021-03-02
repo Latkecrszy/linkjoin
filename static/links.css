@@ -251,7 +251,7 @@
     width: 75vw;
     padding: 25px 30px 28px;
     margin-top: 20px;
-    margin-left: 10vw;
+    margin-left: 13vw;
     height: 40px;
 }
 
@@ -322,4 +322,14 @@
     font-size: 30px;
     color: #F5FBEF;
     padding-bottom: 10px;
+}
+
+select {
+    margin-left: 40px;
+    margin-top: 15px;
+    border-radius: 3px;
+    background-color: #2B8FD8;
+    color: white;
+    border: none;
+    padding: 5px;
 }

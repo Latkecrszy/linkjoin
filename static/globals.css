@@ -24,15 +24,13 @@ a {
     color: white;
     font-family: Montserrat;
     font-size: 14px;
-    font-style: normal;
     font-weight: 400;
     line-height: 17px;
-    letter-spacing: 0em;
     text-align: left;
     display: block;
-    bottom: 10px;
     float: left;
-    position: fixed;
+    margin-top: 40px;
+    margin-left: -80px;
 }
 
 .footer_image {
@@ -195,4 +193,11 @@ div {
     left: 31vw;
     bottom: 60px;
     position: relative;
+}
+
+.header_link {
+    background: none;
+    border: none;
+    font-family: Montserrat;
+    margin-right: 30px;
 }

@@ -39,40 +39,18 @@
     </svg>
     <div class="header" id="header">
         <a href="/login"><button class="button login" style="font-family: Montserrat; border: 2px solid white; margin-right: 30px;">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a>
-        <a href="/signup"><button class="button" style="font-family: Montserrat; width: 100px; border: none; margin-right: 30px;">Sign Up</button></a>
-        <a href="/links"><button class="button" style="font-family: Montserrat; width: 50px; border: none; margin-right: 30px;">Links</button></a>
-        <a href="/about"><button class="button" style="font-family: Montserrat; width: 110px; border: none; margin-right: 30px;">About Us</button></a>
+        <a href="/signup"><button class="header_link button">Sign Up</button></a>
+        <a href="/links"><button class="header_link button">Links</button></a>
+        <a href="/about"><button class="header_link button">About Us</button></a>
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <div class="linkjoin">LinkJoin</div>
     </div>
     <div class="left_content" style="margin-left: 50px;">
-        <div style="font-weight: bold; font-size: 44px; line-height: 57px; width: 500px;">Being on time has never been so easy.</div>
-        <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px; width: 450px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
+        <div style="font-weight: bold; font-size: 44px; line-height: 57px; max-width: 500px;">Being on time has never been so easy.</div>
+        <div class="description" style="font-family: Roboto; font-weight: 400; margin-top: 10px; line-height: 31px; font-size: 18px; max-width: 450px;">LinkJoin helps you join meetings automatically at exactly the right moment, even when you're not at the computer.</div>
         <a href="/signup"><button class="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
         <a href="#scroll_to"><button class="get_started" style="background-color: #142539; box-shadow: 10px 10px 10px #091B30;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-        <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
-            What is LinkJoin?
-        </div>
-        <div class="explanation" style="margin-left: 2vw;">
-            LinkJoin is a site that automatically opens your meetings for you. Zoom, Google Meets, you name it! It's as simple as making an account and creating a link, and you'll never be late again.
-        </div>
-        <div class="explanation_title" style="margin-right: 2vw; margin-top: 30px;">
-            How do I get started?
-        </div>
-        <div class="explanation" style="margin-left: 2vw;">
-            Just head over to <a href="/signup" style="text-decoration: none; color: #2B8FD8;">the signup page</a> and create an account. From there, you'll be redirected to <a href="/links" style="text-decoration: none; color: #2B8FD8;">the links page</a> to start scheduling your meetings!
-        </div>
-    </div>
-    <div class="right_content">
-        <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;" id="calendar_guy">
-        <div class="explanation_title" style="float: right; margin-right: 2vw; display: inline; margin-top: -100px;">
-            How does it work?
-        </div>
-        <div class="explanation" style="float: right; margin-right: 2vw; display: inline;">
-            Here at LinkJoin, we provide only the best of service. That's why we use expertly trained snakes (pythons, to be specific) to click the buttons in our HQ that open your meetings right on time! Don't worry, they're very accurate.
-        </div>
-    </div>
-    <div class="footer" id="footer" style="position: absolute">
+        <div class="footer" id="footer">
         <div style="margin-bottom: 10px;">
             <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image"><div class="footer_text" style="cursor: pointer;">Crafted by Seth Raphael</div>
             <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_text">Join the Discord</div></a></div><br>
@@ -80,6 +58,36 @@
             <img src="{{ url_for('static', filename='images/github.png') }}" class="footer_image"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_text">Contribute on Github</div></a>
             <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image" style="border-radius: 1px;"><a href="https://storyset.com/work" style="text-decoration: none;"><div class="footer_text">Illustration by Freepik Storyset</div></a>
         </div>
+            </div>
+        <div id="words_1">
+            <div class="explanation_title" style="margin-right: 2vw;" id="scroll_to">
+                What is LinkJoin?
+            </div>
+            <div class="explanation" style="margin-left: 2vw;">
+                LinkJoin is a site that automatically opens your meetings for you. Zoom, Google Meets, you name it! It's as simple as making an account and creating a link, and you'll never be late again.
+            </div>
+        </div>
+        <div id="words_3">
+            <div class="explanation_title" style="margin-right: 2vw; margin-top: 30px;">
+                How do I get started?
+            </div>
+            <div class="explanation" style="margin-left: 2vw;">
+                Just head over to <a href="/signup" style="text-decoration: none; color: #2B8FD8;">the signup page</a> and create an account. From there, you'll be redirected to <a href="/links" style="text-decoration: none; color: #2B8FD8;">the links page</a> to start scheduling your meetings!
+            </div>
+        </div>
+
     </div>
+    <div class="right_content">
+        <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" style="height: 95vh; width: 40vw; position: absolute; top: 50px; right: 50px;" id="calendar_guy">
+        <div id="words_2">
+            <div class="explanation_title" style="float: right; margin-right: 2vw; display: inline; margin-top: -100px;">
+                How does it work?
+            </div>
+            <div class="explanation" style="float: right; margin-right: 2vw; display: inline;">
+                Here at LinkJoin, we provide only the best of service. That's why we use expertly trained snakes (pythons, to be specific) to click the buttons in our HQ that open your meetings right on time! Don't worry, they're very accurate.
+            </div>
+        </div>
+    </div>
+
     </body>
 </html>

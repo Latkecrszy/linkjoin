@@ -1,6 +1,6 @@
 .explanation_title {
     font-size: 60px;
-    width: 40vw;
+    max-width: 600px;
     text-align: center;
     display: block;
     margin-top: 50vh;
@@ -72,9 +72,24 @@
     margin-right: 10px;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 1039px) {
     #calendar_guy {
         display: none;
+    }
+}
+
+@media (max-width: 859px) {
+    #footer {
+        display: none;
+    }
+    #words_1 {
+        margin-top: 1px;
+    }
+    #words_2 {
+        margin-top: 850px;
+    }
+    #words_3 {
+        margin-top: 1000px;
     }
 }
 

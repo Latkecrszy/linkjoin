@@ -1,7 +1,7 @@
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
+let keep_on = false
 async function NewTab(username) {
     while (true) {
         let date = new Date()
@@ -39,9 +39,30 @@ async function NewTab(username) {
         console.log(date.getDay())
         console.log(`day: ${day}, hour: ${parseInt(date.getHours())}, minute: ${parseInt(date.getMinutes())}`)
         await sleep(15000)
+        if (keep_on == true) {
+            location.reload()
+        }
     }
 }
 
-  function redirect(redirect_to) {
-      window.open("/"+redirect_to)
-  }
+function redirect(redirect_to) {
+    window.open("/"+redirect_to)
+}
+
+function change_keep_on() {
+    if (keep_on == false) {
+        keep_on = true
+    }
+    else {
+        keep_on = false
+    }
+    console.log(keep_on)
+}
+let inactive = 0
+while (true) {
+    await sleep(6000)
+    inactive += 1
+    if (inactive == 120) {
+        location.reload()
+    }
+}
