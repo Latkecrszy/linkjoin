@@ -84,17 +84,30 @@ async function load_links(username, sort) {
             }
         }
         else if (sort == "time") {
+            let day_nums = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
             let times = []
             console.log("time sorting")
             let link_time_list = {}
+
             for (const link_info of links) {
-                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
-                link_time_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                if ('days' in link_info) {
+                    console.log(JSON.parse(link_info["days"].replaceAll("'", '"'))[0])
+                    times.push((parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]))
+                    link_time_list[(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]])] = link_info
+                }
+                else {
+                    times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                    link_time_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                }
             }
+            console.log(times)
             times = times.sort((a, b) => a - b)
+            console.log(link_time_list)
             for (const link_time of times) {
+                console.log(link_time)
                 final.push(link_time_list[link_time])
             }
+            console.log(final)
         }
         else {
             final = links
@@ -278,7 +291,6 @@ function register_link(parameter) {
                 days.push(document.getElementById("buttons").children[x].id)
             }
         }
-        // TO DO: Make links page able to show dates, not just days. Make redirect page able to recognize dates.
         console.log(days)
         if (parameter == "register") {
             url = `/register?name=${name}&link=${link}&time=${time}&repeats=true&days=${days}`
