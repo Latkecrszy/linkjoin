@@ -86,10 +86,12 @@
         margin-top: 1px;
     }
     #words_2 {
-        margin-top: 850px;
+        transform: translateY(calc(1350px - 100vw));
+        /*margin-top: calc(1075px - 100%);*/
     }
     #words_3 {
-        margin-top: 1000px;
+        transform: translateY(calc(1500px - 100vw));
+        /*margin-top: calc(1225px - 100%);*/
     }
 }
 
