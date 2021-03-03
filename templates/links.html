@@ -44,6 +44,11 @@
                 {% else %}
                     <option value="time">Time</option>
                 {% endif %}
+                {% if sort == "datetime" %}
+                    <option value="datetime" selected>Date & Time</option>
+                {% else %}
+                    <option value="datetime">Date & Time</option>
+                {% endif %}
             </select>
             <div style="margin-left: 40px; margin-top: 20px; font-size: 20px; width: 120px;">Keep Device On:</div>
             <select id="keep_on" onchange="change_keep_on()">

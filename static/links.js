@@ -64,7 +64,6 @@ async function load_links(username, sort) {
         console.log(sort)
         let final = []
         if (sort == "day") {
-            console.log("day sorting")
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
                 if (link_info['recurring'] == "true") {
@@ -86,9 +85,7 @@ async function load_links(username, sort) {
         else if (sort == "time") {
             let day_nums = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
             let times = []
-            console.log("time sorting")
             let link_time_list = {}
-
             for (const link_info of links) {
                 if ('days' in link_info) {
                     console.log(JSON.parse(link_info["days"].replaceAll("'", '"'))[0])
@@ -100,18 +97,37 @@ async function load_links(username, sort) {
                     link_time_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                 }
             }
-            console.log(times)
-            times = times.sort((a, b) => a - b)
-            console.log(link_time_list)
-            for (const link_time of times) {
+            for (const link_time of times.sort((a, b) => a - b)) {
                 console.log(link_time)
                 final.push(link_time_list[link_time])
             }
-            console.log(final)
+        }
+        else if (sort == "datetime") {
+            let link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
+            let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
+            let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
+            for (const link_info of links) {
+                if (link_info['recurring'] == "true") {
+                    link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                    other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                }
+                else {
+                    link_list['dates'].push(link_info)
+                }
+
+            }
+            for (let day_name in other_link_list) {
+                other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
+            }
+            for (let day_name in other_link_list) {
+                console.log(day_name)
+                for (let time_info of other_link_list[day_name]) {
+                    final.push(link_list[day_name][time_info])
+                }
+            }
         }
         else {
             final = links
-            console.log("not sorting")
         }
         document.getElementById("header").style.margin = "0 0 80px 0"
         let iterator = 0;

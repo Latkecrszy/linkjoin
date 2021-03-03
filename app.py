@@ -114,7 +114,7 @@ def links():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
-        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day'] else "no"
+        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day', 'datetime'] else "no"
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
@@ -211,6 +211,7 @@ def otherlinks():
 def sort():
     response = make_response(redirect("/links"))
     response.set_cookie("sort", json.dumps({"sort": request.args.get("sort")}))
+    print(request.args.get("sort"))
     return response
 
 
@@ -229,6 +230,7 @@ def reassign():
         document.pop('recurring')
         print(document)
     return make_response({"stuff": "happened"})
+
 
 if __name__ == "__main__":
     app.run()
