@@ -1,5 +1,5 @@
 .explanation_title {
-    font-size: 60px;
+    font-size: 50px;
     max-width: 600px;
     text-align: center;
     display: block;
@@ -7,7 +7,7 @@
 }
 
 .explanation {
-    font-size: 30px;
+    font-size: 25px;
     text-align: center;
     width: 40vw;
     margin-top: 20px;

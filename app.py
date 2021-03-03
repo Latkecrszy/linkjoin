@@ -51,7 +51,7 @@ def login():
     cookie = json.dumps({key: value for key, value in login_info.items() if key != "_id"})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
-    response.set_cookie('login_info', cookie)
+    response.set_cookie('login_info', cookie, max_age=172800)
     return response
 
 
@@ -73,7 +73,7 @@ def signup():
     cookie = json.dumps(cookie)
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
-    response.set_cookie('login_info', cookie)
+    response.set_cookie('login_info', cookie, max_age=172800)
     return response
 
 
