@@ -70,7 +70,7 @@ async function load_links(username, sort) {
         if (sort == "day") {
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
-                if (link_info['recurring'] == "true") {
+                if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
                     console.log(JSON.parse(link_info["days"].replaceAll("'", '"')))
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
                 }
@@ -111,7 +111,7 @@ async function load_links(username, sort) {
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             for (const link_info of links) {
-                if (link_info['recurring'] == "true") {
+                if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                     other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
                 }
