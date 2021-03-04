@@ -181,7 +181,7 @@ async function load_links(username, sort) {
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
-            if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
+            if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link['repeat'])) {
                 let days_list = link["days"].replaceAll("'", '"')
                 days_list = JSON.parse(days_list)
                 days.innerText = days_list.join(", ")
