@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 import json, os, dotenv, base64, re, argon2
 from argon2 import PasswordHasher
 from flask_cors import CORS
+
 ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
@@ -98,7 +99,8 @@ def register():
         else:
             links_db.insert_one(
                 {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                 'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
+                 'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
+                           request.args.get("dates").split(",")],
                  'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
                  "recurring": "false"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
@@ -112,13 +114,15 @@ def links():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"} for link in links_db.find({"username": login_info['username']})]
+        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
+                      for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
-        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day', 'datetime'] else "no"
+        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and \
+                                                                  json.loads(request.cookies.get("sort"))['sort'] in [
+                                                                      'time', 'day', 'datetime'] else "no"
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
         return redirect("/login")
-
 
 
 @app.route("/delete", methods=["POST", "GET"])
@@ -144,17 +148,20 @@ def update():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if request.args.get("repeats") == "true":
             links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                {"username": login_info['username'], "id": int(request.args.get("id")),
-                 'days': request.args.get("days").split(","),
-                 'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "recurring": "true"})
+                                          {"username": login_info['username'], "id": int(request.args.get("id")),
+                                           'days': request.args.get("days").split(","),
+                                           'time': request.args.get("time"), 'link': link,
+                                           'name': request.args.get('name'), "active": "true",
+                                           "recurring": "true"})
         else:
             links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                {"username": login_info['username'], "id": int(request.args.get("id")),
-                 'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
-                           request.args.get("dates").split(",")],
-                 'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "recurring": "false"})
+                                          {"username": login_info['username'], "id": int(request.args.get("id")),
+                                           'dates': [{"day": i.split("-")[2], "month": i.split("-")[1],
+                                                      "year": i.split("-")[0]} for i in
+                                                     request.args.get("dates").split(",")],
+                                           'time': request.args.get("time"), 'link': link,
+                                           'name': request.args.get('name'), "active": "true",
+                                           "recurring": "false"})
         return redirect("/links")
     return redirect("/login")
 
@@ -165,7 +172,8 @@ def deactivate():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        print(links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"$set": {"active": "false"}}))
+        print(links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
+                                           {"$set": {"active": "false"}}))
         return redirect("/links")
     return redirect("/login")
 
@@ -176,7 +184,8 @@ def activate():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))}, {"$set": {"active": "true"}})
+        links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
+                                     {"$set": {"active": "true"}})
         return redirect("/links")
     return redirect("/login")
 
@@ -230,6 +239,25 @@ def reassign():
         document.pop('recurring')
         print(document)
     return make_response({"stuff": "happened"})
+
+
+@app.route("/change_occurrence")
+def change_occurrence():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    links_db.find_one_and_update({"username": request.args.get("username"), "id": int(request.args.get("id"))},
+                                 {"$set": {"occurrences": request.args.get("occurrences")}})
+    return redirect("/links")
+
+
+@app.route("/tos")
+def tos():
+    return make_response("Coming soon!")
+
+
+@app.route("/privacy")
+def privacy():
+    return make_response("Coming soon!")
 
 
 if __name__ == "__main__":
