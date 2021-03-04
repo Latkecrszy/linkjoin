@@ -90,19 +90,19 @@ def register():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if request.args.get("repeats") == "true":
+        if request.args.get("repeats") != "none":
             links_db.insert_one(
                 {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                  'days': request.args.get("days").split(","),
                  'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "recurring": "true"})
+                 "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts"))})
         else:
             links_db.insert_one(
                 {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                  'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                            request.args.get("dates").split(",")],
                  'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "recurring": "false"})
+                 "repeat": "none"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     return redirect("/login")

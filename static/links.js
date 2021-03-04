@@ -296,10 +296,10 @@ function register_link(parameter) {
             dates.push(element.value)
         }
         if (parameter == "register") {
-            url = `/register?name=${name}&link=${link}&time=${time}&repeats=false&dates=${dates}`
+            url = `/register?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}`
         }
         else {
-            url = `/update?name=${name}&link=${link}&time=${time}&repeats=false&dates=${dates}&id=${parameter}`
+            url = `/update?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}&id=${parameter}`
         }
 
 
