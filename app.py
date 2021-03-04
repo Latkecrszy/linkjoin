@@ -260,5 +260,10 @@ def privacy():
     return make_response("Coming soon!")
 
 
+@app.route("/auth/google")
+def privacy():
+    return make_response("Coming soon!")
+
+
 if __name__ == "__main__":
     app.run()
