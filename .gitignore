@@ -1,0 +1,5 @@
+.env
+.idea
+templates/redirect.html
+.DS_Store
+.vscode
