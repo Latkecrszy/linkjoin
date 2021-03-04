@@ -229,15 +229,16 @@ def reassign():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     for document in links_db.find():
-        document = dict(document)
-        if document['recurring'] == "true":
-            document['repeat'] = "week"
+        doc = dict(document)
+        if doc['recurring'] == "true":
+            doc['repeat'] = "week"
             print("recurring")
         else:
-            document['repeat'] = "none"
+            doc['repeat'] = "none"
             print("non-recurring")
-        document.pop('recurring')
-        print(document)
+        doc.pop('recurring')
+        print(doc)
+        links_db.find_one_and_replace(document, doc)
     return make_response({"stuff": "happened"})
 
 
@@ -261,7 +262,7 @@ def privacy():
 
 
 @app.route("/auth/google")
-def privacy():
+def auth():
     return make_response("Coming soon!")
 
 
