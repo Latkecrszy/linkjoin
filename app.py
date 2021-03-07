@@ -3,11 +3,18 @@ from flask_pymongo import PyMongo
 import json, os, dotenv, base64, re, argon2
 from argon2 import PasswordHasher
 from flask_cors import CORS
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from oauthlib.oauth2 import WebApplicationClient
 
 ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
+client_id = os.environ.get("CLIENT_ID", None)
+client_secret = os.environ.get("CLIENT_SECRET", None)
+url = "https://accounts.google.com/.well-known/openid-configuration"
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
 
 
@@ -224,12 +231,12 @@ def sort():
     return response
 
 
-@app.route("/change_occurrence")
-def change_occurrence():
+@app.route("/change_var")
+def change_var():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     links_db.find_one_and_update({"username": request.args.get("username"), "id": int(request.args.get("id"))},
-                                 {"$set": {"occurrences": request.args.get("occurrences")}})
+                                 {"$set": {request.args.get("var"): request.args.get(request.args.get("var"))}})
     return redirect("/links")
 
 

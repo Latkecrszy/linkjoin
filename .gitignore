@@ -3,3 +3,4 @@
 templates/redirect.html
 .DS_Store
 .vscode
+env

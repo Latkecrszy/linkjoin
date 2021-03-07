@@ -17,3 +17,6 @@ pytz==2020.1
 six==1.15.0
 Werkzeug==1.0.1
 zope.interface==5.1.2
+oauthlib==3.0.1
+pyOpenSSL==19.0.0
+Flask-Login==0.4.1

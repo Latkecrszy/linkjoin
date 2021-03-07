@@ -1,25 +1,24 @@
+let noSleep = new NoSleep()
+noSleep.disable()
 function popUp() {
-
-    element = document.getElementById("popup")
-    element.classList.remove("hidden")
-    document.getElementById("main_page").classList.add("blurred")
+    popup = document.getElementById("popup")
+    popup.style.display = "flex"
+    document.getElementById("page").classList.toggle("blurred")
     document.getElementsByTagName("html")[0].style.background = "#040E1A"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
-    document.getElementById("popup_schedule").innerText = "Schedule a new meeting"
+    document.getElementById("title").innerText = "Schedule a new meeting"
     check()
 }
 
 function hide() {
-    element = document.getElementById("popup")
-    element.classList.add("hidden")
-    document.getElementById("main_page").classList.remove("blurred")
+    popup = document.getElementById("popup")
+    popup.style.display = "none"
+    document.getElementById("page").classList.toggle("blurred")
     document.getElementsByTagName("html")[0].style.background = "#091B30"
-    document.getElementsByTagName("html")[0].style.overflow = "auto"
-    document.getElementById("header").style.background = "#142539"
-
+    check()
 }
 
 function check() {
@@ -28,31 +27,30 @@ function check() {
         if (document.getElementById("repeats_text").innerText.includes("every") == false) {
             document.getElementById("repeats_text").innerText += " every"
             document.getElementById("days").classList.remove("hidden")
-            document.getElementById("dates").classList.add("hidden")
             document.getElementById("starts").classList.remove("hidden")
-             document.getElementById("starts_text").classList.remove("hidden")
+            document.getElementById("select").classList.remove("hidden")
+            document.getElementById("dates_container").style.display = "none"
+            document.getElementById("first_date").classList.add("gone")
+            document.getElementById("add_field").classList.add("gone")
+            document.getElementById("submit").classList.remove("gone")
+
         }
     }
     else {
         document.getElementById("repeats_text").innerText = "Repeats"
         document.getElementById("days").classList.add("hidden")
-        document.getElementById("dates").classList.remove("hidden")
         document.getElementById("starts").classList.add("hidden")
-        document.getElementById("starts_text").classList.add("hidden")
+        document.getElementById("select").classList.add("hidden")
+        document.getElementById("dates_container").style.display = "flex"
+        document.getElementById("first_date").classList.remove("gone")
+        document.getElementById("add_field").classList.remove("gone")
+        document.getElementById("submit").classList.add("gone")
     }
 }
 
-function change_color(day) {
-    day_button = document.getElementById(day)
-    if (day_button.classList.contains("selected")) {
-        day_button.classList.remove("selected")
-        day_button.classList.add("deselected")
-    }
-    else {
-         day_button.classList.add("selected")
-         day_button.classList.remove("deselected")
-    }
-}
+document.addEventListener("click", event => {
+  if(event.target.matches("#days button")) event.target.classList.toggle("selected");
+})
 
 
 async function load_links(username, sort) {
@@ -112,6 +110,8 @@ async function load_links(username, sort) {
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             for (const link_info of links) {
                 if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
+                    console.log(link_list)
+                    console.log(link_info)
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                     other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
                 }
@@ -133,7 +133,7 @@ async function load_links(username, sort) {
         else {
             final = links
         }
-        document.getElementById("header").style.margin = "0 0 80px 0"
+        document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
         for (let link of final) {
             link_event = document.createElement("div")
@@ -225,15 +225,15 @@ async function load_links(username, sort) {
             edit.addEventListener("click", function() {
                 link_event = document.getElementById(iterator.toString())
                 element = document.getElementById("popup")
-                element.classList.remove("hidden")
-                document.getElementById("main_page").classList.add("blurred")
+                element.style.display = "flex"
+                document.getElementById("page").classList.add("blurred")
                 document.getElementsByTagName("html")[0].style.background = "#040E1A"
                 check()
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
-                document.getElementById("popup_schedule").innerText = "Edit your meeting"
+                document.getElementById("title").innerText = "Edit your meeting"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
             })
@@ -246,14 +246,14 @@ async function load_links(username, sort) {
             delete_button.innerText = "Delete"
             delete_button.addEventListener("click", function() {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-                document.getElementById("popup_delete").classList.remove("hidden")
+                document.getElementById("popup_delete").style.display = "flex"
                 document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
             buttons.appendChild(delete_button)
             link_event.appendChild(buttons)
             if (link['active'] == "false") {
                 link_event.opacity = 0.6
             }
-            document.getElementById("insert_things").appendChild(link_event)
+            document.getElementById("insert").appendChild(link_event)
             iterator += 1
         }
     }
@@ -267,17 +267,6 @@ function sort() {
     location.href = "/sort?sort="+document.getElementById("sort").value.toString()
 }
 
-function add_field() {
-    let date_input = document.createElement("input")
-    date_input.type = "date"
-    date_input.classList.add("date_input")
-    date_input.style.display = "inline-block"
-    date_input.style.float = "left"
-    date_input.style.marginRight = "15px"
-    let today = new Date().toISOString().split('T')[0]
-    date_input.min = today
-    document.getElementById("insert").appendChild(date_input)
-}
 
 function register_link(parameter) {
     let form_element = document.getElementById("create")
@@ -286,13 +275,9 @@ function register_link(parameter) {
     let time = document.getElementById("time").value
     let url;
     if (!document.getElementById("repeats").checked) {
-        console.log("not checked")
-        let dates = [document.getElementById("date").value]
-        console.log("children:")
-        console.log(document.getElementById("insert").children)
-        console.log(document.getElementById("insert").children.length)
-        for (let x = 0; x < document.getElementById("insert").children.length; x++) {
-            let element = document.getElementById("insert").children[x];
+        let dates = [document.getElementById("first_date").value]
+        for (let x = 0; x < document.getElementById("dates").children.length; x++) {
+            let element = document.getElementById("dates").children[x];
             dates.push(element.value)
         }
         if (parameter == "register") {
@@ -302,22 +287,32 @@ function register_link(parameter) {
             url = `/update?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}&id=${parameter}`
         }
 
-
     }
     else {
         let days = []
-        for (let x = 0; x < document.getElementById("buttons").children.length; x++) {
-            if (document.getElementById("buttons").children[x].classList.contains("selected")) {
-                days.push(document.getElementById("buttons").children[x].id)
+        console.log(document.getElementById("days").children.length)
+        for (let x = 0; x < document.getElementById("days").children.length; x++) {
+            if (document.getElementById("days").children[x].classList.contains("selected")) {
+                days.push(document.getElementById("days").children[x].value)
             }
         }
         console.log(days)
         if (parameter == "register") {
-            url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${document.getElementById("starts").value}`
+            url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${document.getElementById("starts_select").value}`
         }
         else {
-            url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${document.getElementById("starts").value}`
+            url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${document.getElementById("starts_select").value}`
         }
     }
     location.href = url
 }
+
+/*document.getElementById("keep_on").addEventListener('onchange', function nosleep() {
+    if (document.getElementById("keep_on").value == "yes") {
+        noSleep.enable()
+    }
+    else {
+        noSleep.disable();
+    }
+}
+)*/

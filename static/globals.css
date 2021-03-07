@@ -21,8 +21,6 @@ a {
 
 .footer {
     opacity: 0.5;
-    color: white;
-    font-family: Montserrat;
     font-size: 14px;
     font-weight: 400;
     line-height: 17px;
@@ -69,7 +67,7 @@ a {
     font-family: Montserrat;
 }
 
-.button {
+/*.button {
     text-align: center;
     vertical-align: center;
     float: right;
@@ -83,6 +81,9 @@ a {
     font-weight: 600;
     line-height: 22px;
     display: inline-block;
+}*/
+
+button {
     color: white;
 }
 
@@ -113,13 +114,11 @@ svg {
 .footer_links {
     height: 60px;
     width: 960px;
-    margin-left: 16vw;
-    margin-top: 100px;
-    margin-bottom: -20px;
-    position: relative;
+    margin: 100px 0 -20px 16vw;
     border-radius: 72px;
     padding: 22px, 56px, 22px, 56px;
     background-color: 142539;
+    text-align: center;
 }
 
 .footer_link {
@@ -132,7 +131,7 @@ svg {
     line-height: 15px;
     letter-spacing: 0em;
     text-align: left;
-    color: white;
+
     opacity: 1;
 }
 
@@ -174,7 +173,7 @@ div {
     font-size: 22px;
     font-weight: 600;
     letter-spacing: 0.01em;
-    color: white;
+
     text-align: center;
     width: 700px;
     left: 28vw;
@@ -186,7 +185,7 @@ div {
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.01em;
-    color: white;
+
     opacity: 0.7;
     text-align: center;
     width: 600px;
@@ -201,3 +200,43 @@ div {
     font-family: Montserrat;
     margin-right: 30px;
 }
+
+select {
+    -webkit-appearance:none;
+}
+
+body: {display: flex;}
+
+
+
+
+
+
+
+
+#header_links {
+    background-color: #142539;
+    height: 80px;
+    padding: 0 0 20px 15px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.button {
+    text-align: center;
+    height: 50px;
+    display: inline-block;
+    margin-left: 30px;
+}
+
+.gone {
+    display: none;
+}
+
+.flex {
+    display: flex;
+}
+
+
+
+
