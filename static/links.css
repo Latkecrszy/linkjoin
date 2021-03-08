@@ -256,24 +256,20 @@ input[type=date] {
 }
 
 
-#popup_delete div {
-    font-size: 26px;
-    margin-top: 20px;
-}
+#popup_delete div {font-size: 26px; margin-top: 20px;}
 
-#button_no {
-    background-color: #2B8FD8;
+#delete_buttons_container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 30px;
 }
-
-#delete_buttons_container {display: flex; justify-content: space-around; margin-top: 30px;}
 
 #delete_buttons_container button {
      height: 30px;
      width: 50px;
      border: none;
      border-radius: 3px;
+     background-color: #2B8FD8;
 }
 
-#button_yes {
-    background-color: #A40606;
-}
+#button_yes {background-color: #A40606;}

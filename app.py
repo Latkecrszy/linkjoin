@@ -48,6 +48,8 @@ def login():
     mongo = PyMongo(app)
     login_db = mongo.db.login
     hasher = PasswordHasher()
+    print(dict(request.form))
+    print(request)
     login_info = {'username': request.form.get("email").lower(), 'password': hasher.hash(request.form.get("password"))}
     if login_db.find_one({'username': request.form.get("email").lower()}) is None:
         return render_template("login.html", error="username_not_found")

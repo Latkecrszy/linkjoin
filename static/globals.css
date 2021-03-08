@@ -1,14 +1,15 @@
-button:focus{outline: none;}
+button:focus{outline: none}
 
-input:focus {outline: none;}
+input:focus {outline: none}
 
-html {background-color: #142539;}
+html {background-color: #142539}
 
-button:hover {cursor: pointer;}
+button:hover {cursor: pointer}
 
 a {
     text-decoration: none;
     color: white;
+    font-family: Montserrat;
 }
 
 .footer_text {
@@ -22,13 +23,9 @@ a {
 .footer {
     opacity: 0.5;
     font-size: 14px;
-    font-weight: 400;
-    line-height: 17px;
-    text-align: left;
     display: block;
     float: left;
-    margin-top: 40px;
-    margin-left: -80px;
+    margin: 40px 0 0 -80px;
 }
 
 .footer_image {
@@ -42,7 +39,6 @@ a {
 .header {
     height: 8vh;
     min-height: 50px;
-    /*box-shadow: 4px 8px 18px black;*/
     margin-bottom: 50px;
     position: relative;
     top: 1px;
@@ -67,49 +63,19 @@ a {
     font-family: Montserrat;
 }
 
-/*.button {
-    text-align: center;
-    vertical-align: center;
-    float: right;
-    border-radius: 70px;
-    margin-top: 10px;
-    background-color: #142539;
-    font-size: 16px;
-    font-style: normal;
-    height: 50px;
-    width: 110px;
-    font-weight: 600;
-    line-height: 22px;
-    display: inline-block;
-}*/
-
-button {
-    color: white;
-}
-
-.login:hover {
-    background-color: #2B8FD8;
-}
-
-.login {
-    border: 2px solid white;
-    margin-right: 30px;
-}
+button {color: white}
 
 svg {
     z-index: -1;
     height: 1000%;
     width: 110vw;
     position: fixed;
+    fill:#091B30;
 }
 
-.blurred {
-    opacity: 0.2;
-}
+.blurred {opacity: 0.2}
 
-.hidden {
-    visibility: hidden;
-}
+.hidden {visibility: hidden}
 
 .footer_links {
     height: 60px;
@@ -126,26 +92,16 @@ svg {
     display: inline;
     font-family: Montserrat;
     font-size: 12px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 15px;
-    letter-spacing: 0em;
-    text-align: left;
-
     opacity: 1;
 }
 
-.footer_link:hover {
-    color: #0AFFED;
-}
+.footer_link:hover {color: #0AFFED}
 
 .links_footer_image {
     height: 15px;
     width: 15px;
     display: inline;
-    margin-right: 10px;
-    margin-left: 15px;
-    margin-top: 20px;
+    margin: 20px 10px 0 15px;
 }
 
 .header_links {
@@ -156,24 +112,18 @@ svg {
     padding-bottom: 15px;
 }
 
-div {
-    font-family: Montserrat;
-    color: white;
-}
+div {font-family: Montserrat; color: white;}
 
 .logo {
     float: left;
     height: 35px;
     width: 35px;
-    margin-top: 29px;
-    margin-left: 55px;
+    margin: 29px 0 0 55px;
 }
 
 .where_it_happens {
     font-size: 22px;
     font-weight: 600;
-    letter-spacing: 0.01em;
-
     text-align: center;
     width: 700px;
     left: 28vw;
@@ -184,8 +134,6 @@ div {
 .enable {
     font-size: 16px;
     font-weight: 600;
-    letter-spacing: 0.01em;
-
     opacity: 0.7;
     text-align: center;
     width: 600px;
@@ -201,18 +149,9 @@ div {
     margin-right: 30px;
 }
 
-select {
-    -webkit-appearance:none;
-}
+select {-webkit-appearance:none}
 
-body: {display: flex;}
-
-
-
-
-
-
-
+body: {display: flex}
 
 #header_links {
     background-color: #142539;
@@ -229,14 +168,8 @@ body: {display: flex;}
     margin-left: 30px;
 }
 
-.gone {
-    display: none;
-}
+.gone {display: none}
 
-.flex {
-    display: flex;
-}
+.flex {display: flex}
 
-
-
-
+input:invalid {box-shadow: none}

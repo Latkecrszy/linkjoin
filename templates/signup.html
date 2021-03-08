@@ -1,50 +1,50 @@
-<html style="overflow: hidden;">
+<html id="login_html">
     <head>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="189748485716-pip2ll8uo27n1pmv003n5thm7sjtgcav.apps.googleusercontent.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <title>LinkJoin | Sign Up to Get Started</title>
+        <title>LinkJoin | Sign Up</title>
         <meta name="description" content="Sign up to get started with LinkJoin, and never be late again.">
         <meta name=”robots” content="index, follow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
     </head>
-    <body style="overflow: hidden; margin: 0;">
-        <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet" style="z-index: -1;">
-            <path d="M235, 0 C300, 200 150,
-                  100 350, 600 L0, 300 L0, 0 Z"
-                  style="stroke:none; fill:#091B30;">
-            </path>
+    <body style="margin: 0; display: flex; flex-direction: column;">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
+            <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
-        <div class="header_login">
-            <a href="/login"><button class="button login" style="border: 2px solid white; font-family: Montserrat;">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" style="top: 0.5px; position: relative;"></button></a><div class="already">Already have an account?</div>
-            <a href="/"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="margin: 30px;"></a>
-        </div>
-        <div class="left_content" style="padding-left: 10vw; padding-top: 20vh;">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" height="280" width="280">
-            <div class="linkjoin_signup"><strong>LinkJoin</strong></div>
-            <div class="slogan_login">Never be late again</div>
-        </div>
-        <div class="right_content" style="padding-left: 100px;">
-            <div class="form_box">
-                <div style="color: white;">Create an Account</div>
-                <form method="POST" action="/signup_error">
-                    <input type="text" name="email" class="email" id="email" placeholder="Email" required>
-                    <input name="password" class="password" id="password" placeholder="Password" type="password" required>
-                    <button type="submit" class="submit" id="submit" name="submit">Sign Up <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
-                    {% if error == "email_in_use" %}
+        <header id="header_links">
+            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px"></a>
+            <div>Already have an account?</div>
+            <a href="/login" class="login_button">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px"></a>
+        </header>
+        <div id="main_page">
+            <div id="left_content">
+                <img src="{{ url_for('static', filename='images/Frame.png') }}" height="280" width="280">
+                <div id="signup_title">LinkJoin</div>
+                <div id="signup_text">Never be late again</div>
+            </div>
+            <div id="right_content">
+                <div id="welcome">Create an Account</div>
+                {% if error == "email_in_use" %}
                         <div class="error" style="left: 90px;">This email is already associated with an account</div>
                     {% elif error == "invalid_email" %}
                         <div class="error" style="left: 200px;">Invalid email</div>
                     {% endif %}
+                <form method="POST" action="/signup_error">
+                    <input type="text" name="email" id="email" placeholder="Email" required><br>
+                    <input id="password" name="password" placeholder="Password" type="password" required><br>
+                    <button type="submit" id="submit" >Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+
                 </form>
             </div>
         </div>
-
     </body>
 </html>
