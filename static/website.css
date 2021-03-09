@@ -121,6 +121,26 @@ footer {
 
 
 /*Media Queries*/
+@media (max-width: 450px) {
+    .get_started {width: 200}
+}
+
+@media (min-width: 1600px) {
+    #motto {font-size: 3vw; max-width: 40vw; margin: 10vh 0 0 5vw;}
+    #description {font-size: 1.5vw; max-width: 35vw; margin: 1.5vh 0 0 5vw;}
+    .get_started {width: 27vw; height: 6vw; font-size: 1.5vw; margin: 2.5vh 0 0 5vw; border-radius: 5vw; }
+    .get_started img {height: 1.5vw; width: 1.5vw; margin-left: 1vw;}
+    #logo {width: 15vw; height: 3.5vw; margin-top: 0.5vw;}
+    header a {font-size: 1.2vw;}
+    .login_button {height: 3vw !important; width: 7vw !important; padding-top: 0.6vw !important;}
+    .login_button img {height: 0.9vw; width: 0.6vw;}
+    #main_html {margin-right: 3vw}
+    .title {font-size: 2.8vw}
+    .desc {font-size: 1.4vw; max-width: 40vw; margin-left: 5vw; margin-right: 5vw;}
+    .desc a {font-size: 1.4vw}
+    .footer_image {height: 1vw !important; width: 1vw !important; margin-right: 0.3vw !important}
+    .footer_text {font-size: 1vw;}
+}
 @media (max-width: 730px) {
     header a {
         display: none;
@@ -145,7 +165,7 @@ footer {
     #main_html {background: #091B30;}
 }
 
-@media(max-width: 980px) {
+@media(max-width: 150vh), (max-height: 33vw) {
     #calendar_guy {display: none;}
 }
 
