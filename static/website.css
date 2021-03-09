@@ -113,9 +113,9 @@ footer {
 
 .footer_image {height: 15px; width: 15px;}
 
-.footer_link {margin: 0 20px 20px 0; }
+.footer_link {margin: 0 20px 20px 0}
 
-.footer_text {text-decoration: none; font-size: 14px;}
+.footer_text {text-decoration: none; font-size: 14px; cursor: pointer;}
 
 .footer_text:hover {color: #0AFFED}
 
