@@ -4,9 +4,9 @@
 
 #back {margin: 30px; margin-right: auto;}
 
-#page {
-    width: 100vw;
-}
+#logo {height: 300px; width: 300px;}
+
+#page {width: 100vw}
 
 #signup_title {
     font: 500 45px Montserrat;
@@ -25,7 +25,7 @@
     margin: 0 auto 0 13%;
 }
 
-#right_content {margin-top: 70px;}
+#right_content {margin: 13vh; auto 0 0}
 
 #email, #password {
     width: 28vw;
@@ -53,27 +53,46 @@
 
 #main_page {display: flex}
 
-#welcome {
-    font-size: 40;
+#welcome {font-size: 40}
+
+@media(min-width: 1600px) {
+    #submit img {height: 0.7vw; width: 0.7vw; margin-left: 0.1vw}
+    #welcome {font-size: 2vw}
+    #submit {
+        height: 2.5vw;
+        width: 5.5vw;
+        border-radius: 3vw;
+        font: 800 0.8vw Montserrat;
+        margin: 1vw 0 0 30px;
+    }
+    #email::placeholder, #password::placeholder {font-size: 0.7vw}
+    #email, #password {
+        width: 28vw;
+        font: 500 1vw Montserrat;
+        height: 3vw;
+        padding: 16px 61px 16px 28px;
+        background-color: white;
+        opacity: 0.3;
+        border: none;
+        border-radius: 0.15vw;
+        margin-top: 30px;
+    }
+
 }
 
 @media (max-width: 985px) {
-    #left_content {
-        display: none;
-    }
-    #password, #email {
-        width: 300px;
-    }
-    #welcome {
-        margin-right: 0;
-    }
+    #left_content {display: none}
+
+    #password, #email {width: 300px}
+
+    #welcome {margin-right: 0}
 
 }
 
 @media (max-width: 730px) {
-    svg {
-        display: none;
-    }
+    svg {display: none}
+
+    #login_html {background: #091B30;}
 }
 
 .error {

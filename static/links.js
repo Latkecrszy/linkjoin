@@ -57,10 +57,8 @@ async function load_links(username, sort) {
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() == '') {
-        document.getElementById("header").style.margin = "0 0 0 0"
-        document.getElementById("disappear").classList.remove("hidden")
-        document.getElementById("footer_links").style.bottom = "-5px"
-        document.getElementById("footer_links").style.position = "absolute"
+        document.getElementById("header_links").style.margin = "0 0 0 0"
+        document.getElementById("disappear").classList.remove("gone")
     }
     else {
         console.log(sort)
