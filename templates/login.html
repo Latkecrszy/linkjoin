@@ -24,6 +24,7 @@
             <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px"></a>
             <div>Don't have an account?</div>
             <a href="/signup" class="login_button">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px"></a>
+
         </header>
         <div id="main_page">
             <div id="left_content">
@@ -34,15 +35,14 @@
             <div id="right_content">
                 <div id="welcome">Welcome Back</div>
                 {% if error == "username_not_found" %}
-                        <div class="error">No account is associated with this email</div>
-                    {% elif error == "incorrect_password" %}
-                        <div class="error">Incorrect Password</div>
-                    {% endif %}
+                    <div class="error">No account is associated with this email</div>
+                {% elif error == "incorrect_password" %}
+                    <div class="error">Incorrect Password</div>
+                {% endif %}
                 <form method="POST" action="/login_error">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
                     <button type="submit" id="submit" >Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
-
                 </form>
             </div>
         </div>

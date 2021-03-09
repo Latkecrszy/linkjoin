@@ -1,101 +1,158 @@
-.explanation_title {
-    font-size: 50px;
-    max-width: 600px;
-    text-align: center;
-    display: block;
-    margin-top: 50vh;
+/*Page Sections*/
+header {
+    display: flex;
+    width: 100%;
+    padding: 30px;
+    height: 1px;
 }
 
-.explanation {
-    font-size: 25px;
-    text-align: center;
-    width: 40vw;
-    margin-top: 20px;
-    font-family: Roboto;
-    line-height: 1.4;
+header a {margin: 20px 40px 0 40px}
+
+header img {margin: 0 auto 0 20px}
+
+#page {display: flex; flex-direction: row;}
+
+#left_content {
+    margin: 100 auto 0 75px;
+    display: flex;
+    flex-direction: column;
+}
+
+#right_content {
+    margin: 0 40px 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#info {
+    display: flex;
+    justify-content: space-between;
+}
+
+footer {
     opacity: 0.7;
-    display: block;
+    height: 100px;
 }
 
-.button {
-    text-align: center;
-    vertical-align: center;
-    float: right;
-    border-radius: 70px;
-    margin-top: 10px;
-    background-color: #142539;
-    font-size: 16px;
-    height: 50px;
-    width: 110px;
-    font-weight: 600;
-    line-height: 22px;
-    display: inline-block;
 
+/*Hamburger Menu*/
+#hamburger {cursor: pointer; display: none; margin: 0 30px 0 auto;}
+
+#hamburger_dropdown.expand {display: flex; margin-left: auto}
+
+#hamburger_dropdown.expand a {display: block; margin-left: auto}
+
+#dropdown {display: none; flex-direction: column}
+
+#line1, #line2, #line3 {
+  width: 35px;
+  height: 5px;
+  background-color: white;
+  margin: 6px 0;
+  transition: 0.4s;
+  border-radius: 5px;
 }
 
-.linkjoin {
-    font-family: Montserrat;
-    font-size: 24px;
-    font-weight: 500;
-    float: left;
-    text-align: left;
-    margin-top: 30px;
-    position: relative;
+#hamburger_dropdown {
+    display: none;
+    height: 170px;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: auto;
 }
 
+.expand #line1 {
+    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
+    transform: rotate(-45deg) translate(-9px, 6px);
+}
+
+.expand #line2 {opacity: 0}
+
+.expand #line3 {
+    -webkit-transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(45deg) translate(-8px, -8px);
+}
+
+/*Left Content*/
 .get_started {
     border-radius: 84px;
-    font-size: 20px;
-    line-height: 27px;
+    font: 600 20px Montserrat;
     width: 321px;
     height: 67px;
-    font-weight: 600;
-    font-family: Montserrat;
     background-color: #2B8FD8;
     border: none;
     margin-top: 35px;
-    display: block;
 }
 
-.logo {
-    float: left;
-    height: 50px;
-    width: 50px;
-    margin-top: 22px;
-    margin-left: 10px;
-    margin-right: 10px;
+#motto {font-weight: bold; font-size: 44px; max-width: 500px;}
+
+#description {font: 400 18px Roboto; margin-top: 10px; max-width: 450px;}
+
+
+/*Right Content*/
+#right_content img {
+    height: 95vh;
+    width: 40vw;
 }
 
-@media (max-width: 1039px) {
-    #calendar_guy {
+
+/*Info*/
+.row {display: flex; margin-top: 70px;}
+
+.info_box {display: flex; flex-direction: column; margin: 75px; text-align: center}
+
+.title {font: 600 50px Montserrat; margin-bottom: 20px;}
+
+.desc {font: 400 30px Roboto; opacity: 0.6;}
+
+.desc a {color: #2B8FD8; font: 400 30px Roboto;}
+
+
+/*Footer*/
+.line {display: flex; justify-content: space-between;}
+
+.footer_image {height: 15px; width: 15px;}
+
+.footer_link {margin: 0 20px 20px 0; }
+
+.footer_text {text-decoration: none; font-size: 14px;}
+
+.footer_text:hover {color: #0AFFED}
+
+
+/*Media Queries*/
+@media (max-width: 730px) {
+    header a {
         display: none;
     }
+    #hamburger {
+        display: inline-block;
+    }
+    #dropdown {
+        display: flex;
+    }
+    #hamburger a {
+        display: block;
+    }
+    #hamburger_dropdown {
+        display: inline-block;
+    }
+    .row {flex-direction: column}
 }
 
-@media (max-height: 600px) {
-    #calendar_guy {
-        display: none;
-    }
+@media(max-width: 850px) {
+    svg {display: none}
+    #main_html {background: #091B30;}
 }
 
-@media (max-width: 859px) {
-    #footer {
-        display: none;
-    }
-    #words_1 {
-        margin-top: 1px;
-    }
-    #words_2 {
-        transform: translateY(calc(1700px - 100vw * 1.3));
-    }
-    #words_3 {
-        transform: translateY(calc(1900px - 100vw * 1.3));
-    }
+@media(max-width: 980px) {
+    #calendar_guy {display: none;}
 }
 
-.login:hover {background-color: #2B8FD8}
 
-.login {
-    border: 2px solid white;
-    margin-right: 30px;
+/*Other*/
+#main_html {
+    overflow-x: hidden;
+    overflow-y: visible;
+    scroll-behavior: smooth;
 }

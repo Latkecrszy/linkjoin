@@ -4,26 +4,6 @@
 
 #back {margin: 30px; margin-right: auto;}
 
-.login_button {
-    background: none;
-    border: 2px solid white;
-    border-radius: 70px;
-    margin: 15px 30px 20px 20px;
-    height: 50px;
-    width: 110px;
-    text-align: center;
-    box-sizing: border-box;
-    padding-top: 13px;
-}
-
-.login_button:hover {
-    background: #2B8FD8;
-}
-
-.login_button img {
-    margin-left: 3px;
-}
-
 #page {
     width: 100vw;
 }
