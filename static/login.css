@@ -33,8 +33,9 @@
     height: 65px;
     padding: 16px 61px 16px 28px;
     background-color: white;
-    opacity: 0.3;
+    opacity: 0.4;
     border: none;
+    color: black;
     border-radius: 7px;
     margin-top: 30px;
 }

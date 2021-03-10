@@ -21,9 +21,10 @@
     <body id="links_body">
         <script type="text/javascript">
             load_links('{{ username }}', '{{ sort }}')
+            console.log("working")
         </script>
         <div id="page">
-            <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start.
+            <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can assist.
                 <button onclick="this.parentElement.style.display='none';" id="close_alert">×</button>
             </div>
             <div id="header_links">

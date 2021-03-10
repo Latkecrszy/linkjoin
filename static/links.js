@@ -279,8 +279,27 @@ async function load_links(username, sort) {
             iterator += 1
         }
     }
+    console.log("working")
+    check_day()
     await NewTab(username)
 }
+
+function check_day() {
+    console.log("triggered")
+    let date = new Date()
+    let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
+    let children = document.getElementById("days").children
+    for (let i = 0; i < children.length; i++) {
+        let child = children[i];
+        if (child.value == day) {
+            child.classList.toggle("selected")
+        }
+        console.log(child.value)
+    }
+    console.log(day)
+}
+
+
 function redirect(redirect_to) {
     window.open(redirect_to)
 }
