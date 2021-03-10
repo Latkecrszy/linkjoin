@@ -1,4 +1,5 @@
-<html id="login_html">
+<!DOCTYPE html>
+<html id="login_html" lang="en">
     <head>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
@@ -21,14 +22,14 @@
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header id="header_links">
-            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px"></a>
+            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" alt="back arrow"></a>
             <div>Don't have an account?</div>
-            <a href="/signup" class="login_button">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px"></a>
+            <a href="/signup" class="login_button">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="right arrow"></a>
 
         </header>
         <div id="main_page">
             <div id="left_content">
-                <img src="{{ url_for('static', filename='images/Frame.png') }}" id="logo">
+                <img src="{{ url_for('static', filename='images/Frame.png') }}" id="logo" alt="LinkJoin logo">
                 <div id="signup_title">LinkJoin</div>
                 <div id="signup_text">Never be late again</div>
             </div>
@@ -42,7 +43,7 @@
                 <form method="POST" action="/login_error">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
-                    <button type="submit" id="submit" >Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button>
+                    <button type="submit" id="submit" >Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
                 </form>
             </div>
         </div>

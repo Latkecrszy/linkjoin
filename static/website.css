@@ -10,10 +10,10 @@ header a {margin: 20px 40px 0 40px}
 
 header img {margin: 0 auto 0 20px}
 
-#page {display: flex; flex-direction: row;}
+#page {display: flex; flex-direction: row; margin-bottom: 30vh;}
 
 #left_content {
-    margin: 100 auto 0 150px;
+    margin: 100px auto 0 150px;
     display: flex;
     flex-direction: column;
 }
@@ -84,9 +84,9 @@ footer {
     margin-top: 35px;
 }
 
-#motto {font-weight: bold; font-size: 44px; max-width: 500px;}
+#motto {font-weight: bold; font-size: 44px; max-width: 500px; margin-bottom: 10px}
 
-#description {font: 400 18px Roboto; margin-top: 15px; max-width: 450px; line-height: 30px}
+#description {font: 400 18px Roboto; margin: 0; max-width: 450px; line-height: 30px}
 
 #learn_more {background-color: #142539; box-shadow: 10px 10px 10px #091B30;}
 
@@ -105,9 +105,9 @@ footer {
 
 .title {font: 600 43px Montserrat; margin-bottom: 20px;}
 
-.desc {font: 400 27px Roboto; opacity: 0.6;}
+.desc {font: 400 24px Roboto; opacity: 0.6;}
 
-.desc a {color: #2B8FD8; font: 400 30px Roboto;}
+.desc a {color: #2B8FD8; font: 400 24px Roboto;}
 
 
 /*Footer*/

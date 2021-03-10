@@ -1,4 +1,5 @@
-<html id="links_html">
+<!DOCTYPE html>
+<html id="links_html" lang="en">
     <head>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
@@ -17,6 +18,9 @@
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
         <script src="{{ url_for('static', filename='links.js') }}"></script>
         <title>LinkJoin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.35"/>
+        <meta name=”robots” content="index, follow"/>
+        <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website"
     </head>
     <body id="links_body">
         <script type="text/javascript">
@@ -24,16 +28,16 @@
             console.log("working")
         </script>
         <div id="page">
-            <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can assist.
+            <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" rel="noopener" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can help.
                 <button onclick="this.parentElement.style.display='none';" id="close_alert">×</button>
             </div>
-            <div id="header_links">
-                <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px"></a>
+            <header id="header_links">
+                <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
                 <a href="/login"><div class="button header_button">Switch Account</div></a>
                 <a href="/help" target="_blank"><div class="button header_button">Help</div></a>
                 <a href="/about" target="_blank"><div class="button header_button">About Us</div></a>
-                <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp()" id="plus_button">
-            </div>
+                <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp()" id="plus_button" alt="Click to schedule a link">
+            </header>
 
             <div id="select_column">
                 <div id="sort_by">Sort By:</div>
@@ -61,16 +65,16 @@
                 </select>
             </div>
             <div class="gone" id="disappear">
-                <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 5vh 0 0 36vw;">
+                <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 5vh 0 0 36vw;" alt="Man with clock">
                 <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
             </div>
             <div id="insert"></div>
-            <div class="footer_links" id="footer_links">
-                <img src="{{ url_for('static', filename='images/heart.png') }}" class="links_footer_image"><div class="footer_link" style="cursor: pointer;">Crafted by Seth Raphael</div>
-                <img src="{{ url_for('static', filename='images/discord.png') }}" class="links_footer_image"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_link">Join the Discord</div></a>
-                <img src="{{ url_for('static', filename='images/github.png') }}" class="links_footer_image"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_link">Contribute on Github</div></a>
-                <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="links_footer_image"><a href="https://storyset.com/work" class="footer_link">Illustration by Freepik Storyset</a>
-            </div>
+            <footer class="footer_links" id="footer_links">
+                <img src="{{ url_for('static', filename='images/heart.png') }}" class="links_footer_image" alt="heart"><div class="footer_link" style="cursor: pointer;">Crafted by Seth Raphael</div>
+                <img src="{{ url_for('static', filename='images/discord.png') }}" class="links_footer_image" alt="discord logo"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_link">Join the Discord</div></a>
+                <img src="{{ url_for('static', filename='images/github.png') }}" class="links_footer_image" alt="github logo"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_link">Contribute on Github</div></a>
+                <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="links_footer_image" alt="link"><a href="https://storyset.com/work" class="footer_link">Illustration by Freepik Storyset</a>
+            </footer>
         </div>
         <div id="popup_delete">
             <div>Are you sure you want to delete this meeting?</div>
@@ -81,22 +85,22 @@
         </div>
         <div id="popup">
             <div id="title">Schedule a new meeting</div>
-            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()">
+            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="float: left; position: absolute; top: 15px; left: 20px;" onclick="hide()" alt="back to links page">
             <form id="create" autocomplete="off" onsubmit="register_link()">
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px">
+                    <img src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px" alt="text symbol">
                     <input type="text" placeholder="Meeting Title" id="name" required>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/link.png') }}" height="13px" width="18px;">
+                    <img src="{{ url_for('static', filename='images/link.png') }}" height="13px" width="18px;" alt="link symbol">
                     <input type="text" placeholder="Meeting Link" id="link" required>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/time.png') }}" height="18px" width="18px">
+                    <img src="{{ url_for('static', filename='images/time.png') }}" height="18px" width="18px" alt="clock">
                     <input type="time" placeholder="hour:min am/pm" id="time" required>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px">
+                    <img src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
                     <input type="password" placeholder="Optional: Meeting Password" id="password">
                 </div>
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
@@ -105,7 +109,7 @@
                     <input onclick="check()" type="checkbox" id="repeats" checked="checked">
                     <div id="repeats_text">Repeats every</div>
                     <input class="gone" id="first_date" type="date" placeholder="yyyy mm dd">
-                    <button type="button" id="add_field" class="gone"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="20px" width="21px;"></button>
+                    <button type="button" id="add_field" class="gone"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="20px" width="21px;" alt="plus sign"></button>
                     <select id="select" class="popup_select">
                         <option value="week" selected>Week</option>
                         <option value="2 weeks">2 Weeks</option>

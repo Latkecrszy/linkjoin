@@ -30,7 +30,7 @@
 #email, #password {
     width: 28vw;
     font: 500 15px Montserrat;
-    height: 65px;
+    height: 40px;
     padding: 16px 61px 16px 28px;
     background-color: white;
     opacity: 0.4;
@@ -54,7 +54,7 @@
 
 #main_page {display: flex}
 
-#welcome {font-size: 40}
+#welcome {font-size: 40px}
 
 @media(min-width: 1600px) {
     #submit img {height: 0.7vw; width: 0.7vw; margin-left: 0.1vw}

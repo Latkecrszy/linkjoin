@@ -1,4 +1,5 @@
-<html id="main_html">
+<!DOCTYPE html>
+<html id="main_html" lang="en">
     <head>
         <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
@@ -24,10 +25,10 @@
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header>
-            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40">
+            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo">
             <a href="/links">Links</a>
             <a href="/signup">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px"></a>
+            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -35,21 +36,21 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px"></a>
-                    <a href="/signup">Log In</a>
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login">Log In</a>
                     <a href="/links">Links</a>
                 </div>
             </div>
         </header>
         <div id="page">
             <div id="left_content">
-                <div id="motto">Being on time has never been so easy.</div>
-                <div id="description">LinkJoin helps you join meetings automatically at exactly the right moment, even when you forget.</div>
-                <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-                <a href="#info"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+                <h1 id="motto">Being on time has never been so easy.</h1>
+                <h4 id="description">LinkJoin helps you join meetings automatically at exactly the right moment, even when you forget.</h4>
+                <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
+                <a href="#info"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
-                <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy">
+                <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy" alt="Man surrounded by calendars">
             </div>
         </div>
         <div class="row" id="info">
@@ -65,21 +66,21 @@
         <footer>
             <div class="line">
                 <div class="footer_link">
-                    <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image">
+                    <img src="{{ url_for('static', filename='images/heart.png') }}" class="footer_image" alt="heart">
                     <div class="footer_text">Crafted by Seth Raphael</div>
                 </div>
                 <div class="footer_link">
-                    <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image">
+                    <img src="{{ url_for('static', filename='images/discord.png') }}" class="footer_image" alt="discord logo">
                     <a href="https://discord.gg/MbqYAA36fx" class="footer_text">Join the Discord</a>
                 </div>
             </div>
             <div class="line">
                 <div class="footer_link">
-                    <img src="{{ url_for('static', filename='images/github.png') }}" class="footer_image">
+                    <img src="{{ url_for('static', filename='images/github.png') }}" class="footer_image" alt="github logo">
                     <a href="https://github.com/Latkecrszy/linkjoin" class="footer_text">Contribute on Github</a>
                 </div>
                 <div class="footer_link">
-                    <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image" style="border-radius: 1px;">
+                    <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image" style="border-radius: 1px;" alt="link icon">
                     <a href="https://storyset.com/work" class="footer_text">Illustration by Freepik Storyset</a>
                 </div>
             </div>
@@ -89,7 +90,7 @@
         document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
         function myFunction(x) {
             if (x.matches) {document.getElementById("get_started").innerText = "Get started"}
-            else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px">`}
+            else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`}
         }
         let x = window.matchMedia("(max-width: 450px)")
         myFunction(x) // Call listener function at run time
