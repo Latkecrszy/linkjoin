@@ -1,5 +1,10 @@
 let noSleep = new NoSleep()
 noSleep.disable()
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function popUp() {
     popup = document.getElementById("popup")
     popup.style.display = "flex"
@@ -196,6 +201,25 @@ async function load_links(username, sort) {
                 days.innerText = dates_list.join("; ")
             }
             link_event.appendChild(days)
+            if ('password' in link) {
+                console.log("here")
+                let copy = document.createElement("button")
+                copy.innerText = "Password"
+                copy.id = link['id'].toString()
+                copy.classList.add("copy")
+                copy.addEventListener('click', async function copy() {
+                    let p = document.createElement("p")
+                    p.innerText = link['password']
+                    p.select()
+                    p.setSelectionRange(0, 99999)
+                    document.execCommand("copy")
+                    copy.innerText = "Copied!"
+                    p.remove()
+                    await sleep(2000)
+                    copy.innerText = "Password"
+                })
+                link_event.appendChild(copy)
+            }
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
             let activate_switch = document.createElement("button")
@@ -271,6 +295,7 @@ function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let time = document.getElementById("time").value
+    let password = document.getElementById("password").value
     let url;
     if (!document.getElementById("repeats").checked) {
         let dates = [document.getElementById("first_date").value]
@@ -302,6 +327,7 @@ function register_link(parameter) {
             url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${document.getElementById("starts_select").value}`
         }
     }
+    if (password.length > 0) {url += `&password=${password}`}
     location.href = url
 }
 

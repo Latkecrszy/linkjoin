@@ -67,13 +67,13 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 500px;
-    min-height: 500px;
+    min-height: 530px;
     position: absolute;
     top: 100px;
     left: 35vw;
 }
 
-#name, #link, #time {
+#name, #link, #time, #password {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
@@ -84,7 +84,9 @@
     width: 70%;
 }
 
-#name::placeholder, #link::placeholder {font-size: 14px; opacity: 0.42;}
+
+
+#name::placeholder, #link::placeholder, #password::placeholder {font-size: 14px; opacity: 0.42;}
 
 #title {
     font-size: 18px;
@@ -273,4 +275,12 @@ input[type=date] {
 }
 
 #button_yes {background-color: #A40606;}
+
+.copy {
+    background: #2B8FD8;
+    width: 100px;
+    font-size: 14px;
+    color: white;
+
+}
 

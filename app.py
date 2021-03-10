@@ -100,18 +100,33 @@ def register():
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if request.args.get("repeats") != "none":
-            links_db.insert_one(
-                {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                 'days': request.args.get("days").split(","),
-                 'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts"))})
+            if request.args.get("password"):
+                links_db.insert_one(
+                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
+                     'days': request.args.get("days").split(","),
+                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
+                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "password": request.args.get("password")})
+            else:
+                links_db.insert_one(
+                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
+                     'days': request.args.get("days").split(","),
+                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
+                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts"))})
         else:
-            links_db.insert_one(
-                {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                 'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
-                           request.args.get("dates").split(",")],
-                 'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                 "repeat": "none"})
+            if request.args.get("password"):
+                links_db.insert_one(
+                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
+                     'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
+                               request.args.get("dates").split(",")],
+                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
+                     "repeat": "none", "password": request.args.get("password")})
+            else:
+                links_db.insert_one(
+                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
+                     'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
+                               request.args.get("dates").split(",")],
+                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
+                     "repeat": "none"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     return redirect("/login")
@@ -218,7 +233,7 @@ def otherlinks():
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_list = links_db.find({"username": login_info['username']})
-        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
+        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username"}
                       for link in links_list]
         link_names = [link['name'] for link in links_list]
         return render_template("alternate_links.html", username=login_info['username'], link_names=link_names)
