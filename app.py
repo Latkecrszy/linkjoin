@@ -159,22 +159,40 @@ def update():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if request.args.get("repeats") != "none":
-            links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                          {"username": login_info['username'], "id": int(request.args.get("id")),
-                                           'days': request.args.get("days").split(","),
-                                           'time': request.args.get("time"), 'link': link,
-                                           'name': request.args.get('name'), "active": "true",
-                                           "repeat": request.args.get("repeats")})
+        if request.args.get("password"):
+            if request.args.get("repeats") != "none":
+                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
+                                              {"username": login_info['username'], "id": int(request.args.get("id")),
+                                               'days': request.args.get("days").split(","),
+                                               'time': request.args.get("time"), 'link': link,
+                                               'name': request.args.get('name'), "active": "true",
+                                               "repeat": request.args.get("repeats"), "password": request.args.get("password")})
+            else:
+                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
+                                              {"username": login_info['username'], "id": int(request.args.get("id")),
+                                               'dates': [{"day": i.split("-")[2],
+                                                          "month": i.split("-")[1],
+                                                          "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
+                                               'time': request.args.get("time"), 'link': link,
+                                               'name': request.args.get('name'), "active": "true",
+                                               "repeat": "none", "password": request.args.get("password")})
         else:
-            links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                          {"username": login_info['username'], "id": int(request.args.get("id")),
-                                           'dates': [{"day": i.split("-")[2],
-                                                      "month": i.split("-")[1],
-                                                      "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
-                                           'time': request.args.get("time"), 'link': link,
-                                           'name': request.args.get('name'), "active": "true",
-                                           "repeat": "none"})
+            if request.args.get("repeats") != "none":
+                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
+                                              {"username": login_info['username'], "id": int(request.args.get("id")),
+                                               'days': request.args.get("days").split(","),
+                                               'time': request.args.get("time"), 'link': link,
+                                               'name': request.args.get('name'), "active": "true",
+                                               "repeat": request.args.get("repeats")})
+            else:
+                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
+                                              {"username": login_info['username'], "id": int(request.args.get("id")),
+                                               'dates': [{"day": i.split("-")[2],
+                                                          "month": i.split("-")[1],
+                                                          "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
+                                               'time': request.args.get("time"), 'link': link,
+                                               'name': request.args.get('name'), "active": "true",
+                                               "repeat": "none"})
 
         return redirect("/links")
     return redirect("/login")

@@ -260,7 +260,7 @@ async function load_links(username, sort) {
 
             })
             edit.innerText = "Edit"
-            edit.style.color = "white"
+            edit.style.color = "black"
             buttons.appendChild(edit)
             let delete_button = document.createElement("button")
             delete_button.classList.add("function_button")
