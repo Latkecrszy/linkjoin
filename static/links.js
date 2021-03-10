@@ -207,11 +207,11 @@ async function load_links(username, sort) {
                 copy.innerText = "Password"
                 copy.id = link['id'].toString()
                 copy.classList.add("copy")
-                copy.addEventListener('click', async function copy() {
-                    let p = document.createElement("p")
-                    p.innerText = link['password']
+                copy.addEventListener('click', async function copyText() {
+                    let p = document.createElement("input")
+                    p.value = link['password']
+                    document.getElementById("links_body").appendChild(p)
                     p.select()
-                    p.setSelectionRange(0, 99999)
                     document.execCommand("copy")
                     copy.innerText = "Copied!"
                     p.remove()
@@ -260,11 +260,11 @@ async function load_links(username, sort) {
 
             })
             edit.innerText = "Edit"
+            edit.style.color = "white"
             buttons.appendChild(edit)
             let delete_button = document.createElement("button")
             delete_button.classList.add("function_button")
             delete_button.style.background = "#A40606"
-            delete_button.style.color = "white"
             delete_button.innerText = "Delete"
             delete_button.addEventListener("click", function() {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
