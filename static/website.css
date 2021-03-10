@@ -88,6 +88,8 @@ footer {
 
 #description {font: 400 18px Roboto; margin-top: 10px; max-width: 450px;}
 
+#learn_more {background-color: #142539; box-shadow: 10px 10px 10px #091B30;}
+
 
 /*Right Content*/
 #right_content img {
@@ -175,4 +177,10 @@ footer {
     overflow-x: hidden;
     overflow-y: visible;
     scroll-behavior: smooth;
+}
+
+#main_body {
+    margin: 0 30px 0 0;
+    display: flex;
+    flex-direction: column;
 }

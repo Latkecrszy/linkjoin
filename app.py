@@ -33,23 +33,12 @@ def Signup():
     return render_template("signup.html", error=None)
 
 
-@app.route("/open")
-def open():
-    login_info = request.cookies.get('login_info')
-    if login_info:
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        return render_template("redirect.html", username=login_info['username'])
-    return redirect("/login")
-
-
 @app.route("/login_error", methods=['POST'])
 def login():
     response = make_response(redirect("/links"))
     mongo = PyMongo(app)
     login_db = mongo.db.login
     hasher = PasswordHasher()
-    print(dict(request.form))
-    print(request)
     login_info = {'username': request.form.get("email").lower(), 'password': hasher.hash(request.form.get("password"))}
     if login_db.find_one({'username': request.form.get("email").lower()}) is None:
         return render_template("login.html", error="username_not_found")
@@ -224,21 +213,6 @@ def db():
     links_list = [{str(i): str(j) for i, j in link.items() if i != "_id"} for
                   link in links_list]
     return make_response(jsonify(links_list))
-
-
-@app.route("/otherlinks")
-def otherlinks():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_list = links_db.find({"username": login_info['username']})
-        links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username"}
-                      for link in links_list]
-        link_names = [link['name'] for link in links_list]
-        return render_template("alternate_links.html", username=login_info['username'], link_names=link_names)
-    else:
-        return redirect("/login")
 
 
 @app.route("/sort")

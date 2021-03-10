@@ -19,7 +19,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
     </head>
-    <body style="margin: 0 30px 0 0; display: flex; flex-direction: column;">
+    <body id="main_body">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
@@ -46,7 +46,7 @@
                 <div id="motto">Being on time has never been so easy.</div>
                 <div id="description">LinkJoin helps you join meetings automatically at exactly the right moment, even when you forget.</div>
                 <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
-                <a href="#info"><button class="get_started" id="learn_more" style="background-color: #142539; box-shadow: 10px 10px 10px #091B30;">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
+                <a href="#info"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px"></button></a>
             </div>
             <div id="right_content">
                 <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy">

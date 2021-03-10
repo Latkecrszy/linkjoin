@@ -16,7 +16,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
     </head>
-    <body style="margin: 0; display: flex; flex-direction: column;">
+    <body id="login_body">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
@@ -34,9 +34,9 @@
             <div id="right_content">
                 <div id="welcome">Create an Account</div>
                 {% if error == "email_in_use" %}
-                        <div class="error" style="left: 90px;">This email is already associated with an account</div>
+                        <div class="error">This email is already associated with an account</div>
                     {% elif error == "invalid_email" %}
-                        <div class="error" style="left: 200px;">Invalid email</div>
+                        <div class="error">Invalid email</div>
                     {% endif %}
                 <form method="POST" action="/signup_error">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>

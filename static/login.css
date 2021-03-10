@@ -101,3 +101,5 @@
     color: red;
     text-align: center;
 }
+
+#login_body {margin: 0; display: flex; flex-direction: column;}

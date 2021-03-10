@@ -286,3 +286,4 @@ input[type=date] {
     margin: 0 -75px 0 0;
 }
 
+#insert {display: flex; flex-direction: column;}
