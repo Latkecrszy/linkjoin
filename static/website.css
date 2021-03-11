@@ -13,7 +13,7 @@ header img {margin: 0 auto 0 20px}
 #page {display: flex; flex-direction: row; margin-bottom: 30vh;}
 
 #left_content {
-    margin: 100px auto 0 150px;
+    margin: 100px auto 0 max(8vw, 100px);
     display: flex;
     flex-direction: column;
 }
@@ -150,7 +150,7 @@ footer {
     #hamburger {
         display: inline-block;
     }
-    #motto, #description {margin-left: 50px;}
+    #motto, #description {margin-left: -30px;}
     #dropdown {
         display: flex;
     }
@@ -177,7 +177,6 @@ footer {
 /*Other*/
 #main_html {
     overflow-x: hidden;
-    overflow-y: visible;
     scroll-behavior: smooth;
 }
 
