@@ -84,7 +84,7 @@
 @media (max-width: 985px) {
     #left_content {display: none}
 
-    #password, #email {width: 300px}
+    #password, #email {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
 
     #welcome {margin-right: 0}
 
