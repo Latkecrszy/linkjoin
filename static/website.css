@@ -150,6 +150,7 @@ footer {
     #hamburger {
         display: inline-block;
     }
+    #motto, #description {margin-left: 50px;}
     #dropdown {
         display: flex;
     }
@@ -158,6 +159,7 @@ footer {
     }
     #hamburger_dropdown {
         display: inline-block;
+        z-index: 9;
     }
     .row {flex-direction: column}
 }
