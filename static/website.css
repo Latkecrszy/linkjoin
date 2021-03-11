@@ -6,7 +6,7 @@ header {
     height: 1px;
 }
 
-header a {margin: 20px 40px 0 40px}
+header a {margin: 20px 40px 0 40px; z-index: 9}
 
 header img {margin: 0 auto 0 20px}
 
