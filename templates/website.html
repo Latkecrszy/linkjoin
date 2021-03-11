@@ -53,14 +53,39 @@
                 <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy" alt="Man surrounded by calendars">
             </div>
         </div>
-        <!--<div id="info">
+        <div id="info">
             <div id="faq">
-                <div class="question">What is LinkJoin?</div>
-                <div class="answer gone">LinkJoin is a site that automatically opens your meetings for you. It's as simple as making an account and creating a link, and you'll never be late again.</div>
-                <div class="question">How do I get started?</div>
-                <div class="answer gone">Just head over to the signup page and create an account. From there, you'll be redirected to the links page to start scheduling your meetings!</div>
+                <div class="question" onclick="expand(0)">
+                    <p>What is LinkJoin?</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone" onclick="expand(0)">LinkJoin is a website that automatically opens your meetings for you. It's as simple as making an account and scheduling your links, and you'll never be late again.</div>
+                <div class="question" onclick="expand(1)">
+                    <p>How do I get started?</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone" onclick="expand(1)">Just head over to the signup page and create an account. From there, you'll be redirected to the links page to start scheduling your meetings!</div>
+                <div class="question" onclick="expand(2)">
+                    <p>Why are my links not opening?</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone" onclick="expand(2)">
+                    There are a few reasons that your links may not be opening. One of the first things that you should check for is that you have pop-ups for linkjoin.xyz enabled. See the other questions for instructions on how to do this. If you have popups enabled, next take a look at your link on the links page. You should see a day (or multiple) on it. This will look like the common abbreviation of the day (Mon, Tue, etc.) If you don't see any days there, click the edit button to select some days for your link to open on. If all else fails, feel free to send an email to me at setharaphael7@gmail.com, and I'd be happy to help figure out what's going on!
+                </div>
+                <!--<div class="question" onclick="expand(3)">
+                    <p>How do I enable popups? (chrome)</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone">
+                    To do this, go into your browser settings (usually by pressing ctrl ,) and navigate to the Privacy and Security tab. In chrome,
+                </div>-->
             </div>
-        </div>-->
+        </div>
+        <div style="min-height: 20px; background-color: #091B30; width: 100vw">
         <footer>
             <div class="line">
                 <div class="footer_link">
@@ -83,6 +108,7 @@
                 </div>
             </div>
         </footer>
+        </div>
     </body>
     <script>
         document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
@@ -93,5 +119,13 @@
         let x = window.matchMedia("(max-width: 450px)")
         myFunction(x) // Call listener function at run time
         x.addListener(myFunction)
+        function expand(index) {
+            let answers = document.getElementsByClassName("answer")
+            let questions = document.getElementsByClassName("question")
+            answers[parseInt(index)].classList.toggle("gone")
+            questions[parseInt(index)].getElementsByTagName("div")[0].classList.toggle("gone")
+            questions[parseInt(index)].getElementsByTagName("div")[1].classList.toggle("gone")
+            console.log(index)
+        }
     </script>
 </html>
