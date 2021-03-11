@@ -314,6 +314,16 @@ function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let time = document.getElementById("time").value
+    console.log(time)
+    if (time.toString().toLowerCase().includes("am")) {
+        time = time.split("a")[0]
+    }
+    else if (time.toString().toLowerCase().includes("pm")) {
+        time = time.split("a")[0]
+        time = `${parseInt(time.split(":")[0])+12}:${parseInt(time.split(":")[1])}`
+    }
+    console.log(time)
+    console.log(typeof time)
     let password = document.getElementById("password").value
     let url;
     if (!document.getElementById("repeats").checked) {
