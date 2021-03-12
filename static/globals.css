@@ -183,7 +183,7 @@ input:invalid {box-shadow: none}
     min-width: 100px;
     text-align: center;
     box-sizing: border-box;
-    padding-top: 13px;
+    padding-top: 11.5px;
 }
 
 .login_button:hover {

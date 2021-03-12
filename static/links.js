@@ -5,8 +5,9 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function popUp() {
-    popup = document.getElementById("popup")
+function popUp(popup) {
+    console.log(popup)
+    popup = document.getElementById(popup)
     popup.style.display = "flex"
     document.getElementById("page").classList.toggle("blurred")
     document.getElementsByTagName("html")[0].style.background = "#040E1A"
@@ -18,8 +19,8 @@ function popUp() {
     check()
 }
 
-function hide() {
-    popup = document.getElementById("popup")
+function hide(popup) {
+    popup = document.getElementById(popup)
     popup.style.display = "none"
     document.getElementById("page").classList.toggle("blurred")
     document.getElementsByTagName("html")[0].style.background = "#091B30"
@@ -163,7 +164,7 @@ async function load_links(username, sort) {
             link_event.appendChild(time_div)
             let name = document.createElement("div")
             let name_container = document.createElement("div")
-            name_container.classList.add("name_container")
+            name_container.style.cursor = "pointer"
             name.classList.add("link_event_title")
             name.innerText = link["name"]
             if (link["active"] == "true") {
@@ -222,6 +223,28 @@ async function load_links(username, sort) {
             }
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
+            let share = document.createElement("button")
+            share.classList.add("function_button")
+            share.style.background = "#E0FF4F"
+            share.innerText = "Share link"
+            share.style.color = "black"
+            share.addEventListener("click", function openShare() {
+                let state = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
+                console.log(document.getElementById("popup_share").style)
+                document.getElementById("popup_share").style.display = state
+                document.getElementById("share_link").value = link['share']
+                document.getElementById("page").classList.toggle("blurred")
+                document.getElementsByTagName("html")[0].style.background = "#040E1A"
+                })
+
+            document.getElementById("click_to_copy").addEventListener('click', async function copyText() {
+                document.getElementById("share_link").select()
+                document.execCommand("copy")
+                document.getElementById("click_to_copy").innerText = "Copied!"
+                await sleep(2000)
+                document.getElementById("click_to_copy").innerText = "Click to Copy"
+            })
+            buttons.appendChild(share)
             let activate_switch = document.createElement("button")
             activate_switch.classList.add("function_button")
             if (link['active'] == "false") {

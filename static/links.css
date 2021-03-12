@@ -227,6 +227,37 @@ input[type=date] {
     margin: 10px;
 }
 
+@media (max-width: 1000px) {
+    .link_event {
+        background-color: #142539;
+        border-radius: 1px;
+        height: 30vw;
+        padding: 25px 30px;
+        margin-left: 26vw !important;
+        width: 40vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 270px;
+        min-height: 175px;
+    }
+
+    .time {
+        font-size: 28px;
+        box-sizing: border-box;
+        margin-left: calc(45% - 50px)}
+
+    .buttons_container {
+        font-weight: 600;
+        margin-bottom: 45px;
+        text-align: center;
+        display: flex;
+        justify-content: space-around;
+        margin-left: -20%;
+        box-sizing: border-box;
+    }
+}
+
 .days {
     font-size: 16px;
     text-align: center;
@@ -287,3 +318,44 @@ input[type=date] {
 }
 
 #insert {display: flex; flex-direction: column;}
+
+#popup_share {
+    width: 600px;
+    height: 250px;
+    background-color: #091B30;
+    padding-top: 30px;
+    position: absolute;
+    top: 150px;
+    left: calc(50vw - 250px);
+    border-radius: 5px;
+    flex-direction: column;
+}
+
+#popup_share p {
+    font-size: 20px;
+    color: white;
+    margin: 30px 0 70px 40px;
+}
+
+#share_link {
+    margin-left: 60px !important;
+    overflow: visible;
+    width: 350px;
+    font: 500 18px Roboto;
+    background-color: #142539;
+    height: 50px;
+    display: inline;
+    padding-left: 5px;
+    border: none;
+}
+
+#click_to_copy {
+    background-color: #2B8FD8;
+    font: 500 14px Montserrat;
+    width: 120px;
+    height: 50px;
+    border: none;
+    display: inline;
+    margin-left: -3px;
+    margin-bottom: 15px;
+}

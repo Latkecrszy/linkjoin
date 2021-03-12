@@ -264,6 +264,7 @@ def privacy():
 def auth():
     return make_response("Coming soon!")
 
+
 @app.route("/addlink")
 def addlink():
     mongo = PyMongo(app)
