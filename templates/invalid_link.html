@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html id="main_html" lang="en">
+    <head>
+        <meta name=”robots” content="noindex, nofollow">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    </head>
+    <body id="main_body">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
+            <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
+        </svg>
+        <header>
+            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <a href="/links">Links</a>
+            <a href="/signup">Sign Up</a>
+            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <div id="dropdown">
+                <div id="hamburger">
+                    <div id="line1"></div>
+                    <div id="line2"></div>
+                    <div id="line3"></div>
+                </div>
+                <div id="hamburger_dropdown">
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login">Log In</a>
+                    <a href="/links">Links</a>
+                </div>
+            </div>
+        </header>
+    </body>
+    <script>
+        document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
+        function myFunction(x) {
+            if (x.matches) {document.getElementById("get_started").innerText = "Get started"; document.getElementById("get_started").style.width = "250px"; document.getElementById("learn_more").style.width = "250px"}
+            else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`; document.getElementById("get_started").style.width = "321px"; document.getElementById("learn_more").style.width = "321px"}
+        }
+        let x = window.matchMedia("(max-width: 450px)")
+        myFunction(x)
+        x.addListener(myFunction)
+    </script>
+</html>

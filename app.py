@@ -264,16 +264,6 @@ def privacy():
 def auth():
     return make_response("Coming soon!")
 
-
-@app.route("/link")
-def link():
-    mongo = PyMongo(app)
-    links_db = mongo.db.links
-    for document in links_db.find():
-        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-        links_db.find_one_and_update(dict(document), {"$set": {"share": f"https://linkjoin.xyz/addlink?id={id}"}})
-
-
 @app.route("/addlink")
 def addlink():
     mongo = PyMongo(app)
@@ -292,6 +282,11 @@ def addlink():
         return redirect('/links')
     else:
         return redirect(f"/login?redirect=https://linkjoin.xyz/addlink?id={request.args.get('id')}")
+
+
+@app.route("/invalid")
+def invalid():
+    return render_template("invalid_link.html")
 
 
 if __name__ == "__main__":

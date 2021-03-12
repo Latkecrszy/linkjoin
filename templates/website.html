@@ -123,7 +123,7 @@
             else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`; document.getElementById("get_started").style.width = "321px"; document.getElementById("learn_more").style.width = "321px"}
         }
         let x = window.matchMedia("(max-width: 450px)")
-        myFunction(x) // Call listener function at run time
+        myFunction(x)
         x.addListener(myFunction)
         function expand(index) {
             let answers = document.getElementsByClassName("answer")

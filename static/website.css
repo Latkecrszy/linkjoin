@@ -4,9 +4,10 @@ header {
     width: 100%;
     padding: 30px;
     height: 1px;
+
 }
 
-header a {margin: 20px 40px 0 40px; z-index: 9}
+header a {margin: 15px 40px 0 40px; z-index: 9; font: 600 18px Montserrat}
 
 header img {margin: 0 auto 0 20px}
 
