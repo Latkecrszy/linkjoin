@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect
 from flask_pymongo import PyMongo
-import json, os, dotenv, base64, re, argon2
+import json, os, dotenv, base64, re, argon2, random, string
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -25,7 +25,7 @@ def main():
 
 @app.route("/login")
 def Login():
-    return render_template("login.html", error=None)
+    return render_template("login.html", error=None, redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/signup")
@@ -35,7 +35,7 @@ def Signup():
 
 @app.route("/login_error", methods=['POST'])
 def login():
-    response = make_response(redirect("/links"))
+    response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
     login_db = mongo.db.login
     hasher = PasswordHasher()
@@ -263,6 +263,35 @@ def privacy():
 @app.route("/auth/google")
 def auth():
     return make_response("Coming soon!")
+
+
+@app.route("/link")
+def link():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    for document in links_db.find():
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+        links_db.find_one_and_update(dict(document), {"$set": {"share": f"https://linkjoin.xyz/addlink?id={id}"}})
+
+
+@app.route("/addlink")
+def addlink():
+    mongo = PyMongo(app)
+    links_db = mongo.db.links
+    id_db = mongo.db.id
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        new_link = links_db.find_one({"share": f"https://linkjoin.xyz/addlink?id={request.args.get('id')}"})
+        if new_link is None:
+            return render_template("invalid_link.html")
+        new_link = {key: value for key, value in dict(new_link).items() if key != "_id" and key != "id" and key != "username" and key != "share"}
+        new_link['username'] = login_info['username']
+        new_link["id"] = int(dict(id_db.find_one({"_id": "id"}))['id'])
+        id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
+        links_db.insert_one(new_link)
+        return redirect('/links')
+    else:
+        return redirect(f"/login?redirect=https://linkjoin.xyz/addlink?id={request.args.get('id')}")
 
 
 if __name__ == "__main__":

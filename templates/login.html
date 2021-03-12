@@ -39,7 +39,7 @@
                 {% elif error == "incorrect_password" %}
                     <div class="error">Incorrect Password</div>
                 {% endif %}
-                <form method="POST" action="/login_error">
+                <form method="POST" action="/login_error?redirect={{ redirect }}">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
                     <button type="submit" id="submit" >Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
