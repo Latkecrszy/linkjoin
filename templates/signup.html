@@ -39,12 +39,16 @@
                 {% elif error == "invalid_email" %}
                     <div class="error">Invalid email</div>
                 {% endif %}
-                <form method="POST" action="/signup_error?redirect={{ redirect }}">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
-                    <button type="submit" id="submit" >Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
-                </form>
+                    <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
             </div>
         </div>
     </body>
+    <script>
+        function signUp() {
+            console.log("works")
+            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
+        }
+    </script>
 </html>

@@ -25,28 +25,30 @@ def main():
 
 @app.route("/login")
 def Login():
-    return render_template("login.html", error=None, redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+    return render_template("login.html", error=request.args.get("error"), redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/signup")
 def Signup():
-    return render_template("signup.html", error=None, redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+    return render_template("signup.html", error=request.args.get("error"), redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
-@app.route("/login_error", methods=['POST', 'GET'])
+@app.route("/login_error", methods=['GET'])
 def login():
     response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
     login_db = mongo.db.login
     hasher = PasswordHasher()
-    login_info = {'username': request.form.get("email").lower(), 'password': hasher.hash(request.form.get("password"))}
-    if login_db.find_one({'username': request.form.get("email").lower()}) is None:
-        return render_template("login.html", error="username_not_found")
-    authorization = login_db.find_one({'username': request.form.get("email").lower()})
+    print(request.args)
+    login_info = {'username': request.args.get("email").lower(), 'password': hasher.hash(request.args.get("password"))}
+    redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
+    if login_db.find_one({'username': request.args.get("email").lower()}) is None:
+        return redirect(f"/login?error=username_not_found{redirect_link}")
+    authorization = login_db.find_one({'username': request.args.get("email").lower()})
     try:
-        ph.verify(authorization['password'], request.form.get("password"))
+        ph.verify(authorization['password'], request.args.get("password"))
     except argon2.exceptions.VerifyMismatchError:
-        return render_template("login.html", error="incorrect_password")
+        return redirect(f"/login?error=incorrect_password{redirect_link}")
     cookie = json.dumps({key: value for key, value in login_info.items() if key != "_id"})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -54,20 +56,21 @@ def login():
     return response
 
 
-@app.route("/signup_error", methods=["POST"])
+@app.route("/signup_error", methods=["GET"])
 def signup():
     hasher = PasswordHasher()
     response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
     login_db = mongo.db.login
-    email = request.form.get("email").lower()
+    email = request.args.get("email").lower()
+    redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if not re.search("^[^@ ]+@[^@ ]+\.[^@ .]{2,}$", email):
-        return render_template("signup.html", error="invalid_email")
-    login_info = {'username': email, 'password': request.form.get("password")}
-    if login_db.find_one({'username': request.form.get("email").lower()}) is not None:
-        return render_template("signup.html", error="email_in_use")
-    HASH = hasher.hash(request.form.get("password"))
-    login_db.insert_one({'username': request.form.get("email").lower(), 'password': HASH})
+        return redirect(f"/signup?error=invalid_email{redirect_link}")
+    login_info = {'username': email, 'password': request.args.get("password")}
+    if login_db.find_one({'username': request.args.get("email").lower()}) is not None:
+        return redirect(f"/signup?error=email_in_use{redirect_link}")
+    HASH = hasher.hash(request.args.get("password"))
+    login_db.insert_one({'username': request.args.get("email").lower(), 'password': HASH})
     cookie = {key: value for key, value in login_info.items() if key != "_id"}
     cookie = json.dumps(cookie)
     cookie = str.encode(cookie)

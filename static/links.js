@@ -235,6 +235,7 @@ async function load_links(username, sort) {
                 document.getElementById("share_link").value = link['share']
                 document.getElementById("page").classList.toggle("blurred")
                 document.getElementsByTagName("html")[0].style.background = "#040E1A"
+                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 })
 
             document.getElementById("click_to_copy").addEventListener('click', async function copyText() {
