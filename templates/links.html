@@ -92,7 +92,7 @@
         <div id="popup">
             <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="margin: 20px 0px -30px 20px" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
-            <form id="create" autocomplete="off" onsubmit="register_link()">
+            <form id="create" autocomplete="off" onsubmit="register_link('register')">
                 <div class="flex">
                     <img src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px" alt="text symbol">
                     <input type="text" placeholder="Meeting Title" id="name" required>
@@ -107,7 +107,7 @@
                 </div>
                 <div class="flex">
                     <img src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
-                    <input type="password" placeholder="Optional: Meeting Password" id="password">
+                    <input type="text" placeholder="Optional: Meeting Password" id="password">
                 </div>
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
 
@@ -147,8 +147,7 @@
                             <option value="4">in 4 weeks</option>
                         </select>
                     </div>
-
-                    <button type="button" id="submit" onclick="register_link('register')">Create</button>
+                    <button type="submit" id="submit">Create</button>
                 </div>
             </form>
         </div>

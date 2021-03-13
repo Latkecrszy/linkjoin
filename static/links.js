@@ -13,6 +13,8 @@ function popUp(popup) {
     document.getElementsByTagName("html")[0].style.background = "#040E1A"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
+    document.getElementById("time").value = null
+    document.getElementById("password").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
     document.getElementById("title").innerText = "Schedule a new meeting"
@@ -277,6 +279,10 @@ async function load_links(username, sort) {
                 check()
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
+                if ("password" in link) {document.getElementById("password").value = link["password"]}
+                else {document.getElementById("password").value = null}
+
+                document.getElementById("time").value = link['time']
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
