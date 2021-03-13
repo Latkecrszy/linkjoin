@@ -33,7 +33,7 @@ def Signup():
     return render_template("signup.html", error=None)
 
 
-@app.route("/login_error", methods=['POST'])
+@app.route("/login_error", methods=['POST', 'GET'])
 def login():
     response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
@@ -81,7 +81,10 @@ def register():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     id_db = mongo.db.id
-    print(request.args)
+    ids = [dict(document)['share'] for document in links_db.find()]
+    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    while f"https://linkjoin.xyz/addlink?id={id}" in ids:
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     if request.cookies.get('login_info'):
         if "https" not in request.args.get("link"):
             link = f"https://{request.args.get('link')}"
@@ -94,13 +97,14 @@ def register():
                     {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                      'days': request.args.get("days").split(","),
                      'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "password": request.args.get("password")})
+                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "password": request.args.get("password"),
+                     "share": f"https://linkjoin.xyz/addlink?id={id}"})
             else:
                 links_db.insert_one(
                     {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                      'days': request.args.get("days").split(","),
                      'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts"))})
+                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "share": f"https://linkjoin.xyz/addlink?id={id}"})
         else:
             if request.args.get("password"):
                 links_db.insert_one(
@@ -108,14 +112,14 @@ def register():
                      'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                                request.args.get("dates").split(",")],
                      'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": "none", "password": request.args.get("password")})
+                     "repeat": "none", "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
             else:
                 links_db.insert_one(
                     {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                      'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                                request.args.get("dates").split(",")],
                      'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": "none"})
+                     "repeat": "none", "share": f"https://linkjoin.xyz/addlink?id={id}"})
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     return redirect("/login")
@@ -278,6 +282,11 @@ def addlink():
         new_link = {key: value for key, value in dict(new_link).items() if key != "_id" and key != "id" and key != "username" and key != "share"}
         new_link['username'] = login_info['username']
         new_link["id"] = int(dict(id_db.find_one({"_id": "id"}))['id'])
+        ids = [dict(document)['share'] for document in links_db.find()]
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+        while f"https://linkjoin.xyz/addlink?id={id}" in ids:
+            id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+        new_link['share'] = f"https://linkjoin.xyz/addlink?id={id}"
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         links_db.insert_one(new_link)
         return redirect('/links')
