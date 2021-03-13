@@ -356,16 +356,19 @@ function register_link(parameter) {
     }
     else if (time.toString().toLowerCase().includes("pm")) {
         time = time.split("p")[0]
+        console.log(time)
         time = `${parseInt(time.split(":")[0])+12}:${time.split(":")[1]}`
+        console.log(time)
     }
     let password = document.getElementById("password").value
     let url;
     if (!document.getElementById("repeats").checked) {
-        let dates = [document.getElementById("first_date").value]
+        let dates = [document.getElementById("first_date").value.replaceAll(" ", "-")]
         for (let x = 0; x < document.getElementById("dates").children.length; x++) {
             let element = document.getElementById("dates").children[x];
-            dates.push(element.value)
+            dates.push((element.value).replaceAll(" ", "-"))
         }
+        console.log(dates)
         if (parameter == "register") {
             url = `/register?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}`
         }
