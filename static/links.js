@@ -17,6 +17,10 @@ function popUp(popup) {
     document.getElementById("password").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
+    document.getElementById("submit_dates").innerHTML = null
+    document.getElementById("submit_dates").innerText = "Create"
+    document.getElementById("submit_dates").setAttribute("onclick", `register_link("register")`)
+    document.getElementById("submit").setAttribute("onclick", `register_link("register")`)
     document.getElementById("title").innerText = "Schedule a new meeting"
     check()
 }
@@ -285,6 +289,8 @@ async function load_links(username, sort) {
                 document.getElementById("time").value = link['time']
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
+                document.getElementById("submit_dates").innerText = "Update"
+                document.getElementById("submit_dates").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
@@ -349,11 +355,9 @@ function register_link(parameter) {
         time = time.split("a")[0]
     }
     else if (time.toString().toLowerCase().includes("pm")) {
-        time = time.split("a")[0]
-        time = `${parseInt(time.split(":")[0])+12}:${parseInt(time.split(":")[1])}`
+        time = time.split("p")[0]
+        time = `${parseInt(time.split(":")[0])+12}:${time.split(":")[1]}`
     }
-    console.log(time)
-    console.log(typeof time)
     let password = document.getElementById("password").value
     let url;
     if (!document.getElementById("repeats").checked) {
@@ -387,6 +391,7 @@ function register_link(parameter) {
         }
     }
     if (password.length > 0) {url += `&password=${password}`}
+    console.log(url)
     location.href = url
 }
 
