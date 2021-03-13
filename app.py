@@ -84,7 +84,7 @@ def register():
     mongo = PyMongo(app)
     links_db = mongo.db.links
     id_db = mongo.db.id
-    ids = [dict(document)['share'] for document in links_db.find()]
+    ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while f"https://linkjoin.xyz/addlink?id={id}" in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
@@ -160,6 +160,10 @@ def delete():
 def update():
     mongo = PyMongo(app)
     links_db = mongo.db.links
+    ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
+    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    while f"https://linkjoin.xyz/addlink?id={id}" in ids:
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     if request.cookies.get('login_info'):
         if "https" not in request.args.get("link"):
             link = f"https://{request.args.get('link')}"
@@ -173,7 +177,7 @@ def update():
                                                'days': request.args.get("days").split(","),
                                                'time': request.args.get("time"), 'link': link,
                                                'name': request.args.get('name'), "active": "true",
-                                               "repeat": request.args.get("repeats"), "password": request.args.get("password")})
+                                               "repeat": request.args.get("repeats"), "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
             else:
                 links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
                                               {"username": login_info['username'], "id": int(request.args.get("id")),
@@ -182,7 +186,7 @@ def update():
                                                           "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
                                                'time': request.args.get("time"), 'link': link,
                                                'name': request.args.get('name'), "active": "true",
-                                               "repeat": "none", "password": request.args.get("password")})
+                                               "repeat": "none", "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
         else:
             if request.args.get("repeats") != "none":
                 links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
@@ -190,7 +194,7 @@ def update():
                                                'days': request.args.get("days").split(","),
                                                'time': request.args.get("time"), 'link': link,
                                                'name': request.args.get('name'), "active": "true",
-                                               "repeat": request.args.get("repeats")})
+                                               "repeat": request.args.get("repeats"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
             else:
                 links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
                                               {"username": login_info['username'], "id": int(request.args.get("id")),
@@ -199,7 +203,7 @@ def update():
                                                           "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
                                                'time': request.args.get("time"), 'link': link,
                                                'name': request.args.get('name'), "active": "true",
-                                               "repeat": "none"})
+                                               "repeat": "none", "share": f"https://linkjoin.xyz/addlink?id={id}"})
 
         return redirect("/links")
     return redirect("/login")
@@ -285,7 +289,7 @@ def addlink():
         new_link = {key: value for key, value in dict(new_link).items() if key != "_id" and key != "id" and key != "username" and key != "share"}
         new_link['username'] = login_info['username']
         new_link["id"] = int(dict(id_db.find_one({"_id": "id"}))['id'])
-        ids = [dict(document)['share'] for document in links_db.find()]
+        ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
         while f"https://linkjoin.xyz/addlink?id={id}" in ids:
             id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
