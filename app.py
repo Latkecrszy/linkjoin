@@ -30,7 +30,7 @@ def Login():
 
 @app.route("/signup")
 def Signup():
-    return render_template("signup.html", error=None)
+    return render_template("signup.html", error=None, redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/login_error", methods=['POST', 'GET'])
@@ -57,7 +57,7 @@ def login():
 @app.route("/signup_error", methods=["POST"])
 def signup():
     hasher = PasswordHasher()
-    response = make_response(redirect("/links"))
+    response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
     login_db = mongo.db.login
     email = request.form.get("email").lower()

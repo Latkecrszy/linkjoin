@@ -35,15 +35,14 @@
             <div id="right_content">
                 <div id="welcome">Create an Account</div>
                 {% if error == "email_in_use" %}
-                        <div class="error">This email is already associated with an account</div>
-                    {% elif error == "invalid_email" %}
-                        <div class="error">Invalid email</div>
-                    {% endif %}
-                <form method="POST" action="/signup_error">
+                    <div class="error">This email is already associated with an account</div>
+                {% elif error == "invalid_email" %}
+                    <div class="error">Invalid email</div>
+                {% endif %}
+                <form method="POST" action="/signup_error?redirect={{ redirect }}">
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
                     <button type="submit" id="submit" >Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
-
                 </form>
             </div>
         </div>
