@@ -34,6 +34,7 @@
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
                 <a href="/login"><div class="button header_button">Switch Account</div></a>
+                <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 <a href="/help" target="_blank"><div class="button header_button">Help</div></a>
                 <a href="/about" target="_blank"><div class="button header_button">About Us</div></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp('popup')" id="plus_button" alt="Click to schedule a link">
@@ -117,10 +118,10 @@
                     <input class="gone" id="first_date" type="date" placeholder="yyyy mm dd">
                     <button type="button" id="add_field" class="gone"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="20px" width="21px;" alt="plus sign"></button>
                     <select id="select" class="popup_select">
-                        <option value="week" selected>Week</option>
-                        <option value="2 weeks">2 Weeks</option>
-                        <option value="3 weeks">3 Weeks</option>
-                        <option value="4 weeks">4 Weeks</option>
+                        <option value="week" id="week" selected>Week</option>
+                        <option value="2 weeks" id="2 weeks">2 Weeks</option>
+                        <option value="3 weeks" id="3 weeks">3 Weeks</option>
+                        <option value="4 weeks" id="4 weeks">4 Weeks</option>
                     </select>
                 </div>
                 <div id="dates_container" class="gone">
@@ -128,22 +129,22 @@
                     <button type="button" id="submit_dates" onclick="register_link('register')">Create</button>
                 </div>
                 <div id="days">
-                    <button value="Sun" type="button">Su</button>
-                    <button value="Mon" type="button">M</button>
-                    <button value="Tue" type="button">Tu</button>
-                    <button value="Wed" type="button">W</button>
-                    <button value="Thu" type="button">Th</button>
-                    <button value="Fri" type="button">F</button>
-                    <button value="Sat" type="button">Sa</button>
+                    <button value="Sun" id="Sun" type="button">Su</button>
+                    <button value="Mon" id="Mon" type="button">M</button>
+                    <button value="Tue" id="Tue" type="button">Tu</button>
+                    <button value="Wed" id="Wed" type="button">W</button>
+                    <button value="Thu" id="Thu" type="button">Th</button>
+                    <button value="Fri" id="Fri" type="button">F</button>
+                    <button value="Sat" id="Sat" type="button">Sa</button>
                 </div>
                 <div id="starts_container">
                     <div id="starts">Starts
                         <select class="popup_select" id="starts_select">
-                            <option value="0">Today</option>
-                            <option value="1">in 1 week</option>
-                            <option value="2">in 2 weeks</option>
-                            <option value="3">in 3 weeks</option>
-                            <option value="4">in 4 weeks</option>
+                            <option value="0" id="0">Today</option>
+                            <option value="1" id="1">in 1 week</option>
+                            <option value="2" id="2">in 2 weeks</option>
+                            <option value="3" id="3">in 3 weeks</option>
+                            <option value="4" id="4">in 4 weeks</option>
                         </select>
                     </div>
                     <button type="button" id="submit" onclick="register_link('register')">Create</button>

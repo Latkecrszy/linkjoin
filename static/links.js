@@ -22,6 +22,16 @@ function popUp(popup) {
     document.getElementById("submit_dates").setAttribute("onclick", `register_link("register")`)
     document.getElementById("submit").setAttribute("onclick", `register_link("register")`)
     document.getElementById("title").innerText = "Schedule a new meeting"
+    document.getElementById('week').selected = "selected"
+
+    let children = document.getElementById("days").children
+    for (let i=0; i < children.length; i++) {
+        let date = new Date()
+        if (children[i].value != {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]) {
+            children[i].classList.remove("selected")
+        }
+    }
+    document.getElementById("0").selected = "selected"
     check()
 }
 
@@ -191,8 +201,9 @@ async function load_links(username, sort) {
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
+            let days_list;
             if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link['repeat'])) {
-                let days_list = link["days"].replaceAll("'", '"')
+                days_list = link["days"].replaceAll("'", '"')
                 days_list = JSON.parse(days_list)
                 days.innerText = days_list.join(", ")
             }
@@ -292,6 +303,18 @@ async function load_links(username, sort) {
                 document.getElementById("submit_dates").innerText = "Update"
                 document.getElementById("submit_dates").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
+                console.log(days_list)
+                for (let day_abbrev of days_list) {
+                    if (document.getElementById(day_abbrev)) {
+                        console.log(day_abbrev)
+                        if (!document.getElementById(day_abbrev).classList.contains("selected")) {
+                            document.getElementById(day_abbrev).classList.add("selected")
+                        }
+
+                    }
+                }
+                document.getElementById(link['repeat']).selected = "selected"
+                document.getElementById(link['starts']).selected = "selected"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
             })
@@ -316,23 +339,29 @@ async function load_links(username, sort) {
         }
     }
     console.log("working")
-    check_day()
+    check_day(username)
     await NewTab(username)
 }
 
-function check_day() {
+async function check_day(username) {
     console.log("triggered")
     let date = new Date()
+    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let links = await start_json.json()
     let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
     let children = document.getElementById("days").children
-    for (let i = 0; i < children.length; i++) {
-        let child = children[i];
-        if (child.value == day) {
-            child.classList.toggle("selected")
+    console.log(links)
+    console.log(links.length)
+    if (links.length <= 3) {
+        for (let i = 0; i < children.length; i++) {
+            let child = children[i];
+            if (child.value == day) {
+                child.classList.add("selected")
+            }
+            console.log(child.value)
         }
-        console.log(child.value)
+        console.log(day)
     }
-    console.log(day)
 }
 
 
@@ -387,10 +416,10 @@ function register_link(parameter) {
         }
         console.log(days)
         if (parameter == "register") {
-            url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${document.getElementById("starts_select").value}`
+            url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
         }
         else {
-            url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${document.getElementById("starts_select").value}`
+            url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
         }
     }
     if (password.length > 0) {url += `&password=${password}`}
@@ -398,12 +427,7 @@ function register_link(parameter) {
     location.href = url
 }
 
-/*document.getElementById("keep_on").addEventListener('onchange', function nosleep() {
-    if (document.getElementById("keep_on").value == "yes") {
-        noSleep.enable()
-    }
-    else {
-        noSleep.disable();
-    }
+function logOut() {
+    document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    location.reload()
 }
-)*/

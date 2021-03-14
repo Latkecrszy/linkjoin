@@ -165,6 +165,7 @@ body: {display: flex}
     height: 50px;
     display: inline-block;
     margin-left: 30px;
+    cursor: pointer;
 }
 
 .gone {display: none}

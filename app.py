@@ -25,12 +25,14 @@ def main():
 
 @app.route("/login")
 def Login():
-    return render_template("login.html", error=request.args.get("error"), redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+    return render_template("login.html", error=request.args.get("error"),
+                           redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/signup")
 def Signup():
-    return render_template("signup.html", error=request.args.get("error"), redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+    return render_template("signup.html", error=request.args.get("error"),
+                           redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/login_error", methods=['GET'])
@@ -94,35 +96,23 @@ def register():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        insert = {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
+                  'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'),
+                  "active": "true", "starts": int(request.args.get("starts")),
+                  "share": f"https://linkjoin.xyz/addlink?id={id}"}
         if request.args.get("repeats") != "none":
-            if request.args.get("password"):
-                links_db.insert_one(
-                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                     'days': request.args.get("days").split(","),
-                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "password": request.args.get("password"),
-                     "share": f"https://linkjoin.xyz/addlink?id={id}"})
-            else:
-                links_db.insert_one(
-                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                     'days': request.args.get("days").split(","),
-                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": request.args.get("repeats"), "starts": int(request.args.get("starts")), "share": f"https://linkjoin.xyz/addlink?id={id}"})
+            insert['repeat'] = request.args.get("repeats")
+            insert['days'] = request.args.get("days").split(",")
         else:
-            if request.args.get("password"):
-                links_db.insert_one(
-                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                     'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
-                               request.args.get("dates").split(",")],
-                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": "none", "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
-            else:
-                links_db.insert_one(
-                    {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
-                     'dates': [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
-                               request.args.get("dates").split(",")],
-                     'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'), "active": "true",
-                     "repeat": "none", "share": f"https://linkjoin.xyz/addlink?id={id}"})
+            insert['repeat'] = "none"
+            insert['dates'] = [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
+                               request.args.get("dates").split(",")]
+        if request.args.get("password"):
+            insert['password'] = request.args.get("password")
+        if request.args.get("repeats")[0].isnumeric():
+            insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
+        print(insert)
+        links_db.insert_one(insert)
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
     return redirect("/login")
@@ -170,41 +160,23 @@ def update():
         else:
             link = request.args.get("link")
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if request.args.get("password"):
-            if request.args.get("repeats") != "none":
-                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                              {"username": login_info['username'], "id": int(request.args.get("id")),
-                                               'days': request.args.get("days").split(","),
-                                               'time': request.args.get("time"), 'link': link,
-                                               'name': request.args.get('name'), "active": "true",
-                                               "repeat": request.args.get("repeats"), "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
-            else:
-                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                              {"username": login_info['username'], "id": int(request.args.get("id")),
-                                               'dates': [{"day": i.split("-")[2],
-                                                          "month": i.split("-")[1],
-                                                          "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
-                                               'time': request.args.get("time"), 'link': link,
-                                               'name': request.args.get('name'), "active": "true",
-                                               "repeat": "none", "password": request.args.get("password"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
+        insert = {"username": login_info['username'], "id": int(request.args.get("id")),
+                  'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'),
+                  "active": "true", "starts": int(request.args.get("starts")),
+                  "share": f"https://linkjoin.xyz/addlink?id={id}"}
+        if request.args.get("repeats") != "none":
+            insert['repeat'] = request.args.get("repeats")
+            insert['days'] = request.args.get("days").split(",")
         else:
-            if request.args.get("repeats") != "none":
-                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                              {"username": login_info['username'], "id": int(request.args.get("id")),
-                                               'days': request.args.get("days").split(","),
-                                               'time': request.args.get("time"), 'link': link,
-                                               'name': request.args.get('name'), "active": "true",
-                                               "repeat": request.args.get("repeats"), "share": f"https://linkjoin.xyz/addlink?id={id}"})
-            else:
-                links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))},
-                                              {"username": login_info['username'], "id": int(request.args.get("id")),
-                                               'dates': [{"day": i.split("-")[2],
-                                                          "month": i.split("-")[1],
-                                                          "year": i.split("-")[0]} for i in request.args.get("dates").split(",")],
-                                               'time': request.args.get("time"), 'link': link,
-                                               'name': request.args.get('name'), "active": "true",
-                                               "repeat": "none", "share": f"https://linkjoin.xyz/addlink?id={id}"})
-
+            insert['repeat'] = "none"
+            insert['dates'] = [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
+                               request.args.get("dates").split(",")]
+        if request.args.get("password"):
+            insert['password'] = request.args.get("password")
+        if request.args.get("repeats")[0].isnumeric():
+            insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
+        print(insert)
+        links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))}, insert)
         return redirect("/links")
     return redirect("/login")
 
@@ -286,7 +258,8 @@ def addlink():
         new_link = links_db.find_one({"share": f"https://linkjoin.xyz/addlink?id={request.args.get('id')}"})
         if new_link is None:
             return render_template("invalid_link.html")
-        new_link = {key: value for key, value in dict(new_link).items() if key != "_id" and key != "id" and key != "username" and key != "share"}
+        new_link = {key: value for key, value in dict(new_link).items() if
+                    key != "_id" and key != "id" and key != "username" and key != "share"}
         new_link['username'] = login_info['username']
         new_link["id"] = int(dict(id_db.find_one({"_id": "id"}))['id'])
         ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
