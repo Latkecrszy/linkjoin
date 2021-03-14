@@ -307,6 +307,9 @@ async function load_links(username, sort) {
                 for (let day_abbrev of days_list) {
                     if (document.getElementById(day_abbrev)) {
                         console.log(day_abbrev)
+                        let currentDay = new Date()
+                        currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(currentDay.getDay())]
+                        document.getElementById(currentDay).classList.remove("selected")
                         if (!document.getElementById(day_abbrev).classList.contains("selected")) {
                             document.getElementById(day_abbrev).classList.add("selected")
                         }
