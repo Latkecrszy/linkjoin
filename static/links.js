@@ -331,7 +331,7 @@ async function load_links(username, sort) {
         }
     }
     check_day(username)
-    await NewTab(username)
+    await NewTab(username, links)
 }
 
 async function check_day(username) {

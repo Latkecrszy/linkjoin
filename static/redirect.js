@@ -2,7 +2,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 let keep_on = false
-async function NewTab(username) {
+async function NewTab(username, links) {
     while (true) {
         let date = new Date()
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
@@ -115,7 +115,8 @@ async function NewTab(username) {
             }
         }
         await sleep(15000)
-        if (keep_on == true) {
+
+        if (JSON.stringify(user_links) != JSON.stringify(links)) {
             location.reload()
         }
     }
