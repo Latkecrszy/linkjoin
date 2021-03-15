@@ -212,11 +212,14 @@ async function load_links(username, sort) {
                 days.innerText = dates_list.join("; ")
             }
             link_event.appendChild(days)
+            let buttons = document.createElement("div")
+            buttons.classList.add("buttons_container")
             if ('password' in link) {
                 let copy = document.createElement("button")
                 copy.innerText = "Password"
                 copy.id = link['id'].toString()
-                copy.classList.add("copy")
+                copy.classList.add("function_button")
+                copy.style.background = "#37123C"
                 copy.addEventListener('click', async function copyText() {
                     let p = document.createElement("input")
                     p.value = link['password']
@@ -228,10 +231,9 @@ async function load_links(username, sort) {
                     await sleep(2000)
                     copy.innerText = "Password"
                 })
-                link_event.appendChild(copy)
+                buttons.appendChild(copy)
             }
-            let buttons = document.createElement("div")
-            buttons.classList.add("buttons_container")
+
             let share = document.createElement("button")
             share.classList.add("function_button")
             share.style.background = "#E0FF4F"
