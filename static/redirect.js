@@ -29,7 +29,7 @@ async function NewTab(username) {
                         else if (link['repeat'] == "2 weeks") {
                             let accept_dates = []
                             console.log(days)
-                            for (let i=days.length; i<(days.length*2)-1; i++) {
+                            for (let i=days.length; i<(days.length*2); i++) {
                                 accept_dates.push(parseInt(i))
                                 console.log(i)
                             }
@@ -56,7 +56,7 @@ async function NewTab(username) {
                         }
                         else if (link['repeat'] == "3 weeks") {
                             let accept_dates = []
-                            for (let i=days.length*2+1; i<(days.length*3)-2; i++) {
+                            for (let i=days.length*2+1; i<(days.length*3)-1; i++) {
                                 accept_dates.push(i)
                             }
                             if (accept_dates.includes(parseInt(link['occurrences']))) {
@@ -76,7 +76,7 @@ async function NewTab(username) {
                         }
                         else if (link['repeat'] == "4 weeks") {
                             let accept_dates = []
-                            for (let i=days.length*3+1; i<(days.length*4)-2; i++) {
+                            for (let i=days.length*3+1; i<(days.length*4)-1; i++) {
                                 accept_dates.push(i)
                             }
                             if (accept_dates.includes(parseInt(link['occurrences']))) {

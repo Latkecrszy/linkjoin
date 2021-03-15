@@ -154,10 +154,7 @@ def delete():
 def update():
     mongo = PyMongo(app)
     links_db = mongo.db.links
-    ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
-    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    while f"https://linkjoin.xyz/addlink?id={id}" in ids:
-        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+
     if request.cookies.get('login_info'):
         if "https" not in request.args.get("link"):
             link = f"https://{request.args.get('link')}"
@@ -167,7 +164,7 @@ def update():
         insert = {"username": login_info['username'], "id": int(request.args.get("id")),
                   'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'),
                   "active": "true", "starts": int(request.args.get("starts")),
-                  "share": f"https://linkjoin.xyz/addlink?id={id}"}
+                  "share": links_db.find_one({"id": int(request.args.get('id'))})['share']}
         if request.args.get("repeats") != "none":
             insert['repeat'] = request.args.get("repeats")
             insert['days'] = request.args.get("days").split(",")
