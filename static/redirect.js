@@ -5,7 +5,6 @@ let keep_on = false
 async function NewTab(username) {
     while (true) {
         let date = new Date()
-        console.log(date.getDay())
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
         let user_links = await start_json.json()
@@ -14,7 +13,6 @@ async function NewTab(username) {
         let days;
         for (const link of user_links) {
             if (link['active'] == "true") {
-                console.log(link)
                 days = JSON.parse(link["days"].replaceAll("'", '"'))
                 if (parseInt(date.getHours()) == parseInt(link["time"].split(":")[0]) && parseInt(date.getMinutes()) == parseInt(link["time"].split(":")[1]) && link['active'] == "true") {
                     if (days.includes(day)) {
@@ -27,18 +25,9 @@ async function NewTab(username) {
                             await sleep(60000)
                         }
                         else if (link['repeat'] == "2 weeks") {
-                            let accept_dates = []
-                            console.log(days)
                             for (let i=days.length; i<(days.length*2); i++) {
                                 accept_dates.push(parseInt(i))
-                                console.log(i)
                             }
-                            console.log(accept_dates)
-                            console.log(parseInt(link['occurrences']) in accept_dates)
-                            console.log(typeof link['occurrences'])
-                            console.log(link['occurrences'])
-                            console.log("---------")
-                            console.log(parseInt(link['occurrences'])+1)
                             if (accept_dates.includes(parseInt(link['occurrences']))) {
                                 window.open(link["link"])
                                 await sleep(60000)
@@ -110,12 +99,6 @@ async function NewTab(username) {
                         }
                         else {
                             for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
-                                console.log(date.getMonth())
-                                console.log(date.getFullYear())
-                                console.log(date.getDate())
-                                console.log(date_info.month)
-                                console.log(date_info.year)
-                                console.log(date_info.day)
                                 if (parseInt(date_info.month)-1 == parseInt(date.getMonth()) && parseInt(date_info.year) == parseInt(date.getFullYear()) && parseInt(date_info.day) == parseInt(date.getDate())) {
                                     window.open(link["link"])
                                     await sleep(60000)
@@ -126,8 +109,6 @@ async function NewTab(username) {
                 }
             }
         }
-        console.log(date.getDay())
-        console.log(`day: ${day}, hour: ${parseInt(date.getHours())}, minute: ${parseInt(date.getMinutes())}`)
         await sleep(15000)
         if (keep_on == true) {
             location.reload()
@@ -137,14 +118,4 @@ async function NewTab(username) {
 
 function redirect(redirect_to) {
     window.open("/"+redirect_to)
-}
-
-function change_keep_on() {
-    if (keep_on == false) {
-        keep_on = true
-    }
-    else {
-        keep_on = false
-    }
-    console.log(keep_on)
 }

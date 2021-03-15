@@ -6,7 +6,6 @@ function sleep(ms) {
 }
 
 function popUp(popup) {
-    console.log(popup)
     popup = document.getElementById(popup)
     popup.style.display = "flex"
     document.getElementById("page").classList.toggle("blurred")
@@ -83,13 +82,11 @@ async function load_links(username, sort) {
         document.getElementById("disappear").classList.remove("gone")
     }
     else {
-        console.log(sort)
         let final = []
         if (sort == "day") {
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
                 if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
-                    console.log(JSON.parse(link_info["days"].replaceAll("'", '"')))
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
                 }
                 else {
@@ -97,7 +94,6 @@ async function load_links(username, sort) {
                 }
 
             }
-            console.log(link_list)
             for (const day in link_list) {
                 for (let key of link_list[day]) {
                     final.push(key)
@@ -110,7 +106,6 @@ async function load_links(username, sort) {
             let link_time_list = {}
             for (const link_info of links) {
                 if ('days' in link_info) {
-                    console.log(JSON.parse(link_info["days"].replaceAll("'", '"'))[0])
                     times.push((parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]))
                     link_time_list[(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]])] = link_info
                 }
@@ -120,7 +115,6 @@ async function load_links(username, sort) {
                 }
             }
             for (const link_time of times.sort((a, b) => a - b)) {
-                console.log(link_time)
                 final.push(link_time_list[link_time])
             }
         }
@@ -130,13 +124,11 @@ async function load_links(username, sort) {
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             for (const link_info of links) {
                 if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
-                    console.log(link_list)
-                    console.log(link_info)
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                     other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
                 }
                 else {
-                    link_list['dates'].push(link_info)
+                    link_list['dates'][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                 }
 
             }
@@ -144,7 +136,6 @@ async function load_links(username, sort) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
             }
             for (let day_name in other_link_list) {
-                console.log(day_name)
                 for (let time_info of other_link_list[day_name]) {
                     final.push(link_list[day_name][time_info])
                 }
@@ -155,6 +146,7 @@ async function load_links(username, sort) {
         }
         document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
+        console.log(final)
         for (let link of final) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
@@ -210,17 +202,13 @@ async function load_links(username, sort) {
             else {
                 let dates_list = []
                 let months = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
-                console.log(link['dates'])
                 for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
-                    console.log(date_info)
-                    console.log(date_info["month"])
                     dates_list.push(`${months[date_info["month"].toString()]} ${parseInt(date_info["day"])}, ${date_info["year"]}`)
                 }
                 days.innerText = dates_list.join("; ")
             }
             link_event.appendChild(days)
             if ('password' in link) {
-                console.log("here")
                 let copy = document.createElement("button")
                 copy.innerText = "Password"
                 copy.id = link['id'].toString()
@@ -247,7 +235,6 @@ async function load_links(username, sort) {
             share.style.color = "black"
             share.addEventListener("click", function openShare() {
                 let state = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-                console.log(document.getElementById("popup_share").style)
                 document.getElementById("popup_share").style.display = state
                 document.getElementById("share_link").value = link['share']
                 document.getElementById("page").classList.toggle("blurred")
@@ -303,10 +290,8 @@ async function load_links(username, sort) {
                 document.getElementById("submit_dates").innerText = "Update"
                 document.getElementById("submit_dates").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
-                console.log(days_list)
                 for (let day_abbrev of days_list) {
                     if (document.getElementById(day_abbrev)) {
-                        console.log(day_abbrev)
                         let currentDay = new Date()
                         currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(currentDay.getDay())]
                         document.getElementById(currentDay).classList.remove("selected")
@@ -341,29 +326,23 @@ async function load_links(username, sort) {
             iterator += 1
         }
     }
-    console.log("working")
     check_day(username)
     await NewTab(username)
 }
 
 async function check_day(username) {
-    console.log("triggered")
     let date = new Date()
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let links = await start_json.json()
     let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
     let children = document.getElementById("days").children
-    console.log(links)
-    console.log(links.length)
     if (links.length <= 3) {
         for (let i = 0; i < children.length; i++) {
             let child = children[i];
             if (child.value == day) {
                 child.classList.add("selected")
             }
-            console.log(child.value)
         }
-        console.log(day)
     }
 }
 
@@ -382,15 +361,12 @@ function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let time = document.getElementById("time").value
-    console.log(time)
     if (time.toString().toLowerCase().includes("am")) {
         time = time.split("a")[0]
     }
     else if (time.toString().toLowerCase().includes("pm")) {
         time = time.split("p")[0]
-        console.log(time)
         time = `${parseInt(time.split(":")[0])+12}:${time.split(":")[1]}`
-        console.log(time)
     }
     let password = document.getElementById("password").value
     let url;
@@ -400,7 +376,6 @@ function register_link(parameter) {
             let element = document.getElementById("dates").children[x];
             dates.push((element.value).replaceAll(" ", "-"))
         }
-        console.log(dates)
         if (parameter == "register") {
             url = `/register?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}`
         }
@@ -411,13 +386,11 @@ function register_link(parameter) {
     }
     else {
         let days = []
-        console.log(document.getElementById("days").children.length)
         for (let x = 0; x < document.getElementById("days").children.length; x++) {
             if (document.getElementById("days").children[x].classList.contains("selected")) {
                 days.push(document.getElementById("days").children[x].value)
             }
         }
-        console.log(days)
         if (parameter == "register") {
             url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
         }
@@ -426,7 +399,6 @@ function register_link(parameter) {
         }
     }
     if (password.length > 0) {url += `&password=${password}`}
-    console.log(url)
     location.href = url
 }
 

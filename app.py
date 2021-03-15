@@ -100,7 +100,7 @@ def register():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         insert = {"username": login_info['username'], "id": int(dict(id_db.find_one({"_id": "id"}))['id']),
                   'time': request.args.get("time"), 'link': link, 'name': request.args.get('name'),
-                  "active": "true", "starts": int(request.args.get("starts")),
+                  "active": "true",
                   "share": f"https://linkjoin.xyz/addlink?id={id}"}
         if request.args.get("repeats") != "none":
             insert['repeat'] = request.args.get("repeats")
@@ -109,6 +109,7 @@ def register():
             insert['repeat'] = "none"
             insert['dates'] = [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                                request.args.get("dates").split(",")]
+        insert['starts'] = int(request.args.get("starts")) if request.args.get("starts") else 0
         if request.args.get("password"):
             password = request.args.get("password").encode()
             password = encoder.encrypt(password)
@@ -224,6 +225,8 @@ def db():
                 links_list[links_list.index(i)]["password"] = str(encoder.decrypt(i["password"]).decode())
         if 'days' in i.keys():
             links_list[links_list.index(i)]["days"] = str(i["days"])
+        if 'dates' in i.keys():
+            links_list[links_list.index(i)]["dates"] = str(i["dates"])
     print(list(links_list))
     return make_response(jsonify(list(links_list)))
 
