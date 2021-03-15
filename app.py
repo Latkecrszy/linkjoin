@@ -17,8 +17,7 @@ url = "https://accounts.google.com/.well-known/openid-configuration"
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
-with open("encrypt.key", "rb") as file:
-    encoder = Fernet(file.read())
+encoder = Fernet(os.environ.get("ENCRYPT_KEY").encode())
 
 
 @app.route("/")
