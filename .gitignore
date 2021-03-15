@@ -4,3 +4,4 @@ templates/redirect.html
 .DS_Store
 .vscode
 env
+encrypt.key

@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 import json, os, dotenv, base64, re, argon2, random, string
 from argon2 import PasswordHasher
 from flask_cors import CORS
+from cryptography.fernet import Fernet
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from oauthlib.oauth2 import WebApplicationClient
 
@@ -16,6 +17,8 @@ url = "https://accounts.google.com/.well-known/openid-configuration"
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
+with open("encrypt.key", "rb") as file:
+    encoder = Fernet(file.read())
 
 
 @app.route("/")
@@ -108,7 +111,9 @@ def register():
             insert['dates'] = [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                                request.args.get("dates").split(",")]
         if request.args.get("password"):
-            insert['password'] = request.args.get("password")
+            password = request.args.get("password").encode()
+            password = encoder.encrypt(password)
+            insert['password'] = password
         if request.args.get("repeats")[0].isnumeric():
             insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
         print(insert)
@@ -172,7 +177,9 @@ def update():
             insert['dates'] = [{"day": i.split("-")[2], "month": i.split("-")[1], "year": i.split("-")[0]} for i in
                                request.args.get("dates").split(",")]
         if request.args.get("password"):
-            insert['password'] = request.args.get("password")
+            password = request.args.get("password").encode()
+            password = encoder.encrypt(password)
+            insert['password'] = password
         if request.args.get("repeats")[0].isnumeric():
             insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
         print(insert)
@@ -211,8 +218,14 @@ def db():
     links_db = mongo.db.links
     username = request.args.get("username")
     links_list = links_db.find({"username": username})
-    links_list = [{str(i): str(j) for i, j in link.items() if i != "_id"} for
+    links_list = [{i: j for i, j in link.items() if i != "_id"} for
                   link in links_list]
+    for i in links_list:
+        if 'password' in i.keys():
+            print("worked")
+            if hasattr(encoder.decrypt(i['password']), "decode"):
+                print("worked twice")
+                links_list[links_list.index(i)]['password'] = encoder.decrypt(i['password']).decode()
     return make_response(jsonify(links_list))
 
 
