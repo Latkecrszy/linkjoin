@@ -13,7 +13,12 @@ async function NewTab(username) {
         let days;
         for (const link of user_links) {
             if (link['active'] == "true") {
-                days = JSON.parse(link["days"].replaceAll("'", '"'))
+                if ('days' in link) {
+                    days = JSON.parse(link["days"].replaceAll("'", '"'))
+                }
+                else {
+                    dates = JSON.parse(link["dates"].replaceAll("'", '"'))
+                }
                 if (parseInt(date.getHours()) == parseInt(link["time"].split(":")[0]) && parseInt(date.getMinutes()) == parseInt(link["time"].split(":")[1]) && link['active'] == "true") {
                     if (days.includes(day)) {
                         if (parseInt(link['starts']) > 0) {
@@ -98,7 +103,7 @@ async function NewTab(username) {
                             await sleep(60000)
                         }
                         else {
-                            for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
+                            for (let date_info of dates) {
                                 if (parseInt(date_info.month)-1 == parseInt(date.getMonth()) && parseInt(date_info.year) == parseInt(date.getFullYear()) && parseInt(date_info.day) == parseInt(date.getDate())) {
                                     window.open(link["link"])
                                     await sleep(60000)

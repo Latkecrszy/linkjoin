@@ -122,6 +122,7 @@ async function load_links(username, sort) {
             let link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
+            console.log(links)
             for (const link_info of links) {
                 if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
@@ -129,12 +130,15 @@ async function load_links(username, sort) {
                 }
                 else {
                     link_list['dates'][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                    other_link_list['dates'].push([parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)])
+
                 }
 
             }
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
             }
+            console.log(other_link_list)
             for (let day_name in other_link_list) {
                 for (let time_info of other_link_list[day_name]) {
                     final.push(link_list[day_name][time_info])
