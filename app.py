@@ -217,14 +217,14 @@ def db():
     links_db = mongo.db.links
     username = request.args.get("username")
     links_list = links_db.find({"username": username})
-    links_list = [{i: j for i, j in link.items() if i != "_id"} for
+    links_list = [{str(i): str(j) for i, j in link.items() if i != "_id"} for
                   link in links_list]
     for i in links_list:
         if 'password' in i.keys():
             print("worked")
             if hasattr(encoder.decrypt(i['password']), "decode"):
                 print("worked twice")
-                links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password']).decode())
+                links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password'].encode()).decode())
     return make_response(jsonify(links_list))
 
 
