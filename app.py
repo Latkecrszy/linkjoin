@@ -17,7 +17,7 @@ url = "https://accounts.google.com/.well-known/openid-configuration"
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
-encoder = Fernet(os.environ.get("ENCRYPT_KEY").encode())
+encoder = Fernet(os.environ.get("ENCRYPT_KEY", None).encode())
 
 
 @app.route("/")
@@ -224,7 +224,7 @@ def db():
             print("worked")
             if hasattr(encoder.decrypt(i['password']), "decode"):
                 print("worked twice")
-                links_list[links_list.index(i)]['password'] = encoder.decrypt(i['password']).decode()
+                links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password']).decode())
     return make_response(jsonify(links_list))
 
 
