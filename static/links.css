@@ -187,24 +187,24 @@ input[type=date] {
 }
 
 .link_event {
-    background: linear-gradient(-45deg, rgba(,0,0,0.22), rgba(150,150,150,0.25));
-    border-radius: 8px;
+    background: #142539; /*linear-gradient(-45deg, rgba(,0,0,0.22), rgba(150,150,150,0.25));*/
+    border-radius: 30px;
     margin: 40px 0 0 13vw;
     display: flex;
     height: 240px;
     padding: 25px 50px 0px 45px;
     margin-left: max(10vw, 100px) !important;
-    width: 40vw;
+    width: 23vw;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-width: 300px;
     max-width: 600px;
     min-height: 175px;
-    box-shadow:
-    12px 12px 16px 0 rgba(0, 0, 0, 0.7),
-    -8px -8px 12px 0 rgba(255, 255, 255, 0.1);
-    /*box-shadow: 6px 6px 10px black;*/
+    /*box-shadow:
+    -8px -8px 12px 0 rgba(0, 0, 0, 0.7),
+    12px 12px 16px 0 rgba(255, 255, 255, 0.1);*/
+    box-shadow: 6px 6px 10px black;
 }
 
 .buttons_container {
@@ -277,11 +277,13 @@ input[type=date] {
 
 #insert {
     display: flex;
-    flex-direction: column;
-    margin: 0 50px 0 18vw !important;}
+    flex-direction: row;
+    margin: -150px 50px 0 7vw !important;
+    width: 100vw;
+    flex-wrap: wrap;}
 
 @media(max-width: 720px) {
-    #insert {margin: 0 50px 0 0 !important;}
+    #insert {margin: -150px 50px 0 0 !important;}
 }
 
 #popup_share {

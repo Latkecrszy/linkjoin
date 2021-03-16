@@ -5,3 +5,5 @@ templates/redirect.html
 .vscode
 env
 encrypt.key
+background.js
+manifest.json

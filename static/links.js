@@ -155,9 +155,7 @@ async function load_links(username, sort) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
-            if (iterator == 0) {
-                link_event.style.margin = "-140px 0 0 13vw"
-            }
+
             let time_div = document.createElement("div")
             time_div.classList.add("time")
             let time = link["time"]
