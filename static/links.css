@@ -8,8 +8,7 @@
 }
 
 #plus_button {
-    margin-top: 3%;
-    margin-right: 30%;
+    margin: 50px 30% 0 25%;
 }
 
 #plus_button:hover {cursor: pointer;}
@@ -279,7 +278,11 @@ input[type=date] {
 #insert {
     display: flex;
     flex-direction: column;
-    margin: 0 50px 0 auto !important;}
+    margin: 0 50px 0 18vw !important;}
+
+@media(max-width: 720px) {
+    #insert {margin: 0 50px 0 0 !important;}
+}
 
 #popup_share {
     width: 600px;
