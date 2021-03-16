@@ -22,17 +22,26 @@ encoder = Fernet(os.environ.get("ENCRYPT_KEY", None).encode())
 
 @app.route("/")
 def main():
+    mongo = PyMongo(app)
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"home": 1}})
     return render_template("website.html")
 
 
 @app.route("/login")
 def Login():
+    mongo = PyMongo(app)
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"login": 1}})
     return render_template("login.html", error=request.args.get("error"),
                            redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
 
 @app.route("/signup")
 def Signup():
+    mongo = PyMongo(app)
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"signup": 1}})
     return render_template("signup.html", error=request.args.get("error"),
                            redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
@@ -126,6 +135,8 @@ def register():
 @app.route("/links")
 def links():
     mongo = PyMongo(app)
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))

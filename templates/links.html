@@ -42,43 +42,47 @@
             </div>
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
+                <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick="popUp('popup')" id="plus_button" alt="Click to schedule a link">
                 <a href="/login"><div class="button header_button">Switch Account</div></a>
                 <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 <!--<a href="/help" target="_blank"><div class="button header_button">Help</div></a>
                 <a href="/about" target="_blank"><div class="button header_button">About Us</div></a>-->
-                <img src="{{ url_for('static', filename='images/plus.png') }}" height="75px" width="75px" onclick="popUp('popup')" id="plus_button" alt="Click to schedule a link">
             </header>
+            <div id="settings">
+                <div class="box">
+                    <div id="sort_by">Sort By:</div>
+                    <select onchange="sort()" id="sort">
+                        {% if sort == "no" %}
+                            <option value="none" selected>None</option>
+                        {% else %}
+                            <option value="none">None</option>
+                        {% endif %}
+                        {% if sort == "day" %}
+                            <option value="day" selected>Day</option>
+                        {% else %}
+                            <option value="day">Day</option>
+                        {% endif %}
+                        {% if sort == "time" %}
+                            <option value="time" selected>Time</option>
+                        {% else %}
+                            <option value="time">Time</option>
+                        {% endif %}
+                        {% if sort == "datetime" %}
+                            <option value="datetime" selected>Day & Time</option>
+                        {% else %}
+                            <option value="datetime">Day & Time</option>
+                        {% endif %}
+                    </select>
+                </div>
 
-            <div id="select_column">
-                <div id="sort_by">Sort By:</div>
-                <select onchange="sort()" id="sort">
-                    {% if sort == "no" %}
-                        <option value="none" selected>None</option>
-                    {% else %}
-                        <option value="none">None</option>
-                    {% endif %}
-                    {% if sort == "day" %}
-                        <option value="day" selected>Day</option>
-                    {% else %}
-                        <option value="day">Day</option>
-                    {% endif %}
-                    {% if sort == "time" %}
-                        <option value="time" selected>Time</option>
-                    {% else %}
-                        <option value="time">Time</option>
-                    {% endif %}
-                    {% if sort == "datetime" %}
-                        <option value="datetime" selected>Date & Time</option>
-                    {% else %}
-                        <option value="datetime">Date & Time</option>
-                    {% endif %}
-                </select>
             </div>
-            <div class="gone" id="disappear">
-                <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 5vh 0 0 36vw;" alt="Man with clock">
-                <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
+            <div id="content">
+                <div class="gone" id="disappear">
+                    <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 5vh 0 0 36vw;" alt="Man with clock">
+                    <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
+                </div>
+                <div id="insert"></div>
             </div>
-            <div id="insert"></div>
             <footer class="footer_links" id="footer_links">
                 <img src="{{ url_for('static', filename='images/heart.png') }}" class="links_footer_image" alt="heart"><div class="footer_link" style="cursor: pointer;">Crafted by Seth Raphael</div>
                 <img src="{{ url_for('static', filename='images/discord.png') }}" class="links_footer_image" alt="discord logo"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_link">Join the Discord</div></a>

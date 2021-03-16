@@ -8,9 +8,8 @@
 }
 
 #plus_button {
-    top: 70%;
-    position: relative;
-    right: 47%;
+    margin-top: 3%;
+    margin-right: 30%;
 }
 
 #plus_button:hover {cursor: pointer;}
@@ -19,14 +18,6 @@
     font-weight: 500;
     font-size: 16px;
     text-align: center
-}
-
-#select_column {
-    margin-right: auto;
-    width: 15vw;
-    display: flex;
-    flex-direction: column;
-    top: 20px;
 }
 
 #sort_by {
@@ -48,7 +39,7 @@
     padding: 5px;
 }
 
-#links_html {background-color: #091B30; overflow: visible;}
+#links_html {background-color: #091B30; overflow: visible; overflow-x: hidden !important; margin-bottom: 30px}
 
 #home {margin-top: 22px; margin-right: auto;}
 
@@ -83,8 +74,6 @@
     padding-bottom: 5px;
     width: 70%;
 }
-
-
 
 #name::placeholder, #link::placeholder, #password::placeholder {font-size: 14px; opacity: 0.42;}
 
@@ -192,30 +181,41 @@ input[type=date] {
 }
 
 .link_event_title {
-    font-size: 16px;
-    margin-top: 10px;
+    font-size: 18px;
+    margin: 20px 0 10px 0;
     box-sizing: border-box;
     text-align: center;
 }
 
 .link_event {
-    background-color: #142539;
-    border-radius: 1px;
-    width: 75vw;
-    padding: 25px 30px 28px;
-    margin: 20px 0 0 13vw;
-    height: 40px;
+    background: linear-gradient(-45deg, rgba(,0,0,0.22), rgba(150,150,150,0.25));
+    border-radius: 8px;
+    margin: 40px 0 0 13vw;
     display: flex;
+    height: 240px;
+    padding: 25px 50px 0px 45px;
+    margin-left: max(10vw, 100px) !important;
+    width: 40vw;
+    display: flex;
+    flex-direction: column;
     justify-content: space-between;
+    min-width: 300px;
+    max-width: 600px;
+    min-height: 175px;
+    box-shadow:
+    12px 12px 16px 0 rgba(0, 0, 0, 0.7),
+    -8px -8px 12px 0 rgba(255, 255, 255, 0.1);
+    /*box-shadow: 6px 6px 10px black;*/
 }
 
 .buttons_container {
     font-weight: 600;
-    margin-bottom: 45px;
+    margin: 0px 10% 45px 10%;
     text-align: center;
     display: flex;
     justify-content: space-around;
-    padding-left: 70px;
+    width: 80%;
+    padding-left: -20%;
     box-sizing: border-box;
 }
 
@@ -227,52 +227,21 @@ input[type=date] {
     margin: 10px;
 }
 
-@media (max-width: 1000px) {
-    .link_event {
-        background-color: #142539;
-        border-radius: 1px;
-        height: 30vw;
-        padding: 25px 30px;
-        margin-left: 26vw !important;
-        width: 40vw;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-width: 270px;
-        min-height: 175px;
-    }
-
-    .time {
-        font-size: 28px;
-        box-sizing: border-box;
-        margin-left: calc(45% - 50px)}
-
-    .buttons_container {
-        font-weight: 600;
-        margin-bottom: 45px;
-        text-align: center;
-        display: flex;
-        justify-content: space-around;
-        margin-left: -20%;
-        box-sizing: border-box;
-    }
-}
-
 .days {
-    font-size: 16px;
+    font-size: 19px;
     text-align: center;
-    margin-top: 10px;
+    margin: 10px 0 15px 0;
 }
 
 .join_now {
-    font-size: 12px;
+    font-size: 15px;
     opacity: 0.2;
+    margin-bottom: 15px;
     box-sizing: border-box;
-    margin-top; 5px;
     text-align: center;
 }
 
-.time {font-size: 28px; box-sizing: border-box;}
+.time {font-size: 28px; box-sizing: border-box; margin-left: calc(47% - 50px)}
 
 
 #popup_delete {
@@ -307,17 +276,10 @@ input[type=date] {
 
 #button_yes {background-color: #A40606;}
 
-.copy {
-    background: #2B8FD8;
-    width: 100px;
-    font-size: 14px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    margin: 0 -75px 0 0;
-}
-
-#insert {display: flex; flex-direction: column;}
+#insert {
+    display: flex;
+    flex-direction: column;
+    margin: 0 50px 0 auto !important;}
 
 #popup_share {
     width: 600px;
@@ -359,3 +321,20 @@ input[type=date] {
     margin-left: -3px;
     margin-bottom: 15px;
 }
+
+#page {display: flex; flex-direction: column;}
+
+#content {display: flex; justify-content: space-between;}
+
+#settings {
+    margin-right: auto;
+    display: flex;
+    flex-direction: row;
+    width: 50vw;
+}
+
+.box {display: flex; flex-direction: column;}
+
+
+
+
