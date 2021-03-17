@@ -49,7 +49,7 @@
                 {% elif error == "invalid_email" %}
                     <div class="error">Invalid email</div>
                 {% endif %}
-                    <input type="text" name="email" id="email" placeholder="Email" required><br>
+                    <input type="email" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
                     <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
             </div>

@@ -51,7 +51,7 @@
                 {% elif error == "not_logged_in" %}
                     <div class="error" style="font-size: 17px">Log in to view your links</div>
                 {% endif %}
-                    <input type="text" name="email" id="email" placeholder="Email" required><br>
+                    <input type="email" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>
                     <button id="submit" onclick="logIn()">Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
             </div>
