@@ -159,7 +159,7 @@ def links():
                                                                       'time', 'day', 'datetime'] else "no"
         return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
     else:
-        return redirect("/login")
+        return redirect("/login?error=not_logged_in")
 
 
 @app.route("/delete", methods=["POST", "GET"])

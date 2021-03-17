@@ -56,31 +56,37 @@
     background-color: #091B30;
     flex-direction: column;
     justify-content: flex-start;
-    width: 500px;
+    width: 33vw;
+    min-width: 500px;
+    height: 34vw;
     min-height: 530px;
     position: absolute;
     top: 100px;
+    border-radius: 10px;
     left: 35vw;
+    box-shadow: 6px 6px 10px black;
 }
 
 #name, #link, #time, #password {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
-    margin: 20px 0 0 10px;
-    font-size: 16px;
+    margin: 5% 0 0 10px;
+    font-size: max(1.2vw, 16px);
     text-align: left;
     padding-bottom: 5px;
     width: 70%;
 }
 
-#name::placeholder, #link::placeholder, #password::placeholder {font-size: 14px; opacity: 0.42;}
+#name {margin-top: 3% !important}
+
+#name::placeholder, #link::placeholder, #password::placeholder {font-size: max(0.9vw, 14px); opacity: 0.42;}
 
 #title {
-    font-size: 18px;
+    font-size: max(1.3vw, 22px);
     font-weight: 600;
     text-align: left;
-    margin: 40px 0 0 65px;
+    margin: 5% 0 0 65px;
 }
 
 input {color: white; font-family: Montserrat;}
@@ -128,10 +134,10 @@ input {color: white; font-family: Montserrat;}
     border-radius: 100px;
     text-align: center;
     background: #142539;
-    height: 50px;
-    width: 50px;
+    height: max(3vw, 50px);
+    width: max(3vw, 50px);
     border: none;
-    font: 500 18px Roboto;
+    font: 500 max(1.2vw, 18px) Roboto;
 
 }
 
@@ -142,13 +148,13 @@ input {color: white; font-family: Montserrat;}
 #starts_container div, #starts_container select {display: inline; margin-left: 30px;}
 
 #submit, #submit_dates{
-    width: 150px;
-    height: 56px;
+    width: max(10vw, 150px);
+    height: max(4vw, 65px);
     background-color: #2B8FD8;
     border-radius: 84px;
     text-align: center;
     border: 0px solid;
-    font: 600 18px Montserrat;
+    font: 600 max(1.25vw, 20px) Montserrat;
     margin-left: 70px;
 }
 
@@ -166,7 +172,7 @@ input {color: white; font-family: Montserrat;}
 }
 
 .flex img {
-    margin: 20px 0 0 60px;
+    margin: 5% 0 0 60px;
 }
 
 #add_field {
@@ -278,7 +284,7 @@ input[type=date] {
 #insert {
     display: flex;
     flex-direction: row;
-    margin: -150px 50px 0 7vw !important;
+    margin: -150px 50px 0 5vw !important;
     width: 100vw;
     flex-wrap: wrap;}
 

@@ -127,8 +127,8 @@ footer {
 @media (min-width: 1700px) {
     #motto {font-size: 3vw; max-width: 40vw; margin: 10vh 0 0 5vw;}
     #description {font-size: 1.5vw; max-width: 35vw; margin: 1.5vh 0 0 5vw; line-height: 2.3vw}
-    .get_started {width: 25vw !important; height: 5vw; font-size: 1.5vw; margin: 2.5vh 0 0 5vw; border-radius: 5vw; }
-    .get_started img {height: 1.5vw; width: 1.5vw; margin-left: 1vw;}
+    .get_started {width: 28vw !important; height: 6vw; font-size: 1.8vw; margin: 2.5vh 0 0 5vw; border-radius: 5vw; }
+    .get_started img {height: 1.8vw; width: 1.8vw; margin-left: 1vw;}
     #logo {width: 15vw; height: 3.5vw; margin-top: 0.5vw;}
     header a {font-size: 1.2vw;}
     .login_button {height: 3vw !important; width: 7vw !important; padding-top: 0.6vw !important;}

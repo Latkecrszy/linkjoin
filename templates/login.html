@@ -48,6 +48,8 @@
                     <div class="error">No account is associated with this email</div>
                 {% elif error == "incorrect_password" %}
                     <div class="error">Incorrect Password</div>
+                {% elif error == "not_logged_in" %}
+                    <div class="error" style="font-size: 17px">Log in to view your links</div>
                 {% endif %}
                     <input type="text" name="email" id="email" placeholder="Email" required><br>
                     <input id="password" name="password" placeholder="Password" type="password" required><br>

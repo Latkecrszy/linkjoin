@@ -48,13 +48,13 @@
                 <div id="hamburger_dropdown">
                     <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/login">Log In</a>
-                    <a href="/links">Links</a>
+                    <a href="/links">My Links</a>
                 </div>
             </div>
         </header>
         <div id="page">
             <div id="left_content">
-                <h1 id="motto">Being on time has never been so easy.</h1>
+                <h1 id="motto">Never Be Late Again.</h1>
                 <h4 id="description">LinkJoin helps you join meetings automatically at exactly the right moment, even when you forget.</h4>
                 <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
                 <a href="#info"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
@@ -96,7 +96,19 @@
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(4)"></div>
+                <div class="answer gone" onclick="expand(4)">Start by clicking the hamburger menu at the top right corner and selecting preferences. Once in preferences, navigate to the privacy and security tab. Scroll down to the permissions section, and uncheck the box labeled Block pop-up windows. You're all set!</div>
+                <div class="question" onclick="expand(5)">
+                    <p>How do I enable popups in Safari?</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone" onclick="expand(5)">Press ⌘ , to open safari settings. Find and click on the websites tab, and scroll down to the pop-up windows section at the very bottom. Select it, and change the select menu titled When visiting other websites at the bottom to allow. Then, you're all set!</div>
+                <div class="question" onclick="expand(6)">
+                    <p>Where did LinkJoin come from?</p>
+                    <div class="plus">+</div>
+                    <div class="minus gone">-</div>
+                </div>
+                <div class="answer gone" onclick="expand(6)">LinkJoin started as a simple tool to make getting to meetings on time easier, but has grown into much more. It is now a full fledged website dedicated to making your life easier by removing the stress of having to remember yet another meeting. </div>
             </div>
         </div>
         <div style="min-height: 20px; background-color: #091B30; width: 100vw">

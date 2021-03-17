@@ -40,7 +40,7 @@
     margin-top: 30px;
 }
 
-#password {margin-top: 20px}
+#password {margin-top: 0}
 
 #submit {
     height: 64px;
@@ -78,6 +78,7 @@
         border-radius: 0.4vw;
         margin-top: 20px;
     }
+    #password {margin-top: 0;}
 
 }
 

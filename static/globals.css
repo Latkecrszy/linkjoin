@@ -78,8 +78,8 @@ svg {
 .hidden {visibility: hidden}
 
 .footer_links {
-    height: 60px;
-    width: 960px;
+    min-height: 60px;
+    max-width: 960px;
     margin: 100px 5vw -20px 18vw;
     border-radius: 72px;
     background-color: #142539;
