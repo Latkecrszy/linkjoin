@@ -11,7 +11,7 @@ header a {margin: 15px 40px 0 40px; z-index: 9; font: 600 18px Montserrat}
 
 header img {margin: 0 auto 0 20px}
 
-#page {display: flex; flex-direction: row; margin-bottom: 30vh;}
+#page {display: flex; flex-direction: row; margin-bottom: max(15vh, 150px);}
 
 #left_content {
     margin: 100px auto 0 max(10vw, 100px);
@@ -122,7 +122,7 @@ footer {
     height: 550px;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
 }
 
 .pair img {height: 600px; width: 600px;}
@@ -202,7 +202,7 @@ footer {
 
 
 /*FAQ*/
-#info {width: 100vw; background-color: #091B30; min-height: 500px; padding-top: 75px}
+#info {width: 100vw; background: none; min-height: 500px; padding-top: 75px; margin-top: 200px;}
 #faq {
     display: flex;
     flex-direction: column;
