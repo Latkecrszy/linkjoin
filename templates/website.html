@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html id="main_html" lang="en">
     <head>
-        <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192025936-1">
         </script>
         <script>
@@ -14,8 +13,8 @@
         <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
         <title>LinkJoin | Auto Join Zoom Meetings With Ease</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
@@ -36,7 +35,7 @@
         </svg>
         <header>
             <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo">
-            <a href="/links">Links</a>
+            <a href="/links">My Links</a>
             <a href="/signup">Sign Up</a>
             <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
@@ -48,7 +47,7 @@
                 <div id="hamburger_dropdown">
                     <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/login">Log In</a>
-                    <a href="/links">My Links</a>
+                    <a href="/links">Links</a>
                 </div>
             </div>
         </header>
@@ -57,58 +56,81 @@
                 <h1 id="motto">Never Be Late Again.</h1>
                 <h4 id="description">LinkJoin helps you join meetings automatically at exactly the right moment, even when you forget.</h4>
                 <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
-                <a href="#info"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
+                <a href="#what"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
                 <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy" alt="Man surrounded by calendars">
             </div>
         </div>
+        <div id="what">
+            <div class="pair">
+                <img src="{{ url_for('static', filename='images/meeting.png') }}">
+                <div class="info">
+                    <div class="main_question">
+                        What is LinkJoin?
+                    </div>
+                    <div class="main_answer">
+                        LinkJoin is a website that organizes and automatically opens your meetings for you. It's as simple as making an account and scheduling your links, and you'll never be late again.
+                    </div>
+                </div>
+            </div>
+            <div class="pair">
+                <div class="info">
+                    <div class="main_question">
+                        Why LinkJoin?
+                    </div>
+                    <div class="main_answer">
+                        When you receive a meeting invitation, the invite link usually remains in your inbox, getting buried under heaps of new emails. This can lead to accidentally deleting or losing track of that important link, and end with you missing that life changing meeting. With LinkJoin, however, your links remain in an accessible and convenient place, and open automatically at the right time.
+                    </div>
+                </div>
+                <img src="{{ url_for('static', filename='images/why_linkjoin.png') }}">
+            </div>
+            <div class="pair">
+                <img src="{{ url_for('static', filename='images/whered_it_come_from.png') }}">
+                <div class="info">
+                    <div class="main_question">
+                        Where did LinkJoin Come From?
+                    </div>
+                    <div class="main_answer">
+                        LinkJoin started as a simple tool to make getting to meetings on time easier, but has grown into much more. It is now a full fledged website dedicated to making your life easier by removing the stress of having to remember yet another meeting.                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="info">
             <div id="faq">
                 <div class="question" onclick="expand(0)">
-                    <p>What is LinkJoin?</p>
-                    <div class="plus">+</div>
-                    <div class="minus gone">-</div>
-                </div>
-                <div class="answer gone" onclick="expand(0)">LinkJoin is a website that automatically opens your meetings for you. It's as simple as making an account and scheduling your links, and you'll never be late again.</div>
-                <div class="question" onclick="expand(1)">
                     <p>How do I get started?</p>
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(1)">Just head over to the signup page and create an account. From there, you'll be redirected to the links page to start scheduling your meetings!</div>
-                <div class="question" onclick="expand(2)">
+                <div class="answer gone" onclick="expand(0)">Just head over to the signup page and create an account. From there, you'll be redirected to the links page to start scheduling your meetings!</div>
+                <div class="question" onclick="expand(1)">
                     <p>Why are my links not opening?</p>
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(2)">
+                <div class="answer gone" onclick="expand(1)">
                     There are a few reasons that your links may not be opening. One of the first things that you should check for is that you have pop-ups for linkjoin.xyz enabled. See the other questions for instructions on how to do this. If you have popups enabled, next take a look at your link on the links page. You should see a day (or multiple) on it. This will look like the common abbreviation of the day (Mon, Tue, etc.) If you don't see any days there, click the edit button to select some days for your link to open on. If all else fails, feel free to send an email to me at setharaphael7@gmail.com, and I'd be happy to help figure out what's going on!
                 </div>
-                <div class="question" onclick="expand(3)">
+                <div class="question" onclick="expand(2)">
                     <p>How do I enable popups in Google Chrome?</p>
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(3)">Start by opening the chrome settings by clicking on the three dots in the upper right and selecting settings. Navigate to the privacy and security tab. Select site settings, scroll down, and click on Pop-ups and redirects. Flip the switch at the top to allowed, and you're all good to go!</div>
-                <div class="question" onclick="expand(4)">
+                <div class="answer gone" onclick="expand(2)">Start by opening the chrome settings by clicking on the three dots in the upper right and selecting settings. Navigate to the privacy and security tab. Select site settings, scroll down, and click on Pop-ups and redirects. Flip the switch at the top to allowed, and you're all good to go!</div>
+                <div class="question" onclick="expand(3)">
                     <p>How do I enable popups in FireFox?</p>
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(4)">Start by clicking the hamburger menu at the top right corner and selecting preferences. Once in preferences, navigate to the privacy and security tab. Scroll down to the permissions section, and uncheck the box labeled Block pop-up windows. You're all set!</div>
-                <div class="question" onclick="expand(5)">
+                <div class="answer gone" onclick="expand(3)">Start by clicking the hamburger menu at the top right corner and selecting preferences. Once in preferences, navigate to the privacy and security tab. Scroll down to the permissions section, and uncheck the box labeled Block pop-up windows. You're all set!</div>
+                <div class="question" onclick="expand(4)">
                     <p>How do I enable popups in Safari?</p>
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(5)">Press ⌘ , to open safari settings. Find and click on the websites tab, and scroll down to the pop-up windows section at the very bottom. Select it, and change the select menu titled When visiting other websites at the bottom to allow. Then, you're all set!</div>
-                <div class="question" onclick="expand(6)">
-                    <p>Where did LinkJoin come from?</p>
-                    <div class="plus">+</div>
-                    <div class="minus gone">-</div>
-                </div>
-                <div class="answer gone" onclick="expand(6)">LinkJoin started as a simple tool to make getting to meetings on time easier, but has grown into much more. It is now a full fledged website dedicated to making your life easier by removing the stress of having to remember yet another meeting. </div>
+                <div class="answer gone" onclick="expand(4)">Press ⌘ , to open safari settings. Find and click on the websites tab, and scroll down to the pop-up windows section at the very bottom. Select it, and change the select menu titled When visiting other websites at the bottom to allow. Then, you're all set!</div>
             </div>
         </div>
         <div style="min-height: 20px; background-color: #091B30; width: 100vw">
@@ -130,7 +152,7 @@
                 </div>
                 <div class="footer_link">
                     <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="footer_image" style="border-radius: 1px;" alt="link icon">
-                    <a href="https://storyset.com/work" class="footer_text">Illustration by Freepik Storyset</a>
+                    <a href="https://storyset.com/work" class="footer_text">Illustrations by Freepik Storyset</a>
                 </div>
             </div>
             <div class="line">

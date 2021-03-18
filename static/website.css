@@ -14,7 +14,7 @@ header img {margin: 0 auto 0 20px}
 #page {display: flex; flex-direction: row; margin-bottom: 30vh;}
 
 #left_content {
-    margin: 100px auto 0 max(8vw, 100px);
+    margin: 100px auto 0 max(10vw, 100px);
     display: flex;
     flex-direction: column;
 }
@@ -28,7 +28,7 @@ header img {margin: 0 auto 0 20px}
 footer {
     opacity: 0.7;
     height: 100px;
-    margin-top: 50px;
+    margin: 50px 20px 0 0;
 }
 
 
@@ -74,24 +74,24 @@ footer {
 .get_started {
     border-radius: 84px;
     font: 600 20px Montserrat;
-    width: 321px;
-    height: 67px;
+    height: 75px;
     background-color: #2B8FD8;
     border: none;
     margin-top: 35px;
+
 }
 
-#motto {font-weight: bold; font-size: 44px; max-width: 500px; margin-bottom: 10px}
+#motto {font-weight: 100; font-size: 46px; max-width: 500px; margin-bottom: 10px}
 
-#description {font: 400 18px Roboto; margin: 0; max-width: 450px; line-height: 30px}
+#description {font: 400 20px Roboto; margin: 0; max-width: 450px; line-height: 30px}
 
-#learn_more {background-color: #142539; box-shadow: 10px 10px 10px #091B30;}
+#learn_more {background-color: #142539;}
 
 
 /*Right Content*/
 #right_content img {
-    height: 95vh;
-    width: 40vw;
+    height: 92vh;
+    width: 37vw;
 }
 
 
@@ -107,6 +107,33 @@ footer {
 .desc a {color: #2B8FD8; font: 400 24px Roboto;}
 
 
+/*Q and A*/
+#what {
+    width: 84vw;
+    margin-left: 8vw;
+    min-height: 500px;
+    background: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.pair {
+    width: 85vw;
+    height: 550px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 100px;
+}
+
+.pair img {height: 600px; width: 600px;}
+
+.info {display: flex; flex-direction: column; justify-content: center;}
+
+.main_question {font-size: 45px; max-width: 550px; margin: 100px 0 15px 0;}
+
+.main_answer {font-size: 22px; max-width: 550px; opacity: 0.9; line-height: 32px;}
+
+
 /*Footer*/
 .line {display: flex; justify-content: space-between;}
 
@@ -120,6 +147,12 @@ footer {
 
 
 /*Media Queries*/
+@media (max-width: 1230px) {
+    .pair img {height: 50vw; width: 50vw}
+}
+@media (max-width: 890px) {
+    .pair img {display: none;}
+}
 @media (max-width: 450px) {
     .get_started {width: 200}
 }
@@ -163,7 +196,7 @@ footer {
     #main_html {background: #091B30;}
 }
 
-@media(max-width: 150vh), (max-height: 33vw) {
+@media(max-width: 180vh), (max-height: 36vw) {
     #calendar_guy {display: none;}
 }
 

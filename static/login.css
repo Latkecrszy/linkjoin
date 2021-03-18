@@ -40,7 +40,7 @@
     margin-top: 30px;
 }
 
-#password {margin-top: 0}
+#password {margin-top: 20px}
 
 #submit {
     height: 64px;
@@ -78,7 +78,6 @@
         border-radius: 0.4vw;
         margin-top: 20px;
     }
-    #password {margin-top: 0;}
 
 }
 
@@ -94,7 +93,7 @@
 @media (max-width: 730px) {
     svg {display: none}
 
-    #login_html {background: #091B30;}
+    #login_html {background: #091B30; overflow: hidden !important;}
 }
 
 .error {
@@ -105,4 +104,4 @@
     margin-top: 10px;
 }
 
-#login_body {margin: 0; display: flex; flex-direction: column;}
+#login_body {margin: 0; display: flex; flex-direction: column; overflow: hidden !important;}
