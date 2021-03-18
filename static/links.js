@@ -165,7 +165,11 @@ async function load_links(username, sort) {
             if (parseInt(time_list[0]) == 12) {
                 pm = "pm"
             }
-            else if (parseInt(time_list[0]) > 11) {
+            else if (parseInt(time_list[0]) == 24) {
+                pm = "am"
+                time_list[0] = 12
+            }
+            else if (parseInt(time_list[0]) > 12) {
                 time_list[0] = parseInt(time_list[0]) - 12
                 pm = "pm"
             }
@@ -288,8 +292,21 @@ async function load_links(username, sort) {
                 document.getElementById("link").value = link["link"]
                 if ("password" in link) {document.getElementById("password").value = link["password"]}
                 else {document.getElementById("password").value = null}
+                if (parseInt(link['time'].split(":")[0]) == 12) {
+                    document.getElementById("pm").selected = "selected"
+                    document.getElementById("hour").value = 12
+                }
+                else if (parseInt(link['time'].split(":")[0]) == 24) {
+                    document.getElementById("hour").value = 12
+                }
+                else if (parseInt(link['time'].split(":")[0]) > 12) {
+                    document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
+                    document.getElementById("pm").selected = "selected"
+                }
+                else {
+                    document.getElementById("hour").value = link['time'].split(":")[0]
+                }
 
-                document.getElementById("hour").value = link['time'].split(":")[0]
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
@@ -369,7 +386,10 @@ function register_link(parameter) {
     let hour = parseInt(document.getElementById("hour").value)
     let minute = parseInt(document.getElementById("minute").value)
     if (document.getElementById("am").value == "pm") {
-        hour += 12
+        if (hour != 12) {hour += 12}
+    }
+    else {
+        if (hour == 12) {hour += 12}
     }
     let time = `${hour}:${minute}`
     let password = document.getElementById("password").value
