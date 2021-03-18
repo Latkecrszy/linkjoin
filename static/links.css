@@ -67,7 +67,7 @@
     box-shadow: 6px 6px 10px black;
 }
 
-#name, #link, #time, #password {
+#name, #link, #hour, #minute, #password {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
@@ -80,7 +80,7 @@
 
 #name {margin-top: 3% !important}
 
-#name::placeholder, #link::placeholder, #password::placeholder {font-size: max(0.9vw, 14px); opacity: 0.42;}
+#name::placeholder, #link::placeholder, #password::placeholder, #hour::placeholder, #minute::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
 
 #title {
     font-size: max(1.3vw, 22px);

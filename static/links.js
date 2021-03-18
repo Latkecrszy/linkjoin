@@ -12,7 +12,8 @@ function popUp(popup) {
     document.getElementsByTagName("html")[0].style.background = "#040E1A"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
-    document.getElementById("time").value = null
+    document.getElementById("hour").value = null
+    document.getElementById("minute").value = null
     document.getElementById("password").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
@@ -288,7 +289,8 @@ async function load_links(username, sort) {
                 if ("password" in link) {document.getElementById("password").value = link["password"]}
                 else {document.getElementById("password").value = null}
 
-                document.getElementById("time").value = link['time']
+                document.getElementById("hour").value = link['time'].split(":")[0]
+                document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("submit_dates").innerText = "Update"
@@ -364,14 +366,12 @@ function register_link(parameter) {
     let form_element = document.getElementById("create")
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
-    let time = document.getElementById("time").value
-    if (time.toString().toLowerCase().includes("am")) {
-        time = time.split("a")[0]
+    let hour = parseInt(document.getElementById("hour").value)
+    let minute = parseInt(document.getElementById("minute").value)
+    if (document.getElementById("am").value == "pm") {
+        hour += 12
     }
-    else if (time.toString().toLowerCase().includes("pm")) {
-        time = time.split("p")[0]
-        time = `${parseInt(time.split(":")[0])+12}:${time.split(":")[1]}`
-    }
+    let time = `${hour}:${minute}`
     let password = document.getElementById("password").value
     let url;
     if (!document.getElementById("repeats").checked) {
