@@ -240,7 +240,7 @@ async function load_links(username, sort) {
             let share = document.createElement("button")
             share.classList.add("function_button")
             share.style.background = "#E0FF4F"
-            share.innerText = "Share link"
+            share.innerText = "Share"
             share.style.color = "black"
             share.addEventListener("click", function openShare() {
                 let state = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
@@ -306,7 +306,6 @@ async function load_links(username, sort) {
                 else {
                     document.getElementById("hour").value = link['time'].split(":")[0]
                 }
-
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)

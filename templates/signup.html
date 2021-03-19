@@ -49,9 +49,11 @@
                 {% elif error == "invalid_email" %}
                     <div class="error">Invalid email</div>
                 {% endif %}
-                    <input type="email" name="email" id="email" placeholder="Email" required><br>
-                    <input id="password" name="password" placeholder="Password" type="password" required><br>
-                    <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
+                <!--<div data-onsuccess="onSignUp" onclick="addClass()" id="gsignup">Sign Up With Google</div>-->
+                <input type="email" name="email" id="email" placeholder="Email" required><br>
+                <input id="password" name="password" placeholder="Password" type="password" required><br>
+                <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
+
             </div>
         </div>
     </body>
@@ -59,5 +61,10 @@
         function signUp() {
             location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
         }
+        function onSignUp(googleUser) {
+            location.href = `/google_signup?redirect={{ redirect }}&email=${googleUser.getBasicProfile().nt}`
+            console.log(JSON.stringify(googleUser.getBasicProfile()))
+        }
+        function addClass() {document.getElementById("gsignup").classList.add("g-signin2")}
     </script>
 </html>

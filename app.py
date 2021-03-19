@@ -66,7 +66,6 @@ def login():
     mongo = PyMongo(app)
     login_db = mongo.db.login
     hasher = PasswordHasher()
-    print(request.args)
     login_info = {'username': request.args.get("email").lower(), 'password': hasher.hash(request.args.get("password"))}
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if login_db.find_one({'username': request.args.get("email").lower()}) is None:
@@ -93,17 +92,49 @@ def signup():
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if not re.search("^[^@ ]+@[^@ ]+\.[^@ .]{2,}$", email):
         return redirect(f"/signup?error=invalid_email{redirect_link}")
-    login_info = {'username': email, 'password': request.args.get("password")}
     if login_db.find_one({'username': request.args.get("email").lower()}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
     HASH = hasher.hash(request.args.get("password"))
-    login_db.insert_one({'username': request.args.get("email").lower(), 'password': HASH})
-    cookie = {key: value for key, value in login_info.items() if key != "_id"}
-    cookie = json.dumps(cookie)
+    login_db.insert_one({'username': email, 'password': HASH})
+    cookie = json.dumps({'username': email, 'password': request.args.get("password")})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
     return response
+
+
+@app.route("/google_signup")
+def google_signup():
+    response = make_response(redirect(request.args.get("redirect")))
+    mongo = PyMongo(app)
+    login_db = mongo.db.google_login
+    email = request.args.get("email").lower()
+    redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
+    if login_db.find_one({'username': email}) is not None:
+        return redirect(f"/signup?error=email_in_use{redirect_link}")
+    login_db.insert_one({'username': request.args.get("email").lower()})
+    cookie = json.dumps({'username': email})
+    cookie = str.encode(cookie)
+    cookie = base64.b64encode(cookie)
+    response.set_cookie('login_info', cookie, max_age=172800)
+    return response
+
+
+@app.route("/google_login")
+def google_login():
+    response = make_response(redirect(request.args.get("redirect")))
+    mongo = PyMongo(app)
+    login_db = mongo.db.google_login
+    email = request.args.get("email").lower()
+    redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
+    if login_db.find_one({'username': email}) is None:
+        return redirect(f"/login?error=username_not_found{redirect_link}")
+    cookie = json.dumps({'username': email})
+    cookie = str.encode(cookie)
+    cookie = base64.b64encode(cookie)
+    response.set_cookie('login_info', cookie, max_age=172800)
+    return response
+
 
 
 @app.route("/register")

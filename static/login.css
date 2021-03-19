@@ -105,3 +105,5 @@
 }
 
 #login_body {margin: 0; display: flex; flex-direction: column; overflow: hidden !important;}
+
+.gsignup {width: 200px; height: 50px; background: white;}
