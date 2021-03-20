@@ -48,11 +48,13 @@
                     <div class="error">This email is already associated with an account</div>
                 {% elif error == "invalid_email" %}
                     <div class="error">Invalid email</div>
+                {% elif error == "try_again" %}
+                    <div class="error">Something went wrong; Please try again.</div>
                 {% endif %}
-                <div data-onsuccess="onSignUp" onclick="signedUp()" id="gsignin" class="g-signin2" style="color: black !important">Sign Up With Google</div>
+                <!--<div data-onsuccess="onSignUp" onclick="signedUp()" id="gsignin" class="g-signin2" style="color: black !important">Sign Up With Google</div>
                 <div style="width: 100%; height: 10px; border-bottom: 2px solid white; text-align: center; opacity: 0.4; margin-top: 20px;">
                     <span style="font-size: 20px; background-color: #142539; padding: 0 4px;"> Or </span>
-                </div>
+                </div>-->
                 <input type="email" name="email" id="email" placeholder="Email" required><br>
                 <input id="password" name="password" placeholder="Password" type="password" required><br>
                 <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
@@ -70,7 +72,9 @@
             if (signed) {
                 let profile = await googleUser.getBasicProfile()
                 let link = `/google_signup?redirect={{ redirect }}&email=${profile.nt}`
-                location.replace(link)
+                if (profile.nt != undefined) {
+                    location.replace(link)
+                }
             }
        }
         setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Sign Up With Google"}})}, 50)
