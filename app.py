@@ -126,6 +126,7 @@ def google_login():
     mongo = PyMongo(app)
     login_db = mongo.db.google_login
     email = request.args.get("email").lower()
+    print(request.args)
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if login_db.find_one({'username': email}) is None:
         print(email)
