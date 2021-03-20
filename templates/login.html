@@ -67,7 +67,7 @@
             location.href = `/login_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
         }
         function loggedIn() {logged = true;}
-        function onLogIn(googleUser) {
+        async function onLogIn(googleUser) {
             if (logged) {
                 let profile = await googleUser.getBasicProfile()
                 console.log(profile)
