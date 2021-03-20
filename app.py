@@ -125,10 +125,11 @@ def google_login():
     response = make_response(redirect(request.args.get("redirect")))
     mongo = PyMongo(app)
     login_db = mongo.db.google_login
+    alt_login_db = mongo.db.login
     email = request.args.get("email").lower()
     print(request.args)
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
-    if login_db.find_one({'username': email}) is None:
+    if login_db.find_one({'username': email}) is None and alt_login_db.find_one({'username': email}):
         print(email)
         return redirect(f"/login?error=username_not_found{redirect_link}")
     cookie = json.dumps({'username': email})
