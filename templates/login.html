@@ -69,6 +69,7 @@
         function loggedIn() {logged = true;}
         function onLogIn(googleUser) {
             if (logged) {
+                console.log(googleUser.getBasicProfile())
                 location.href = `/google_login?redirect={{ redirect }}&email=${googleUser.getBasicProfile().nt}`
             }
        }
