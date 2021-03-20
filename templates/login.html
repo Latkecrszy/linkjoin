@@ -69,10 +69,12 @@
         function loggedIn() {logged = true;}
         function onLogIn(googleUser) {
             if (logged) {
-                console.log(googleUser.getBasicProfile())
-                console.log(googleUser.getBasicProfile()['nt'])
-                console.log(`/google_login?redirect={{ redirect }}&email=${googleUser.getBasicProfile()['nt']}`)
-                location.href = `/google_login?redirect={{ redirect }}&email=${googleUser.getBasicProfile()['nt']}`
+                let profile = await googleUser.getBasicProfile()
+                console.log(profile)
+                console.log(profile['nt'])
+                console.log(profile.nt)
+                console.log(`/google_login?redirect={{ redirect }}&email=${profile['nt']}`)
+                location.href = `/google_login?redirect={{ redirect }}&email=${profile['nt']}`
             }
        }
         setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Log In With Google"}})}, 50)
