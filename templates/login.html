@@ -70,11 +70,7 @@
         async function onLogIn(googleUser) {
             if (logged) {
                 let profile = await googleUser.getBasicProfile()
-                console.log(profile)
-                console.log(profile['nt'])
-                console.log(profile.nt)
                 let link = `/google_login?redirect={{ redirect }}&email=${profile.nt}`
-                console.log(link)
                 location.replace(link)
             }
        }

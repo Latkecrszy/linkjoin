@@ -65,11 +65,12 @@
         function signUp() {
             location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
         }
-        function signedUp() {signed = true; console.log("work")}
-        function onSignUp(googleUser) {
+        function signedUp() {signed = true}
+        async function onSignUp(googleUser) {
             if (signed) {
-                location.href = `/google_signup?redirect={{ redirect }}&email=${googleUser.getBasicProfile().nt}`
-                console.log(JSON.stringify(googleUser.getBasicProfile()))
+                let profile = await googleUser.getBasicProfile()
+                let link = `/google_signup?redirect={{ redirect }}&email=${profile.nt}`
+                location.replace(link)
             }
        }
         setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Sign Up With Google"}})}, 50)
