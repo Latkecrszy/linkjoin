@@ -158,6 +158,7 @@ body: {display: flex}
     padding: 0 40px 20px 15px;
     display: flex;
     justify-content: flex-end;
+    z-index: 7;
 }
 
 .button {
