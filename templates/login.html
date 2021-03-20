@@ -73,8 +73,9 @@
                 console.log(profile)
                 console.log(profile['nt'])
                 console.log(profile.nt)
-                console.log(`/google_login?redirect={{ redirect }}&email=${profile['nt']}`)
-                //location.href = `/google_login?redirect={{ redirect }}&email=${profile['nt']}`
+                let link = `/google_login?redirect={{ redirect }}&email=${profile.nt}`
+                console.log(link)
+                location.replace(link)
             }
        }
         setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Log In With Google"}})}, 50)
