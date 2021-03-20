@@ -70,7 +70,7 @@
         function onLogIn(googleUser) {
             if (logged) {
                 console.log(googleUser.getBasicProfile())
-                // location.href = `/google_login?redirect={{ redirect }}&email=${googleUser.getBasicProfile().nt}`
+                location.href = `/google_login?redirect={{ redirect }}&email=${googleUser.getBasicProfile()['nt']}`
             }
        }
         setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Log In With Google"}})}, 50)
