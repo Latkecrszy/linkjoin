@@ -129,7 +129,7 @@ def google_login():
     email = request.args.get("email").lower()
     print(request.args)
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
-    if login_db.find_one({'username': email}) is None and alt_login_db.find_one({'username': email}):
+    if login_db.find_one({'username': email}) is None and alt_login_db.find_one({'username': email}) is None:
         print(email)
         return redirect(f"/login?error=username_not_found{redirect_link}")
     cookie = json.dumps({'username': email})
