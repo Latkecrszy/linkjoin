@@ -195,3 +195,5 @@ input:invalid {box-shadow: none}
 .login_button img {
     margin-left: 3px;
 }
+
+[override] ._hj-wTRLt__Title__Title, {color: black !important}

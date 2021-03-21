@@ -27,8 +27,8 @@ def main():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
             return render_template("website.html")
-        users = mongo.db.users
-        users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
     return render_template("website.html")
 
 
@@ -40,8 +40,8 @@ def Login():
         if login_info['username'] == "setharaphael7@gmail.com":
             return render_template("login.html", error=request.args.get("error"),
                                    redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
-        users = mongo.db.users
-        users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
     return render_template("login.html", error=request.args.get("error"),
                            redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
@@ -54,8 +54,8 @@ def Signup():
         if login_info['username'] == "setharaphael7@gmail.com":
             return render_template("signup.html", error=request.args.get("error"),
                                    redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
-        users = mongo.db.users
-        users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
+    users = mongo.db.users
+    users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
     return render_template("signup.html", error=request.args.get("error"),
                            redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
 
