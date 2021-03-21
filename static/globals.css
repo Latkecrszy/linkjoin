@@ -169,7 +169,7 @@ body: {display: flex}
     cursor: pointer;
 }
 
-.gone {display: none}
+.gone {display: none !important}
 
 .flex {display: flex}
 
