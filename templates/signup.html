@@ -72,7 +72,7 @@
         async function onSignUp(googleUser) {
             if (signed) {
                 let profile = await googleUser.getBasicProfile()
-                let link = `/google_login?redirect={{ redirect }}&email=${profile.getEmail()}`
+                let link = `/google_signup?redirect={{ redirect }}&email=${profile.getEmail()}`
                 location.replace(link)
             }
        }
