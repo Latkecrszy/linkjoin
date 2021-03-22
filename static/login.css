@@ -25,7 +25,7 @@
     margin: 0 auto 0 13%;
 }
 
-#right_content {margin: 4vh 13vh 13vh 13vh;}
+#right_content {margin: 4vh 13vh 13vh 30vh;}
 
 #email, #password {
     width: 28vw;
@@ -107,23 +107,13 @@
 #login_body {margin: 0; display: flex; flex-direction: column; overflow: hidden !important;}
 
 #gsignin *{
-	color: black !important;
 	height:auto;
 	width:auto;
 	z-index:auto;
-	content: '';
-	box-shadow: none;
-	font-size: 20px;
 	overflow: visible;
+	border-radius: 3px;
 }
 
 #gsignin {
-    background: white;
-    width: 48% !important;
-    min-width: 240px !important;
-    height: 60px !important;
     margin-top: 20px;
-    padding-top: 13px;
-    box-sizing: border-box;
-    border-radius: 7px;
 }

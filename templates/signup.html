@@ -11,6 +11,7 @@
 
           gtag('config', 'UA-192025936-1');
         </script>
+        <script>setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Sign Up With Google"}})}, 1)</script>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -27,14 +28,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
     </head>
-    <body id="login_body" onload="deleteCookies()">
+    <body id="login_body">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header id="header_links">
             <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" alt="Left arrow"></a>
             <div style="padding-left: 40px">Already have an account?</div>
-            <a href="/login" class="login_button">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right arrow"></a>
+            <a href="/login?redirect={{ redirect }}" class="login_button">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right arrow"></a>
         </header>
         <div id="main_page">
             <div id="left_content">
@@ -64,9 +65,6 @@
     </body>
     <script>
         let signed = false
-        function signUp() {
-            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
-        }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
@@ -75,7 +73,15 @@
                 location.replace(link)
             }
        }
-        setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Sign Up With Google"}})}, 50)
-
-    </script>
+    function renderButton() {
+      gapi.signin2.render('gsignin', {
+        'scope': 'profile email',
+        'width': 240,
+        'height': 50,
+        'longtitle': true,
+        'theme': 'dark',
+        'onsuccess': onSignUp});
+    }
+  </script>
+  <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 </html>
