@@ -65,6 +65,9 @@
     </body>
     <script>
         let signed = false
+        function signUp() {
+            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
+        }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {

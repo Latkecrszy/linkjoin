@@ -64,6 +64,9 @@
     </body>
     <script>
         let logged = false
+        function logIn() {
+            location.href = `/login_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}`
+        }
         function loggedIn() {logged = true;}
         async function onLogIn(googleUser) {
             if (logged) {
