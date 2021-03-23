@@ -2,7 +2,8 @@
 <html id="login_html" lang="en">
     <head>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192814042-1"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192814042-1">
+        </script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
@@ -57,6 +58,9 @@
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required><br>
                 <input id="password" name="password" placeholder="Password" type="password" required><br>
+                {% if error == "incorrect_password" %}
+                    <a href="/reset_password" id="reset">Forgot password?</a>
+                {% endif %}
                 <button id="submit" onclick="logIn()">Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
             </div>
         </div>

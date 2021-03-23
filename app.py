@@ -356,6 +356,11 @@ def invalid():
     return render_template("invalid_link.html")
 
 
+@app.route("/reset_password")
+def reset_password():
+    return render_template("forgot_password.html")
+
+
 app.register_error_handler(404, lambda e: render_template("404.html"))
 
 

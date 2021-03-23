@@ -25,7 +25,7 @@
     margin: 0 auto 0 13%;
 }
 
-#right_content {margin: 4vh 13vh 13vh 30vh;}
+#right_content {margin: 0 13vh 13vh max(50px, 5vw);}
 
 #email, #password {
     width: 28vw;
@@ -117,3 +117,6 @@
 #gsignin {
     margin-top: 20px;
 }
+
+#reset {font-size: 12px; text-decoration: underline;}
+#reset:hover {color: red; opacity: 0.8;}
