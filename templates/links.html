@@ -42,7 +42,10 @@
             </div>
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
-                <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick="popUp('popup')" id="plus_button" alt="Click to schedule a link">
+                <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
+                {% if premium == "false" %}
+                    <a href="/premium"><div class="button header_button">Premium</div></a>
+                {% endif %}
                 <a href="/login"><div class="button header_button">Switch Account</div></a>
                 <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 <!--<a href="/help" target="_blank"><div class="button header_button">Help</div></a>
@@ -91,21 +94,27 @@
                 <img src="https://p7.hiclipart.com/preview/262/298/325/computer-icons-hyperlink-symbol-clip-art-chain-link.jpg" class="links_footer_image" alt="link"><a href="https://storyset.com/work" class="footer_link">Illustration by Freepik Storyset</a>
             </footer>
         </div>
-        <div id="popup_delete">
+
+
+        <div class="popup_delete">
             <div>Are you sure you want to delete this meeting?</div>
             <div id="delete_buttons_container">
                 <a href="/links"><button id="button_no">No</button></a>
                 <a id="delete_button"><button id="button_yes">Yes</button></a>
             </div>
         </div>
+
+
         <div id="popup_share" style="display: none">
             <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" style="margin: -10px 0px -10px 20px" onclick="hide('popup_share')" alt="back to links page">
             <p>Share this url with others to add your link to their list!</p>
             <div><input id="share_link">
             <button id="click_to_copy">Click to Copy</button></div>
         </div>
+
+
         <div id="popup">
-            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" style="margin: 20px 0px -30px 20px; height: max(1.2vw, 20px); width: max(1.2vw, 20px);" onclick="hide('popup')" alt="back to links page">
+            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" style="margin: 20px 0px -30px 20px; height: max(1.2vw, 20px); width: max(1.2vw, 20px); cursor: pointer;" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
             <form id="create" autocomplete="off">
                 <div class="flex">
@@ -146,8 +155,8 @@
                 </div>
                 <div id="dates_container" class="gone">
                     <div id="dates"></div>
-                    <button type="button" id="submit_dates" onclick="register_link('register')">Create</button>
                 </div>
+                <button type="button" id="submit_dates" class="gone" onclick="register_link('register')">Create</button>
                 <div id="days">
                     <button value="Sun" id="Sun" type="button">Su</button>
                     <button value="Mon" id="Mon" type="button">M</button>
@@ -170,6 +179,11 @@
                     <button type="button" id="submit" onclick="register_link('register')">Create</button>
                 </div>
             </form>
+        </div>
+
+
+        <div id="popup_premium">
+            <div>You have reached the free limit of 10 links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
     </body>
     <script>

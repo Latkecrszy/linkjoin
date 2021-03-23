@@ -8,7 +8,7 @@
 }
 
 #plus_button {
-    margin: 50px 30% 0 25%;
+    margin: 50px 23% 0 0;
 }
 
 #plus_button:hover {cursor: pointer;}
@@ -253,7 +253,7 @@ input[type=date] {
 .time {font-size: 28px; box-sizing: border-box; margin-left: calc(47% - 50px)}
 
 
-#popup_delete {
+.popup_delete {
     height: 200px;
     width: 500px;
     text-align: center;
@@ -264,10 +264,42 @@ input[type=date] {
     background: #091B30;
     display: none;
     flex-direction: column;
+    border-radius: 10px;
 }
 
+:root {
+    --progress: 1%;
+    --right: -350px;
+}
 
-#popup_delete div {font-size: 26px; margin-top: 20px;}
+#popup_premium {
+    padding: 20px;
+    box-shadow: 4px 8px 18px black;
+    background: #091B30;
+    display: none;
+    flex-direction: column;
+    border-radius: 5px;
+    height: 80px;
+    width: 300px;
+    font-size: 15px;
+    position: absolute;
+    top: 50px;
+    right: var(--right);
+    z-index: 11;
+}
+
+#popup_premium:after {
+    content: "";
+    display: block;
+    width: var(--progress);
+    padding-top: 65px;
+    border-bottom: 1px solid white;
+}
+
+#popup_premium a {color: green; font-weight: bold !important;}
+
+
+.popup_delete div {font-size: 26px; margin-top: 20px;}
 
 #delete_buttons_container {
     display: flex;
@@ -288,7 +320,7 @@ input[type=date] {
 #insert {
     display: flex;
     flex-direction: row;
-    margin: -150px 50px 0 5vw !important;
+    margin: -150px 50px 0 4.5vw !important;
     width: 100vw;
     flex-wrap: wrap;}
 

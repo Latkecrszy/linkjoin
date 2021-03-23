@@ -5,7 +5,8 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function popUp(popup) {
+async function popUp(popup, premium, link_names) {
+
     popup = document.getElementById(popup)
     popup.style.display = "flex"
     document.getElementById("page").classList.toggle("blurred")
@@ -51,10 +52,11 @@ function check() {
             document.getElementById("days").classList.remove("hidden")
             document.getElementById("starts").classList.remove("hidden")
             document.getElementById("select").classList.remove("hidden")
-            document.getElementById("dates_container").style.display = "none"
+            document.getElementById("dates_container").classList.add("gone")
             document.getElementById("first_date").classList.add("gone")
             document.getElementById("add_field").classList.add("gone")
             document.getElementById("submit").classList.remove("gone")
+            document.getElementById("submit_dates").classList.add("gone")
 
         }
     }
@@ -63,10 +65,11 @@ function check() {
         document.getElementById("days").classList.add("hidden")
         document.getElementById("starts").classList.add("hidden")
         document.getElementById("select").classList.add("hidden")
-        document.getElementById("dates_container").style.display = "flex"
+        document.getElementById("dates_container").classList.remove("gone")
         document.getElementById("first_date").classList.remove("gone")
         document.getElementById("add_field").classList.remove("gone")
         document.getElementById("submit").classList.add("gone")
+        document.getElementById("submit_dates").classList.remove("gone")
     }
 }
 
@@ -383,7 +386,10 @@ function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
-    let minute = parseInt(document.getElementById("minute").value)
+    let minute = document.getElementById("minute").value
+    if (minute.length == 1) {
+        minute = `0${minute}`
+    }
     if (document.getElementById("am").value == "pm") {
         if (hour != 12) {hour += 12}
     }

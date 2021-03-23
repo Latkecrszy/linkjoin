@@ -183,20 +183,22 @@ def register():
 @app.route("/links")
 def links():
     mongo = PyMongo(app)
-
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] != "setharaphael7@gmail.com":
             users = mongo.db.users
             users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
         links_db = mongo.db.links
+        login_db = mongo.db.login
+        google_login_db = mongo.db.google_login
+        premium = dict(login_db.find_one({"username": login_info['username']}))['premium'] if login_db.find_one({"username": login_info['username']}) else dict(google_login_db.find_one({"username": login_info['username']}))['premium']
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
                       for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
         sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and \
                                                                   json.loads(request.cookies.get("sort"))['sort'] in [
                                                                       'time', 'day', 'datetime'] else "no"
-        return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort)
+        return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort, premium=premium)
     else:
         return redirect("/login?error=not_logged_in")
 
@@ -359,6 +361,8 @@ def invalid():
 @app.route("/reset_password")
 def reset_password():
     return render_template("forgot_password.html")
+
+
 
 
 app.register_error_handler(404, lambda e: render_template("404.html"))
