@@ -8,7 +8,7 @@
 }
 
 #plus_button {
-    margin: 50px 23% 0 0;
+    margin-top: 50px;
 }
 
 #plus_button:hover {cursor: pointer;}
@@ -41,7 +41,7 @@
 
 #links_html {background-color: #091B30; overflow: visible; overflow-x: hidden !important; margin-bottom: 30px}
 
-#home {margin-top: 22px; margin-right: auto;}
+#home {margin: 22px min(140px, 5vw) 0 0;}
 
 .header_button {margin-top: 35px;}
 
@@ -381,7 +381,3 @@ input[type=date] {
 }
 
 .box {display: flex; flex-direction: column;}
-
-
-
-

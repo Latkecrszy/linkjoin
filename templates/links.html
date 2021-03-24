@@ -43,13 +43,13 @@
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
-                {% if premium == "false" %}
-                    <a href="/premium"><div class="button header_button">Premium</div></a>
-                {% endif %}
-                <a href="/login"><div class="button header_button">Switch Account</div></a>
-                <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
-                <!--<a href="/help" target="_blank"><div class="button header_button">Help</div></a>
-                <a href="/about" target="_blank"><div class="button header_button">About Us</div></a>-->
+                <div>
+                    {% if premium == "false" %}
+                        <a href="/premium"><div class="button header_button">Premium</div></a>
+                    {% endif %}
+                    <a href="/login"><div class="button header_button">Switch Account</div></a>
+                    <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
+                </div>
             </header>
             <div id="settings">
                 <div class="box">
