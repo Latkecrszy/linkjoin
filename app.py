@@ -4,8 +4,8 @@ import json, os, dotenv, base64, re, argon2, random, string
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
-from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from oauthlib.oauth2 import WebApplicationClient
+# from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+# from oauthlib.oauth2 import WebApplicationClient
 
 ph = PasswordHasher()
 app = Flask(__name__)
@@ -18,11 +18,12 @@ url = "https://accounts.google.com/.well-known/openid-configuration"
 # login_manager.init_app(app)
 cors = CORS(app, resources={r'/db/*': {"origins": ["https://linkjoin.xyz", "http://127.0.0.1:5000"]}})
 encoder = Fernet(os.environ.get("ENCRYPT_KEY", None).encode())
+mongo = PyMongo(app)
 
 
 @app.route("/")
 def main():
-    mongo = PyMongo(app)
+    
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
@@ -34,7 +35,7 @@ def main():
 
 @app.route("/login")
 def Login():
-    mongo = PyMongo(app)
+    
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
@@ -48,7 +49,7 @@ def Login():
 
 @app.route("/signup")
 def Signup():
-    mongo = PyMongo(app)
+    
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
@@ -63,7 +64,7 @@ def Signup():
 @app.route("/login_error", methods=['GET'])
 def login():
     response = make_response(redirect(request.args.get("redirect")))
-    mongo = PyMongo(app)
+    
     login_db = mongo.db.login
     hasher = PasswordHasher()
     login_info = {'username': request.args.get("email").lower(), 'password': hasher.hash(request.args.get("password"))}
@@ -86,7 +87,7 @@ def login():
 def signup():
     hasher = PasswordHasher()
     response = make_response(redirect(request.args.get("redirect")))
-    mongo = PyMongo(app)
+    
     login_db = mongo.db.login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
@@ -106,7 +107,7 @@ def signup():
 @app.route("/google_signup")
 def google_signup():
     response = make_response(redirect(request.args.get("redirect")))
-    mongo = PyMongo(app)
+    
     login_db = mongo.db.google_login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
@@ -123,7 +124,7 @@ def google_signup():
 @app.route("/google_login")
 def google_login():
     response = make_response(redirect(request.args.get("redirect")))
-    mongo = PyMongo(app)
+    
     login_db = mongo.db.google_login
     alt_login_db = mongo.db.login
     email = request.args.get("email").lower()
@@ -142,7 +143,7 @@ def google_login():
 
 @app.route("/register")
 def register():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     id_db = mongo.db.id
     ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
@@ -182,7 +183,6 @@ def register():
 
 @app.route("/links")
 def links():
-    mongo = PyMongo(app)
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] != "setharaphael7@gmail.com":
@@ -195,17 +195,15 @@ def links():
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
                       for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
-        sort = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and \
-                                                                  json.loads(request.cookies.get("sort"))['sort'] in [
-                                                                      'time', 'day', 'datetime'] else "no"
-        return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort, premium=premium)
+        sort_pref = json.loads(request.cookies.get("sort"))['sort'] if request.cookies.get("sort") and json.loads(request.cookies.get("sort"))['sort'] in ['time', 'day', 'datetime'] else "no"
+        return render_template("links.html", username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium)
     else:
         return redirect("/login?error=not_logged_in")
 
 
 @app.route("/delete", methods=["POST", "GET"])
 def delete():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -216,7 +214,7 @@ def delete():
 
 @app.route("/update")
 def update():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
 
     if request.cookies.get('login_info'):
@@ -250,7 +248,7 @@ def update():
 
 @app.route("/deactivate")
 def deactivate():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -262,7 +260,7 @@ def deactivate():
 
 @app.route("/activate")
 def activate():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -274,7 +272,7 @@ def activate():
 
 @app.route("/db", methods=["GET", "POST"])
 def db():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     username = request.args.get("username")
     links_list = links_db.find({"username": username})
@@ -305,7 +303,7 @@ def sort():
 
 @app.route("/change_var")
 def change_var():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     links_db.find_one_and_update({"username": request.args.get("username"), "id": int(request.args.get("id"))},
                                  {"$set": {request.args.get("var"): request.args.get(request.args.get("var"))}})
@@ -329,7 +327,7 @@ def auth():
 
 @app.route("/addlink")
 def addlink():
-    mongo = PyMongo(app)
+    
     links_db = mongo.db.links
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
@@ -361,8 +359,6 @@ def invalid():
 @app.route("/reset_password")
 def reset_password():
     return render_template("forgot_password.html")
-
-
 
 
 app.register_error_handler(404, lambda e: render_template("404.html"))
