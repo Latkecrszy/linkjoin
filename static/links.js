@@ -1,12 +1,38 @@
 let noSleep = new NoSleep()
 noSleep.disable()
 
+document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function popUp(popup, premium, link_names) {
+    if (premium == "false" && link_names.length >= 10) {
+        console.log(link_names)
+        document.documentElement.style.setProperty("--right", "-350px")
+        document.getElementById("popup_premium").style.display = "flex"
+        let position = -350
+        while (position <= 50) {
+            document.documentElement.style.setProperty("--right", `${position}px`)
+            await sleep(1)
+            position += 3.5
 
+        }
+        let amount = 1
+        while (amount <= 110) {
+            document.documentElement.style.setProperty("--progress", `${amount}%`)
+            await sleep(11)
+            amount += 0.25
+        }
+        while (position>= -350) {
+            document.documentElement.style.setProperty("--right", `${position}px`)
+            await sleep(1)
+            position -= 3.5
+
+        }
+        return document.getElementById("popup_premium").style.display = "none"
+    }
     popup = document.getElementById(popup)
     popup.style.display = "flex"
     document.getElementById("page").classList.toggle("blurred")

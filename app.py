@@ -64,10 +64,7 @@ def Signup():
 @app.route("/login_error", methods=['GET'])
 def login():
     response = make_response(redirect(request.args.get("redirect")))
-    
     login_db = mongo.db.login
-    hasher = PasswordHasher()
-    login_info = {'username': request.args.get("email").lower(), 'password': hasher.hash(request.args.get("password"))}
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if login_db.find_one({'username': request.args.get("email").lower()}) is None:
         return redirect(f"/login?error=username_not_found{redirect_link}")
@@ -76,7 +73,7 @@ def login():
         ph.verify(authorization['password'], request.args.get("password"))
     except argon2.exceptions.VerifyMismatchError:
         return redirect(f"/login?error=incorrect_password{redirect_link}")
-    cookie = json.dumps({key: value for key, value in login_info.items() if key != "_id"})
+    cookie = json.dumps({'username': request.args.get("email").lower()})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
@@ -97,7 +94,7 @@ def signup():
         return redirect(f"/signup?error=email_in_use{redirect_link}")
     HASH = hasher.hash(request.args.get("password"))
     login_db.insert_one({'username': email, 'password': HASH, "premium": "false"})
-    cookie = json.dumps({'username': email, 'password': request.args.get("password")})
+    cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
