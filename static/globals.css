@@ -103,14 +103,6 @@ svg {
     margin: 20px 10px 0 15px;
 }
 
-.header_links {
-    background-color: #142539;
-    height: 80px;
-    width: 100%;
-    position: relative;
-    padding-bottom: 15px;
-}
-
 div {font-family: Montserrat; color: white;}
 
 .logo {
@@ -157,7 +149,7 @@ body: {display: flex}
     height: 80px;
     padding: 0 40px 20px 15px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     z-index: 7;
 }
 
@@ -195,5 +187,3 @@ input:invalid {box-shadow: none}
 .login_button img {
     margin-left: 3px;
 }
-
-[override] ._hj-wTRLt__Title__Title, {color: black !important}
