@@ -113,8 +113,8 @@ def google_signup():
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if login_db.find_one({'username': email}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
-    login_db.insert_one({'username': request.args.get("email").lower()})
-    cookie = json.dumps({'username': email, "premium": "false"})
+    login_db.insert_one({'username': request.args.get("email").lower(), "premium": "false"})
+    cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
