@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html id="main_html" lang="en">
+    <head>
+        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='premium.css') }}" rel="stylesheet"/>
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <title>LinkJoin Premium | Get the most out of LinkJoin</title>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <script data-ad-client="ca-pub-6523615305039224" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://linkjoin.xyz/premium">
+        <meta property="og:title" content="LinkJoin Premium | Get the most out of LinkJoin">
+        <meta property="og:description" content="LinkJoin opens your meetings for you right on time, even if you're not at the computer!">
+        <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
+        <meta name="description" content="With LinkJoin premium, you get unlimited links along with other cool features.">
+        <meta name=”robots” content="index, follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </head>
+    <body id="main_body">
+        <header>
+            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <a href="/links">Links</a>
+            <a href="/login">Log In</a>
+            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <div id="dropdown">
+                <div id="hamburger">
+                    <div id="line1"></div>
+                    <div id="line2"></div>
+                    <div id="line3"></div>
+                </div>
+                <div id="hamburger_dropdown">
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login">Log In</a>
+                    <a href="/links">Links</a>
+                </div>
+            </div>
+        </header>
+        <p id="desc">Unlimited links, superior organization, and more. Try premium now.</p>
+        <hr>
+        {% if logged_in == "false" %}
+            <a href="/login" id="login">Log In</a>
+        {% else %}
+            <p id="refer">Refer a friend to get premium!</p>
+            <div style="height: 50px; margin-top: 50px; display: flex; justify-content: center;">
+                <input id="share_link" value="{{ refer }}">
+                <button id="click_to_copy">Click to Copy Link</button>
+            </div>
+        {% endif %}
+    </body>
+    <script src="{{ url_for('static', filename='premium.js') }}"></script>
+</html>

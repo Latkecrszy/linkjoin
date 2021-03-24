@@ -35,7 +35,6 @@ def main():
 
 @app.route("/login")
 def Login():
-    
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
@@ -49,16 +48,17 @@ def Login():
 
 @app.route("/signup")
 def Signup():
-    
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         if login_info['username'] == "setharaphael7@gmail.com":
             return render_template("signup.html", error=request.args.get("error"),
-                                   redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+                                   redirect=request.args.get("redirect") if request.args.get("redirect") else "/links",
+                                   refer=request.args.get("refer") if request.args.get("refer") else "none")
     users = mongo.db.users
     users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
     return render_template("signup.html", error=request.args.get("error"),
-                           redirect=request.args.get("redirect") if request.args.get("redirect") else "/links")
+                           redirect=request.args.get("redirect") if request.args.get("redirect") else "/links",
+                           refer=request.args.get("refer") if request.args.get("refer") else "none")
 
 
 @app.route("/login_error", methods=['GET'])
@@ -84,16 +84,29 @@ def login():
 def signup():
     hasher = PasswordHasher()
     response = make_response(redirect(request.args.get("redirect")))
-    
     login_db = mongo.db.login
+    google_login_db = mongo.db.google_login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if not re.search("^[^@ ]+@[^@ ]+\.[^@ .]{2,}$", email):
         return redirect(f"/signup?error=invalid_email{redirect_link}")
     if login_db.find_one({'username': request.args.get("email").lower()}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
+    if login_db.find({"refer": request.args.get("refer")}) or google_login_db.find({"refer": request.args.get("refer")}):
+        try:
+            login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
+        except:
+            pass
+        try:
+            google_login_db.find_one_and_update(dict(google_login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
+        except:
+            pass
     HASH = hasher.hash(request.args.get("password"))
-    login_db.insert_one({'username': email, 'password': HASH, "premium": "false"})
+    ids = [dict(document)['refer'] for document in google_login_db.find() if 'refer' in document]
+    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    while id in ids:
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    login_db.insert_one({'username': email, 'password': HASH, "premium": "false", "refer": id})
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -104,13 +117,29 @@ def signup():
 @app.route("/google_signup")
 def google_signup():
     response = make_response(redirect(request.args.get("redirect")))
-    
-    login_db = mongo.db.google_login
+    google_login_db = mongo.db.google_login
+    login_db = mongo.db.login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
-    if login_db.find_one({'username': email}) is not None:
+    if google_login_db.find_one({'username': email}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
-    login_db.insert_one({'username': request.args.get("email").lower(), "premium": "false"})
+    if login_db.find({"refer": request.args.get("refer")}) or google_login_db.find(
+            {"refer": request.args.get("refer")}):
+        try:
+            login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})),
+                                         {"$set": {"premium": "true"}})
+        except:
+            pass
+        try:
+            google_login_db.find_one_and_update(dict(google_login_db.find_one({"refer": request.args.get("refer")})),
+                                                {"$set": {"premium": "true"}})
+        except:
+            pass
+    ids = [dict(document)['refer'] for document in google_login_db.find() if 'refer' in document]
+    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    while id in ids:
+        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+    google_login_db.insert_one({'username': request.args.get("email").lower(), "premium": "false", "refer": id})
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -121,7 +150,6 @@ def google_signup():
 @app.route("/google_login")
 def google_login():
     response = make_response(redirect(request.args.get("redirect")))
-    
     login_db = mongo.db.google_login
     alt_login_db = mongo.db.login
     email = request.args.get("email").lower()
@@ -140,7 +168,6 @@ def google_login():
 
 @app.route("/register")
 def register():
-    
     links_db = mongo.db.links
     id_db = mongo.db.id
     ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
@@ -324,7 +351,6 @@ def auth():
 
 @app.route("/addlink")
 def addlink():
-    
     links_db = mongo.db.links
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
@@ -356,6 +382,23 @@ def invalid():
 @app.route("/reset_password")
 def reset_password():
     return render_template("forgot_password.html")
+
+
+@app.route("/premium")
+def premium():
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        logged_in = "true"
+        login_db = mongo.db.login
+        google_login_db = mongo.db.google_login
+        if login_db.find({"username": login_info['username']}):
+            refer = f'https://linkjoin.xyz/signup?refer={dict(login_db.find_one({"username": login_info["username"]}))["refer"]}'
+        else:
+            refer = f'https://linkjoin.xyz/signup?refer={dict(google_login_db.find_one({"username": login_info["username"]}))["refer"]}'
+    else:
+        logged_in = "false"
+        refer = "none"
+    return render_template("premium.html", logged_in=logged_in, refer=refer)
 
 
 app.register_error_handler(404, lambda e: render_template("404.html"))

@@ -170,6 +170,7 @@ footer {
     .footer_image {height: 1vw !important; width: 1vw !important; margin-right: 0.3vw !important}
     .footer_text {font-size: 1vw;}
 }
+
 @media (max-width: 730px) {
     header a {
         display: none;
