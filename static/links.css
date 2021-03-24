@@ -384,3 +384,5 @@ input[type=date] {
 }
 
 .box {display: flex; flex-direction: column;}
+
+#dates_container {display: flex;justify-content: space-between;}

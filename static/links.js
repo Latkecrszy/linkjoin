@@ -8,31 +8,7 @@ function sleep(ms) {
 }
 
 async function popUp(popup, premium, link_names) {
-    if (premium == "false" && link_names.length >= 10) {
-        console.log(link_names)
-        document.documentElement.style.setProperty("--right", "-350px")
-        document.getElementById("popup_premium").style.display = "flex"
-        let position = -350
-        while (position <= 50) {
-            document.documentElement.style.setProperty("--right", `${position}px`)
-            await sleep(1)
-            position += 3.5
 
-        }
-        let amount = 1
-        while (amount <= 110) {
-            document.documentElement.style.setProperty("--progress", `${amount}%`)
-            await sleep(11)
-            amount += 0.25
-        }
-        while (position>= -350) {
-            document.documentElement.style.setProperty("--right", `${position}px`)
-            await sleep(1)
-            position -= 3.5
-
-        }
-        return document.getElementById("popup_premium").style.display = "none"
-    }
     popup = document.getElementById(popup)
     popup.style.display = "flex"
     document.getElementById("page").classList.toggle("blurred")
@@ -349,10 +325,10 @@ async function load_links(username, sort) {
                         if (!document.getElementById(day_abbrev).classList.contains("selected")) {
                             document.getElementById(day_abbrev).classList.add("selected")
                         }
-
                     }
                 }
                 document.getElementById(link['repeat']).selected = "selected"
+                console.log(link)
                 document.getElementById(link['starts']).selected = "selected"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
