@@ -96,7 +96,7 @@ def signup():
     if login_db.find_one({'username': request.args.get("email").lower()}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
     HASH = hasher.hash(request.args.get("password"))
-    login_db.insert_one({'username': email, 'password': HASH})
+    login_db.insert_one({'username': email, 'password': HASH, "premium": "false"})
     cookie = json.dumps({'username': email, 'password': request.args.get("password")})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -114,7 +114,7 @@ def google_signup():
     if login_db.find_one({'username': email}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
     login_db.insert_one({'username': request.args.get("email").lower()})
-    cookie = json.dumps({'username': email})
+    cookie = json.dumps({'username': email, "premium": "false"})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
