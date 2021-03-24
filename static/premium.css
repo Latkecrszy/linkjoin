@@ -43,7 +43,6 @@ header {
     width: calc(100% - 25px);
     padding: 30px 5px 30px 30px;
     height: 60px;
-    background-color: #091B30;
     margin: 10px;
 }
 
@@ -77,7 +76,7 @@ header img {margin: 0 auto 0 20px}
     overflow: visible;
     width: 300px;
     font: 500 18px Roboto;
-    background-color: #091B30;
+    background-color: #142539;
     height: 50px;
     padding-left: 5px;
     border: none;
@@ -130,6 +129,7 @@ hr {
 #main_html {
     overflow-x: hidden;
     scroll-behavior: smooth;
+    background-color: #091B30;
 }
 
 #main_body {
