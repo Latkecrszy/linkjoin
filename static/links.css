@@ -279,20 +279,22 @@ input[type=date] {
     display: none;
     flex-direction: column;
     border-radius: 5px;
-    height: 80px;
+    height: 50px;
     width: 300px;
-    font-size: 15px;
+    font-size: 16.5px;
     position: absolute;
     top: 50px;
     right: var(--right);
     z-index: 11;
+    border-left: 5px solid red;
 }
 
 #popup_premium:after {
     content: "";
     display: block;
     width: var(--progress);
-    padding-top: 65px;
+    padding-top: 30px;
+    margin-left: -19px;
     border-bottom: 1px solid white;
 }
 
@@ -320,7 +322,8 @@ input[type=date] {
 #insert {
     display: flex;
     flex-direction: row;
-    margin: -150px 50px 0 4.5vw !important;
+    justify-content: center;
+    margin: -150px 50px 0 -7.5vw !important;
     width: 100vw;
     flex-wrap: wrap;}
 
