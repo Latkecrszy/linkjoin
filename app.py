@@ -85,26 +85,19 @@ def signup():
     hasher = PasswordHasher()
     response = make_response(redirect(request.args.get("redirect")))
     login_db = mongo.db.login
-    google_login_db = mongo.db.google_login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
     if not re.search("^[^@ ]+@[^@ ]+\.[^@ .]{2,}$", email):
         return redirect(f"/signup?error=invalid_email{redirect_link}")
     if login_db.find_one({'username': request.args.get("email").lower()}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
-    if login_db.find({"refer": request.args.get("refer")}) or google_login_db.find({"refer": request.args.get("refer")}):
-        try:
-            login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
-        except:
-            print("failure")
-        try:
-            google_login_db.find_one_and_update(dict(google_login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
-        except:
-            print("failure google")
+    if login_db.find({"refer": request.args.get("refer")}):
+        print(login_db.find_one({"refer": request.args.get("refer")}))
+        login_db.find_one_and_update({"refer": request.args.get("refer")}, {"$set": {"premium": "true"}})
     else:
         print("failure total")
     HASH = hasher.hash(request.args.get("password"))
-    ids = [dict(document)['refer'] for document in google_login_db.find() if 'refer' in document]
+    ids = [dict(document)['refer'] for document in login.find() if 'refer' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
@@ -119,29 +112,19 @@ def signup():
 @app.route("/google_signup")
 def google_signup():
     response = make_response(redirect(request.args.get("redirect")))
-    google_login_db = mongo.db.google_login
     login_db = mongo.db.login
     email = request.args.get("email").lower()
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
-    if google_login_db.find_one({'username': email}) is not None:
+    if login_db.find_one({'username': email}) is not None:
         return redirect(f"/signup?error=email_in_use{redirect_link}")
-    if login_db.find({"refer": request.args.get("refer")}) or google_login_db.find(
-            {"refer": request.args.get("refer")}):
-        try:
-            login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})),
-                                         {"$set": {"premium": "true"}})
-        except:
-            pass
-        try:
-            google_login_db.find_one_and_update(dict(google_login_db.find_one({"refer": request.args.get("refer")})),
-                                                {"$set": {"premium": "true"}})
-        except:
-            pass
-    ids = [dict(document)['refer'] for document in google_login_db.find() if 'refer' in document]
+    if login_db.find({"refer": request.args.get("refer")}):
+        login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})),
+                                    {"$set": {"premium": "true"}})
+    ids = [dict(document)['refer'] for document in login_db.find() if 'refer' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    google_login_db.insert_one({'username': request.args.get("email").lower(), "premium": "false", "refer": id})
+    login_db.insert_one({'username': request.args.get("email").lower(), "premium": "false", "refer": id})
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -152,13 +135,10 @@ def google_signup():
 @app.route("/google_login")
 def google_login():
     response = make_response(redirect(request.args.get("redirect")))
-    login_db = mongo.db.google_login
-    alt_login_db = mongo.db.login
+    login_db = mongo.db.login
     email = request.args.get("email").lower()
-    print(request.args)
     redirect_link = f"&redirect={request.args.get('redirect')}" if request.args.get("redirect") else None
-    if login_db.find_one({'username': email}) is None and alt_login_db.find_one({'username': email}) is None:
-        print(email)
+    if login_db.find_one({'username': email}) is None:
         return redirect(f"/login?error=username_not_found{redirect_link}")
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
@@ -200,7 +180,6 @@ def register():
             insert['password'] = password
         if request.args.get("repeats")[0].isnumeric():
             insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
-        print(insert)
         links_db.insert_one(insert)
         id_db.find_one_and_update({"_id": "id"}, {"$inc": {"id": 1}})
         return redirect("/links")
@@ -216,8 +195,7 @@ def links():
             users.find_one_and_update({"id": "stats"}, {"$inc": {"links": 1}})
         links_db = mongo.db.links
         login_db = mongo.db.login
-        google_login_db = mongo.db.google_login
-        premium = dict(login_db.find_one({"username": login_info['username']}))['premium'] if login_db.find_one({"username": login_info['username']}) else dict(google_login_db.find_one({"username": login_info['username']}))['premium']
+        premium = dict(login_db.find_one({"username": login_info['username']}))['premium']
         links_list = [{str(i): str(j) for i, j in link.items() if i != "_id" and i != "username" and i != "password"}
                       for link in links_db.find({"username": login_info['username']})]
         link_names = [link['name'] for link in links_list]
@@ -266,7 +244,6 @@ def update():
             insert['password'] = password
         if request.args.get("repeats")[0].isnumeric():
             insert['occurrences'] = (int(request.args.get("repeats")[0])-1) * len(request.args.get("days").split(","))
-        print(insert)
         links_db.find_one_and_replace({"username": login_info['username'], "id": int(request.args.get("id"))}, insert)
         return redirect("/links")
     return redirect("/login")
@@ -278,8 +255,8 @@ def deactivate():
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        print(links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
-                                           {"$set": {"active": "false"}}))
+        links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
+                                           {"$set": {"active": "false"}})
         return redirect("/links")
     return redirect("/login")
 
@@ -306,15 +283,12 @@ def db():
                   link in links_list]
     for i in links_list:
         if 'password' in i.keys():
-            print("worked")
             if hasattr(encoder.decrypt(i['password']), "decode"):
-                print("worked twice")
                 links_list[links_list.index(i)]["password"] = str(encoder.decrypt(i["password"]).decode())
         if 'days' in i.keys():
             links_list[links_list.index(i)]["days"] = str(i["days"])
         if 'dates' in i.keys():
             links_list[links_list.index(i)]["dates"] = str(i["dates"])
-    print(list(links_list))
     return make_response(jsonify(list(links_list)))
 
 
@@ -323,7 +297,6 @@ def db():
 def sort():
     response = make_response(redirect("/links"))
     response.set_cookie("sort", json.dumps({"sort": request.args.get("sort")}))
-    print(request.args.get("sort"))
     return response
 
 
@@ -392,11 +365,7 @@ def premium():
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         logged_in = "true"
         login_db = mongo.db.login
-        google_login_db = mongo.db.google_login
-        if login_db.find({"username": login_info['username']}):
-            refer = f'https://linkjoin.xyz/signup?refer={dict(login_db.find_one({"username": login_info["username"]}))["refer"]}'
-        else:
-            refer = f'https://linkjoin.xyz/signup?refer={dict(google_login_db.find_one({"username": login_info["username"]}))["refer"]}'
+        refer = f'https://linkjoin.xyz/signup?refer={dict(login_db.find_one({"username": login_info["username"]}))["refer"]}'
     else:
         logged_in = "false"
         refer = "none"
