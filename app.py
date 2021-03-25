@@ -97,7 +97,7 @@ def signup():
     else:
         print("failure total")
     HASH = hasher.hash(request.args.get("password"))
-    ids = [dict(document)['refer'] for document in login.find() if 'refer' in document]
+    ids = [dict(document)['refer'] for document in login_db.find() if 'refer' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
