@@ -96,11 +96,13 @@ def signup():
         try:
             login_db.find_one_and_update(dict(login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
         except:
-            pass
+            print("failure")
         try:
             google_login_db.find_one_and_update(dict(google_login_db.find_one({"refer": request.args.get("refer")})), {"$set": {"premium": "true"}})
         except:
-            pass
+            print("failure google")
+    else:
+        print("failure total")
     HASH = hasher.hash(request.args.get("password"))
     ids = [dict(document)['refer'] for document in google_login_db.find() if 'refer' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
