@@ -16,7 +16,7 @@ client_secret = os.environ.get('CLIENT_SECRET', None)
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
-cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz']}})
+cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5000']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 mongo = PyMongo(app)
 
@@ -164,7 +164,7 @@ def register():
         insert = {'username': login_info['username'], 'id': int(dict(id_db.find_one({'_id': 'id'}))['id']),
                   'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()), 'name': request.args.get('name'),
                   'active': 'true',
-                  'share': f'https://linkjoin.xyz/addlink?id={id}'}
+                  'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())}
         if request.args.get('repeats') != 'none':
             insert['repeat'] = request.args.get('repeats')
             insert['days'] = request.args.get('days').split(',')
@@ -287,6 +287,8 @@ def db():
         if 'dates' in i.keys():
             links_list[links_list.index(i)]['dates'] = str(i['dates'])
         links_list[links_list.index(i)]['link'] = str(encoder.decrypt(i['link']).decode())
+        if 'share' in i.keys():
+            links_list[links_list.index(i)]['share'] = str(encoder.decrypt(i['share']).decode())
     return make_response(jsonify(list(links_list)))
 
 
@@ -328,18 +330,18 @@ def addlink():
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        new_link = links_db.find_one({'share': f'https://linkjoin.xyz/addlink?id={request.args.get("id")}'})
+        new_link = links_db.find_one({'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={request.args.get("id")}'.encode())})
         if new_link is None:
             return render_template('invalid_link.html')
         new_link = {key: value for key, value in dict(new_link).items() if
                     key != '_id' and key != 'id' and key != 'username' and key != 'share'}
         new_link['username'] = login_info['username']
         new_link['id'] = int(dict(id_db.find_one({'_id': 'id'}))['id'])
-        ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
+        ids = [encoder.decrypt(dict(document)['share']).decode() for document in links_db.find() if 'share' in document]
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
         while f'https://linkjoin.xyz/addlink?id={id}' in ids:
             id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-        new_link['share'] = f'https://linkjoin.xyz/addlink?id={id}'
+        new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
         id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
         links_db.insert_one(new_link)
         return redirect('/links')
@@ -368,6 +370,15 @@ def premium():
         logged_in = 'false'
         refer = 'none'
     return render_template('premium.html', logged_in=logged_in, refer=refer)
+
+
+@app.route('/encrypt')
+def encrypt():
+    links_db = mongo.db.links
+    for document in links_db.find({"username": "setharaphael7@gmail.com"}):
+        document = dict(document)
+        document['share'] = encoder.encrypt(document['share'].encode())
+        links_db.find_one_and_replace({'id': document['id']}, document)
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
