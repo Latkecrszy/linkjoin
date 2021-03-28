@@ -330,7 +330,12 @@ def addlink():
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        new_link = links_db.find_one({'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={request.args.get("id")}'.encode())})
+        share = []
+        new_link = None
+        for doc in links_db.find():
+            if 'share' in dict(doc):
+                if encoder.decrypt(dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
+                    new_link = dict(doc)
         if new_link is None:
             return render_template('invalid_link.html')
         new_link = {key: value for key, value in dict(new_link).items() if
@@ -375,10 +380,16 @@ def premium():
 @app.route('/encrypt')
 def encrypt():
     links_db = mongo.db.links
-    for document in links_db.find({"username": "setharaphael7@gmail.com"}):
+    for document in links_db.find():
         document = dict(document)
-        document['share'] = encoder.encrypt(document['share'].encode())
-        links_db.find_one_and_replace({'id': document['id']}, document)
+        if document['username'] != "setharaphael7@gmail.com":
+            if 'share' in document:
+                try:
+                    document['share'] = encoder.encrypt(document['share'].encode())
+                    links_db.find_one_and_replace({'id': document['id']}, document)
+                except:
+                    pass
+    return 'done'
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
