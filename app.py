@@ -377,21 +377,6 @@ def premium():
     return render_template('premium.html', logged_in=logged_in, refer=refer)
 
 
-@app.route('/encrypt')
-def encrypt():
-    links_db = mongo.db.links
-    for document in links_db.find():
-        document = dict(document)
-        if document['username'] != "setharaphael7@gmail.com":
-            if 'share' in document:
-                try:
-                    document['share'] = encoder.encrypt(document['share'].encode())
-                    links_db.find_one_and_replace({'id': document['id']}, document)
-                except:
-                    pass
-    return 'done'
-
-
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 
