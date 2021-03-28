@@ -206,7 +206,6 @@ def links():
 
 @app.route('/delete', methods=['POST', 'GET'])
 def delete():
-    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -249,7 +248,6 @@ def update():
 
 @app.route('/deactivate')
 def deactivate():
-    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -261,7 +259,6 @@ def deactivate():
 
 @app.route('/activate')
 def activate():
-    
     links_db = mongo.db.links
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
@@ -274,8 +271,7 @@ def activate():
 @app.route('/db', methods=['GET', 'POST'])
 def db():
     links_db = mongo.db.links
-    username = request.args.get('username')
-    links_list = links_db.find({'username': username})
+    links_list = links_db.find({'username': request.args.get('username')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for i in links_list:
@@ -302,7 +298,6 @@ def sort():
 
 @app.route('/change_var')
 def change_var():
-    
     links_db = mongo.db.links
     links_db.find_one_and_update({'username': request.args.get('username'), 'id': int(request.args.get('id'))},
                                  {'$set': {request.args.get('var'): request.args.get(request.args.get('var'))}})
@@ -319,18 +314,12 @@ def privacy():
     return make_response('Coming soon!')
 
 
-@app.route('/auth/google')
-def auth():
-    return make_response('Coming soon!')
-
-
 @app.route('/addlink')
 def addlink():
     links_db = mongo.db.links
     id_db = mongo.db.id
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        share = []
         new_link = None
         for doc in links_db.find():
             if 'share' in dict(doc):
