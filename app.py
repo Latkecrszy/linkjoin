@@ -91,8 +91,10 @@ def signup():
     if login_db.find_one({'username': request.args.get('email').lower()}) is not None:
         return redirect(f'/signup?error=email_in_use{redirect_link}')
     if login_db.find({'refer': request.args.get('refer')}):
-        print(login_db.find_one({'refer': request.args.get('refer')}))
-        login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
+        try:
+            login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
+        except:
+            pass
     else:
         print('failure total')
     HASH = hasher.hash(request.args.get('password'))
@@ -117,8 +119,11 @@ def google_signup():
     if login_db.find_one({'username': email}) is not None:
         return redirect(f'/signup?error=email_in_use{redirect_link}')
     if login_db.find({'refer': request.args.get('refer')}):
-        login_db.find_one_and_update(dict(login_db.find_one({'refer': request.args.get('refer')})),
-                                    {'$set': {'premium': 'true'}})
+        try:
+            login_db.find_one_and_update(dict(login_db.find_one({'refer': request.args.get('refer')})),
+                                        {'$set': {'premium': 'true'}})
+        except:
+            pass
     ids = [dict(document)['refer'] for document in login_db.find() if 'refer' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:

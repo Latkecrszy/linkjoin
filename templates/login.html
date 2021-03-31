@@ -11,7 +11,7 @@
 
           gtag('config', 'UA-192814042-1');
         </script>
-        <script>setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected")) {x.innerText = "Log In With Google"}})}, 1)</script>
+        <script>setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected") || x.id.toString().includes("not_signed")) {x.innerText = "Log In With Google"}})}, 1)</script>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
