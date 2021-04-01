@@ -126,13 +126,90 @@
                 </div>
                 <div class="flex">
                     <img src="{{ url_for('static', filename='images/time.png') }}" height="18px" width="18px" alt="clock">
-                    <input type="number" id="hour" max="12" min="1" style="width: 50px" placeholder="hour" required>
-                    <input type="number" id="minute" max="59" min="1" style="width: 50px" placeholder="min" required>
-                    <select class="popup_select" style="margin: 40px 0 0 10px !important; height: 20px; width: 25px;" id="am">
+                    <select id="hour2" class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; width: 20px;">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                    </select>
+                    <p class="popup_select" style="margin: 23px 0 0 0 !important; height: 20px; width: 5px;">:</p>
+                    <select id="minute2" class="popup_select" style="margin: 25px 0 0 0 !important; height: 20px; width: 25px;">
+                        <option>00</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                        <option>10</option>
+                        <option>11</option>
+                        <option>12</option>
+                        <option>13</option>
+                        <option>14</option>
+                        <option>15</option>
+                        <option>16</option>
+                        <option>17</option>
+                        <option>18</option>
+                        <option>19</option>
+                        <option>8</option>
+                        <option>20</option>
+                        <option>21</option>
+                        <option>22</option>
+                        <option>23</option>
+                        <option>24</option>
+                        <option>25</option>
+                        <option>26</option>
+                        <option>27</option>
+                        <option>28</option>
+                        <option>29</option>
+                        <option>30</option>
+                        <option>31</option>
+                        <option>32</option>
+                        <option>33</option>
+                        <option>34</option>
+                        <option>35</option>
+                        <option>36</option>
+                        <option>37</option>
+                        <option>38</option>
+                        <option>39</option>
+                        <option>40</option>
+                        <option>41</option>
+                        <option>42</option>
+                        <option>43</option>
+                        <option>44</option>
+                        <option>45</option>
+                        <option>46</option>
+                        <option>47</option>
+                        <option>48</option>
+                        <option>49</option>
+                        <option>50</option>
+                        <option>51</option>
+                        <option>52</option>
+                        <option>53</option>
+                        <option>54</option>
+                        <option>55</option>
+                        <option>56</option>
+                        <option>57</option>
+                        <option>58</option>
+                        <option>59</option>
+                    </select>
+                    <!--<input type="number" id="hour" max="12" min="1" style="width: 50px" placeholder="hour" required>
+                    <input type="number" id="minute" max="59" min="1" style="width: 50px" placeholder="min" required>-->
+                    <select class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; width: 25px;" id="am">
                         <option value="am">AM</option>
                         <option value="pm" id="pm">PM</option>
                     </select>
-                    <!--<input type="time" placeholder="hour:min am/pm" id="time" required>-->
                 </div>
                 <div class="flex">
                     <img src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
