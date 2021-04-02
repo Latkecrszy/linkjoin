@@ -39,8 +39,8 @@ async function popUp(popup, premium, link_names) {
     document.getElementsByTagName("html")[0].style.background = "#040E1A"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
-    document.getElementById("hour").value = null
-    document.getElementById("minute").value = null
+    document.getElementById("hour").value = 1
+    document.getElementById("minute").options.selectedIndex = 0
     document.getElementById("password").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
@@ -333,8 +333,9 @@ async function load_links(username, sort) {
                     document.getElementById("pm").selected = "selected"
                 }
                 else {
-                    document.getElementById("hour").value = link['time'].split(":")[0]
+                    document.getElementById("hour").value = parseInt(link['time'].split(":")[0])
                 }
+                console.log(parseInt(link['time'].split(":")[0]))
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
@@ -413,9 +414,6 @@ function register_link(parameter) {
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
     let minute = document.getElementById("minute").value
-    if (minute.length == 1) {
-        minute = `0${minute}`
-    }
     if (document.getElementById("am").value == "pm") {
         if (hour != 12) {hour += 12}
     }

@@ -68,7 +68,7 @@
     box-shadow: 6px 6px 10px black;
 }
 
-#name, #link, #hour, #minute, #password {
+#name, #link, #password {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
