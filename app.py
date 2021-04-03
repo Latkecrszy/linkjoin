@@ -175,8 +175,9 @@ def register():
             insert['days'] = request.args.get('days').split(',')
         else:
             insert['repeat'] = 'none'
-            insert['dates'] = [{'day': i.split('-')[2], 'month': i.split('-')[1], 'year': i.split('-')[0]} for i in
-                               request.args.get('dates').split(',')]
+            if request.args.get('dates') != '':
+                insert['dates'] = [{'day': i.split('-')[2], 'month': i.split('-')[1], 'year': i.split('-')[0]} for i in
+                                   request.args.get('dates').split(',')]
         insert['starts'] = int(request.args.get('starts')) if request.args.get('starts') else 0
         if request.args.get('password'):
             password = request.args.get('password').encode()
@@ -369,6 +370,15 @@ def premium():
         logged_in = 'false'
         refer = 'none'
     return render_template('premium.html', logged_in=logged_in, refer=refer)
+
+
+@app.route("/users")
+def users():
+    login_db = mongo.db.login
+    print('\n'.join([doc for doc in login_db.find()]))
+    print(len([_ for _ in login_db.find()]))
+    return render_template('404.html')
+
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

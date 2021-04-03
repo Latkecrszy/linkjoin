@@ -9,7 +9,6 @@ function sleep(ms) {
 
 async function popUp(popup, premium, link_names) {
     if (premium == "false" && link_names.length >= 10) {
-        console.log(link_names)
         document.documentElement.style.setProperty("--right", "-350px")
         document.getElementById("popup_premium").style.display = "flex"
         let position = -350
@@ -152,7 +151,6 @@ async function load_links(username, sort) {
             let link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
-            console.log(links)
             for (const link_info of links) {
                 if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
                     link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
@@ -168,7 +166,6 @@ async function load_links(username, sort) {
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
             }
-            console.log(other_link_list)
             for (let day_name in other_link_list) {
                 for (let time_info of other_link_list[day_name]) {
                     final.push(link_list[day_name][time_info])
@@ -180,7 +177,6 @@ async function load_links(username, sort) {
         }
         document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
-        console.log(final)
         for (let link of final) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
@@ -335,7 +331,6 @@ async function load_links(username, sort) {
                 else {
                     document.getElementById("hour").value = parseInt(link['time'].split(":")[0])
                 }
-                console.log(parseInt(link['time'].split(":")[0]))
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
@@ -353,7 +348,6 @@ async function load_links(username, sort) {
                     }
                 }
                 document.getElementById(link['repeat']).selected = "selected"
-                console.log(link)
                 document.getElementById(link['starts']).selected = "selected"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 
@@ -423,8 +417,10 @@ function register_link(parameter) {
     let time = `${hour}:${minute}`
     let password = document.getElementById("password").value
     let url;
+    let dates = []
+    let days = []
     if (!document.getElementById("repeats").checked) {
-        let dates = [document.getElementById("first_date").value.replaceAll(" ", "-")]
+        dates = [document.getElementById("first_date").value.replaceAll(" ", "-")]
         for (let x = 0; x < document.getElementById("dates").children.length; x++) {
             let element = document.getElementById("dates").children[x];
             dates.push((element.value).replaceAll(" ", "-"))
@@ -435,10 +431,9 @@ function register_link(parameter) {
         else {
             url = `/update?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}&id=${parameter}`
         }
-
     }
     else {
-        let days = []
+        days = []
         for (let x = 0; x < document.getElementById("days").children.length; x++) {
             if (document.getElementById("days").children[x].classList.contains("selected")) {
                 days.push(document.getElementById("days").children[x].value)
@@ -452,7 +447,15 @@ function register_link(parameter) {
         }
     }
     if (password.length > 0) {url += `&password=${password}`}
-    location.href = url
+    console.log(days)
+    console.log(dates)
+    console.log(days.length)
+    console.log(dates.length)
+    console.log((!days && !dates))
+    if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
+    if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
+    if (days.length === 0 && dates.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
+    location.replace(url)
 }
 
 function logOut() {

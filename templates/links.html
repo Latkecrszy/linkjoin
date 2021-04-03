@@ -115,6 +115,7 @@
         <div id="popup">
             <img src="{{ url_for('static', filename='images/arrow_left.png') }}" style="margin: 20px 0px -30px 20px; height: max(1.2vw, 20px); width: max(1.2vw, 20px); cursor: pointer;" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
+            <div id="error"></div>
             <form id="create" autocomplete="off">
                 <div class="flex">
                     <img src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px" alt="text symbol">
