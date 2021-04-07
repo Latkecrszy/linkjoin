@@ -234,6 +234,7 @@ async function load_links(username, sort) {
             else {
                 let dates_list = []
                 let months = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
+                console.log(link)
                 for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
                     dates_list.push(`${months[date_info["month"].toString()]} ${parseInt(date_info["day"])}, ${date_info["year"]}`)
                 }

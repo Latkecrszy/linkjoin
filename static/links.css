@@ -322,13 +322,17 @@ input[type=date] {
 #insert {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    margin: -150px 50px 0 -7.5vw !important;
-    width: 100vw;
+    justify-content: space-between;
+    margin: -150px 100px 0 50px;
+    padding-right: 50px;
     flex-wrap: wrap;}
 
-@media(max-width: 720px) {
-    #insert {margin: -150px 50px 0 0 !important;}
+@media(max-width: 1300px) {
+    #insert {justify-content: center;}
+}
+
+@media(min-width: 3500px) {
+    #insert {justify-content: center;}
 }
 
 #popup_share {
