@@ -11,7 +11,11 @@
 
           gtag('config', 'UA-192814042-1');
         </script>
-        <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
+        {% if style == "old" %}
+            <link href="{{ url_for('static', filename='old_links.css') }}" rel="stylesheet"/>
+        {% else %}
+            <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
+        {% endif %}
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">

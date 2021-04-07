@@ -23,38 +23,17 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def main():
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if login_info['username'] == 'setharaphael7@gmail.com':
-            return render_template('website.html')
-    users = mongo.db.users
-    users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
     return render_template('website.html')
 
 
 @app.route('/login')
 def Login():
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if login_info['username'] == 'setharaphael7@gmail.com':
-            return render_template('login.html', error=request.args.get('error'),
-                                   redirect=request.args.get('redirect') if request.args.get('redirect') else '/links')
-    users = mongo.db.users
-    users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
     return render_template('login.html', error=request.args.get('error'),
                            redirect=request.args.get('redirect') if request.args.get('redirect') else '/links')
 
 
 @app.route('/signup')
 def Signup():
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if login_info['username'] == 'setharaphael7@gmail.com':
-            return render_template('signup.html', error=request.args.get('error'),
-                                   redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
-                                   refer=request.args.get('refer') if request.args.get('refer') else 'none')
-    users = mongo.db.users
-    users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
     return render_template('signup.html', error=request.args.get('error'),
                            redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
                            refer=request.args.get('refer') if request.args.get('refer') else 'none')
@@ -375,10 +354,9 @@ def premium():
 @app.route("/users")
 def users():
     login_db = mongo.db.login
-    print('\n'.join([doc for doc in login_db.find()]))
+    print('\n'.join([str(doc) for doc in login_db.find()]))
     print(len([_ for _ in login_db.find()]))
     return render_template('404.html')
-
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
