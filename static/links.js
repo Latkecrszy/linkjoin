@@ -43,9 +43,6 @@ async function popUp(popup, premium, link_names) {
     document.getElementById("password").value = null
     document.getElementById("submit").innerHTML = null
     document.getElementById("submit").innerText = "Create"
-    document.getElementById("submit_dates").innerHTML = null
-    document.getElementById("submit_dates").innerText = "Create"
-    document.getElementById("submit_dates").setAttribute("onclick", `register_link("register")`)
     document.getElementById("submit").setAttribute("onclick", `register_link("register")`)
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
@@ -58,7 +55,6 @@ async function popUp(popup, premium, link_names) {
         }
     }
     document.getElementById("0").selected = "selected"
-    check()
 }
 
 function hide(popup) {
@@ -66,36 +62,6 @@ function hide(popup) {
     popup.style.display = "none"
     document.getElementById("page").classList.toggle("blurred")
     document.getElementsByTagName("html")[0].style.background = "#091B30"
-    check()
-}
-
-function check() {
-    checkbox = document.getElementById("repeats")
-    if (checkbox.checked) {
-        if (document.getElementById("repeats_text").innerText.includes("every") == false) {
-            document.getElementById("repeats_text").innerText += " every"
-            document.getElementById("days").classList.remove("hidden")
-            document.getElementById("starts").classList.remove("hidden")
-            document.getElementById("select").classList.remove("hidden")
-            document.getElementById("dates_container").classList.add("gone")
-            document.getElementById("first_date").classList.add("gone")
-            document.getElementById("add_field").classList.add("gone")
-            document.getElementById("submit").classList.remove("gone")
-            document.getElementById("submit_dates").classList.add("gone")
-
-        }
-    }
-    else {
-        document.getElementById("repeats_text").innerText = "Repeats"
-        document.getElementById("days").classList.add("hidden")
-        document.getElementById("starts").classList.add("hidden")
-        document.getElementById("select").classList.add("hidden")
-        document.getElementById("dates_container").classList.remove("gone")
-        document.getElementById("first_date").classList.remove("gone")
-        document.getElementById("add_field").classList.remove("gone")
-        document.getElementById("submit").classList.add("gone")
-        document.getElementById("submit_dates").classList.remove("gone")
-    }
 }
 
 document.addEventListener("click", event => {
@@ -114,15 +80,7 @@ async function load_links(username, sort) {
         let final = []
         if (sort == "day") {
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
-            for (const link_info of links) {
-                if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
-                    link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)
-                }
-                else {
-                    link_list['dates'].push(link_info)
-                }
-
-            }
+            for (const link_info of links) {link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)}
             for (const day in link_list) {
                 for (let key of link_list[day]) {
                     final.push(key)
@@ -152,16 +110,8 @@ async function load_links(username, sort) {
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             for (const link_info of links) {
-                if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link_info['repeat'])) {
-                    link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                    other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
-                }
-                else {
-                    link_list['dates'][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                    other_link_list['dates'].push([parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)])
-
-                }
-
+                link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
             }
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
@@ -226,20 +176,9 @@ async function load_links(username, sort) {
             let days = document.createElement("div")
             days.classList.add("days")
             let days_list;
-            if (["week", "2 weeks", "3 weeks", "4 weeks"].includes(link['repeat'])) {
-                days_list = link["days"].replaceAll("'", '"')
-                days_list = JSON.parse(days_list)
-                days.innerText = days_list.join(", ")
-            }
-            else {
-                let dates_list = []
-                let months = {"01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"}
-                console.log(link)
-                for (let date_info of JSON.parse(link['dates'].replaceAll("'", '"'))) {
-                    dates_list.push(`${months[date_info["month"].toString()]} ${parseInt(date_info["day"])}, ${date_info["year"]}`)
-                }
-                days.innerText = dates_list.join("; ")
-            }
+            days_list = link["days"].replaceAll("'", '"')
+            days_list = JSON.parse(days_list)
+            days.innerText = days_list.join(", ")
             link_event.appendChild(days)
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
@@ -313,7 +252,6 @@ async function load_links(username, sort) {
                 element.style.display = "flex"
                 document.getElementById("page").classList.add("blurred")
                 document.getElementsByTagName("html")[0].style.background = "#040E1A"
-                check()
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
                 if ("password" in link) {document.getElementById("password").value = link["password"]}
@@ -335,8 +273,6 @@ async function load_links(username, sort) {
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
-                document.getElementById("submit_dates").innerText = "Update"
-                document.getElementById("submit_dates").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
                 for (let day_abbrev of days_list) {
                     if (document.getElementById(day_abbrev)) {
@@ -420,46 +356,31 @@ function register_link(parameter) {
     let url;
     let dates = []
     let days = []
-    if (!document.getElementById("repeats").checked) {
-        dates = [document.getElementById("first_date").value.replaceAll(" ", "-")]
-        for (let x = 0; x < document.getElementById("dates").children.length; x++) {
-            let element = document.getElementById("dates").children[x];
-            dates.push((element.value).replaceAll(" ", "-"))
+    for (let x = 0; x < document.getElementById("days").children.length; x++) {
+        if (document.getElementById("days").children[x].classList.contains("selected")) {
+            days.push(document.getElementById("days").children[x].value)
         }
-        if (parameter == "register") {
-            url = `/register?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}`
-        }
-        else {
-            url = `/update?name=${name}&link=${link}&time=${time}&repeats=none&dates=${dates}&id=${parameter}`
-        }
+    }
+    if (parameter == "register") {
+        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     else {
-        days = []
-        for (let x = 0; x < document.getElementById("days").children.length; x++) {
-            if (document.getElementById("days").children[x].classList.contains("selected")) {
-                days.push(document.getElementById("days").children[x].value)
-            }
-        }
-        if (parameter == "register") {
-            url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
-        }
-        else {
-            url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
-        }
+        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     if (password.length > 0) {url += `&password=${password}`}
-    console.log(days)
-    console.log(dates)
-    console.log(days.length)
-    console.log(dates.length)
-    console.log((!days && !dates))
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
     if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
-    if (days.length === 0 && dates.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
+    if (days.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
     location.replace(url)
 }
 
 function logOut() {
     document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     location.reload()
+}
+
+
+function checkNever() {
+    if (document.getElementById("select").value == "never") {document.getElementById("repeats_text").innerText = "Repeats"}
+    else {document.getElementById("repeats_text").innerText = "Repeats every"}
 }

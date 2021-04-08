@@ -13,17 +13,16 @@ async function NewTab(username, links) {
         let days;
         for (const link of user_links) {
             if (link['active'] == "true") {
-                if ('days' in link) {
-                    days = JSON.parse(link["days"].replaceAll("'", '"'))
-                }
-                else {
-                    dates = JSON.parse(link["dates"].replaceAll("'", '"'))
-                }
+                days = JSON.parse(link["days"].replaceAll("'", '"'))
                 if (parseInt(date.getHours()) == parseInt(link["time"].split(":")[0]) && parseInt(date.getMinutes()) == parseInt(link["time"].split(":")[1]) && link['active'] == "true") {
                     if (days.includes(day)) {
                         if (parseInt(link['starts']) > 0) {
                             await sleep(60000)
                             location.href = `/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts'])-1}&var=starts`
+                        }
+                        else if (link['repeat'] === "never") {
+                            window.open(link["link"])
+                            location.replace(`/delete?id=${link['id']}`)
                         }
                         else if (link['repeat'] == "week") {
                             window.open(link["link"])
@@ -101,14 +100,6 @@ async function NewTab(username, links) {
                                 location.href = `/change_var?username=${username}&id=${link['id']}&occurrences=${newMonth}&var=occurrences`
                             }
                             await sleep(60000)
-                        }
-                        else {
-                            for (let date_info of dates) {
-                                if (parseInt(date_info.month)-1 == parseInt(date.getMonth()) && parseInt(date_info.year) == parseInt(date.getFullYear()) && parseInt(date_info.day) == parseInt(date.getDate())) {
-                                    window.open(link["link"])
-                                    await sleep(60000)
-                                }
-                            }
                         }
                     }
                 }

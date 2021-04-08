@@ -100,9 +100,8 @@ input {color: white; font-family: Montserrat;}
 
 #repeats_text {
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 18px;
     text-align: left;
-    margin: 5px 0 0 10px;
 }
 
 .flex_right {
@@ -122,7 +121,7 @@ input {color: white; font-family: Montserrat;}
     color: white;
 }
 
-#select {margin-left: 70px;}
+#select {margin-left: 30px; font-size: 18px;}
 
 #days {
     margin: 30px 0 0 45px;

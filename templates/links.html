@@ -223,21 +223,15 @@
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
 
                 <div class="flex_right" id="repeats_container">
-                    <input onclick="check()" type="checkbox" id="repeats" checked="checked">
                     <div id="repeats_text">Repeats every</div>
-                    <input class="gone" id="first_date" type="date" placeholder="yyyy mm dd">
-                    <button type="button" id="add_field" class="gone"><img src="{{ url_for('static', filename='images/add_field.png') }}" height="20px" width="21px;" alt="plus sign"></button>
-                    <select id="select" class="popup_select">
+                    <select id="select" class="popup_select" onchange="checkNever()">
+                        <option value="never" id="never">Never</option>
                         <option value="week" id="week" selected>Week</option>
                         <option value="2 weeks" id="2 weeks">2 Weeks</option>
                         <option value="3 weeks" id="3 weeks">3 Weeks</option>
                         <option value="4 weeks" id="4 weeks">4 Weeks</option>
                     </select>
                 </div>
-                <div id="dates_container" class="gone">
-                    <div id="dates"></div>
-                </div>
-                <button type="button" id="submit_dates" class="gone" onclick="register_link('register')">Create</button>
                 <div id="days">
                     <button value="Sun" id="Sun" type="button">Su</button>
                     <button value="Mon" id="Mon" type="button">M</button>
@@ -265,14 +259,4 @@
             <div>You have reached the limit of 10 free links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
     </body>
-    <script>
-        document.getElementById("add_field").addEventListener('click',
-function add_field() {
-    let date_input = document.createElement("input")
-    date_input.type = "date"
-    let today = new Date().toISOString().split('T')[0]
-    date_input.min = today
-    document.getElementById("dates").appendChild(date_input)
-})
-    </script>
 </html>
