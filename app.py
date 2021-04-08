@@ -133,41 +133,37 @@ def google_login():
 
 @app.route('/register')
 def register():
-    links_db = mongo.db.links
-    id_db = mongo.db.id
-    ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
-    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    while f'https://linkjoin.xyz/addlink?id={id}' in ids:
+    try:
+        links_db = mongo.db.links
+        id_db = mongo.db.id
+        ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    if request.cookies.get('login_info'):
-        if 'https' not in request.args.get('link'):
-            link = f'https://{request.args.get("link")}'
-        else:
-            link = request.args.get('link')
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        insert = {'username': login_info['username'], 'id': int(dict(id_db.find_one({'_id': 'id'}))['id']),
-                  'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()), 'name': request.args.get('name'),
-                  'active': 'true',
-                  'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())}
-        if request.args.get('repeats') != 'none':
-            insert['repeat'] = request.args.get('repeats')
-            insert['days'] = request.args.get('days').split(',')
-        else:
-            insert['repeat'] = 'none'
-            if request.args.get('dates') != '':
-                insert['dates'] = [{'day': i.split('-')[2], 'month': i.split('-')[1], 'year': i.split('-')[0]} for i in
-                                   request.args.get('dates').split(',')]
-        insert['starts'] = int(request.args.get('starts')) if request.args.get('starts') else 0
-        if request.args.get('password'):
-            password = request.args.get('password').encode()
-            password = encoder.encrypt(password)
-            insert['password'] = password
-        if request.args.get('repeats')[0].isnumeric():
-            insert['occurrences'] = (int(request.args.get('repeats')[0])-1) * len(request.args.get('days').split(','))
-        links_db.insert_one(insert)
-        id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-        return redirect('/links')
-    return redirect('/login')
+        while f'https://linkjoin.xyz/addlink?id={id}' in ids:
+            id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
+        if request.cookies.get('login_info'):
+            if 'https' not in request.args.get('link'):
+                link = f'https://{request.args.get("link")}'
+            else:
+                link = request.args.get('link')
+            login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+            insert = {'username': login_info['username'], 'id': int(dict(id_db.find_one({'_id': 'id'}))['id']),
+                      'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()),
+                      'name': request.args.get('name'), 'active': 'true',
+                      'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
+                      'repeat': request.args.get('repeats'), 'days': request.args.get('days').split(','),
+                      'starts': int(request.args.get('starts')) if request.args.get('starts') else 0}
+            if request.args.get('password'):
+                password = request.args.get('password').encode()
+                password = encoder.encrypt(password)
+                insert['password'] = password
+            if request.args.get('repeats')[0].isnumeric():
+                insert['occurrences'] = (int(request.args.get('repeats')[0])-1) * len(request.args.get('days').split(','))
+            links_db.insert_one(insert)
+            id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+            return redirect('/links')
+        return redirect('/login')
+    except:
+        return render_template("error.html")
 
 
 @app.route('/links')
