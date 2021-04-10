@@ -313,7 +313,7 @@ async function load_links(username, sort) {
     console.log(tutorial_completed)
     tutorial_completed = await tutorial_completed.json()
     console.log(tutorial_completed)
-    if (tutorial_completed['tutorial'] === "false") {await tutorial(0)}
+    //if (tutorial_completed['tutorial'] === "false") {await tutorial(0)}
     check_day(username)
     await NewTab(username, links)
 }
@@ -391,16 +391,3 @@ function checkNever() {
     else {document.getElementById("repeats_text").innerText = "Repeats every"}
 }
 
-async function tutorial(item) {
-    if (item == 0) {
-        document.getElementById("page").classList.toggle("blurred")
-        document.getElementsByTagName("html")[0].style.background = "#040E1A"
-    }
-    if (item == 10) {
-        document.getElementById("page").classList.toggle("blurred")
-        document.getElementsByTagName("html")[0].style.background = "#091B30"
-        await fetch(`https://linkjoin.xyz/tutorial?username=${username}`)
-    }
-    document.getElementById(`tutorial${item}`).style.display = "flex"
-    document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
-}

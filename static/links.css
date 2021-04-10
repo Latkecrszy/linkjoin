@@ -400,16 +400,41 @@ input[type=date] {
 
 .tutorial {
     z-index: 7;
-    width: 150px;
+    width: 350px;
     display: none;
-    height: 100px;
+    height: 200px;
     border-radius: 10px;
     background: #091B30;
     position: absolute;
     color: white;
-    font: 500 18px Montserrat
+    font: 500 18px Montserrat;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    line-height: 22px;
 }
 
+.ok {
+    background: #2B8FD8;
+    border: none;
+    width: 100px;
+    height: 60px;;
+    border-radius: 12px;
+    margin-top: 30px;
+    font: 500 16px Montserrat
+}
+
+#spotlight {
+    background: white;
+    opacity: 0.4;
+    border-radius: 200px;
+    position: absolute;
+    z-index: 9;}
+
 #tutorial0 {top: 30vh; left: 40vw;}
+
+#tutorial1 {top: 47vh; left: 5vw;}
 
 
