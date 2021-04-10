@@ -310,8 +310,9 @@ async function load_links(username, sort) {
         }
     }
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
+    tutorial_completed = await tutorial_completed.json()
     console.log(tutorial_completed)
-    if (tutorial_completed.toString() === "false") {await tutorial(0)}
+    if (tutorial_completed['tutorial'] === "false") {await tutorial(0)}
     check_day(username)
     await NewTab(username, links)
 }

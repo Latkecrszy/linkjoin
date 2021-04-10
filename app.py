@@ -369,8 +369,9 @@ def tutorial_complete():
     login_db = mongo.db.login
     user = login_db.find_one({"username": request.args.get("username").lower()})
     if user:
-        return user['tutorial']
+        return jsonify(user)
     return 200
+
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
