@@ -371,7 +371,7 @@ def tutorial_complete():
     login_db = mongo.db.login
     user = login_db.find_one({"username": request.args.get("username").lower()})
     if user:
-        return jsonify(user)
+        return jsonify(dict(user))
     return 200
 
 
