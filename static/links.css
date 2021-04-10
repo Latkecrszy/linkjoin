@@ -394,4 +394,22 @@ input[type=date] {
     font: 500 14px Roboto;
     color: red;
     opacity: 0.7;
-    margin: 5px 0 0 65px}
+    margin: 5px 0 0 65px
+}
+
+
+.tutorial {
+    z-index: 7;
+    width: 150px;
+    display: none;
+    height: 100px;
+    border-radius: 10px;
+    background: #091B30;
+    position: absolute;
+    color: white;
+    font: 500 18px Montserrat
+}
+
+#tutorial0 {top: 30vh; left: 40vw;}
+
+

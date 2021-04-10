@@ -309,6 +309,8 @@ async function load_links(username, sort) {
             iterator += 1
         }
     }
+    let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
+    if (tutorial_completed.toString() === "false") {await tutorial(0)}
     check_day(username)
     await NewTab(username, links)
 }
@@ -384,4 +386,18 @@ function logOut() {
 function checkNever() {
     if (document.getElementById("select").value == "never") {document.getElementById("repeats_text").innerText = "Repeats"}
     else {document.getElementById("repeats_text").innerText = "Repeats every"}
+}
+
+async function tutorial(item) {
+    if (item == 0) {
+        document.getElementById("page").classList.toggle("blurred")
+        document.getElementsByTagName("html")[0].style.background = "#040E1A"
+    }
+    if (item == 10) {
+        document.getElementById("page").classList.toggle("blurred")
+        document.getElementsByTagName("html")[0].style.background = "#091B30"
+        await fetch(`https://linkjoin.xyz/tutorial?username=${username}`)
+    }
+    document.getElementById(`tutorial${item}`).style.display = "flex"
+    document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
 }

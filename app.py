@@ -81,7 +81,8 @@ def signup():
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    login_db.insert_one({'username': email, 'password': HASH, 'premium': 'false', 'refer': id})
+    login_db.insert_one({'username': email, 'password': HASH, 'premium': 'false', 'refer': id,
+                         'tutorial': 'false'})
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -107,7 +108,8 @@ def google_signup():
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    login_db.insert_one({'username': request.args.get('email').lower(), 'premium': 'false', 'refer': id})
+    login_db.insert_one({'username': request.args.get('email').lower(), 'premium': 'false', 'refer': id,
+                         'tutorial': 'false'})
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -354,6 +356,21 @@ def users():
     print(len([_ for _ in login_db.find()]))
     return render_template('404.html')
 
+
+@app.route("/tutorial")
+def tutorial():
+    login_db = mongo.db.login
+    login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": 'true'}})
+    return 'done'
+
+
+@app.route("/tutorial_complete")
+def tutorial():
+    login_db = mongo.db.login
+    user = login_db.find_one({"username": request.args.get("username").lower()})
+    if user:
+        return user['tutorial']
+    return 200
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
