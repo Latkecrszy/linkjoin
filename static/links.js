@@ -444,7 +444,7 @@ async function tutorial(item) {
         document.getElementById("starts_select").style.padding = "5px"
         document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
     }
-    if (parseInt(item) === 10) {
+    if (parseInt(item) === 9) {
         document.getElementById("tutorial9").style.display = "none"
         await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     }
