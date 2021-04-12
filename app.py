@@ -365,6 +365,7 @@ def tutorial():
     print(request.args.get("step"))
     login_db = mongo.db.login
     login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": request.args.get("step")}})
+    print("working")
     return 'done'
 
 

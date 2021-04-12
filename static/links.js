@@ -447,7 +447,7 @@ async function tutorial(item) {
     }
     if (parseInt(item) === 10) {
         document.getElementById("tutorial9").style.display = "none"
-        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+        return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
