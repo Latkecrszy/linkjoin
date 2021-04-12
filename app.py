@@ -21,6 +21,7 @@ cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http
                             r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5000']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 mongo = PyMongo(app)
+hasher = PasswordHasher()
 
 
 @app.route('/')
@@ -41,18 +42,19 @@ def Signup():
                            refer=request.args.get('refer') if request.args.get('refer') else 'none')
 
 
-@app.route('/login_error', methods=['GET'])
+@app.route("/login_error")
 def login():
     response = make_response(redirect(request.args.get('redirect')))
     login_db = mongo.db.login
     redirect_link = f'&redirect={request.args.get("redirect")}' if request.args.get('redirect') else None
     if login_db.find_one({'username': request.args.get('email').lower()}) is None:
         return redirect(f'/login?error=username_not_found{redirect_link}')
-    authorization = login_db.find_one({'username': request.args.get('email').lower()})
-    try:
-        ph.verify(authorization['password'], request.args.get('password'))
-    except argon2.exceptions.VerifyMismatchError:
-        return redirect(f'/login?error=incorrect_password{redirect_link}')
+    if request.args.get('password') is not None:
+        try:
+            ph.verify(login_db.find_one({'username': request.args.get('email').lower()})['password'],
+                      request.args.get('password'))
+        except argon2.exceptions.VerifyMismatchError:
+            return redirect(f'/login?error=incorrect_password{redirect_link}')
     cookie = json.dumps({'username': request.args.get('email').lower()})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
@@ -60,79 +62,31 @@ def login():
     return response
 
 
-@app.route('/signup_error', methods=['GET'])
+@app.route("/signup_error")
 def signup():
-    hasher = PasswordHasher()
-    response = make_response(redirect(request.args.get('redirect')))
     login_db = mongo.db.login
+    response = make_response(redirect(request.args.get('redirect')))
+    redirect_link = request.args.get("redirect") if request.args.get("redirect") else "/links"
     email = request.args.get('email').lower()
-    redirect_link = f'&redirect={request.args.get("redirect")}' if request.args.get('redirect') else None
     if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-        return redirect(f'/signup?error=invalid_email{redirect_link}')
+        return redirect(f'/signup?error=invalid_email&redirect={redirect_link}')
     if login_db.find_one({'username': request.args.get('email').lower()}) is not None:
-        return redirect(f'/signup?error=email_in_use{redirect_link}')
+        return redirect(f'/signup?error=email_in_use&redirect={redirect_link}')
     if login_db.find({'refer': request.args.get('refer')}):
-        try:
-            login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
-        except:
-            pass
-    else:
-        print('failure total')
-    HASH = hasher.hash(request.args.get('password'))
-    ids = [dict(document)['refer'] for document in login_db.find() if 'refer' in document]
+        try: login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
+        except: pass
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    while id in ids:
+    while id in [dict(document)['refer'] for document in login_db.find() if 'refer' in document]:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    login_db.insert_one({'username': email, 'password': HASH, 'premium': 'false', 'refer': id,
-                         'tutorial': 0})
+    insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': 0}
+    if request.args.get('password'):
+        insert['password'] = hasher.hash(request.args.get('password'))
+    login_db.insert_one(insert)
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
     response.set_cookie('login_info', cookie, max_age=172800)
     return response
-
-
-@app.route('/google_signup')
-def google_signup():
-    response = make_response(redirect(request.args.get('redirect')))
-    login_db = mongo.db.login
-    email = request.args.get('email').lower()
-    redirect_link = f'&redirect={request.args.get("redirect")}' if request.args.get('redirect') else None
-    if login_db.find_one({'username': email}) is not None:
-        return redirect(f'/signup?error=email_in_use{redirect_link}')
-    if login_db.find({'refer': request.args.get('refer')}):
-        try:
-            login_db.find_one_and_update(dict(login_db.find_one({'refer': request.args.get('refer')})),
-                                        {'$set': {'premium': 'true'}})
-        except:
-            pass
-    ids = [dict(document)['refer'] for document in login_db.find() if 'refer' in document]
-    id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    while id in ids:
-        id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    login_db.insert_one({'username': request.args.get('email').lower(), 'premium': 'false', 'refer': id,
-                         'tutorial': 0})
-    cookie = json.dumps({'username': email})
-    cookie = str.encode(cookie)
-    cookie = base64.b64encode(cookie)
-    response.set_cookie('login_info', cookie, max_age=172800)
-    return response
-
-
-@app.route('/google_login')
-def google_login():
-    response = make_response(redirect(request.args.get('redirect')))
-    login_db = mongo.db.login
-    email = request.args.get('email').lower()
-    redirect_link = f'&redirect={request.args.get("redirect")}' if request.args.get('redirect') else None
-    if login_db.find_one({'username': email}) is None:
-        return redirect(f'/login?error=username_not_found{redirect_link}')
-    cookie = json.dumps({'username': email})
-    cookie = str.encode(cookie)
-    cookie = base64.b64encode(cookie)
-    response.set_cookie('login_info', cookie, max_age=172800)
-    return response
-
 
 
 @app.route('/register')
@@ -361,11 +315,8 @@ def users():
 
 @app.route("/tutorial")
 def tutorial():
-    print("working")
-    print(request.args.get("step"))
     login_db = mongo.db.login
     login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": request.args.get("step")}})
-    print("working")
     return 'done'
 
 
@@ -382,7 +333,7 @@ def tutorial_complete():
 @app.route("/setuptutorial")
 def setuptutorial():
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": 'test5@gmail.com'}, {"$set": {"tutorial": 0}})
+    login_db.find_one_and_delete({"refer": 'DwJKlQcUaygVOduK'})
     return 'done'
 
 

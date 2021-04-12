@@ -49,7 +49,7 @@
     background-color: #2B8FD8;
     font: 800 19px Montserrat;
     border: none;
-    margin: 40px 0 0 30px;
+    margin: 10px 0 0 30px;
 }
 
 #main_page {display: flex}
@@ -60,11 +60,11 @@
     #submit img {height: 1.1vw; width: 1.1vw; margin-left: 0.1vw}
     #welcome {font-size: 2.4vw}
     #submit {
-        height: 4vw;
-        width: 10vw;
+        height: 5vw;
+        width: 12vw;
         border-radius: 3vw;
-        font: 800 1.2vw Montserrat;
-        margin-top: 2vw;
+        font: 800 1.4vw Montserrat;
+        margin-top: 1vw;
     }
     #email::placeholder, #password::placeholder {font-size: 1vw}
     #email, #password {
