@@ -317,7 +317,7 @@ async function load_links(username, sort) {
     console.log(tutorial_completed)
     tutorial_completed = await tutorial_completed.json()
     console.log(tutorial_completed)
-    // if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
+    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     check_day(username)
     await NewTab(username, links)
 }
@@ -397,9 +397,14 @@ function checkNever() {
 
 async function tutorial(item) {
     item = parseInt(item)
-    if (item === 0) {document.getElementById("blur").style.opacity = "0.4";
-                     document.getElementById("blur").style.zIndex = "3"}
-    else if (item === 1) {
+    if (document.getElementById("blur").style.opacity !== "0.4") {
+        document.getElementById("blur").style.opacity = "0.4";
+        document.getElementById("blur").style.zIndex = "3"
+        if (item >= 4) {
+            popUp('popup')
+        }
+    }
+     if (item === 1) {
         document.getElementById("box").style.zIndex = "5"
         document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }
@@ -443,7 +448,8 @@ async function tutorial(item) {
         document.getElementById("tutorial9").style.display = "none"
         await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     }
+    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
     document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
-    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
+
 }
