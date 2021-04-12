@@ -362,7 +362,7 @@ def users():
 @app.route("/tutorial")
 def tutorial():
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": 'true'}})
+    login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": request.args.get("step")}})
     return 'done'
 
 

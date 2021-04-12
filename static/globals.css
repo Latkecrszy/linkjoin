@@ -142,15 +142,12 @@ div {font-family: Montserrat; color: white;}
 
 select {-webkit-appearance:none}
 
-body: {display: flex}
-
 #header_links {
     background-color: #142539;
     height: 80px;
     padding: 0 40px 20px 15px;
     display: flex;
     justify-content: space-between;
-    z-index: 7;
 }
 
 .button {

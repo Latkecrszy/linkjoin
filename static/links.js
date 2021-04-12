@@ -1,6 +1,6 @@
 let noSleep = new NoSleep()
 noSleep.disable()
-
+let global_username;
 document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
 
 function sleep(ms) {
@@ -8,7 +8,7 @@ function sleep(ms) {
 }
 
 async function popUp(popup, premium, link_names) {
-    if (premium == "false" && link_names.length >= 10) {
+    if (premium === "false" && link_names.length >= 10) {
         document.documentElement.style.setProperty("--right", "-350px")
         document.getElementById("popup_premium").style.display = "flex"
         let position = -350
@@ -32,10 +32,11 @@ async function popUp(popup, premium, link_names) {
         }
         return document.getElementById("popup_premium").style.display = "none"
     }
+    hide('popup')
     popup = document.getElementById(popup)
     popup.style.display = "flex"
-    document.getElementById("page").classList.toggle("blurred")
-    document.getElementsByTagName("html")[0].style.background = "#040E1A"
+    document.getElementById("blur").style.opacity = "0.4"
+    document.getElementById("blur").style.zIndex = "3"
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("hour").value = 1
@@ -55,13 +56,14 @@ async function popUp(popup, premium, link_names) {
         }
     }
     document.getElementById("0").selected = "selected"
+    tutorial(4)
 }
 
 function hide(popup) {
     popup = document.getElementById(popup)
     popup.style.display = "none"
-    document.getElementById("page").classList.toggle("blurred")
-    document.getElementsByTagName("html")[0].style.background = "#091B30"
+    document.getElementById("blur").style.zIndex = "-3"
+    document.getElementById("blur").style.opacity = "0"
 }
 
 document.addEventListener("click", event => {
@@ -70,6 +72,7 @@ document.addEventListener("click", event => {
 
 
 async function load_links(username, sort) {
+    global_username = username
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() == '') {
@@ -250,7 +253,8 @@ async function load_links(username, sort) {
                 link_event = document.getElementById(iterator.toString())
                 element = document.getElementById("popup")
                 element.style.display = "flex"
-                document.getElementById("page").classList.add("blurred")
+                document.getElementById("blur").style.opacity = "0.4"
+                document.getElementById("blur").style.zIndex = "3"
                 document.getElementsByTagName("html")[0].style.background = "#040E1A"
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
@@ -313,7 +317,7 @@ async function load_links(username, sort) {
     console.log(tutorial_completed)
     tutorial_completed = await tutorial_completed.json()
     console.log(tutorial_completed)
-    //if (tutorial_completed['tutorial'] === "false") {await tutorial(0)}
+    // if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     check_day(username)
     await NewTab(username, links)
 }
@@ -387,7 +391,59 @@ function logOut() {
 
 
 function checkNever() {
-    if (document.getElementById("select").value == "never") {document.getElementById("repeats_text").innerText = "Repeats"}
+    if (document.getElementById("select").value === "never") {document.getElementById("repeats_text").innerText = "Repeats"}
     else {document.getElementById("repeats_text").innerText = "Repeats every"}
 }
 
+async function tutorial(item) {
+    item = parseInt(item)
+    if (item === 0) {document.getElementById("blur").style.opacity = "0.4";
+                     document.getElementById("blur").style.zIndex = "3"}
+    else if (item === 1) {
+        document.getElementById("box").style.zIndex = "5"
+        document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
+    }
+    else if (item === 2) {
+        document.getElementById("box").style.zIndex = "auto"
+        document.getElementById("box").style.background = null
+        document.getElementById("links_menu").style.zIndex = "5"
+        document.getElementById("links_menu").style.background = "rgba(255, 255, 255, 0.2)"
+    }
+    else if (item === 3) {
+        document.getElementById("links_menu").style.zIndex = "auto"
+        document.getElementById("links_menu").style.background = null
+        document.getElementById("plus_button").style.background = "rgba(255, 255, 255, 0.2)"
+        document.getElementById("plus_button").style.zIndex = "5"
+    }
+    else if (item === 4) {
+        if (document.getElementById("tutorial3").style.display !== "flex") {
+            return
+        }
+        if (document.getElementById("popup").style.display !== "flex") { popUp('popup')}
+        document.getElementById("plus_button").style.zIndex = "auto"
+        document.getElementById("plus_button").style.background = null
+    }
+    else if (item === 6) {
+        document.getElementById("select").style.background = "rgba(255, 255, 255, 0.2)"
+        document.getElementById("select").style.borderRadius = "5px"
+    }
+    else if (item === 7) {
+        document.getElementById("select").style.background = null
+        document.getElementById("select").style.borderRadius = null
+        document.getElementById("days").style.background = "rgba(255, 255, 255, 0.2)"
+    }
+    else if (item === 8) {
+        document.getElementById("days").style.background = null
+        document.getElementById("starts_select").style.background = "rgba(255, 255, 255, 0.2)"
+        document.getElementById("starts_select").style.borderRadius = "5px"
+        document.getElementById("starts_select").style.padding = "5px"
+        document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
+    }
+    if (parseInt(item) === 10) {
+        document.getElementById("tutorial9").style.display = "none"
+        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+    }
+    document.getElementById(`tutorial${item}`).style.display = "flex"
+    document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
+    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
+}

@@ -36,10 +36,7 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <body id="links_body">
-        <script type="text/javascript">
-            load_links('{{ username }}', '{{ sort }}')
-        </script>
+    <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
         <div id="page">
             <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" rel="noopener" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can help.
                 <button onclick="this.parentElement.style.display='none';" id="close_alert">×</button>
@@ -47,7 +44,7 @@
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
-                <div>
+                <div id="links_menu">
                     {% if premium == "false" %}
                         <a href="/premium"><div class="button header_button">Premium</div></a>
                     {% endif %}
@@ -55,37 +52,34 @@
                     <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 </div>
             </header>
-            <div id="settings">
-                <div class="box">
-                    <div id="sort_by">Sort By:</div>
-                    <select onchange="sort()" id="sort">
-                        {% if sort == "no" %}
-                            <option value="none" selected>None</option>
-                        {% else %}
-                            <option value="none">None</option>
-                        {% endif %}
-                        {% if sort == "day" %}
-                            <option value="day" selected>Day</option>
-                        {% else %}
-                            <option value="day">Day</option>
-                        {% endif %}
-                        {% if sort == "time" %}
-                            <option value="time" selected>Time</option>
-                        {% else %}
-                            <option value="time">Time</option>
-                        {% endif %}
-                        {% if sort == "datetime" %}
-                            <option value="datetime" selected>Day & Time</option>
-                        {% else %}
-                            <option value="datetime">Day & Time</option>
-                        {% endif %}
-                    </select>
-                </div>
-
+            <div id="box">
+                <div id="sort_by">Sort By:</div>
+                <select onchange="sort()" id="sort">
+                    {% if sort == "no" %}
+                        <option value="none" selected>None</option>
+                    {% else %}
+                        <option value="none">None</option>
+                    {% endif %}
+                    {% if sort == "day" %}
+                        <option value="day" selected>Day</option>
+                    {% else %}
+                        <option value="day">Day</option>
+                    {% endif %}
+                    {% if sort == "time" %}
+                        <option value="time" selected>Time</option>
+                    {% else %}
+                        <option value="time">Time</option>
+                    {% endif %}
+                    {% if sort == "datetime" %}
+                        <option value="datetime" selected>Day & Time</option>
+                    {% else %}
+                        <option value="datetime">Day & Time</option>
+                    {% endif %}
+                </select>
             </div>
             <div id="content">
                 <div class="gone" id="disappear">
-                    <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 5vh 0 0 36vw;" alt="Man with clock">
+                    <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: -10vh 0 0 36vw;" alt="Man with clock">
                     <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
                 </div>
                 <div id="insert"></div>
@@ -122,15 +116,15 @@
             <div id="error"></div>
             <form id="create" autocomplete="off">
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px" alt="text symbol">
+                    <img id="name_img" src="{{ url_for('static', filename='images/name.png') }}" height="15px" width="20px" alt="text symbol">
                     <input type="text" placeholder="Meeting Title" id="name" required>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/link.png') }}" height="13px" width="18px;" alt="link symbol">
+                    <img id="link_img" src="{{ url_for('static', filename='images/link.png') }}" height="13px" width="18px;" alt="link symbol">
                     <input type="text" placeholder="Meeting Link" id="link" required>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/time.png') }}" height="18px" width="18px" alt="clock">
+                    <img id="time_img" src="{{ url_for('static', filename='images/time.png') }}" height="18px" width="18px" alt="clock">
                     <select id="hour" class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; width: 25px;">
                         <option>1</option>
                         <option>2</option>
@@ -217,7 +211,7 @@
                     </select>
                 </div>
                 <div class="flex">
-                    <img src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
+                    <img id="password_img" src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
                     <input type="text" placeholder="Optional: Meeting Password" id="password">
                 </div>
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
@@ -259,32 +253,33 @@
             <div>You have reached the limit of 10 free links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
         <div id="tutorial0" class="tutorial">
-            Hi there! Welcome to LinkJoin! Let's get you set up and ready to be one time.
+            Hi there! Welcome to LinkJoin! Let's get you set up and ready to be on time.
             <button class="ok" onclick="tutorial(1)">I'm ready!</button>
         </div>
         <div id="tutorial1" class="tutorial">
-            Let's start off by showing you around the page. This menu here is how you can change the organization of your links.
+            Let's get started by showing you around the page.
+            This menu is where you can change how your links are organized.
             Choose from sorting by day, time, or both!
             <button class="ok" onclick="tutorial(2)">Next</button>
         </div>
         <div id="tutorial2" class="tutorial">
-            Next, these buttons will let you manage your account. Switch accounts or sign out at any time.
+            Next, these buttons will let you manage your account. Switch accounts or log out at any time.
             <button class="ok" onclick="tutorial(3)">Next</button>
         </div>
         <div id="tutorial3" class="tutorial">
-            Now, the important part: let's create a link. Click on the big plus right there to get started.
+            Now, the important part: Let's schedule our first link. Click on the big plus right there to get started.
             <button class="ok" onclick="tutorial(4)">Next</button>
         </div>
         <div id="tutorial4" class="tutorial">
             Nice! Now, let's give our new meeting a title.
-            <button class="ok" onclick="tutorial(5)">Done!</button>
+            <button class="ok" onclick="tutorial(5)">Next</button>
         </div>
         <div id="tutorial5" class="tutorial">
-            Next, add in a link, time, and password (optional).
+            Next, add in a link, time, and an optional password.
             <button class="ok" onclick="tutorial(6)">Next</button>
         </div>
         <div id="tutorial6" class="tutorial">
-            To change how often your link will open, change the dropdown here. Go ahead, try it out!
+            To change how often your link will open, select an option from the dropdown here. Go ahead, try it out!
             <button class="ok" onclick="tutorial(7)">Next</button>
         </div>
         <div id="tutorial7" class="tutorial">
@@ -300,5 +295,12 @@
             <button class="ok" onclick="tutorial(10)">Thanks!</button>
         </div>
         <div id="spotlight"></div>
+        <div id="blur"></div>
     </body>
+    <script>
+        console.log(window.innerHeight)
+        document.getElementById("blur").style.height = (window.innerHeight+100).toString()+"px"
+        if (window.innerWidth < 815) {document.getElementById("blur").style.height = (window.innerHeight+150).toString()+"px"}
+    </script>
+
 </html>

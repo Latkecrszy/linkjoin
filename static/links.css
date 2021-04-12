@@ -8,7 +8,9 @@
 }
 
 #plus_button {
-    margin-top: 50px;
+    margin-top: 20px;
+    border-radius: 100px;
+    padding: 30px
 }
 
 #plus_button:hover {cursor: pointer;}
@@ -43,7 +45,7 @@
 
 #home {margin: 22px min(140px, 5vw) 0 0;}
 
-.header_button {margin-top: 35px;}
+.header_button {margin-top: 17px;}
 
 #close_alert {
     border: none;
@@ -66,6 +68,7 @@
     border-radius: 10px;
     left: 35vw;
     box-shadow: 6px 6px 10px black;
+    z-index: 5
 }
 
 #name, #link, #password {
@@ -121,13 +124,15 @@ input {color: white; font-family: Montserrat;}
     color: white;
 }
 
-#select {margin-left: 30px; font-size: 18px;}
+#select {margin-left: 30px; font-size: 18px; padding: 5px}
 
 #days {
-    margin: 30px 0 0 45px;
+    margin: 20px 0 -10px 45px;
     display: flex;
     justify-content: space-between;
     width: 83%;
+    padding: 10px;
+    border-radius: 30px
 }
 
 #days button {
@@ -322,7 +327,7 @@ input[type=date] {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: -150px 100px 0 50px;
+    margin: -300px 100px 0 50px;
     padding-right: 50px;
     flex-wrap: wrap;}
 
@@ -379,14 +384,14 @@ input[type=date] {
 
 #content {display: flex; justify-content: space-between;}
 
-#settings {
-    margin-right: auto;
+#box {
+    margin: 20px auto 0 0;
     display: flex;
-    flex-direction: row;
-    width: 50vw;
+    flex-direction: column;
+    border-radius: 100px;
+    width: 150px;
+    height: 150px
 }
-
-.box {display: flex; flex-direction: column;}
 
 #dates_container {display: flex; justify-content: space-between;}
 
@@ -414,6 +419,7 @@ input[type=date] {
     align-items: center;
     text-align: center;
     line-height: 22px;
+    box-shadow: 6px 16px 18px black;
 }
 
 .ok {
@@ -428,13 +434,41 @@ input[type=date] {
 
 #spotlight {
     background: white;
-    opacity: 0.4;
+    opacity: 0.1;
     border-radius: 200px;
     position: absolute;
-    z-index: 9;}
+    z-index: 15;
+    margin-right: 50px !important;
+    pointer-events:none}
 
 #tutorial0 {top: 30vh; left: 40vw;}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 
+#tutorial2 {top: 200px; right: 15vw;}
 
+#tutorial3 {top: 250px; right: 58vw;}
+
+#tutorial4 {top: 160px; right: 63vw;}
+
+#tutorial5 {top: 250px; right: 63vw;}
+
+#tutorial6 {top: 310px; right: 63vw}
+
+#tutorial7{top: 370px; right: 63vw}
+
+#tutorial8{top: 430px; right: 63vw}
+
+#tutorial9{top: 430px; left: 67vw}
+
+#blur {
+    width: 100%;
+    z-index: -3;
+    background: black;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0
+}
+
+#links_menu {border-radius: 50px; padding: 5px 30px 20px 0; margin: 15px -30px 0 0; }
