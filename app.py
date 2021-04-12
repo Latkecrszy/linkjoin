@@ -330,13 +330,6 @@ def tutorial_complete():
     return 200
 
 
-@app.route("/setuptutorial")
-def setuptutorial():
-    login_db = mongo.db.login
-    login_db.find_one_and_delete({"refer": 'DwJKlQcUaygVOduK'})
-    return 'done'
-
-
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 
