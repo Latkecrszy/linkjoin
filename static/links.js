@@ -8,6 +8,7 @@ function sleep(ms) {
 }
 
 async function popUp(popup, premium, link_names) {
+    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     if (premium === "false" && link_names.length >= 10) {
         document.documentElement.style.setProperty("--right", "-350px")
         document.getElementById("popup_premium").style.display = "flex"
@@ -444,7 +445,7 @@ async function tutorial(item) {
         document.getElementById("starts_select").style.padding = "5px"
         document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
     }
-    if (parseInt(item) === 9) {
+    if (parseInt(item) === 10) {
         document.getElementById("tutorial9").style.display = "none"
         await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     }

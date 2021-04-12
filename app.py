@@ -381,7 +381,7 @@ def tutorial_complete():
 @app.route("/setuptutorial")
 def setuptutorial():
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": 'test4@gmail.com'}, {"$set": {"tutorial": 0}})
+    login_db.find_one_and_update({"username": 'test5@gmail.com'}, {"$set": {"tutorial": 0}})
     return 'done'
 
 
