@@ -1,59 +1,50 @@
-let noSleep = new NoSleep()
-noSleep.disable()
 let global_username;
-document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function popUp(popup, premium, link_names) {
-    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     if (premium === "false" && link_names.length >= 10) {
         document.documentElement.style.setProperty("--right", "-350px")
         document.getElementById("popup_premium").style.display = "flex"
-        let position = -350
-        while (position <= 50) {
+        let position;
+        for (position = -350; position <= 50; position += 3.5) {
             document.documentElement.style.setProperty("--right", `${position}px`)
             await sleep(1)
-            position += 3.5
-
         }
-        let amount = 1
-        while (amount <= 110) {
+        for (let amount = 1; amount <= 110; amount += 0.25) {
             document.documentElement.style.setProperty("--progress", `${amount}%`)
             await sleep(11)
-            amount += 0.25
         }
         while (position>= -350) {
             document.documentElement.style.setProperty("--right", `${position}px`)
             await sleep(1)
             position -= 3.5
-
         }
         return document.getElementById("popup_premium").style.display = "none"
     }
     hide('popup')
     popup = document.getElementById(popup)
     popup.style.display = "flex"
-    document.getElementById("blur").style.opacity = "0.4"
-    document.getElementById("blur").style.zIndex = "3"
+    let blur = document.getElementById("blur")
+    let submit = document.getElementById("password")
+    blur.style.opacity = "0.4"
+    blur.style.zIndex = "3"
+    submit.innerHTML = null
+    submit.innerText = "Create"
+    submit.setAttribute("onclick", `register_link("register")`)
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("hour").value = 1
     document.getElementById("minute").options.selectedIndex = 0
     document.getElementById("password").value = null
-    document.getElementById("submit").innerHTML = null
-    document.getElementById("submit").innerText = "Create"
-    document.getElementById("submit").setAttribute("onclick", `register_link("register")`)
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
-
-    let children = document.getElementById("days").children
-    for (let i=0; i < children.length; i++) {
-        let date = new Date()
-        if (children[i].value != {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]) {
-            children[i].classList.remove("selected")
+    let date = new Date()
+    for (let child of document.getElementById("days").children) {
+        if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]) {
+            child.classList.remove("selected")
         }
     }
     document.getElementById("0").selected = "selected"
@@ -67,115 +58,79 @@ function hide(popup) {
     document.getElementById("blur").style.opacity = "0"
 }
 
-document.addEventListener("click", event => {
-  if(event.target.matches("#days button")) event.target.classList.toggle("selected");
-})
+document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
 
 
 async function load_links(username, sort) {
     global_username = username
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
     let links = await start_json.json()
-    if (links.toString() == '') {
+    if (links.toString() === '') {
         document.getElementById("header_links").style.margin = "0 0 0 0"
         document.getElementById("disappear").classList.remove("gone")
     }
     else {
         let final = []
-        if (sort == "day") {
-            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
+        if (sort === "day") {
+            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
             for (const link_info of links) {link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)}
-            for (const day in link_list) {
-                for (let key of link_list[day]) {
-                    final.push(key)
-                }
-            }
+            for (const day in link_list) {for (let key of link_list[day]) {final.push(key)}}
         }
-        else if (sort == "time") {
-            let day_nums = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
+        else if (sort === "time") {
             let times = []
-            let link_time_list = {}
+            let add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
+            let time_links_list = {}
             for (const link_info of links) {
-                if ('days' in link_info) {
-                    times.push((parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]))
-                    link_time_list[(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+day_nums[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]])] = link_info
-                }
-                else {
-                    times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
-                    link_time_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                }
+                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]])
+                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]] = link_info
             }
-            for (const link_time of times.sort((a, b) => a - b)) {
-                final.push(link_time_list[link_time])
-            }
+            for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
         }
-        else if (sort == "datetime") {
-            let link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
+        else if (sort === "datetime") {
+            let link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
-            let final_link_list = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             for (const link_info of links) {
-                link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                link_dict[link_info["days"][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                other_link_list[link_info["days"][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
             }
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
             }
             for (let day_name in other_link_list) {
-                for (let time_info of other_link_list[day_name]) {
-                    final.push(link_list[day_name][time_info])
-                }
+                for (let time_info of other_link_list[day_name]) {final.push(link_dict[day_name][time_info])}
             }
         }
-        else {
-            final = links
-        }
+        else {final = links}
         document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
         for (let link of final) {
             link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
-
             let time_div = document.createElement("div")
             time_div.classList.add("time")
             let time = link["time"]
             let time_list = time.split(":")
             let pm = "am"
-            if (parseInt(time_list[0]) == 12) {
-                pm = "pm"
-            }
-            else if (parseInt(time_list[0]) == 24) {
-                pm = "am"
-                time_list[0] = 12
-            }
-            else if (parseInt(time_list[0]) > 12) {
-                time_list[0] = parseInt(time_list[0]) - 12
-                pm = "pm"
-            }
-            time = time_list.join(":")
-            time += " "+pm
-            time_div.innerText = time
+            if (parseInt(time_list[0]) === 12) {pm = "pm"}
+            else if (parseInt(time_list[0]) === 24) {time_list[0] = 12}
+            else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
+            time_div.innerText = (time_list.join(":"))+" "+pm
             link_event.appendChild(time_div)
             let name = document.createElement("div")
             let name_container = document.createElement("div")
             name_container.style.cursor = "pointer"
             name.classList.add("link_event_title")
             name.innerText = link["name"]
-            if (link["active"] == "true") {
-                name.style.color = "#2B8FD8"
-            }
-            else {
-                name.style.color = "#B7C0C7"
-            }
+            if (link["active"] === "true") {name.style.color = "#2B8FD8"}
+            else {name.style.color = "#B7C0C7"}
             let join_now = document.createElement("div")
             join_now.classList.add("join_now")
             join_now.innerText = "Click to join the room now"
             name.setAttribute("onclick", `window.open("${link['link']}")`)
             join_now.setAttribute("onclick", `window.open("${link['link']}")`)
             name_container.appendChild(name)
-
             name_container.appendChild(join_now)
-
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
@@ -212,11 +167,10 @@ async function load_links(username, sort) {
             share.innerText = "Share"
             share.style.color = "black"
             share.addEventListener("click", function openShare() {
-                let state = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-                document.getElementById("popup_share").style.display = state
+                document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
                 document.getElementById("share_link").value = link['share']
-                document.getElementById("page").classList.toggle("blurred")
-                document.getElementsByTagName("html")[0].style.background = "#040E1A"
+                document.getElementById("blur").style.opacity = "0.4";
+                document.getElementById("blur").style.zIndex = "3"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 })
 
@@ -230,8 +184,8 @@ async function load_links(username, sort) {
             buttons.appendChild(share)
             let activate_switch = document.createElement("button")
             activate_switch.classList.add("function_button")
-            if (link['active'] == "false") {
-                link_event.style.opacity = 0.5
+            if (link['active'] === "false") {
+                link_event.style.opacity = "0.5"
                 activate_switch.style.background = "#B7C0C7"
                 activate_switch.style.color = "black"
                 activate_switch.innerText = "Activate"
@@ -239,7 +193,7 @@ async function load_links(username, sort) {
                 location.href = "/activate?id="+link["id"]})
             }
             else {
-                link_event.style.opacity = 1
+                link_event.style.opacity = "1"
                 activate_switch.style.background = "#2B8FD8"
                 activate_switch.style.color = "white"
                 activate_switch.innerText = "Deactivate"
@@ -252,20 +206,19 @@ async function load_links(username, sort) {
             edit.style.background = "#27FB6B"
             edit.addEventListener("click", function() {
                 link_event = document.getElementById(iterator.toString())
-                element = document.getElementById("popup")
+                let element = document.getElementById("popup")
                 element.style.display = "flex"
                 document.getElementById("blur").style.opacity = "0.4"
                 document.getElementById("blur").style.zIndex = "3"
-                document.getElementsByTagName("html")[0].style.background = "#040E1A"
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
                 if ("password" in link) {document.getElementById("password").value = link["password"]}
                 else {document.getElementById("password").value = null}
-                if (parseInt(link['time'].split(":")[0]) == 12) {
+                if (parseInt(link['time'].split(":")[0]) === 12) {
                     document.getElementById("pm").selected = "selected"
                     document.getElementById("hour").value = 12
                 }
-                else if (parseInt(link['time'].split(":")[0]) == 24) {
+                else if (parseInt(link['time'].split(":")[0]) === 24) {
                     document.getElementById("hour").value = 12
                 }
                 else if (parseInt(link['time'].split(":")[0]) > 12) {
@@ -307,17 +260,13 @@ async function load_links(username, sort) {
                 document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
             buttons.appendChild(delete_button)
             link_event.appendChild(buttons)
-            if (link['active'] == "false") {
-                link_event.opacity = 0.6
-            }
+            if (link['active'] === "false") {link_event.opacity = 0.6}
             document.getElementById("insert").appendChild(link_event)
             iterator += 1
         }
     }
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
-    console.log(tutorial_completed)
     tutorial_completed = await tutorial_completed.json()
-    console.log(tutorial_completed)
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     check_day(username)
     await NewTab(username, links)
@@ -454,3 +403,9 @@ async function tutorial(item) {
     document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
 
 }
+
+async function skipTutorial() {
+    return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+}
+
+
