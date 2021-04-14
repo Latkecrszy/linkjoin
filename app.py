@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify, request, render_template, redirect
+from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
 import json, os, dotenv, base64, re, argon2, random, string
 from argon2 import PasswordHasher
@@ -328,6 +328,18 @@ def tutorial_complete():
     if user:
         return jsonify(dict(user))
     return 200
+
+
+@app.route("/arc-sw.js")
+def arc():
+    return send_file('arc-sw.js', mimetype='application/javascript', attachment_filename='arc-sw.js')
+
+
+"""@app.route("/remove")
+def remove():
+    login_db = mongo.db.login
+    login_db.find_one_and_delete({"refer": "JluoNdSWWerbObYX"})
+    return 'done'"""
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
