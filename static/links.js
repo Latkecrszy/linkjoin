@@ -81,8 +81,8 @@ async function load_links(username, sort) {
             let add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
             let time_links_list = {}
             for (const link_info of links) {
-                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]])
-                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]] = link_info
+                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]])
+                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]] = link_info
             }
             for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
         }
@@ -90,9 +90,8 @@ async function load_links(username, sort) {
             let link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
-                console.log(link_info["days"][0])
-                link_dict[link_info["days"][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                other_link_list[link_info["days"][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                link_dict[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
             }
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
