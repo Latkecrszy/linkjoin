@@ -345,6 +345,12 @@ function checkNever() {
     else {document.getElementById("repeats_text").innerText = "Repeats every"}
 }
 
+function openWindow() {
+    let newWindow = window.open()
+    console.log(newWindow)
+    return newWindow
+}
+
 async function tutorial(item) {
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
@@ -354,7 +360,19 @@ async function tutorial(item) {
             popUp('popup')
         }
     }
-     if (item === 1) {
+    if (item === 0) {
+        await sleep(1001)
+        let newWindow = window.open()
+        if (newWindow) {
+            document.getElementById(`tutorial1`).style.display = "flex"
+            document.getElementById(`tutorial-1`).style.display = "none"
+            return newWindow.close()
+        }
+        document.getElementById(`tutorial0`).style.display = "flex"
+        document.getElementById(`tutorial-1`).style.display = "none"
+        return
+    }
+    else if (item === 1) {
         document.getElementById("box").style.zIndex = "5"
         document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }

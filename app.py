@@ -78,7 +78,7 @@ def signup():
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in [dict(document)['refer'] for document in login_db.find() if 'refer' in document]:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': 0}
+    insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': -1}
     if request.args.get('password'):
         insert['password'] = hasher.hash(request.args.get('password'))
     login_db.insert_one(insert)
@@ -126,20 +126,23 @@ def register():
 
 @app.route('/links')
 def links():
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        if login_info['username'] != 'setharaphael7@gmail.com':
-            users = mongo.db.users
-            users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
-        links_db = mongo.db.links
-        login_db = mongo.db.login
-        premium = dict(login_db.find_one({'username': login_info['username']}))['premium']
-        links_list = [{str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
-                      for link in links_db.find({'username': login_info['username']})]
-        link_names = [link['name'] for link in links_list]
-        sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
-        return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium)
-    else:
+    try:
+        if request.cookies.get('login_info'):
+            login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+            if login_info['username'] != 'setharaphael7@gmail.com':
+                users = mongo.db.users
+                users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
+            links_db = mongo.db.links
+            login_db = mongo.db.login
+            premium = dict(login_db.find_one({'username': login_info['username']}))['premium']
+            links_list = [{str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
+                          for link in links_db.find({'username': login_info['username']})]
+            link_names = [link['name'] for link in links_list]
+            sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
+            return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium)
+        else:
+            return redirect('/login?error=not_logged_in')
+    except:
         return redirect('/login?error=not_logged_in')
 
 
@@ -335,11 +338,11 @@ def arc():
     return send_file('arc-sw.js', mimetype='application/javascript', attachment_filename='arc-sw.js')
 
 
-"""@app.route("/remove")
+@app.route("/remove")
 def remove():
     login_db = mongo.db.login
-    login_db.find_one_and_delete({"refer": "JluoNdSWWerbObYX"})
-    return 'done'"""
+    login_db.find_one_and_update({"refer": "WRyFYNfLDFZhpNSL"}, {'$set': {"tutorial": -1}})
+    return 'done'
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

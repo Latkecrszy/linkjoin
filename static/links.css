@@ -441,7 +441,9 @@ input[type=date] {
     margin-right: 50px !important;
     pointer-events:none}
 
-#tutorial0 {top: 30vh; left: 40vw;}
+#tutorial-1 {top: 30vh; left: 40vw;}
+
+#tutorial0 {top: 30vh; left: 40vw; height: 325px}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 
@@ -455,11 +457,11 @@ input[type=date] {
 
 #tutorial6 {top: 310px; right: 63vw}
 
-#tutorial7{top: 370px; right: 63vw}
+#tutorial7 {top: 370px; right: 63vw}
 
-#tutorial8{top: 430px; right: 63vw}
+#tutorial8 {top: 430px; right: 63vw}
 
-#tutorial9{top: 430px; left: 74vw}
+#tutorial9 {top: 430px; left: 74vw}
 
 #blur {
     width: 100%;

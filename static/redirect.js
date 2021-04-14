@@ -18,7 +18,7 @@ async function NewTab(username, links) {
                     if (days.includes(day)) {
                         if (parseInt(link['starts']) > 0) {
                             await sleep(60000)
-                            location.href = `/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts'])-1}&var=starts`
+                            location.replace(`/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts'])-1}&var=starts`)
                         }
                         else if (link['repeat'] === "never") {
                             window.open(link["link"])
