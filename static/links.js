@@ -320,7 +320,7 @@ function register_link(parameter) {
             days.push(document.getElementById("days").children[x].value)
         }
     }
-    if (parameter == "register") {
+    if (parameter === "register") {
         url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     else {
@@ -330,6 +330,7 @@ function register_link(parameter) {
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
     if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
+    skipTutorial()
     url = url.replace("#", "%23")
     location.replace(url)
 }
