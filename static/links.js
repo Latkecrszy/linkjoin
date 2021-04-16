@@ -167,13 +167,13 @@ async function load_links(username, sort) {
             share.innerText = "Share"
             share.style.color = "black"
             share.addEventListener("click", function openShare() {
+                document.getElementById("popup_share").style.zIndex = "11"
                 document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
                 document.getElementById("share_link").value = link['share']
                 document.getElementById("blur").style.opacity = "0.4";
                 document.getElementById("blur").style.zIndex = "3"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 })
-
             document.getElementById("click_to_copy").addEventListener('click', async function copyText() {
                 document.getElementById("share_link").select()
                 document.execCommand("copy")
