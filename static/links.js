@@ -342,6 +342,25 @@ function checkNever() {
 }
 
 
+function browser() {
+    if (navigator.userAgent.indexOf("Chrome") > -1) {console.log("chrome")}
+        else if (navigator.userAgent.indexOf("Firefox") > -1) {
+            document.getElementById(`tutorial0`).children[0].innerText =
+                "You should see a yellow bar at the top of your browser indicating that popups are blocked. " +
+                "Click on the box on the right that says Preferences and select Allow popups for linkjoin.xyz."
+            console.log("firefox")
+        document.getElementById(`tutorial0`).style.height = "250px"
+        }
+        else if (navigator.userAgent.indexOf("Safari") > -1) {
+            document.getElementById(`tutorial0`).children[0].innerText =
+                "Your popups are not enabled. Click ⌘ , to get to browser settings. " +
+                "Click on the websites tab at the top, and scroll down to the bottom where it says Pop-up Windows. " +
+                "On the right, you should see the text 'linkjoin.xyz' with a select menu to its right. Click on that menu and select 'allow'."
+            document.getElementById(`tutorial0`).style.height = "300px"
+        }
+}
+
+
 async function tutorial(item) {
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
@@ -352,6 +371,7 @@ async function tutorial(item) {
         }
     }
     if (item === 0) {
+        browser()
         document.getElementById("check_popup").style.display = "flex"
         document.getElementById(`tutorial-1`).style.display = "none"
         await sleep(5000)
@@ -368,6 +388,7 @@ async function tutorial(item) {
         return
     }
     else if (item === 1) {
+        browser()
         document.getElementById("check_popup").style.display = "flex"
         document.getElementById(`tutorial0`).style.display = "none"
         document.getElementById(`tutorial-1`).style.display = "none"

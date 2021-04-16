@@ -422,6 +422,11 @@ input[type=date] {
     box-shadow: 6px 16px 18px black;
 }
 
+.tutorial p {
+    color: white;
+    font: 500 18px Montserrat;
+    line-height: 22px;}
+
 .ok {
     background: #2B8FD8;
     border: none;
