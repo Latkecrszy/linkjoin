@@ -75,9 +75,6 @@
             if (logged) {
                 let profile = await googleUser.getBasicProfile()
                 let link = `/login_error?redirect={{ redirect }}&email=${profile.getEmail()}`
-                console.log(profile)
-                console.log(link)
-                console.log(profile.getEmail())
                 location.replace(link)
             }
        }

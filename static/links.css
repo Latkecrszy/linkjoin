@@ -441,9 +441,9 @@ input[type=date] {
     margin-right: 50px !important;
     pointer-events:none}
 
-#tutorial-1 {top: 30vh; left: 40vw;}
+#tutorial-1, #check_popup {top: 30vh; left: 40vw;}
 
-#tutorial0 {top: 30vh; left: 40vw; height: 325px}
+#tutorial0 {top: 30vh; left: 40vw; height: 350px; width: 400px; padding: 10px 20px; line-height: 25px}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 

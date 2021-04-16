@@ -115,7 +115,7 @@ def register():
                 password = encoder.encrypt(password)
                 insert['password'] = password
             if request.args.get('repeats')[0].isnumeric():
-                insert['occurrences'] = (int(request.args.get('repeats')[0])-1) * len(request.args.get('days').split(','))
+                insert['occurrences'] = (int(request.args.get('repeats')[0])) * len(request.args.get('days').split(','))
             links_db.insert_one(insert)
             id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
             return redirect('/links')

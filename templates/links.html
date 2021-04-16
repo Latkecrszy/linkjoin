@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html id="links_html" lang="en">
     <head>
-        <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
+        <!--<script async src="https://arc.io/widget.min.js#n1acL2q5"></script>-->
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-192814042-1">
         </script>
@@ -253,15 +253,16 @@
         <div id="popup_premium">
             <div>You have reached the limit of 10 free links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
+        <div id="check_popup" class="tutorial">Please wait, checking popup permissions...</div>
         <div id="tutorial-1" class="tutorial">
             Hi there! Welcome to LinkJoin! Let's get you set up and ready to be on time.
-            <button class="ok" onclick="tutorial(0)">I'm ready!</button>
-            <button class="ok" onclick="skipTutorial()">Skip</button>
+            <div><button class="ok" onclick="tutorial(0)" style="margin-right: 20px">I'm ready!</button>
+            <button class="ok" onclick="skipTutorial()">Skip</button></div>
         </div>
         <div id="tutorial0" class="tutorial">The first thing that you need to do is enable popups in your browser.
             You may see a browser notification at the top that says a popup has been blocked.
             In Safari, you will see an icon appear in the search bar. Click on that, and you will be all set to enable popups.
-            In other browsers, you should see a bar appear at the top of the page that will let you click to enable popups. Please do this.
+            In other browsers, you should see a bar appear at the top of the page that will let you click to enable popups. Please do this to allow your links to open.
             <button class="ok" onclick="tutorial(1)">Done!</button>
         </div>
         <div id="tutorial1" class="tutorial">

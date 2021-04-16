@@ -104,7 +104,7 @@ async function load_links(username, sort) {
         document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
         for (let link of final) {
-            link_event = document.createElement("div")
+            let link_event = document.createElement("div")
             link_event.classList.add("link_event")
             link_event.id = iterator.toString()
             let time_div = document.createElement("div")
@@ -234,8 +234,8 @@ async function load_links(username, sort) {
                 document.getElementById("title").innerText = "Edit your meeting"
                 for (let day_abbrev of days_list) {
                     if (document.getElementById(day_abbrev)) {
-                        let currentDay = new Date()
-                        currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(currentDay.getDay())]
+                        let currentDate = new Date()
+                        let currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(currentDate.getDay())]
                         document.getElementById(currentDay).classList.remove("selected")
                         if (!document.getElementById(day_abbrev).classList.contains("selected")) {
                             document.getElementById(day_abbrev).classList.add("selected")
@@ -279,11 +279,8 @@ async function check_day(username) {
     let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
     let children = document.getElementById("days").children
     if (links.length <= 3) {
-        for (let i = 0; i < children.length; i++) {
-            let child = children[i];
-            if (child.value == day) {
-                child.classList.add("selected")
-            }
+        for (let child of children) {
+            if (child.value === day) {child.classList.add("selected")}
         }
     }
 }
@@ -299,25 +296,23 @@ function sort() {
 
 
 function register_link(parameter) {
-    let form_element = document.getElementById("create")
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
     let minute = document.getElementById("minute").value
-    if (document.getElementById("am").value == "pm") {
-        if (hour != 12) {hour += 12}
+    if (document.getElementById("am").value === "pm") {
+        if (hour !== 12) {hour += 12}
     }
     else {
-        if (hour == 12) {hour += 12}
+        if (hour === 12) {hour += 12}
     }
     let time = `${hour}:${minute}`
     let password = document.getElementById("password").value
     let url;
-    let dates = []
     let days = []
-    for (let x = 0; x < document.getElementById("days").children.length; x++) {
-        if (document.getElementById("days").children[x].classList.contains("selected")) {
-            days.push(document.getElementById("days").children[x].value)
+    for (let child of document.getElementById("days").children) {
+        if (child.classList.contains("selected")) {
+            days.push(child.value)
         }
     }
     if (parameter === "register") {
@@ -346,11 +341,6 @@ function checkNever() {
     else {document.getElementById("repeats_text").innerText = "Repeats every"}
 }
 
-function openWindow() {
-    let newWindow = window.open()
-    console.log(newWindow)
-    return newWindow
-}
 
 async function tutorial(item) {
     item = parseInt(item)
@@ -362,15 +352,16 @@ async function tutorial(item) {
         }
     }
     if (item === 0) {
-        await sleep(1001)
+        document.getElementById("check_popup").style.display = "flex"
+        document.getElementById(`tutorial-1`).style.display = "none"
+        await sleep(5000)
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
-            document.getElementById(`tutorial-1`).style.display = "none"
             return newWindow.close()
         }
         document.getElementById(`tutorial0`).style.display = "flex"
-        document.getElementById(`tutorial-1`).style.display = "none"
+        document.getElementById("check_popup").style.display = "none"
         return
     }
     else if (item === 1) {
