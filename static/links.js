@@ -368,6 +368,19 @@ async function tutorial(item) {
         return
     }
     else if (item === 1) {
+        document.getElementById("check_popup").style.display = "flex"
+        document.getElementById(`tutorial0`).style.display = "none"
+        document.getElementById(`tutorial-1`).style.display = "none"
+        document.getElementById(`popups_not_enabled`).style.display = "none"
+        await sleep(5000)
+        document.getElementById("check_popup").style.display = "none"
+        let newWindow = window.open()
+        if (newWindow) {
+            newWindow.close()
+        }
+        else {
+            return document.getElementById("popups_not_enabled").style.display = "flex"
+        }
         document.getElementById("box").style.zIndex = "5"
         document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }

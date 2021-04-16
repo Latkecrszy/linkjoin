@@ -341,7 +341,7 @@ def arc():
 @app.route("/remove")
 def remove():
     login_db = mongo.db.login
-    login_db.find_one_and_update({"refer": "ujrZnPuNwxqypOMe"}, {'$set': {"tutorial": -1}})
+    login_db.find_one_and_update({"refer": "mDAHisCYeoRaNycA"}, {'$set': {"tutorial": -1}})
     return 'done'
 
 
