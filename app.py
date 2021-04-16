@@ -338,6 +338,13 @@ def arc():
     return send_file('arc-sw.js', mimetype='application/javascript', attachment_filename='arc-sw.js')
 
 
+@app.route("/remove")
+def remove():
+    login_db = mongo.db.login
+    login_db.find_one_and_update({"refer": "ujrZnPuNwxqypOMe"}, {'$set': {"tutorial": -1}})
+    return 'done'
+
+
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 

@@ -358,6 +358,8 @@ async function tutorial(item) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
+            document.getElementById("box").style.zIndex = "5"
+            document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
