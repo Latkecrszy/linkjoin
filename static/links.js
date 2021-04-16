@@ -358,6 +358,7 @@ async function tutorial(item) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
+            document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
         document.getElementById(`tutorial0`).style.display = "flex"
