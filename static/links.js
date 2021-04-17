@@ -240,7 +240,7 @@ async function load_links(username, sort) {
                     }
                 }
                 document.getElementById(link['repeat']).selected = "selected"
-                document.getElementById(link['starts']).selected = "selected"
+                if (link['starts']) {document.getElementById(link['starts']).selected = "selected"}
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
             })
             edit.innerText = "Edit"
