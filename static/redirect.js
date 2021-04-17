@@ -22,15 +22,14 @@ async function NewTab(username, links) {
                 await sleep(60000)
                 continue
             }
-            let occurrences = parseInt(link['occurrences'])
             let accept = []
             for (let x=0; x < days.length; x++) {accept.push(parseInt(link['repeat'][0])*days.length+x)}
-            if (occurrences === accept[accept.length]) {
+            if (parseInt(link['occurrences']) === accept[accept.length]) {
                 await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&occurrences=0&var=occurrences`)
                 window.open(link['link'])
                 await sleep(60000)
             }
-            else if (accept.includes(occurrences)) {
+            else if (accept.includes(parseInt(link['occurrences']))) {
                 await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&occurrences=${occurrences+1}&var=occurrences`)
                 window.open(link['link'])
                 await sleep(60000)

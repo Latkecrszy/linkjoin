@@ -1,7 +1,7 @@
 let global_username;
 
 function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function popUp(popup, premium, link_names) {
@@ -43,17 +43,16 @@ async function popUp(popup, premium, link_names) {
     document.getElementById('week').selected = "selected"
     let date = new Date()
     for (let child of document.getElementById("days").children) {
-        if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]) {
+        if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]) {
             child.classList.remove("selected")
         }
     }
     document.getElementById("0").selected = "selected"
-    tutorial(4)
+    await tutorial(4)
 }
 
 function hide(popup) {
-    popup = document.getElementById(popup)
-    popup.style.display = "none"
+    document.getElementById(popup).style.display = "none"
     document.getElementById("blur").style.zIndex = "-3"
     document.getElementById("blur").style.opacity = "0"
 }
@@ -85,6 +84,11 @@ async function load_links(username, sort) {
                 time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]] = link_info
             }
             for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
+            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            for (const link_info of final) {link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)}
+            /*let real_final = []
+            for (const day in link_list) {for (let key of link_list[day]) {real_final.push(key)}}
+            console.log(real_final)*/
         }
         else if (sort === "datetime") {
             let link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
@@ -134,10 +138,7 @@ async function load_links(username, sort) {
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
-            let days_list;
-            days_list = link["days"].replaceAll("'", '"')
-            days_list = JSON.parse(days_list)
-            days.innerText = days_list.join(", ")
+            days.innerText = JSON.parse(link["days"].replaceAll("'", '"')).join(", ")
             link_event.appendChild(days)
             let buttons = document.createElement("div")
             buttons.classList.add("buttons_container")
@@ -166,7 +167,7 @@ async function load_links(username, sort) {
             share.style.background = "#E0FF4F"
             share.innerText = "Share"
             share.style.color = "black"
-            share.addEventListener("click", function openShare() {
+            share.addEventListener("click", () => {
                 document.getElementById("popup_share").style.zIndex = "11"
                 document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
                 document.getElementById("share_link").value = link['share']
@@ -174,7 +175,7 @@ async function load_links(username, sort) {
                 document.getElementById("blur").style.zIndex = "3"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 })
-            document.getElementById("click_to_copy").addEventListener('click', async function copyText() {
+            document.getElementById("click_to_copy").addEventListener('click', async () => {
                 document.getElementById("share_link").select()
                 document.execCommand("copy")
                 document.getElementById("click_to_copy").innerText = "Copied!"
@@ -190,7 +191,7 @@ async function load_links(username, sort) {
                 activate_switch.style.color = "black"
                 activate_switch.innerText = "Activate"
                 activate_switch.addEventListener("click", function() {
-                location.href = "/activate?id="+link["id"]})
+                location.replace("/activate?id="+link["id"])})
             }
             else {
                 link_event.style.opacity = "1"
@@ -198,7 +199,7 @@ async function load_links(username, sort) {
                 activate_switch.style.color = "white"
                 activate_switch.innerText = "Deactivate"
                 activate_switch.addEventListener("click", function() {
-                location.href = "/deactivate?id="+link["id"]})
+                location.replace("/deactivate?id="+link["id"])})
             }
             buttons.appendChild(activate_switch)
             let edit = document.createElement("button")
@@ -218,24 +219,20 @@ async function load_links(username, sort) {
                     document.getElementById("pm").selected = "selected"
                     document.getElementById("hour").value = 12
                 }
-                else if (parseInt(link['time'].split(":")[0]) === 24) {
-                    document.getElementById("hour").value = 12
-                }
+                else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
                 else if (parseInt(link['time'].split(":")[0]) > 12) {
                     document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
                     document.getElementById("pm").selected = "selected"
                 }
-                else {
-                    document.getElementById("hour").value = parseInt(link['time'].split(":")[0])
-                }
+                else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
-                for (let day_abbrev of days_list) {
+                for (let day_abbrev of JSON.parse(link["days"].replaceAll("'", '"'))) {
                     if (document.getElementById(day_abbrev)) {
                         let currentDate = new Date()
-                        let currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(currentDate.getDay())]
+                        let currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[currentDate.getDay()]
                         document.getElementById(currentDay).classList.remove("selected")
                         if (!document.getElementById(day_abbrev).classList.contains("selected")) {
                             document.getElementById(day_abbrev).classList.add("selected")
@@ -245,7 +242,6 @@ async function load_links(username, sort) {
                 document.getElementById(link['repeat']).selected = "selected"
                 document.getElementById(link['starts']).selected = "selected"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-
             })
             edit.innerText = "Edit"
             edit.style.color = "black"
@@ -268,7 +264,7 @@ async function load_links(username, sort) {
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
-    check_day(username)
+    await check_day(username)
     await NewTab(username, links)
 }
 
@@ -285,14 +281,7 @@ async function check_day(username) {
     }
 }
 
-
-function redirect(redirect_to) {
-    window.open(redirect_to)
-}
-
-function sort() {
-    location.href = "/sort?sort="+document.getElementById("sort").value.toString()
-}
+function sort() {location.replace("/sort?sort="+document.getElementById("sort").value.toString())}
 
 
 function register_link(parameter) {
@@ -300,21 +289,17 @@ function register_link(parameter) {
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
     let minute = document.getElementById("minute").value
-    if (document.getElementById("am").value === "pm") {
-        if (hour !== 12) {hour += 12}
-    }
-    else {
-        if (hour === 12) {hour += 12}
-    }
+    if (document.getElementById("am").value === "pm") {if (hour !== 12) {hour += 12}}
+    else {if (hour === 12) {hour += 12}}
     let time = `${hour}:${minute}`
     let password = document.getElementById("password").value
-    let url;
     let days = []
     for (let child of document.getElementById("days").children) {
         if (child.classList.contains("selected")) {
             days.push(child.value)
         }
     }
+    let url
     if (parameter === "register") {
         url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
@@ -330,10 +315,7 @@ function register_link(parameter) {
     location.replace(url)
 }
 
-function logOut() {
-    document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    location.reload()
-}
+function logOut() {document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; location.reload()}
 
 
 function checkNever() {
@@ -343,12 +325,11 @@ function checkNever() {
 
 
 function browser() {
-    if (navigator.userAgent.indexOf("Chrome") > -1) {console.log("chrome")}
+    if (navigator.userAgent.indexOf("Chrome") > -1) {}
         else if (navigator.userAgent.indexOf("Firefox") > -1) {
             document.getElementById(`tutorial0`).children[0].innerText =
                 "You should see a yellow bar at the top of your browser indicating that popups are blocked. " +
                 "Click on the box on the right that says Preferences and select Allow popups for linkjoin.xyz."
-            console.log("firefox")
         document.getElementById(`tutorial0`).style.height = "250px"
         }
         else if (navigator.userAgent.indexOf("Safari") > -1) {
@@ -366,9 +347,7 @@ async function tutorial(item) {
     if (document.getElementById("blur").style.opacity !== "0.4") {
         document.getElementById("blur").style.opacity = "0.4";
         document.getElementById("blur").style.zIndex = "3"
-        if (item >= 4) {
-            popUp('popup')
-        }
+        if (item >= 4) {await popUp('popup')}
     }
     if (item === 0) {
         browser()
@@ -384,8 +363,7 @@ async function tutorial(item) {
             return newWindow.close()
         }
         document.getElementById(`tutorial0`).style.display = "flex"
-        document.getElementById("check_popup").style.display = "none"
-        return
+        return document.getElementById("check_popup").style.display = "none"
     }
     else if (item === 1) {
         browser()
@@ -396,12 +374,8 @@ async function tutorial(item) {
         await sleep(5000)
         document.getElementById("check_popup").style.display = "none"
         let newWindow = window.open()
-        if (newWindow) {
-            newWindow.close()
-        }
-        else {
-            return document.getElementById("popups_not_enabled").style.display = "flex"
-        }
+        if (newWindow) {newWindow.close()}
+        else {return document.getElementById("popups_not_enabled").style.display = "flex"}
         document.getElementById("box").style.zIndex = "5"
         document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }
@@ -418,9 +392,7 @@ async function tutorial(item) {
         document.getElementById("plus_button").style.zIndex = "5"
     }
     else if (item === 4) {
-        if (document.getElementById("tutorial3").style.display !== "flex") {
-            return
-        }
+        if (document.getElementById("tutorial3").style.display !== "flex") {return}
         if (document.getElementById("popup").style.display !== "flex") { popUp('popup')}
         document.getElementById("plus_button").style.zIndex = "auto"
         document.getElementById("plus_button").style.background = null
@@ -451,8 +423,4 @@ async function tutorial(item) {
 
 }
 
-async function skipTutorial() {
-    return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
-}
-
-
+async function skipTutorial() {return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)}
