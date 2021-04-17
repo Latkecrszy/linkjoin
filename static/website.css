@@ -153,7 +153,7 @@ footer {
     .pair img {display: none;}
 }
 @media (max-width: 450px) {
-    .get_started {width: 200}
+    .get_started {width: 200px}
 }
 
 @media (min-width: 1700px) {

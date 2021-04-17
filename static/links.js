@@ -377,7 +377,6 @@ async function tutorial(item) {
         if (newWindow) {newWindow.close()}
         else {return document.getElementById("popups_not_enabled").style.display = "flex"}
         document.getElementById("box").style.zIndex = "5"
-        document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }
     else if (item === 2) {
         document.getElementById("box").style.zIndex = "auto"

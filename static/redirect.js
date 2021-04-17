@@ -19,6 +19,7 @@ async function NewTab(username, links) {
             }
             if (isNaN(link['repeat'][0])) {
                 window.open(link['link'])
+                if (link['repeat'] === 'never') {await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)}
                 await sleep(60000)
                 continue
             }

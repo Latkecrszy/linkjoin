@@ -42,7 +42,7 @@
         <p id="desc">Unlimited links, superior organization, and more. Try premium now.</p>
         <hr>
         {% if logged_in == "false" %}
-            <a href="/login" id="login">Log In</a>
+            <a href="/login"><button class="get_started" id="get_started">Log In <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
         {% else %}
             <p id="refer">Refer a friend to get premium!</p>
             <div style="height: 50px; margin-top: 50px; display: flex; justify-content: center;">
