@@ -412,14 +412,16 @@ async function tutorial(item) {
         document.getElementById("starts_select").style.padding = "5px"
         document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
     }
-    if (parseInt(item) === 10) {
+    if (item === 10) {
         document.getElementById("tutorial9").style.display = "none"
         return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+    }
+    if (item === 11) {
+
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
     document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
-
 }
 
 async function skipTutorial() {return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)}
