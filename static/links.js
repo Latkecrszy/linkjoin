@@ -261,13 +261,11 @@ async function load_links(username, sort) {
             iterator += 1
         }
     }
+    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
-    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
-    console.log(document.getElementById("blur").style.height)
-    console.log(document.getElementById("insert").offsetHeight)
     await NewTab(username, links)
 
 }
@@ -348,7 +346,7 @@ function browser() {
 }
 
 
-async function tutorial(item) {
+async function tutorial(item, skip) {
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
         document.getElementById("blur").style.opacity = "0.4";
@@ -374,6 +372,13 @@ async function tutorial(item) {
         return document.getElementById("check_popup").style.display = "none"
     }
     else if (item === 1) {
+        if (skip) {
+            document.getElementById("box").style.zIndex = "5"
+            document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
+            document.getElementById("popups_not_enabled").style.display = "none"
+            document.getElementById("tutorial1").style.display = "flex"
+            return document.getElementById("check_popup").style.display = "none"
+        }
         browser()
         document.getElementById("check_popup").style.display = "flex"
         document.getElementById(`tutorial0`).style.display = "none"

@@ -448,7 +448,7 @@ input[type=date] {
 
 #tutorial-1, #check_popup, #tutorial0, #popups_not_enabled {top: 30vh; left: 40vw;}
 
-#popups_not_enabled {height: 250px}
+#popups_not_enabled {height: 325px; width: 400px}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 
