@@ -265,8 +265,14 @@ async function load_links(username, sort) {
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
+    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
+    console.log(document.getElementById("blur").style.height)
+    console.log(document.getElementById("insert").offsetHeight)
     await NewTab(username, links)
+
 }
+
+window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
 
 async function check_day(username) {
     let date = new Date()
@@ -357,11 +363,13 @@ async function tutorial(item) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
+            await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=1`)
             document.getElementById("box").style.zIndex = "5"
             document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
+        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=0`)
         document.getElementById(`tutorial0`).style.display = "flex"
         return document.getElementById("check_popup").style.display = "none"
     }

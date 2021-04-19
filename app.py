@@ -338,6 +338,11 @@ def arc():
     return send_file('arc-sw.js', mimetype='application/javascript', attachment_filename='arc-sw.js')
 
 
+@app.route("/ads.txt")
+def ads():
+    return send_file('ads.txt', attachment_filename='ads.txt')
+
+
 @app.route("/remove")
 def remove():
     login_db = mongo.db.login
