@@ -346,7 +346,7 @@ def ads():
 @app.route("/remove")
 def remove():
     login_db = mongo.db.login
-    login_db.find_one_and_delete({"refer": "LiUaigAqGvVpewmp"})
+    login_db.find_one_and_delete({"refer": "rRGnNyCSKCXaOlaA"})
     return 'done'
 
 

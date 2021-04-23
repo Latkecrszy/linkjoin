@@ -432,7 +432,7 @@ input[type=date] {
     border: none;
     width: 100px;
     height: 60px;;
-    border-radius: 12px;
+    border-radius: 8px;
     margin-top: 30px;
     font: 500 16px Montserrat
 }
@@ -449,6 +449,8 @@ input[type=date] {
 #tutorial-1, #check_popup, #tutorial0, #popups_not_enabled {top: 30vh; left: 40vw;}
 
 #popups_not_enabled {height: 325px; width: 400px}
+
+#tutorial0 {height: 250px;}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 

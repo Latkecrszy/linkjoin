@@ -314,6 +314,12 @@ function register_link(parameter) {
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
     if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
+    /*console.log(global_premium)
+    if (global_premium === "false") {
+        if (!link.includes("zoom.us")) {
+            return document.getElementById("error").innerText = "To schedule links other than Zoom meetings, upgrade to premium!"
+        }
+    }*/
     skipTutorial()
     url = url.replace("#", "%23")
     location.replace(url)
