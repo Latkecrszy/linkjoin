@@ -8,11 +8,8 @@ async function NewTab(username, links) {
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        try {
-            let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-            let user_links = await start_json.json()
-        }
-        catch {location.reload()}
+        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        let user_links = await start_json.json()
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {continue}

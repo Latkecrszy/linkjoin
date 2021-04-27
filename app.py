@@ -16,9 +16,9 @@ client_secret = os.environ.get('CLIENT_SECRET', None)
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
-cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5000']},
-                            r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5000']},
-                            r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5000']}})
+cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
+                            r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
+                            r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 mongo = PyMongo(app)
 hasher = PasswordHasher()
