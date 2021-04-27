@@ -9,6 +9,7 @@ async function NewTab(username, links) {
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        console.log(start_json)
         let user_links = await start_json.json()
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))

@@ -230,7 +230,7 @@ def db():
                 if 'share' in i.keys():
                     links_list[links_list.index(i)]['share'] = str(encoder.decrypt(i['share']).decode())
             return make_response(jsonify(list(links_list)))
-    return 'Not logged in'
+    return jsonify('Not logged in')
 
 
 
