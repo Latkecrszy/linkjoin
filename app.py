@@ -212,22 +212,25 @@ def activate():
 
 @app.route('/db', methods=['GET', 'POST'])
 def db():
-    links_db = mongo.db.links
-    links_list = links_db.find({'username': request.args.get('username')})
-    links_list = [{i: j for i, j in link.items() if i != '_id'} for
-                  link in links_list]
-    for i in links_list:
-        if 'password' in i.keys():
-            if hasattr(encoder.decrypt(i['password']), 'decode'):
-                links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password']).decode())
-        if 'days' in i.keys():
-            links_list[links_list.index(i)]['days'] = str(i['days'])
-        if 'dates' in i.keys():
-            links_list[links_list.index(i)]['dates'] = str(i['dates'])
-        links_list[links_list.index(i)]['link'] = str(encoder.decrypt(i['link']).decode())
-        if 'share' in i.keys():
-            links_list[links_list.index(i)]['share'] = str(encoder.decrypt(i['share']).decode())
-    return make_response(jsonify(list(links_list)))
+    if request.cookies.get('login_info'):
+        if json.loads(base64.b64decode(request.cookies.get('login_info')))['username'] == request.args.get("username"):
+            links_db = mongo.db.links
+            links_list = links_db.find({'username': request.args.get('username')})
+            links_list = [{i: j for i, j in link.items() if i != '_id'} for
+                          link in links_list]
+            for i in links_list:
+                if 'password' in i.keys():
+                    if hasattr(encoder.decrypt(i['password']), 'decode'):
+                        links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password']).decode())
+                if 'days' in i.keys():
+                    links_list[links_list.index(i)]['days'] = str(i['days'])
+                if 'dates' in i.keys():
+                    links_list[links_list.index(i)]['dates'] = str(i['dates'])
+                links_list[links_list.index(i)]['link'] = str(encoder.decrypt(i['link']).decode())
+                if 'share' in i.keys():
+                    links_list[links_list.index(i)]['share'] = str(encoder.decrypt(i['share']).decode())
+            return make_response(jsonify(list(links_list)))
+    return 'Not logged in'
 
 
 
