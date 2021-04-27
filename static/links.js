@@ -338,7 +338,7 @@ function browser() {
     if (navigator.userAgent.indexOf("Chrome") > -1) {}
         else if (navigator.userAgent.indexOf("Firefox") > -1) {
             document.getElementById(`tutorial0`).children[0].innerText =
-                "You should see a yellow bar at the top of your browser indicating that popups are blocked. " +
+                "You should see a gray bar at the top of your browser indicating that popups are blocked. " +
                 "Click on the box on the right that says Preferences and select Allow popups for linkjoin.xyz."
         document.getElementById(`tutorial0`).style.height = "250px"
         }

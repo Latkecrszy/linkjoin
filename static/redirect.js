@@ -1,14 +1,18 @@
 function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms))}
 
 async function NewTab(username, links) {
+    try {
     while (true) {
         let date = new Date()
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-        let user_links = await start_json.json()
+        try {
+            let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+            let user_links = await start_json.json()
+        }
+        catch {location.reload()}
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {continue}
@@ -38,7 +42,8 @@ async function NewTab(username, links) {
         }
         await sleep(15000)
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {location.reload()}
-    }
+    }}
+    catch {location.reload()}
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
