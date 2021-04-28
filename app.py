@@ -357,4 +357,4 @@ app.register_error_handler(404, lambda e: render_template('404.html'))
 
 
 if __name__ == '__main__':
-    app.run(port=5002)
+    app.run()
