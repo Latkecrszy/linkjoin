@@ -14,7 +14,6 @@ dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 client_id = os.environ.get('CLIENT_ID', None)
 client_secret = os.environ.get('CLIENT_SECRET', None)
-twilio_client = Client(os.environ.get("TWILIO_SID", None), os.environ.get("TWILIO_AUTH_TOKEN", None))
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -359,16 +358,6 @@ def remove():
     login_db = mongo.db.login
     login_db.find_one_and_delete({"refer": "rRGnNyCSKCXaOlaA"})
     return 'done'
-
-
-@app.route("/send/<number>")
-def send(number):
-    message = twilio_client.messages.create(to=f"+1{number}", from_="+16194326954", body="Hiyo mom! This is going to be the LinkJoin phone number! (Please don't text back; it'll cost me money)")
-    print(message)
-    print(message.sid)
-    for attr in dir(message):
-        print(attr)
-    return 'sent'
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
