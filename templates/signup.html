@@ -59,6 +59,7 @@
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required><br>
                 <input id="password" name="password" placeholder="Password" type="password" required><br>
+                <div id="keep_div"><input type="checkbox" name="keep" id="keep"><p id="keep_text">Keep me signed in</p></div>
                 <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
 
             </div>
@@ -67,13 +68,13 @@
     <script>
         let signed = false
         function signUp() {
-            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}&refer={{ refer }}`
+            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}&refer={{ refer }}&keep=${document.getElementById("keep").checked}`
         }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
                 let profile = await googleUser.getBasicProfile()
-                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}`
+                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}&keep=${document.getElementById("keep").checked}`
                 location.replace(link)
             }
        }

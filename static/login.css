@@ -2,16 +2,13 @@
 
 #header_links div {margin-top: 30px;}
 
-#back {margin: 30px; margin-right: auto;}
+#back {margin: 30px auto 30px 30px;}
 
 #logo {height: 300px; width: 300px;}
 
 #page {width: 100vw}
 
-#signup_title {
-    font: 500 45px Montserrat;
-    margin: 20px 0 0 50px;
-}
+#signup_title {font: 500 45px Montserrat; margin: 20px 0 0 50px;}
 
 #signup_text {
     font: 500 22px Montserrat;
@@ -49,7 +46,7 @@
     background-color: #2B8FD8;
     font: 800 19px Montserrat;
     border: none;
-    margin: 10px 0 0 30px;
+    margin-bottom: 15px
 }
 
 #main_page {display: flex}
@@ -83,7 +80,6 @@
 
 @media (max-width: 985px) {
     #left_content {display: none}
-
     #password, #email {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
     #gsignin {width: 70vw; max-width: 300px; min-width: 150px;}
     #welcome {margin-right: 0}
@@ -92,7 +88,6 @@
 
 @media (max-width: 730px) {
     svg {display: none}
-
     #login_html {background: #091B30; overflow-x: hidden !important;}
 }
 
@@ -112,11 +107,16 @@
 	z-index:auto;
 	overflow: visible;
 	border-radius: 3px;
+    position: static
 }
 
-#gsignin {
-    margin-top: 20px;
-}
+#gsignin {margin-top: 20px;}
 
 #reset {font-size: 12px; text-decoration: underline;}
 #reset:hover {color: red; opacity: 0.8;}
+
+#keep_div {display: flex; width: 170px; justify-content: space-between}
+
+#keep_text {font: 500 15px Montserrat; margin-top: 0}
+
+@-moz-document url-prefix() { #keep_text {margin-top: 14px} }
