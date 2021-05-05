@@ -14,6 +14,10 @@ async function NewTab(username, links, sort) {
         let time = `${date.getHours()}:${minute}`
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
         user_links = await start_json.json()
+        if (restart) {
+            restart = false
+            break
+        }
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {continue}
@@ -42,10 +46,6 @@ async function NewTab(username, links, sort) {
             }
         }
         await sleep(15000)
-        if (restart) {
-            restart = false
-            break
-        }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
             load_links(username, sort); return}
 
