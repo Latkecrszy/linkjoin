@@ -201,8 +201,6 @@ def disable():
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         link = links_db.find_one({"username": login_info['username'], 'id': int(request.args.get("id"))})
-        print(link)
-        print(link['active'])
         if link['active'] == "true":
             links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
                                          {'$set': {'active': 'false'}})
@@ -239,8 +237,6 @@ def activate():
 @app.route('/db', methods=['GET', 'POST'])
 def db():
     if request.cookies.get('login_info'):
-        print(json.loads(base64.b64decode(request.cookies.get('login_info')))['username'])
-        print(request.args.get("username"))
         if json.loads(base64.b64decode(request.cookies.get('login_info')))['username'] == request.args.get("username"):
             links_db = mongo.db.links
             links_list = links_db.find({'username': request.args.get('username')})

@@ -205,7 +205,7 @@ async function load_links(username, sort) {
                 document.getElementById("popup_delete").style.display = "flex"
                 document.getElementById("delete_button").addEventListener('click', async () => {
                     hide('popup_delete')
-                    await fetch(`/delete?id=${link['id']}`)
+                    await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
                     await refresh()
                     await load_links(username, sort)
                 })
@@ -264,7 +264,7 @@ async function load_links(username, sort) {
             toggle_switch.htmlFor = `toggle${iterator}`
             toggle_switch.classList.add("switch")
             toggle_switch.addEventListener("click", async () => {
-                await fetch(`/disable?id=${link['id']}`)
+                await fetch(`https://linkjoin.xyz/disable?id=${link['id']}`)
                 await refresh()
                 await load_links(username, sort)
             })
@@ -334,10 +334,10 @@ async function register_link(parameter) {
     }
     let url
     if (parameter === "register") {
-        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `https://linkjoin.xyz/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     else {
-        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `https://linkjoin.xyz/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     if (password.length > 0) {url += `&password=${password}`}
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
