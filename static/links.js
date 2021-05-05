@@ -265,8 +265,6 @@ async function load_links(username, sort) {
             toggle_switch.classList.add("switch")
             toggle_switch.addEventListener("click", async () => {
                 await fetch(`https://linkjoin.xyz/disable?id=${link['id']}`)
-                await refresh()
-                await terminate()
                 await load_links(username, sort)
             })
             link_event.appendChild(toggle_switch)

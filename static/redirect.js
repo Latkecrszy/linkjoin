@@ -16,7 +16,7 @@ async function NewTab(username, links, sort) {
         user_links = await start_json.json()
         if (restart) {
             restart = false
-            break
+            return
         }
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
@@ -50,7 +50,6 @@ async function NewTab(username, links, sort) {
         await sleep(15000)
 
     }
-    NewTab(username, user_links, sort)
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
