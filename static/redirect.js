@@ -47,7 +47,7 @@ async function NewTab(username, links, sort) {
             break
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
-            load_links(username, sort)}
+            location.reload()}
 
     }
     NewTab(username, user_links, sort)
