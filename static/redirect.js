@@ -14,11 +14,8 @@ async function start(username, links, sort) {
         }
         let time = `${date.getHours()}:${minute}`
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
-        console.log()
         user_links = await start_json.json()
-        console.log(user_links)
         for (let link of user_links) {
-            console.log(link)
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
                 continue
@@ -26,15 +23,14 @@ async function start(username, links, sort) {
             if (parseInt(link['starts']) > 0) {
                 await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts']) - 1}&var=starts`)
                 pause(username, user_links, sort)
-                continue
             }
             if (isNaN(link['repeat'][0])) {
                 window.open(link['link'])
                 if (link['repeat'] === 'never') {
                     await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
+                    load_links(username, sort)
                 }
                 pause(username, user_links, sort)
-                continue
             }
             let accept = []
             for (let x = 0; x < days.length; x++) {
@@ -61,7 +57,7 @@ async function start(username, links, sort) {
 async function pause(username, links, sort) {
     clearInterval(open)
     await sleep(60000)
-    start()
+    start(username, links, sort)
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
