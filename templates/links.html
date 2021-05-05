@@ -13,16 +13,16 @@
 
           gtag('config', 'UA-192814042-1');
         </script>
+        <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% if style == "old" %}
             <link href="{{ url_for('static', filename='old_links.css') }}" rel="stylesheet"/>
-        {% else %}
-            <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% endif %}
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <script src="{{ url_for('static', filename='nosleep.js') }}"></script>
@@ -33,17 +33,18 @@
         </script>
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
         <script src="{{ url_for('static', filename='links.js') }}"></script>
+        <script data-ad-client="ca-pub-8945030271612534" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         <title>LinkJoin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=0.5"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
     <script>let global_premium = "{{ premium }}"</script>
     <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
         <div id="page">
-            <div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" rel="noopener" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can help.
+            <!--<div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" rel="noopener" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can help.
                 <button onclick="this.parentElement.style.display='none';" id="close_alert">×</button>
-            </div>
+            </div>-->
             <header id="header_links">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
@@ -83,7 +84,7 @@
 
             <div id="content">
                 <div class="gone" id="disappear">
-                    <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: -10vh 0 0 36vw;" alt="Man with clock">
+                    <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" style="margin: 50px 0 0 36vw;" alt="Man with clock">
                     <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
                 </div>
                 <div id="insert"></div>

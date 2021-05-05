@@ -1,4 +1,4 @@
-let global_username;
+let global_username, global_sort;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -62,9 +62,19 @@ document.addEventListener("click", event => {if(event.target.matches("#days butt
 
 async function load_links(username, sort) {
     global_username = username
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    global_sort = sort
+    let link_events = []
+    refresh()
+    let insert = document.getElementById("insert")
+    for (let i=0; i<3; i++) {
+        let placeholder = document.createElement("div")
+        placeholder.classList.add("placeholder")
+        insert.append(placeholder)
+    }
+    let start_json = await fetch(`http://127.0.0.1:5002/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
+        await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
         document.getElementById("disappear").classList.remove("gone")
     }
@@ -140,73 +150,17 @@ async function load_links(username, sort) {
             days.classList.add("days")
             days.innerText = JSON.parse(link["days"].replaceAll("'", '"')).join(", ")
             link_event.appendChild(days)
-            let buttons = document.createElement("div")
-            buttons.classList.add("buttons_container")
-            if ('password' in link) {
-                let copy = document.createElement("button")
-                copy.innerText = "Password"
-                copy.id = link['id'].toString()
-                copy.classList.add("function_button")
-                copy.style.background = "#37123C"
-                copy.addEventListener('click', async function copyText() {
-                    let p = document.createElement("input")
-                    p.value = link['password']
-                    document.getElementById("links_body").appendChild(p)
-                    p.select()
-                    document.execCommand("copy")
-                    copy.innerText = "Copied!"
-                    p.remove()
-                    await sleep(2000)
-                    copy.innerText = "Password"
-                })
-                buttons.appendChild(copy)
-            }
-
-            let share = document.createElement("button")
-            share.classList.add("function_button")
-            share.style.background = "#E0FF4F"
-            share.innerText = "Share"
-            share.style.color = "black"
-            share.addEventListener("click", () => {
-                document.getElementById("popup_share").style.zIndex = "11"
-                document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-                document.getElementById("share_link").value = link['share']
-                document.getElementById("blur").style.opacity = "0.4";
-                document.getElementById("blur").style.zIndex = "3"
-                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-                })
-            document.getElementById("click_to_copy").addEventListener('click', async () => {
-                document.getElementById("share_link").select()
-                document.execCommand("copy")
-                document.getElementById("click_to_copy").innerText = "Copied!"
-                await sleep(2000)
-                document.getElementById("click_to_copy").innerText = "Click to Copy"
-            })
-            buttons.appendChild(share)
-            let activate_switch = document.createElement("button")
-            activate_switch.classList.add("function_button")
-            if (link['active'] === "false") {
-                link_event.style.opacity = "0.5"
-                activate_switch.style.background = "#B7C0C7"
-                activate_switch.style.color = "black"
-                activate_switch.innerText = "Activate"
-                activate_switch.addEventListener("click", function() {
-                location.replace("/activate?id="+link["id"])})
-            }
-            else {
-                link_event.style.opacity = "1"
-                activate_switch.style.background = "#2B8FD8"
-                activate_switch.style.color = "white"
-                activate_switch.innerText = "Deactivate"
-                activate_switch.addEventListener("click", function() {
-                location.replace("/deactivate?id="+link["id"])})
-            }
-            buttons.appendChild(activate_switch)
-            let edit = document.createElement("button")
-            edit.classList.add("function_button")
-            edit.style.background = "#27FB6B"
-            edit.addEventListener("click", function() {
-                link_event = document.getElementById(iterator.toString())
+            let buttons = document.createElement("img")
+            buttons.classList.add("menu_buttons")
+            buttons.src = "static/images/menu_buttons3.svg"
+            buttons.height = 20
+            buttons.width = 8
+            /*Create the menu*/
+            let menu = document.createElement("div")
+            menu.classList.add("menu")
+            /*Make the edit button*/
+            let edit = document.createElement("div")
+            edit.addEventListener("click", () => {
                 let element = document.getElementById("popup")
                 element.style.display = "flex"
                 document.getElementById("blur").style.opacity = "0.4"
@@ -229,14 +183,10 @@ async function load_links(username, sort) {
                 document.getElementById("submit").innerText = "Update"
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
+                for (let day of ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"]) {document.getElementById(day).classList.remove("selected")}
                 for (let day_abbrev of JSON.parse(link["days"].replaceAll("'", '"'))) {
                     if (document.getElementById(day_abbrev)) {
-                        let currentDate = new Date()
-                        let currentDay = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[currentDate.getDay()]
-                        document.getElementById(currentDay).classList.remove("selected")
-                        if (!document.getElementById(day_abbrev).classList.contains("selected")) {
-                            document.getElementById(day_abbrev).classList.add("selected")
-                        }
+                        document.getElementById(day_abbrev).classList.add("selected")
                     }
                 }
                 document.getElementById(link['repeat']).selected = "selected"
@@ -244,30 +194,109 @@ async function load_links(username, sort) {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
             })
             edit.innerText = "Edit"
-            edit.style.color = "black"
-            buttons.appendChild(edit)
-            let delete_button = document.createElement("button")
-            delete_button.classList.add("function_button")
-            delete_button.style.background = "#A40606"
-            delete_button.innerText = "Delete"
-            delete_button.addEventListener("click", function() {
+            /*Make the first line*/
+            let hr = document.createElement("hr")
+            hr.classList.add("menu_line")
+            /*Make the delete button*/
+            let del = document.createElement("div")
+            del.innerText = "Delete"
+            del.addEventListener("click", () => {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 document.getElementById("popup_delete").style.display = "flex"
-                document.getElementById("delete_button").href = `/delete?id=${link['id']}`})
-            buttons.appendChild(delete_button)
+                document.getElementById("delete_button").addEventListener('click', async () => {
+                    hide('popup_delete')
+                    await fetch(`/delete?id=${link['id']}`)
+                    await refresh()
+                    await load_links(username, sort)
+                })
+                })
+            /*Make the second line*/
+            let hr2 = document.createElement("hr")
+            hr2.classList.add("menu_line")
+            /*Make the share button*/
+            let share = document.createElement("div")
+            share.innerText = "Share"
+            share.addEventListener("click", () => {
+                document.getElementById("popup_share").style.zIndex = "11"
+                document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
+                document.getElementById("share_link").value = link['share']
+                document.getElementById("blur").style.opacity = "0.4";
+                document.getElementById("blur").style.zIndex = "3"
+                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+                })
+            /*Add menu click events*/
+            buttons.addEventListener("click", (e) => {menu.style.display = "flex"; e.stopPropagation()})
+            menu.addEventListener("click", (e) => e.stopPropagation())
+            document.addEventListener("click", () => menu.style.display = "none")
+            /*Append everything*/
+            menu.append(edit, hr, del, hr2, share)
+            /*Make the password button and third line*/
+            if ("password" in link) {
+                menu.style.height = "145px"
+                let hr3 = document.createElement("hr")
+                hr3.classList.add("menu_line")
+                let password = document.createElement("div")
+                password.innerText = "Password"
+                password.id = link['id'].toString()
+                password.addEventListener('click', async () => {
+                    let p = document.createElement("input")
+                    p.value = link['password']
+                    document.getElementById("links_body").appendChild(p)
+                    p.select()
+                    document.execCommand("copy")
+                    password.innerText = "Copied!"
+                    p.remove()
+                    await sleep(2000)
+                    password.innerText = "Password"
+                })
+                menu.append(hr3, password)
+            }
+            link_event.appendChild(menu)
+
+            /*Create the switch*/
+            let toggle_switch_checkbox = document.createElement("input")
+            toggle_switch_checkbox.id = `toggle${iterator}`
+            toggle_switch_checkbox.type = "checkbox"
+            toggle_switch_checkbox.classList.add("checkbox")
+            toggle_switch_checkbox.checked = true
+            link_event.appendChild(toggle_switch_checkbox)
+            let toggle_switch = document.createElement("label")
+            toggle_switch.htmlFor = `toggle${iterator}`
+            toggle_switch.classList.add("switch")
+            toggle_switch.addEventListener("click", async () => {
+                await fetch(`/disable?id=${link['id']}`)
+                await refresh()
+                await load_links(username, sort)
+            })
+            link_event.appendChild(toggle_switch)
             link_event.appendChild(buttons)
-            if (link['active'] === "false") {link_event.opacity = 0.6}
-            document.getElementById("insert").appendChild(link_event)
+            if (link['active'] === "false") {
+                link_event.style.opacity = 0.6
+                name.style.color = "#B7C0C7"
+                name_container.style.opacity = 0.7
+                toggle_switch_checkbox.checked = false
+            }
+            link_events.push(link_event)
             iterator += 1
         }
     }
+    document.getElementById("click_to_copy").addEventListener('click', async () => {
+        document.getElementById("share_link").select()
+        document.execCommand("copy")
+        document.getElementById("click_to_copy").innerText = "Copied!"
+        await sleep(2000)
+        document.getElementById("click_to_copy").innerText = "Click to Copy"
+    })
     document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
-    await NewTab(username, links)
-
+    //await sleep(200)
+    await refresh()
+    link_events.forEach((link) => {insert.appendChild(link)})
+    terminate()
+    NewTab(username, links, sort)
 }
 
 window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
@@ -288,7 +317,7 @@ async function check_day(username) {
 function sort() {location.replace("/sort?sort="+document.getElementById("sort").value.toString())}
 
 
-function register_link(parameter) {
+async function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
@@ -322,7 +351,10 @@ function register_link(parameter) {
     }*/
     skipTutorial()
     url = url.replace("#", "%23")
-    location.replace(url)
+    hide('popup')
+    await fetch(url)
+    await refresh()
+    await load_links(global_username, global_sort)
 }
 
 function logOut() {document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; location.reload()}
@@ -396,6 +428,7 @@ async function tutorial(item, skip) {
         if (newWindow) {newWindow.close()}
         else {return document.getElementById("popups_not_enabled").style.display = "flex"}
         document.getElementById("box").style.zIndex = "5"
+        document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
     }
     else if (item === 2) {
         document.getElementById("box").style.zIndex = "auto"
@@ -444,3 +477,9 @@ async function tutorial(item, skip) {
 }
 
 async function skipTutorial() {return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)}
+
+
+async function refresh() {
+    let insert = document.getElementById("insert")
+    while (insert.firstChild) {insert.removeChild(insert.firstChild)}
+}

@@ -148,6 +148,7 @@ select {-webkit-appearance:none}
     padding: 0 40px 20px 15px;
     display: flex;
     justify-content: space-between;
+    width: 96% !important;
 }
 
 .button {

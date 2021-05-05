@@ -146,7 +146,7 @@ def links():
                           for link in links_db.find({'username': login_info['username']})]
             link_names = [link['name'] for link in links_list]
             sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
-            return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium)
+            return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium, style="old")
         else:
             return redirect('/login?error=not_logged_in')
     except:
@@ -195,6 +195,25 @@ def update():
     return redirect('/login')
 
 
+@app.route("/disable")
+def disable():
+    links_db = mongo.db.links
+    if request.cookies.get('login_info'):
+        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
+        link = links_db.find_one({"username": login_info['username'], 'id': int(request.args.get("id"))})
+        print(link)
+        print(link['active'])
+        if link['active'] == "true":
+            links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
+                                         {'$set': {'active': 'false'}})
+        else:
+            links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
+                                         {'$set': {'active': 'true'}})
+        return redirect("/links")
+    else:
+        return redirect('/login')
+
+
 @app.route('/deactivate')
 def deactivate():
     links_db = mongo.db.links
@@ -220,6 +239,8 @@ def activate():
 @app.route('/db', methods=['GET', 'POST'])
 def db():
     if request.cookies.get('login_info'):
+        print(json.loads(base64.b64decode(request.cookies.get('login_info')))['username'])
+        print(request.args.get("username"))
         if json.loads(base64.b64decode(request.cookies.get('login_info')))['username'] == request.args.get("username"):
             links_db = mongo.db.links
             links_list = links_db.find({'username': request.args.get('username')})
