@@ -45,7 +45,7 @@ async function NewTab(username, links, sort) {
                 await sleep(60000)
             }
         }
-        if (JSON.stringify(user_links) !== JSON.stringify(links)) {
+        if (JSON.stringify(user_links) !== JSON.stringify(links)) { console.log("refresh")
             location.reload()}
         // MAKE PAGE REFRESH WHEN CONTENT CHANGES
         await sleep(15000)
@@ -55,4 +55,4 @@ async function NewTab(username, links, sort) {
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
 
-async function terminate() {restart = true}
+function terminate() {restart = true}

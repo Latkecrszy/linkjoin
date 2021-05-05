@@ -294,8 +294,8 @@ async function load_links(username, sort) {
     //await sleep(200)
     await refresh()
     link_events.forEach((link) => {insert.appendChild(link)})
-    await terminate()
-    NewTab(username, links, sort)
+    terminate()
+    await NewTab(username, links, sort)
 }
 
 window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
