@@ -16,7 +16,8 @@ async function NewTab(username, links, sort) {
         user_links = await start_json.json()
         if (restart) {
             restart = false
-            return
+            console.log("restarting")
+            break
         }
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
@@ -46,11 +47,12 @@ async function NewTab(username, links, sort) {
             }
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) { console.log("refresh")
-            location.reload()}
+        load_links(username, sort)}
         // MAKE PAGE REFRESH WHEN CONTENT CHANGES
         await sleep(15000)
 
     }
+    NewTab(username, user_links, sort)
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
