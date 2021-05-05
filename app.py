@@ -207,7 +207,7 @@ def disable():
         else:
             links_db.find_one_and_update({"username": login_info['username'], 'id': int(request.args.get("id"))},
                                          {'$set': {'active': 'true'}})
-        return redirect("/links")
+        return 200
     else:
         return redirect('/login')
 
