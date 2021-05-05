@@ -125,8 +125,8 @@ def register():
                 insert['occurrences'] = (int(request.args.get('repeats')[0])) * len(request.args.get('days').split(','))
             links_db.insert_one(insert)
             id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-            return redirect('/links')
-        return redirect('/login')
+            return 200
+        return 403
     except:
         return render_template("error.html")
 
@@ -159,8 +159,8 @@ def delete():
     if request.cookies.get('login_info'):
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         links_db.find_one_and_delete({'username': login_info['username'], 'id': int(request.args.get('id'))})
-        return redirect('/links')
-    return redirect('/login')
+        return 200
+    return 403
 
 
 @app.route('/update')
@@ -191,8 +191,8 @@ def update():
         if request.args.get('repeats')[0].isnumeric():
             insert['occurrences'] = (int(request.args.get('repeats')[0])-1) * len(request.args.get('days').split(','))
         links_db.find_one_and_replace({'username': login_info['username'], 'id': int(request.args.get('id'))}, insert)
-        return redirect('/links')
-    return redirect('/login')
+        return 200
+    return 403
 
 
 @app.route("/disable")
@@ -209,29 +209,7 @@ def disable():
                                          {'$set': {'active': 'true'}})
         return 200
     else:
-        return redirect('/login')
-
-
-@app.route('/deactivate')
-def deactivate():
-    links_db = mongo.db.links
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({'username': login_info['username'], 'id': int(request.args.get('id'))},
-                                           {'$set': {'active': 'false'}})
-        return redirect('/links')
-    return redirect('/login')
-
-
-@app.route('/activate')
-def activate():
-    links_db = mongo.db.links
-    if request.cookies.get('login_info'):
-        login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-        links_db.find_one_and_update({'username': login_info['username'], 'id': int(request.args.get('id'))},
-                                     {'$set': {'active': 'true'}})
-        return redirect('/links')
-    return redirect('/login')
+        return 403
 
 
 @app.route('/db', methods=['GET', 'POST'])
