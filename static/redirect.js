@@ -46,7 +46,7 @@ async function NewTab(username, links, sort) {
             }
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
-            load_links(username, sort); return}
+            await load_links(username, sort); return}
         await sleep(15000)
 
     }
