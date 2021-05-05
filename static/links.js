@@ -48,6 +48,7 @@ async function popUp(popup, premium, link_names) {
         }
     }
     document.getElementById("0").selected = "selected"
+    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
     await tutorial(4)
 }
 
@@ -295,12 +296,12 @@ async function load_links(username, sort) {
     //await sleep(200)
     await refresh()
     link_events.forEach((link) => {insert.appendChild(link)})
-    terminate()
-    NewTab(username, links, sort)
+    clearInterval(open)
+    start(username, links, sort)
+    // MAKE IT STOP RUNNING THE NEWTAB MULTIPLE TIMES
 }
 
 window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
-
 async function check_day(username) {
     let date = new Date()
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)

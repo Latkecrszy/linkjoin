@@ -2,57 +2,66 @@ function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms))}
 
 let restart = false
 let restartBlocker = false
-
-async function NewTab(username, links, sort) {
-    let user_links;
-    while (true) {
-
+let open
+let user_links
+async function start(username, links, sort) {
+    open = setInterval(async () => {
         let date = new Date()
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
         let minute = date.getMinutes()
-        if (minute.toString().length === 1) {minute = `0${minute}`}
+        if (minute.toString().length === 1) {
+            minute = `0${minute}`
+        }
         let time = `${date.getHours()}:${minute}`
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        console.log()
         user_links = await start_json.json()
-        if (restart) {
-            restart = false
-            console.log("restarting")
-            break
-        }
+        console.log(user_links)
         for (let link of user_links) {
+            console.log(link)
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
-            if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {continue}
+            if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
+                continue
+            }
             if (parseInt(link['starts']) > 0) {
-                await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts'])-1}&var=starts`)
-                await sleep(60000)
+                await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&starts=${parseInt(link['starts']) - 1}&var=starts`)
+                pause(username, user_links, sort)
                 continue
             }
             if (isNaN(link['repeat'][0])) {
                 window.open(link['link'])
-                if (link['repeat'] === 'never') {await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)}
-                await sleep(60000)
+                if (link['repeat'] === 'never') {
+                    await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
+                }
+                pause(username, user_links, sort)
                 continue
             }
             let accept = []
-            for (let x=0; x < days.length; x++) {accept.push(parseInt(link['repeat'][0])*days.length+x)}
+            for (let x = 0; x < days.length; x++) {
+                accept.push(parseInt(link['repeat'][0]) * days.length + x)
+            }
             if (parseInt(link['occurrences']) === accept[accept.length]) {
                 await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&occurrences=0&var=occurrences`)
                 window.open(link['link'])
-                await sleep(60000)
-            }
-            else if (accept.includes(parseInt(link['occurrences']))) {
-                await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&occurrences=${occurrences+1}&var=occurrences`)
+                pause(username, user_links, sort)
+            } else if (accept.includes(parseInt(link['occurrences']))) {
+                await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&occurrences=${occurrences + 1}&var=occurrences`)
                 window.open(link['link'])
-                await sleep(60000)
+                pause(username, user_links, sort)
             }
         }
-        if (JSON.stringify(user_links) !== JSON.stringify(links)) { console.log("refresh")
-        load_links(username, sort); restart = true; continue}
-        // MAKE PAGE REFRESH WHEN CONTENT CHANGES
-        await sleep(15000)
+        if (JSON.stringify(user_links) !== JSON.stringify(links)) {
+            console.log("refresh")
+            load_links(username, sort);
+        }
+    }, 15000)
+}
 
-    }
-    NewTab(username, user_links, sort)
+
+async function pause(username, links, sort) {
+    clearInterval(open)
+    await sleep(60000)
+    start()
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
