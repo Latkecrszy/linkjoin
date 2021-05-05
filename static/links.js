@@ -205,7 +205,7 @@ async function load_links(username, sort) {
                 document.getElementById("popup_delete").style.display = "flex"
                 document.getElementById("delete_button").addEventListener('click', async () => {
                     hide('popup_delete')
-                    await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
+                    await fetch(`/delete?id=${link['id']}`)
                     await refresh()
                     await load_links(username, sort)
                 })
@@ -264,7 +264,8 @@ async function load_links(username, sort) {
             toggle_switch.htmlFor = `toggle${iterator}`
             toggle_switch.classList.add("switch")
             toggle_switch.addEventListener("click", async () => {
-                await fetch(`https://linkjoin.xyz/disable?id=${link['id']}`)
+                await fetch(`/disable?id=${link['id']}`)
+                await refresh()
                 await load_links(username, sort)
             })
             link_event.appendChild(toggle_switch)
@@ -295,7 +296,7 @@ async function load_links(username, sort) {
     await refresh()
     link_events.forEach((link) => {insert.appendChild(link)})
     terminate()
-    await NewTab(username, links, sort)
+    NewTab(username, links, sort)
 }
 
 window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
@@ -333,10 +334,10 @@ async function register_link(parameter) {
     }
     let url
     if (parameter === "register") {
-        url = `https://linkjoin.xyz/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     else {
-        url = `https://linkjoin.xyz/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
     }
     if (password.length > 0) {url += `&password=${password}`}
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
