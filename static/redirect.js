@@ -47,7 +47,7 @@ async function NewTab(username, links, sort) {
             break
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
-            location.reload()}
+            load_links(username, sort); return}
 
     }
     NewTab(username, user_links, sort)
@@ -55,4 +55,4 @@ async function NewTab(username, links, sort) {
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
 
-function terminate() {restart = true}
+async function terminate() {restart = true}

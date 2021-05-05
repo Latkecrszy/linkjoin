@@ -295,7 +295,7 @@ async function load_links(username, sort) {
     //await sleep(200)
     await refresh()
     link_events.forEach((link) => {insert.appendChild(link)})
-    terminate()
+    await terminate()
     NewTab(username, links, sort)
 }
 
