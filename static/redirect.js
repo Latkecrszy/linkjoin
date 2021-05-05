@@ -45,9 +45,9 @@ async function NewTab(username, links, sort) {
                 await sleep(60000)
             }
         }
-        await sleep(15000)
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
             load_links(username, sort); return}
+        await sleep(15000)
 
     }
     NewTab(username, user_links, sort)
