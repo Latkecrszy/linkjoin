@@ -46,7 +46,8 @@ async function NewTab(username, links, sort) {
             }
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
-            await load_links(username, sort); return}
+            location.reload()}
+        // MAKE PAGE REFRESH WHEN CONTENT CHANGES
         await sleep(15000)
 
     }
