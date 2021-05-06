@@ -71,7 +71,7 @@ async function load_links(username, sort) {
         placeholder.classList.add("placeholder")
         insert.append(placeholder)
     }
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`http://127.0.0.1:5002/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
@@ -115,7 +115,6 @@ async function load_links(username, sort) {
             }
         }
         else {final = links}
-        document.getElementById("header_links").style.margin = "0 0 200px 0"
         let iterator = 0;
         for (let link of final) {
             let link_event = document.createElement("div")
