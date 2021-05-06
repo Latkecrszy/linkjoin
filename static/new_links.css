@@ -9,7 +9,7 @@
 .link_event {
     background: #142539;
     border-radius: 3px;
-    margin: 0 30px 20px 30px;
+    margin: 0 130px 20px 130px;
     display: flex;
     height: 100px;
     padding: 0 50px;
@@ -103,4 +103,9 @@
     0% {opacity: 0.05}
     60% {opacity: 0.2}
     100% {opacity: 0.05}
+}
+
+
+@media (max-width: 900px) {
+    .link_event {margin: 0 0 20px 0; width: 100%}
 }

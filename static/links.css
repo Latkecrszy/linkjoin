@@ -316,10 +316,9 @@ input[type=date] {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin: -100px 0 0 50px;
-    padding-right: 50px;
+    margin: -100px 0 0 0;
     flex-wrap: wrap;
-    width: 100vw
+    width: 100vw;
 }
 
 
