@@ -466,7 +466,8 @@ async function tutorial(item, skip) {
     }
     if (item === 10) {
         document.getElementById("tutorial9").style.display = "none"
-        return location.replace(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+        location.reload()
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
