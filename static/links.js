@@ -25,8 +25,7 @@ async function popUp(popup, premium, link_names) {
         return document.getElementById("popup_premium").style.display = "none"
     }
     hide('popup')
-    popup = document.getElementById(popup)
-    popup.style.display = "flex"
+    document.getElementById(popup).style.display = "flex"
     let blur = document.getElementById("blur")
     let submit = document.getElementById("password")
     blur.style.opacity = "0.4"
@@ -467,10 +466,7 @@ async function tutorial(item, skip) {
     }
     if (item === 10) {
         document.getElementById("tutorial9").style.display = "none"
-        return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
-    }
-    if (item === 11) {
-
+        return location.replace(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
