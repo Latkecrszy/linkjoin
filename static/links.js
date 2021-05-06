@@ -1,4 +1,4 @@
-let global_username, global_sort;
+let global_username, global_sort, tutorial_complete;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -353,6 +353,9 @@ async function register_link(parameter) {
     url = url.replace("#", "%23")
     hide('popup')
     await fetch(url)
+    if (tutorial_complete) {
+        location.reload()
+    }
     await refresh()
     await load_links(global_username, global_sort)
 }
@@ -467,7 +470,7 @@ async function tutorial(item, skip) {
     if (item === 10) {
         document.getElementById("tutorial9").style.display = "none"
         await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
-        location.reload()
+        tutorial_complete = true
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     document.getElementById(`tutorial${item}`).style.display = "flex"
