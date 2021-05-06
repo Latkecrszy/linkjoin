@@ -9,11 +9,10 @@
 
 #plus_button {
     margin-top: 20px;
-    border-radius: 100px;
-    padding: 30px
+    padding: 30px;
+    cursor: pointer;
 }
 
-#plus_button:hover {cursor: pointer;}
 
 #click_the_plus {
     font-weight: 500;
