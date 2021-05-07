@@ -129,6 +129,11 @@
     #plus {display: flex !important}
     #plus_button {display: none}
     #home {display: inline-block !important}
+    #popup {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 520px}
+    #popup_delete {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 550px}
+    #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
+    #click_to_copy {display: inline-block; margin-left: 40%;}
+    #share_link {margin-left: 20%}
 }
 
 /*Hamburger Menu*/

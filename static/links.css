@@ -344,7 +344,7 @@ input[type=date] {
 }
 
 #share_link {
-    margin-left: 60px !important;
+    margin-left: 60px;
     overflow: visible;
     width: 350px;
     font: 500 18px Roboto;
