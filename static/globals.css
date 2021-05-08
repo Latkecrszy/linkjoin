@@ -78,12 +78,17 @@ svg {
 .hidden {visibility: hidden}
 
 .footer_links {
-    min-height: 60px;
+    height: 60px;
+    min-width: 890px;
     max-width: 960px;
-    margin: 100px 5vw -20px 18vw;
+    margin: 100px 5vw -20px max(0px, calc(45% - 400px));
     border-radius: 72px;
     background-color: #142539;
     text-align: center;
+    display: flex;
+    padding-left: 40px;
+    box-sizing: border-box;
+    flex-direction: row;
 }
 
 .footer_link {
