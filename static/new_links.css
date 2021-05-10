@@ -119,6 +119,7 @@
         flex-direction: column !important;
         margin-left: max(0px, calc(45% - 100px)) !important
     }
+    #blur {height: calc(100% + 250px) !important}
 }
 
 @media (max-width: 730px) {

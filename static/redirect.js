@@ -1,7 +1,5 @@
 function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms))}
 
-let restart = false
-let restartBlocker = false
 let open
 let user_links
 async function start(username, links, sort) {
@@ -13,7 +11,7 @@ async function start(username, links, sort) {
             minute = `0${minute}`
         }
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        let start_json = await fetch(`http://127.0.0.1:5002/db?username=${username}`)
         user_links = await start_json.json()
         for (let link of user_links) {
             let days = JSON.parse(link["days"].replaceAll("'", '"'))
@@ -61,5 +59,3 @@ async function pause(username, links, sort) {
 }
 
 function redirect(redirect_to) {window.open("/"+redirect_to)}
-
-function terminate() {restart = true}

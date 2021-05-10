@@ -47,7 +47,6 @@ async function popUp(popup, premium, link_names) {
         }
     }
     document.getElementById("0").selected = "selected"
-    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
     await tutorial(4)
 }
 
@@ -71,7 +70,7 @@ async function load_links(username, sort) {
         placeholder.classList.add("placeholder")
         insert.append(placeholder)
     }
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`http://127.0.0.1:5002/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
@@ -286,7 +285,6 @@ async function load_links(username, sort) {
         await sleep(2000)
         document.getElementById("click_to_copy").innerText = "Click to Copy"
     })
-    document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
@@ -299,7 +297,7 @@ async function load_links(username, sort) {
     // MAKE IT STOP RUNNING THE NEWTAB MULTIPLE TIMES
 }
 
-window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
+//window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
 async function check_day(username) {
     let date = new Date()
     let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
