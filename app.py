@@ -54,8 +54,9 @@ def login():
         try:
             ph.verify(login_db.find_one({'username': request.args.get('email').lower()})['password'],
                       request.args.get('password'))
-        except argon2.exceptions.VerifyMismatchError:
+        except:
             return redirect(f'/login?error=incorrect_password{redirect_link}')
+
     cookie = json.dumps({'username': request.args.get('email').lower()})
     cookie = str.encode(cookie)
     cookie = base64.b64encode(cookie)
