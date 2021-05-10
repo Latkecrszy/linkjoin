@@ -17,8 +17,8 @@
 #click_the_plus {
     font-weight: 500;
     font-size: 16px;
-    text-align: right;
-    margin-left: auto;
+    width: 100%;
+    text-align: center;
 }
 
 #sort {
