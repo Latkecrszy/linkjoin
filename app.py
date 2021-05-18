@@ -4,7 +4,6 @@ import json, os, dotenv, base64, re, argon2, random, string
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
-from twilio.rest import Client
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
 

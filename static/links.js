@@ -27,7 +27,7 @@ async function popUp(popup, premium, link_names) {
     hide('popup')
     document.getElementById(popup).style.display = "flex"
     let blur = document.getElementById("blur")
-    let submit = document.getElementById("password")
+    let submit = document.getElementById("submit")
     blur.style.opacity = "0.4"
     blur.style.zIndex = "3"
     submit.innerHTML = null
