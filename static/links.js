@@ -350,11 +350,7 @@ async function register_link(parameter) {
     url = url.replace("#", "%23")
     hide('popup')
     await fetch(url)
-    if (tutorial_complete) {
-        location.reload()
-    }
-    await refresh()
-    await load_links(global_username, global_sort)
+    location.reload()
 }
 
 function logOut() {document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; location.reload()}

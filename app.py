@@ -251,16 +251,6 @@ def change_var():
     return redirect('/links')
 
 
-@app.route('/tos')
-def tos():
-    return make_response('Coming soon!')
-
-
-@app.route('/privacy')
-def privacy():
-    return make_response('Coming soon!')
-
-
 @app.route('/addlink')
 def addlink():
     links_db = mongo.db.links
@@ -357,6 +347,16 @@ def remove():
     login_db.find_one_and_delete({"refer": "GUOVNrOIqevdSvDS"})
     login_db.find_one_and_delete({"refer": "StKFeLkPUOvCWMgy"})
     return 'done'
+
+
+@app.route('/tos')
+def tos():
+    return render_template("tos.html")
+
+
+@app.route('/privacy')
+def privacy():
+    return render_template("privacy.html")
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
