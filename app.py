@@ -1,9 +1,10 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
-import json, os, dotenv, base64, re, argon2, random, string
+import json, os, dotenv, base64, re, random, string, requests
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
+
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
 
@@ -11,8 +12,8 @@ ph = PasswordHasher()
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
-client_id = os.environ.get('CLIENT_ID', None)
-client_secret = os.environ.get('CLIENT_SECRET', None)
+VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
+VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -77,8 +78,10 @@ def signup():
     if login_db.find_one({'username': request.args.get('email').lower()}) is not None:
         return redirect(f'/signup?error=email_in_use&redirect={redirect_link}')
     if login_db.find({'refer': request.args.get('refer')}):
-        try: login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
-        except: pass
+        try:
+            login_db.find_one_and_update({'refer': request.args.get('refer')}, {'$set': {'premium': 'true'}})
+        except:
+            pass
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in [dict(document)['refer'] for document in login_db.find() if 'refer' in document]:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
@@ -116,6 +119,7 @@ def register():
                       'name': request.args.get('name'), 'active': 'true',
                       'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
                       'repeat': request.args.get('repeats'), 'days': request.args.get('days').split(','),
+                      'text': 'false',
                       'starts': int(request.args.get('starts')) if request.args.get('starts') else 0}
             if request.args.get('password'):
                 password = request.args.get('password').encode()
@@ -142,11 +146,16 @@ def links():
             links_db = mongo.db.links
             login_db = mongo.db.login
             premium = dict(login_db.find_one({'username': login_info['username']}))['premium']
-            links_list = [{str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
-                          for link in links_db.find({'username': login_info['username']})]
+            links_list = [
+                {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
+                for link in links_db.find({'username': login_info['username']})]
             link_names = [link['name'] for link in links_list]
-            sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
-            return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref, premium=premium, style="old")
+            sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and \
+                                                                           json.loads(request.cookies.get('sort'))[
+                                                                               'sort'] in ['time', 'day',
+                                                                                           'datetime'] else 'no'
+            return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref,
+                                   premium=premium, style="old")
         else:
             return redirect('/login?error=not_logged_in')
     except:
@@ -173,7 +182,7 @@ def update():
             link = request.args.get('link')
         login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
         insert = {'username': login_info['username'], 'id': int(request.args.get('id')),
-                  'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()), 
+                  'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': request.args.get('name'),
                   'active': 'true', 'starts': int(request.args.get('starts')),
                   'share': links_db.find_one({'id': int(request.args.get('id'))})['share']}
@@ -189,7 +198,7 @@ def update():
             password = encoder.encrypt(password)
             insert['password'] = password
         if request.args.get('repeats')[0].isnumeric():
-            insert['occurrences'] = (int(request.args.get('repeats')[0])-1) * len(request.args.get('days').split(','))
+            insert['occurrences'] = (int(request.args.get('repeats')[0]) - 1) * len(request.args.get('days').split(','))
         links_db.find_one_and_replace({'username': login_info['username'], 'id': int(request.args.get('id'))}, insert)
         return 'done', 200
     return 'not logged in', 403
@@ -235,7 +244,6 @@ def db():
     return jsonify('Not logged in')
 
 
-
 @app.route('/sort')
 def sort():
     response = make_response(redirect('/links'))
@@ -260,7 +268,8 @@ def addlink():
         new_link = None
         for doc in links_db.find():
             if 'share' in dict(doc):
-                if encoder.decrypt(dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
+                if encoder.decrypt(
+                        dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
                     new_link = dict(doc)
         if new_link is None:
             return render_template('invalid_link.html')
@@ -311,10 +320,19 @@ def users():
     return render_template('404.html')
 
 
+@app.route("/viewlinks")
+def viewlinks():
+    links_db = mongo.db.links
+    print('\n'.join([str(doc) for doc in links_db.find()]))
+    print(len([_ for _ in links_db.find()]))
+    return render_template('404.html')
+
+
 @app.route("/tutorial")
 def tutorial():
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": request.args.get("username").lower()}, {"$set": {"tutorial": request.args.get("step")}})
+    login_db.find_one_and_update({"username": request.args.get("username").lower()},
+                                 {"$set": {"tutorial": request.args.get("step")}})
     return 'done'
 
 
@@ -360,7 +378,6 @@ def privacy():
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
-
 
 if __name__ == '__main__':
     app.run(port=os.environ.get("port", 5002))

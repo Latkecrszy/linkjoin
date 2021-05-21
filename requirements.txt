@@ -26,4 +26,4 @@ pip~=21.0.1
 wheel~=0.34.2
 lxml~=4.6.2
 setuptools~=47.1.0
-twilio~=6.57.0
+requests~=2.25.1
