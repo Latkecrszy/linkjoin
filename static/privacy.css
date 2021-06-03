@@ -1,1 +1,14 @@
 body {padding-right: 20px}
+
+#page {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 0 50px;
+}
+
+#page div {
+    font-size: 18px;
+    line-height: 26px
+}
