@@ -136,7 +136,7 @@ footer {
 /*Footer*/
 .line {display: flex; justify-content: space-between;}
 
-.footer_image {height: 15px; width: 15px;}
+.footer_image {height: 18px; width: 18px;}
 
 .footer_link {margin: 0 20px 20px 0}
 
