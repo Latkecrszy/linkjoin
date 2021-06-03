@@ -1,4 +1,4 @@
-body {padding-right: 20px}
+body {padding-right: 20px; overflow-x: hidden;}
 
 #page {
     display: flex;
