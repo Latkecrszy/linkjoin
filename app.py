@@ -419,8 +419,8 @@ def receive_vonage_message():
     print(dict(request.values))
     text = request.args.get("text")
     print(text)
-    if 'stop' in text.lower():
-        mongo.db.links.find_one_and_update({"id": int(request.args.get("id"))}, {"$set": {"text": "false"}})
+    if text.isdigit():
+        mongo.db.links.find_one_and_update({"id": int(text)}, {"$set": {"text": "false"}})
         print("stopped")
     return 'done', 200
 
