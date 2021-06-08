@@ -1,9 +1,10 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
-import json, os, dotenv, base64, re, random, string, requests
+import json, os, dotenv, base64, re, random, string, requests, pprint, threading
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
+# from message import message
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -63,7 +64,7 @@ def login():
     if request.args.get("keep") == "false":
         response.set_cookie('login_info', cookie, max_age=172800)
     else:
-        response.set_cookie('login_info', cookie)
+        response.set_cookie('login_info', cookie, max_age=None)
     return response
 
 
@@ -95,7 +96,7 @@ def signup():
     if request.args.get("keep") == "false":
         response.set_cookie('login_info', cookie, max_age=172800)
     else:
-        response.set_cookie('login_info', cookie)
+        response.set_cookie('login_info', cookie, max_age=None)
     return response
 
 
@@ -119,13 +120,13 @@ def register():
                       'name': request.args.get('name'), 'active': 'true',
                       'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
                       'repeat': request.args.get('repeats'), 'days': request.args.get('days').split(','),
-                      'text': 'false',
+                      'text': request.args.get('text'),
                       'starts': int(request.args.get('starts')) if request.args.get('starts') else 0}
             if request.args.get('password'):
                 password = request.args.get('password').encode()
                 password = encoder.encrypt(password)
                 insert['password'] = password
-            if request.args.get('repeats')[0].isnumeric():
+            if request.args.get('repeats')[0].isdigit():
                 insert['occurrences'] = (int(request.args.get('repeats')[0])) * len(request.args.get('days').split(','))
             links_db.insert_one(insert)
             id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
@@ -185,7 +186,8 @@ def update():
                   'time': request.args.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': request.args.get('name'),
                   'active': 'true', 'starts': int(request.args.get('starts')),
-                  'share': links_db.find_one({'id': int(request.args.get('id'))})['share']}
+                  'share': links_db.find_one({'id': int(request.args.get('id'))})['share'],
+                  'text': request.args.get('text')}
         if request.args.get('repeats') != 'none':
             insert['repeat'] = request.args.get('repeats')
             insert['days'] = request.args.get('days').split(',')
@@ -197,8 +199,8 @@ def update():
             password = request.args.get('password').encode()
             password = encoder.encrypt(password)
             insert['password'] = password
-        if request.args.get('repeats')[0].isnumeric():
-            insert['occurrences'] = (int(request.args.get('repeats')[0]) - 1) * len(request.args.get('days').split(','))
+        if request.args.get('repeats')[0].isdigit():
+            insert['occurrences'] = (int(request.args.get('repeats')[0])) * len(request.args.get('days').split(','))
         links_db.find_one_and_replace({'username': login_info['username'], 'id': int(request.args.get('id'))}, insert)
         return 'done', 200
     return 'not logged in', 403
@@ -322,8 +324,9 @@ def users():
 
 @app.route("/viewlinks")
 def viewlinks():
+    pp = pprint.PrettyPrinter(indent=4)
     links_db = mongo.db.links
-    print('\n'.join([str(doc) for doc in links_db.find()]))
+    pp.pprint([doc for doc in links_db.find()])
     print(len([_ for _ in links_db.find()]))
     return render_template('404.html')
 
@@ -332,6 +335,14 @@ def viewlinks():
 def tutorial():
     login_db = mongo.db.login
     login_db.find_one_and_update({"username": request.args.get("username").lower()},
+                                 {"$set": {"tutorial": request.args.get("step")}})
+    return 'done'
+
+
+@app.route("/settutorial")
+def settutorial():
+    login_db = mongo.db.login
+    login_db.find_one_and_update({"username": "test4@gmail.com"},
                                  {"$set": {"tutorial": request.args.get("step")}})
     return 'done'
 
@@ -377,7 +388,46 @@ def privacy():
     return render_template("privacy.html")
 
 
+@app.route("/send_message")
+def send_message():
+    login_db = mongo.db.login
+    number = login_db.find_one({"username": request.args.get("username")})['number']
+    data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
+            "from": "18336535326", "to": number, "text":
+    f'''LinkJoin Reminder: Your link, {request.args.get('name')}, will open in {request.args.get('time')} minutes.
+    To stop receiving a reminder for this link, go to https://linkjoin.xyz/unsubscribe?id=${request.args.get('id')}'''}
+    response = requests.post("https://rest.nexmo.com/sms/json", data=data)
+    return response.json(), 200
+
+
+@app.route("/unsubscribe")
+def unsubscribe():
+    mongo.db.links.find_one_and_update({"id": int(request.args.get("id"))}, {"$set": {"text": "false"}})
+    return 'done', 200
+
+
+@app.route("/setoffset")
+def setoffset():
+    mongo.db.login.find_one_and_update({"username": request.args.get("username")}, {"$set": {"offset": request.args.get("offset")}})
+    return 'done', 200
+
+
+@app.route("/receive_vonage_message", methods=["GET", "POST"])
+def receive_vonage_message():
+    print(dict(request.headers))
+    print(dict(request.data))
+    print(dict(request.values))
+    text = request.args.get("text")
+    print(text)
+    if 'stop' in text.lower():
+        mongo.db.links.find_one_and_update({"id": int(request.args.get("id"))}, {"$set": {"text": "false"}})
+        print("stopped")
+    return 'done', 200
+
+
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 if __name__ == '__main__':
+    # message_thread = threading.Thread(target=message, daemon=True)
+    # message_thread.start()
     app.run(port=os.environ.get("port", 5002))
