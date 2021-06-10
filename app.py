@@ -414,14 +414,12 @@ def setoffset():
 
 @app.route("/receive_vonage_message", methods=["GET", "POST"])
 def receive_vonage_message():
-    print(dict(request.headers))
-    print(dict(request.data))
-    print(dict(request.values))
     text = request.args.get("text")
-    print(text)
     if text.isdigit():
         mongo.db.links.find_one_and_update({"id": int(text)}, {"$set": {"text": "false"}})
-        print("stopped")
+        data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
+                "from": "18336535326", "to": str(request.args.get("msisdn")), "text": "👍 We won't remind you about this link again"}
+        response = requests.post("https://rest.nexmo.com/sms/json", data=data)
     return 'done', 200
 
 
