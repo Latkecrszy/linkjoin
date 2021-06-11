@@ -44,8 +44,8 @@ def message():
         # Create a dictionary with all the needed info about the time
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
-        for document in links.find({"username": "setharaphael7@gmail.com"}):
-            user = users.find_one({"username": "setharaphael7@gmail.com"})
+        for document in links.find():
+            user = users.find_one({"username": document['username']})
             # TODO: Find workaround to waiting 60 seconds, as that may skip minutes
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
