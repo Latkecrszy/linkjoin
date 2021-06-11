@@ -70,7 +70,7 @@ async function load_links(username, sort) {
         placeholder.classList.add("placeholder")
         insert.append(placeholder)
     }
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`http://127.0.0.1:5002/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
@@ -165,6 +165,8 @@ async function load_links(username, sort) {
                 document.getElementById("blur").style.zIndex = "3"
                 document.getElementById("name").value = link["name"]
                 document.getElementById("link").value = link["link"]
+                document.getElementById("text_select").value = link["text"].toString()
+                document.getElementById("starts_select").value = link["starts"].toString()
                 if ("password" in link) {document.getElementById("password").value = link["password"]}
                 else {document.getElementById("password").value = null}
                 if (parseInt(link['time'].split(":")[0]) === 12) {
@@ -318,7 +320,9 @@ async function register_link(parameter) {
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
+    let text = document.getElementById("text_select").value
     let minute = document.getElementById("minute").value
+    let repeats = document.getElementById("select").value
     if (document.getElementById("am").value === "pm") {if (hour !== 12) {hour += 12}}
     else {if (hour === 12) {hour += 12}}
     let time = `${hour}:${minute}`
@@ -329,23 +333,18 @@ async function register_link(parameter) {
             days.push(child.value)
         }
     }
+    let starts = parseInt(document.getElementById("starts_select").value)*days.length
     let url
     if (parameter === "register") {
-        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${repeats}&days=${days}&starts=${starts}&text=${text}`
     }
     else {
-        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${document.getElementById("select").value}&days=${days}&id=${parameter}&starts=${parseInt(document.getElementById("starts_select").value)*days.length}`
+        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${repeats}&days=${days}&id=${parameter}&starts=${starts}&text=${text}`
     }
     if (password.length > 0) {url += `&password=${password}`}
     if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
     if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
-    /*console.log(global_premium)
-    if (global_premium === "false") {
-        if (!link.includes("zoom.us")) {
-            return document.getElementById("error").innerText = "To schedule links other than Zoom meetings, upgrade to premium!"
-        }
-    }*/
     skipTutorial()
     url = url.replace("#", "%23")
     hide('popup')
@@ -366,16 +365,16 @@ function browser() {
     if (navigator.userAgent.indexOf("Chrome") > -1) {}
         else if (navigator.userAgent.indexOf("Firefox") > -1) {
             document.getElementById(`tutorial0`).children[0].innerText =
-                "You should see a gray bar at the top of your browser indicating that popups are blocked. " +
-                "Click on the box on the right that says Preferences and select Allow popups for linkjoin.xyz."
-        document.getElementById(`tutorial0`).style.height = "250px"
+                "You should see a gray bar indicating that popups are blocked. " +
+                "Click on the box on the right that says Preferences and allow popups. " +
+                "If you don't see a gray bar, you should see an icon on the left side of your search bar. Click this " +
+                "to enable popups."
         }
         else if (navigator.userAgent.indexOf("Safari") > -1) {
             document.getElementById(`tutorial0`).children[0].innerText =
                 "Your popups are not enabled. Click ⌘ , to get to browser settings. " +
                 "Click on the websites tab at the top, and scroll down to the bottom where it says Pop-up Windows. " +
                 "On the right, you should see the text 'linkjoin.xyz' with a select menu to its right. Click on that menu and select 'allow'."
-            document.getElementById(`tutorial0`).style.height = "300px"
         }
 }
 
@@ -450,17 +449,28 @@ async function tutorial(item, skip) {
     }
     else if (item === 7) {
         document.getElementById("select").style.background = null
-        document.getElementById("select").style.borderRadius = null
-        document.getElementById("days").style.background = "rgba(255, 255, 255, 0.2)"
-    }
-    else if (item === 8) {
-        document.getElementById("days").style.background = null
         document.getElementById("starts_select").style.background = "rgba(255, 255, 255, 0.2)"
         document.getElementById("starts_select").style.borderRadius = "5px"
         document.getElementById("starts_select").style.padding = "5px"
         document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
     }
-    if (item === 10) {
+    else if (item === 8) {
+        document.getElementById("starts_select").style.background = null
+        document.getElementById("starts_select").style.borderRadius = null
+        document.getElementById("days").style.background = "rgba(255, 255, 255, 0.2)"
+    }
+    else if (item === 9) {
+        document.getElementById("days").style.background = null
+        document.getElementById("text_select").style.background = "rgba(255, 255, 255, 0.2)"
+        document.getElementById("text_select").style.borderRadius = "5px"
+        document.getElementById("text_select").style.paddingLeft = "5px"
+    }
+    else if (item === 10) {
+        document.getElementById("text_select").style.background = null
+        document.getElementById("text_select").style.borderRadius = null
+        document.getElementById("text_select").style.paddingLeft = null
+    }
+    if (item === 11) {
         document.getElementById("tutorial9").style.display = "none"
         await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
         tutorial_complete = true

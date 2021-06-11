@@ -10,7 +10,6 @@
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-
           gtag('config', 'UA-192814042-1');
         </script>
         <script>setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected") || x.id.toString().includes("not_signed")) {x.innerText = "Log In With Google"}})}, 1)</script>
@@ -60,9 +59,9 @@
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required><br>
                 <input id="password" name="password" placeholder="Password" type="password" required><br>
+                <input id="phone" name="phone" placeholder="Phone Number" type="text" required><br>
                 <div id="keep_div"><input type="checkbox" name="keep" id="keep"><p id="keep_text">Keep me logged in</p></div>
                 <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
-
             </div>
         </div>
     </body>

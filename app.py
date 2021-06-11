@@ -4,7 +4,7 @@ import json, os, dotenv, base64, re, random, string, requests, pprint, threading
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
-# from message import message
+from message import message
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -418,7 +418,7 @@ def receive_vonage_message():
     if text.isdigit():
         mongo.db.links.find_one_and_update({"id": int(text)}, {"$set": {"text": "false"}})
         data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                "from": "18336535326", "to": str(request.args.get("msisdn")), "text": "\U0001f44d We won't remind you about this link again"}
+                "from": "18336535326", "to": str(request.args.get("msisdn")), "text": "Ok, we won't remind you about this link again"}
         response = requests.post("https://rest.nexmo.com/sms/json", data=data)
     return 'done', 200
 
@@ -426,6 +426,6 @@ def receive_vonage_message():
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 if __name__ == '__main__':
-    # message_thread = threading.Thread(target=message, daemon=True)
-    # message_thread.start()
+    message_thread = threading.Thread(target=message, daemon=True)
+    message_thread.start()
     app.run(port=os.environ.get("port", 5002))

@@ -13,6 +13,12 @@
 
           gtag('config', 'UA-192814042-1');
         </script>
+        <script>
+            let date = new Date()
+            let offset = (date.getTimezoneOffset()/60).toString()
+            if (!offset.includes(".")) {offset = `${offset}.0`}
+            fetch(`/setoffset?offset=${offset}&username={{username}}`)
+        </script>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% if style == "old" %}
             <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
@@ -74,24 +80,24 @@
                 <div id="sort_by">Sort By:</div>
                 <select onchange="sort()" id="sort">
                     {% if sort == "no" %}
-                        <option value="none" selected>None</option>
+                        <option value="none" style="color: white" selected>None</option>
                     {% else %}
-                        <option value="none">None</option>
+                        <option value="none" style="color: white">None</option>
                     {% endif %}
                     {% if sort == "day" %}
-                        <option value="day" selected>Day</option>
+                        <option value="day" style="color: white" selected>Day</option>
                     {% else %}
-                        <option value="day">Day</option>
+                        <option value="day" style="color: white">Day</option>
                     {% endif %}
                     {% if sort == "time" %}
-                        <option value="time" selected>Time</option>
+                        <option value="time" style="color: white" selected>Time</option>
                     {% else %}
-                        <option value="time">Time</option>
+                        <option value="time" style="color: white">Time</option>
                     {% endif %}
                     {% if sort == "datetime" %}
-                        <option value="datetime" selected>Day & Time</option>
+                        <option value="datetime" style="color: white" selected>Day & Time</option>
                     {% else %}
-                        <option value="datetime">Day & Time</option>
+                        <option value="datetime" style="color: white">Day & Time</option>
                     {% endif %}
                 </select>
             </div>
@@ -230,6 +236,8 @@
                         <option value="am">AM</option>
                         <option value="pm" id="pm">PM</option>
                     </select>
+                    <!--Put cell phone icon next to text me a reminder
+                    -->
                 </div>
                 <div class="flex">
                     <img id="password_img" src="{{ url_for('static', filename='images/lock.png') }}" height="18px" width="15px" alt="lock symbol">
@@ -237,14 +245,24 @@
                 </div>
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
                 <div class="flex_right" id="repeats_container">
-                    <div id="repeats_text">Repeats every</div>
-                    <select id="select" class="popup_select" onchange="checkNever()">
+                    <div id="repeats_text">Repeats</div>
+                    <select id="select" class="popup_select">
                         <option value="never" id="never">Never</option>
-                        <option value="week" id="week" selected>Week</option>
-                        <option value="2 weeks" id="2 weeks">2 Weeks</option>
-                        <option value="3 weeks" id="3 weeks">3 Weeks</option>
-                        <option value="4 weeks" id="4 weeks">4 Weeks</option>
+                        <option value="week" id="week" selected>every week</option>
+                        <option value="2 weeks" id="2 weeks">every 2 weeks</option>
+                        <option value="3 weeks" id="3 weeks">every 3 weeks</option>
+                        <option value="4 weeks" id="4 weeks">every 4 weeks</option>
                     </select>
+                    <div class="vertical_line"></div>
+                    <div id="starts">Starts
+                        <select class="popup_select" id="starts_select">
+                            <option value="0" id="0">Today</option>
+                            <option value="1" id="1">in 1 week</option>
+                            <option value="2" id="2">in 2 weeks</option>
+                            <option value="3" id="3">in 3 weeks</option>
+                            <option value="4" id="4">in 4 weeks</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="days">
                     <button value="Sun" id="Sun" type="button">Su</button>
@@ -256,13 +274,17 @@
                     <button value="Sat" id="Sat" type="button">Sa</button>
                 </div>
                 <div id="starts_container">
-                    <div id="starts">Starts
-                        <select class="popup_select" id="starts_select">
-                            <option value="0" id="0">Today</option>
-                            <option value="1" id="1">in 1 week</option>
-                            <option value="2" id="2">in 2 weeks</option>
-                            <option value="3" id="3">in 3 weeks</option>
-                            <option value="4" id="4">in 4 weeks</option>
+                    <div id="text_container">
+                        <div>Text me</div>
+                        <select class="popup_select" id="text_select">
+                            <option value="false">Never</option>
+                            <option value="5" selected>5 minutes before</option>
+                            <option value="10">10 minutes before</option>
+                            <option value="15">15 minutes before</option>
+                            <option value="20">20 minutes before</option>
+                            <option value="30">30 minutes before</option>
+                            <option value="45">45 minutes before</option>
+                            <option value="60">60 minutes before</option>
                         </select>
                     </div>
                     <button type="button" id="submit" onclick="register_link('register')">Create</button>
@@ -322,12 +344,16 @@
             <button class="ok" onclick="tutorial(8)">Next</button>
         </div>
         <div id="tutorial8" class="tutorial">
-            Finally, you can change when your link will start to open. It could be today, in a week, or more!
+            You can change when your link will start to open. It could be today, in a week, or more!
             <button class="ok" onclick="tutorial(9)">Next</button>
         </div>
         <div id="tutorial9" class="tutorial">
+            Let LinkJoin text you before your meeting starts to remind you to get on the computer.
+            <button class="ok" onclick="tutorial(10)">Next</button>
+        </div>
+        <div id="tutorial10" class="tutorial">
             Great job! All that's left is to click Create, and your link will be on the books. Enjoy LinkJoin!
-            <button class="ok" onclick="tutorial(10)">Thanks!</button>
+            <button class="ok" onclick="tutorial(11)">Thanks!</button>
         </div>
         <div id="spotlight"></div>
         <div id="blur"></div>

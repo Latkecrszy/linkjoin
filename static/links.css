@@ -11,6 +11,7 @@
     margin-top: 20px;
     padding: 30px;
     cursor: pointer;
+    border-radius: 100px
 }
 
 
@@ -50,7 +51,7 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 33vw;
-    min-width: 500px;
+    min-width: 510px;
     height: 34vw;
     min-height: 550px;
     position: absolute;
@@ -92,8 +93,7 @@ input {color: white; font-family: Montserrat;}
 }
 
 #repeats_text {
-    font-family: Roboto;
-    font-size: 18px;
+    font: 400 18px Roboto;
     text-align: left;
 }
 
@@ -103,7 +103,7 @@ input {color: white; font-family: Montserrat;}
     flex-direction: row;
 }
 
-#repeats_container {margin: 15px 0 0 60px;}
+#repeats_container {margin: 15px 0 0 60px}
 
 .popup_select {
     background: none;
@@ -114,7 +114,14 @@ input {color: white; font-family: Montserrat;}
     color: white;
 }
 
-#select {margin-left: 30px; font-size: 18px; padding: 5px; z-index: 2}
+#select {margin: -5px 15px 0 5px; font-size: 18px; padding: 5px 5px 0 2px; z-index: 2; height: 30px}
+
+.vertical_line {
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 30px
+}
 
 #days {
     margin: 20px 0 -10px 45px;
@@ -138,19 +145,38 @@ input {color: white; font-family: Montserrat;}
 
 #days button.selected {background: #2B8FD8;}
 
-#starts_container {margin: 20px 0 0 50px;}
+#starts_container {margin: 20px 25px 0 50px; display: flex; justify-content: space-between}
 
-#starts_container div, #starts_container select {display: inline; margin-left: 30px;}
+#starts {font: 400 18px Roboto; margin-left: auto}
+
+#starts_select {font-size: 18px; margin: 0 60px 0 5px}
+
+#text_select {
+    height: 25px;
+    text-align: center;
+    font-size: 18px;
+    margin-left: 10px
+}
+
+#text_container {
+    display: flex;
+    margin-top: 20px
+}
+
+#text_container div {
+    font: 400 18px Roboto;
+}
 
 #submit, #submit_dates{
     width: max(10vw, 150px);
+    min-width: 150px;
     height: max(4vw, 65px);
     background-color: #2B8FD8;
     border-radius: 84px;
     text-align: center;
-    border: 0px solid;
+    border: 0 solid;
     font: 600 max(1.25vw, 20px) Montserrat;
-    margin-left: 70px;
+    margin-left: 40px;
 }
 
 #submit_dates {margin: 50px 50px 0 0;}
@@ -445,7 +471,7 @@ input[type=date] {
 
 #popups_not_enabled {height: 325px; width: 400px}
 
-#tutorial0 {height: 250px;}
+#tutorial0 {height: 300px;}
 
 #tutorial1 {top: 47vh; left: 5vw;}
 
@@ -461,9 +487,16 @@ input[type=date] {
 
 #tutorial7 {top: 370px; right: 63vw}
 
-#tutorial8 {top: 430px; right: 63vw}
+#tutorial8 {top: 400px; right: 63vw}
 
-#tutorial9 {top: 430px; left: 74vw}
+#tutorial9 {top: 400px; right: 63vw}
+
+#tutorial10 {top: 430px; right: 10px}
+
+/*When user logs into the site for the first time, get their current time and compare it to utc to figure out their tz*/
+/*Then, set a loop in the application itself to check if the texts need to be sent*/
+/*Ask for their phone number in a prompt, add option to email instead if they don't want to provide it*/
+/*Add phone number field to signup page*/
 
 #blur {
     width: 100%;
@@ -477,3 +510,5 @@ input[type=date] {
 }
 
 #links_menu {border-radius: 50px; padding: 5px 30px 20px 0; margin: 15px -30px 0 0; }
+
+option {color: black}

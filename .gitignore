@@ -7,3 +7,4 @@ env
 encrypt.key
 background.js
 manifest.json
+__pycache__
