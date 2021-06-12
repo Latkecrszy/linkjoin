@@ -24,7 +24,7 @@
 
 #right_content {margin: 0 13vh 13vh max(50px, 5vw);}
 
-#email, #password {
+#email, #password, #phone {
     width: 28vw;
     font: 500 15px Montserrat;
     height: 40px;
@@ -37,7 +37,7 @@
     margin-top: 30px;
 }
 
-#password {margin-top: 20px}
+#password, #phone {margin-top: 20px}
 
 #submit {
     height: 64px;
@@ -63,8 +63,8 @@
         font: 800 1.4vw Montserrat;
         margin-top: 1vw;
     }
-    #email::placeholder, #password::placeholder {font-size: 1vw}
-    #email, #password {
+    #email::placeholder, #password::placeholder, #phone::placeholder {font-size: 1vw}
+    #email, #password, #phone {
         width: 28vw;
         font: 500 1vw Montserrat;
         height: 3vw;
@@ -80,7 +80,7 @@
 
 @media (max-width: 985px) {
     #left_content {display: none}
-    #password, #email {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
+    #password, #email, #phone {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
     #gsignin {width: 70vw; max-width: 300px; min-width: 150px;}
     #welcome {margin-right: 0}
 
