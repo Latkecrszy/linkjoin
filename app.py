@@ -141,7 +141,7 @@ def links():
     try:
         if request.cookies.get('login_info'):
             login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
-            user = mongo.db.users.find_one({"username": login_info['username']})
+            user = mongo.db.login.find_one({"username": login_info['username']})
             number = dict(user).get('number')
             links_db = mongo.db.links
             login_db = mongo.db.login
@@ -158,7 +158,8 @@ def links():
                                    premium=premium, style="old", number=number)
         else:
             return redirect('/login?error=not_logged_in')
-    except:
+    except Exception as e:
+        print(e)
         return redirect('/login?error=not_logged_in')
 
 
