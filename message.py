@@ -46,6 +46,9 @@ def message():
         # Loop through the links
         for document in links.find():
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
+            if user is None:
+                print(user)
+                print(document['username'])
             # TODO: Find workaround to waiting 60 seconds, as that may skip minutes
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
