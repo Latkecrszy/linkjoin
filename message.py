@@ -45,7 +45,6 @@ def message():
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
         for document in links.find():
-            logging.error("Testing to make sure it's running")
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             if user is None:
                 print(user)
