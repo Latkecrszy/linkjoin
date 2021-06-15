@@ -142,7 +142,7 @@ def links():
         if request.cookies.get('login_info'):
             login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
             user = mongo.db.users.find_one({"username": login_info['username']})
-            number = user['number'] if 'number' in user else None
+            number = dict(user).get('number')
             links_db = mongo.db.links
             login_db = mongo.db.login
             premium = dict(login_db.find_one({'username': login_info['username']}))['premium']
