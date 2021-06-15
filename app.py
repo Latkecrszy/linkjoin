@@ -144,6 +144,8 @@ def links():
             if login_info['username'] != 'setharaphael7@gmail.com':
                 users = mongo.db.users
                 users.find_one_and_update({'id': 'stats'}, {'$inc': {'links': 1}})
+            user = mongo.db.users.find_one({"username": login_info['username']})
+            number = user['number'] if 'number' in user else None
             links_db = mongo.db.links
             login_db = mongo.db.login
             premium = dict(login_db.find_one({'username': login_info['username']}))['premium']
@@ -156,7 +158,7 @@ def links():
                                                                                'sort'] in ['time', 'day',
                                                                                            'datetime'] else 'no'
             return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref,
-                                   premium=premium, style="old")
+                                   premium=premium, style="old", number=number)
         else:
             return redirect('/login?error=not_logged_in')
     except:
@@ -426,6 +428,6 @@ def receive_vonage_message():
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 if __name__ == '__main__':
-    message_thread = threading.Thread(target=message, daemon=True)
+    message_thread = threading.Thread(target=message)
     message_thread.start()
     app.run(port=os.environ.get("port", 5002))
