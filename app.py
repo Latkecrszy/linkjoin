@@ -26,6 +26,12 @@ mongo = PyMongo(app)
 hasher = PasswordHasher()
 
 
+@app.before_first_request
+def thread_start():
+    message_thread = threading.Thread(target=message, daemon=True)
+    message_thread.start()
+
+
 @app.route('/')
 def main():
     return render_template('website.html')
@@ -426,6 +432,4 @@ def receive_vonage_message():
 app.register_error_handler(404, lambda e: render_template('404.html'))
 
 if __name__ == '__main__':
-    message_thread = threading.Thread(target=message, daemon=True)
-    message_thread.start()
-    app.run(port=os.environ.get("port", 5002))
+    app.run(port=os.environ.get("port", 5002), threaded=True)
