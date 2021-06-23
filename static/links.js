@@ -520,6 +520,11 @@ if (!tutorial_active) {
     }
 
 }
+else {
+    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("blur").style.zIndex = "-3"
+    document.getElementById("blur").style.opacity = "0"
+}
 
 async function no_add_number() {
     if (number === "None") {number = ''}
