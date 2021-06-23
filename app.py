@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
-import json, os, dotenv, base64, re, random, string, requests, pprint, threading
+import json, os, dotenv, base64, re, random, string, requests, pprint, threading, ast
 from argon2 import PasswordHasher
 from flask_cors import CORS
 from cryptography.fernet import Fernet
@@ -37,6 +37,13 @@ def main():
     return render_template('website.html')
 
 
+@app.route("/location")
+def location():
+    print(request.headers)
+    print(type(request.headers))
+    return jsonify({'country': request.headers.get('Cf-Ipcountry')})
+
+
 @app.route('/login')
 def Login():
     return render_template('login.html', error=request.args.get('error'),
@@ -47,7 +54,8 @@ def Login():
 def Signup():
     return render_template('signup.html', error=request.args.get('error'),
                            redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
-                           refer=request.args.get('refer') if request.args.get('refer') else 'none')
+                           refer=request.args.get('refer') if request.args.get('refer') else 'none',
+                           country_codes=json.load(open("country_codes.json")))
 
 
 @app.route("/login_error")
@@ -76,6 +84,7 @@ def login():
 
 @app.route("/signup_error")
 def signup():
+    print(request.args.get("number") == '')
     login_db = mongo.db.login
     response = make_response(redirect(request.args.get('redirect')))
     redirect_link = request.args.get("redirect") if request.args.get("redirect") else "/links"
@@ -95,6 +104,11 @@ def signup():
     insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': -1}
     if request.args.get('password'):
         insert['password'] = hasher.hash(request.args.get('password'))
+    if request.args.get('number'):
+        number = ''.join([i for i in request.args.get('number') if i in '1234567890'])
+        if len(number) < 11:
+            number = request.args.get('countrycode')+str(number)
+        insert['number'] = int(number)
     login_db.insert_one(insert)
     cookie = json.dumps({'username': email})
     cookie = str.encode(cookie)
@@ -144,7 +158,6 @@ def register():
 
 @app.route('/links')
 def links():
-    try:
         if request.cookies.get('login_info'):
             login_info = json.loads(base64.b64decode(request.cookies.get('login_info')))
             user = mongo.db.login.find_one({"username": login_info['username']})
@@ -156,17 +169,12 @@ def links():
                 {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
                 for link in links_db.find({'username': login_info['username']})]
             link_names = [link['name'] for link in links_list]
-            sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and \
-                                                                           json.loads(request.cookies.get('sort'))[
-                                                                               'sort'] in ['time', 'day',
-                                                                                           'datetime'] else 'no'
+            sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day','datetime'] else 'no'
+            print(number)
             return render_template('links.html', username=login_info['username'], link_names=link_names, sort=sort_pref,
-                                   premium=premium, style="old", number=number)
+                                   premium=premium, style="old", number=number, country_codes=json.load(open("country_codes.json")))
         else:
             return redirect('/login?error=not_logged_in')
-    except Exception as e:
-        print(e)
-        return redirect('/login?error=not_logged_in')
 
 
 @app.route('/delete', methods=['POST', 'GET'])
@@ -237,17 +245,13 @@ def db():
             links_list = links_db.find({'username': request.args.get('username')})
             links_list = [{i: j for i, j in link.items() if i != '_id'} for
                           link in links_list]
-            for i in links_list:
+            for index, i in enumerate(links_list):
                 if 'password' in i.keys():
                     if hasattr(encoder.decrypt(i['password']), 'decode'):
-                        links_list[links_list.index(i)]['password'] = str(encoder.decrypt(i['password']).decode())
-                if 'days' in i.keys():
-                    links_list[links_list.index(i)]['days'] = str(i['days'])
-                if 'dates' in i.keys():
-                    links_list[links_list.index(i)]['dates'] = str(i['dates'])
-                links_list[links_list.index(i)]['link'] = str(encoder.decrypt(i['link']).decode())
+                        links_list[index]['password'] = str(encoder.decrypt(i['password']).decode())
+                links_list[index]['link'] = str(encoder.decrypt(i['link']).decode())
                 if 'share' in i.keys():
-                    links_list[links_list.index(i)]['share'] = str(encoder.decrypt(i['share']).decode())
+                    links_list[index]['share'] = str(encoder.decrypt(i['share']).decode())
             return make_response(jsonify(list(links_list)))
     return jsonify('Not logged in')
 
@@ -263,7 +267,7 @@ def sort():
 def change_var():
     links_db = mongo.db.links
     links_db.find_one_and_update({'username': request.args.get('username'), 'id': int(request.args.get('id'))},
-                                 {'$set': {request.args.get('var'): request.args.get(request.args.get('var'))}})
+                                 {'$set': {request.args.get('var'): request.args.get(request.args.get('var')).split(",")}})
     return redirect('/links')
 
 
@@ -418,6 +422,17 @@ def setoffset():
     return 'done', 200
 
 
+@app.route("/add_number")
+def add_number():
+    number = ''.join([i for i in request.args.get('number') if i in '1234567890'])
+    if len(number) < 11:
+        number = request.args.get('countrycode') + str(number)
+    if number.isdigit():
+        number = int(number)
+    mongo.db.login.find_one_and_update({"username": request.args.get("username")}, {"$set": {"number": number}})
+    return 'done', 200
+
+
 @app.route("/receive_vonage_message", methods=["GET", "POST"])
 def receive_vonage_message():
     text = request.args.get("text")
@@ -427,14 +442,6 @@ def receive_vonage_message():
                 "from": "18336535326", "to": str(request.args.get("msisdn")), "text": "Ok, we won't remind you about this link again"}
         response = requests.post("https://rest.nexmo.com/sms/json", data=data)
     return 'done', 200
-
-
-@app.route("/location")
-def location():
-    x = requests.get(f'http://ip-api.com/json/{request.remote_addr}')
-    print(request.headers)
-    print(x.json())
-    return x.json(), request.headers
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

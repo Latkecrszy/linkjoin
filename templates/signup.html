@@ -59,7 +59,7 @@
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <input id="password" name="password" placeholder="Password" type="password" required>
-                <!--<input id="phone" name="phone" placeholder="Phone Number" type="text" required><br>-->
+                <input id="phone" name="phone" placeholder="Phone Number (Optional)" type="text"><br>
                 <div id="keep_div"><input type="checkbox" name="keep" id="keep"><p id="keep_text">Keep me logged in</p></div>
                 <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
             </div>
@@ -67,14 +67,25 @@
     </body>
     <script>
         let signed = false
-        function signUp() {
-            location.href = `/signup_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}&refer={{ refer }}&keep=${document.getElementById("keep").checked}`
+        async function signUp() {
+            const email = document.getElementById("email").value
+            const password = document.getElementById("password").value
+            const keep = document.getElementById("keep").checked
+            let number = document.getElementById("phone").value
+            let country = await fetch('https://linkjoin.xyz/location')
+            console.log(country)
+            country = await country.json()
+            console.log(country)
+            const countryCodes = {{ country_codes|tojson|safe }}
+            console.log(country['country'])
+            const countryCode = countryCodes[country['countryCode']]
+            location.replace(`/signup_error?redirect={{ redirect }}&email=${email}&password=${password}&refer={{ refer }}&keep=${keep}&number=${number}&countrycode=${countryCode['code'][countryCode['code'].length-1]}`)
         }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
                 let profile = await googleUser.getBasicProfile()
-                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}&keep=${document.getElementById("keep").checked}`
+                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}&keep=${document.getElementById("keep").checked}&number=${document.getElementById("phone").value}`
                 location.replace(link)
             }
        }

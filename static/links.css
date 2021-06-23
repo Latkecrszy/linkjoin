@@ -62,7 +62,7 @@
     z-index: 5;
 }
 
-#name, #link, #password {
+#name, #link, #password, #number {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
@@ -75,7 +75,8 @@
 
 #name {margin-top: 3% !important}
 
-#name::placeholder, #link::placeholder, #password::placeholder, #hour::placeholder, #minute::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
+#name::placeholder, #link::placeholder, #password::placeholder,
+#hour::placeholder, #minute::placeholder, #number::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
 
 #title {
     font-size: max(1.3vw, 22px);
@@ -167,7 +168,7 @@ input {color: white; font-family: Montserrat;}
     font: 400 18px Roboto;
 }
 
-#submit, #submit_dates{
+#submit, #add_number {
     width: max(10vw, 150px);
     min-width: 150px;
     height: max(4vw, 65px);

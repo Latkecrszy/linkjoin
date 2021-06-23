@@ -120,3 +120,13 @@
 #keep_text {font: 500 15px Montserrat; margin-top: 0}
 
 @-moz-document url-prefix() { #keep_text {margin-top: 14px} }
+
+#country_codes {
+    background: none;
+    height: 40px;
+    width: 80px;
+    color: white;
+    font: 400 15px Roboto;
+    border: none;
+    border-bottom: 2px solid white;
+}

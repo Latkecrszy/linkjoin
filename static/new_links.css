@@ -122,7 +122,7 @@
     #blur {height: calc(100% + 250px) !important}
 }
 
-@media (max-width: 730px) {
+@media (max-width: 850px) {
     #hamburger {
         display: inline-block;
     }
@@ -137,15 +137,19 @@
         z-index: 9;
     }
     #header_links a {display: none;}
+    #plus_button {display: flex}
+    #home {display: inline-block !important}
+
+}
+
+@media (max-width: 730px) {
     #plus {display: flex !important}
     #plus_button {display: none}
-    #home {display: inline-block !important}
     #popup {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 520px}
     #popup_delete {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 550px}
     #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
-
 }
 
 /*Hamburger Menu*/
@@ -200,3 +204,42 @@
     box-shadow: -3px 3px 12px rgba(255, 255, 255, 0.25);
     border-radius: 100px
 }
+
+#add_number_div {
+    width: 500px;
+    height: 300px;
+    padding: 15px 10px;
+    background: #091B30;
+    position: absolute;
+    border: 5px solid white;
+    border-radius: 10px;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    display: none;
+}
+
+#add_number_div.content {
+    position: relative;
+    top: -30px
+}
+
+#number {display: inline; width: 60%}
+
+#add_number {
+    font-size: 14px;
+    display: inline;
+    height: 50px;
+    width: 100px;
+    min-width: 100px
+}
+
+#dismiss_add_number {
+    position: relative;
+    top: 0;
+    right: 235px;
+    cursor: pointer
+}
+

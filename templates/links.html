@@ -15,9 +15,12 @@
         </script>
         <script>
             let date = new Date()
+            let number = "{{ number|safe }}"
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch(`/setoffset?offset=${offset}&username={{username}}`)
+            const countryCodes = {{ country_codes|tojson|safe }}
+
         </script>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% if style == "old" %}
@@ -31,14 +34,12 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <script src="{{ url_for('static', filename='nosleep.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/webshim/1.14.5/polyfiller.js"></script>
         <script>
         webshims.setOptions('forms-ext', {types: 'date'});
         webshims.polyfill('forms forms-ext');
         </script>
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
-        <script src="{{ url_for('static', filename='links.js') }}"></script>
         <title>LinkJoin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name=”robots” content="index, follow"/>
@@ -48,13 +49,11 @@
     <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
         <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
         <div id="page">
-            <!--<div id="alert">You must have <b style="color: yellow; font-weight: 800;">this tab</b> open and your device on for your meetings to start. You also must have popups enabled. If you don't know how to enable them, <a href="https://support.google.com/chrome/answer/95472?co=GENIE.Platform%3DDesktop&hl=en-GB" rel="noopener" style="color: yellow; font-weight: 800;" target="_blank">this link</a> can help.
-                <button onclick="this.parentElement.style.display='none';" id="close_alert">×</button>
-            </div>-->
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
+                    <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
                     {% if premium == "false" %}
                         <a href="/premium"><div class="button header_button">Premium</div></a>
                     {% endif %}
@@ -68,6 +67,7 @@
                         <div id="line3"></div>
                     </div>
                     <div id="hamburger_dropdown">
+                        <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
                         {% if premium == "false" %}
                             <a href="/premium"><div class="button header_button">Premium</div></a>
                         {% endif %}
@@ -357,6 +357,22 @@
         </div>
         <div id="spotlight"></div>
         <div id="blur"></div>
+        <div id="add_number_div">
+            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" id="dismiss_add_number" onclick="no_add_number()" alt="back to links page">
+            <div class="content">
+                <h2>One More Thing!</h2>
+                <p>
+                    We noticed that you haven't added a phone number to your account.
+                    This means that you won't receive text reminders for your links.
+                    To add a number, type it in below.
+                    If you don't want to add your number, click the arrow in the upper left.
+                </p>
+                <input id="number" type="text" placeholder="Phone number">
+                <button id="add_number" onclick="add_number()">Add Number</button>
+            </div>
+        </div>
+        <!--TODO: Make the phone number input box appear if they don't have a phone number on file-->
+        <!--TODO: Make the change phone number button at the top of the page-->
     </body>
-
+<script src="{{ url_for('static', filename='links.js') }}"></script>
 </html>

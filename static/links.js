@@ -1,4 +1,5 @@
-let global_username, global_sort, tutorial_complete;
+let global_username, global_sort, tutorial_complete
+let tutorial_active = false;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -60,17 +61,17 @@ document.addEventListener("click", event => {if(event.target.matches("#days butt
 
 
 async function load_links(username, sort) {
+    console.log("restart")
     global_username = username
     global_sort = sort
     let link_events = []
-    refresh()
     let insert = document.getElementById("insert")
     for (let i=0; i<3; i++) {
         let placeholder = document.createElement("div")
         placeholder.classList.add("placeholder")
         insert.append(placeholder)
     }
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
@@ -81,7 +82,7 @@ async function load_links(username, sort) {
         let final = []
         if (sort === "day") {
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
-            for (const link_info of links) {link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)}
+            for (const link_info of links) {link_list[link_info['days'][0]].push(link_info)}
             for (const day in link_list) {for (let key of link_list[day]) {final.push(key)}}
         }
         else if (sort === "time") {
@@ -89,12 +90,12 @@ async function load_links(username, sort) {
             let add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
             let time_links_list = {}
             for (const link_info of links) {
-                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]])
-                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]]] = link_info
+                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]])
+                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]] = link_info
             }
             for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
             let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
-            for (const link_info of final) {link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(link_info)}
+            for (const link_info of final) {link_list[link_info['days'][0]].push(link_info)}
             /*let real_final = []
             for (const day in link_list) {for (let key of link_list[day]) {real_final.push(key)}}
             console.log(real_final)*/
@@ -103,8 +104,12 @@ async function load_links(username, sort) {
             let link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
             let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
-                link_dict[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
-                other_link_list[JSON.parse(link_info["days"].replaceAll("'", '"'))[0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
+                console.log(typeof link_info['days'])
+                console.log(link_info['days'])
+                console.log(link_info['days'][0])
+                console.log(link_dict[link_info['days'][0]])
+                link_dict[link_info['days'][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
+                other_link_list[link_info['days'][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
             }
             for (let day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
@@ -146,7 +151,7 @@ async function load_links(username, sort) {
             link_event.appendChild(name_container)
             let days = document.createElement("div")
             days.classList.add("days")
-            days.innerText = JSON.parse(link["days"].replaceAll("'", '"')).join(", ")
+            days.innerText = link['days'].join(", ")
             link_event.appendChild(days)
             let buttons = document.createElement("img")
             buttons.classList.add("menu_buttons")
@@ -184,7 +189,7 @@ async function load_links(username, sort) {
                 document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
                 document.getElementById("title").innerText = "Edit your meeting"
                 for (let day of ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"]) {document.getElementById(day).classList.remove("selected")}
-                for (let day_abbrev of JSON.parse(link["days"].replaceAll("'", '"'))) {
+                for (let day_abbrev of link['days']) {
                     if (document.getElementById(day_abbrev)) {
                         document.getElementById(day_abbrev).classList.add("selected")
                     }
@@ -476,8 +481,11 @@ async function tutorial(item, skip) {
         tutorial_complete = true
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
-    document.getElementById(`tutorial${item}`).style.display = "flex"
-    document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"
+    tutorial_active = true
+    try {document.getElementById(`tutorial${item}`).style.display = "flex"}
+    catch {}
+    try {document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"}
+    catch {}
 }
 
 async function skipTutorial() {return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)}
@@ -489,3 +497,34 @@ async function refresh() {
 }
 
 document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
+
+
+async function add_number() {
+    let country = await fetch('https://extreme-ip-lookup.com/json/')
+    country = await country.json()
+    const countryCode = countryCodes[country['countryCode']]
+    let number = document.getElementById("number").value
+    await fetch(`/change_var?username=${global_username}&countrycode=${countryCode}&number=${number}`)
+}
+
+function show_add_number() {
+    document.getElementById("add_number_div").style.display = "block"
+        let blur = document.getElementById("blur")
+        blur.style.opacity = "0.4"
+        blur.style.zIndex = "3"
+}
+
+if (!tutorial_active) {
+    if (number === "None") {
+        show_add_number()
+    }
+
+}
+
+async function no_add_number() {
+    if (number === "None") {number = ''}
+    await fetch(`/add_number?username=${global_username}&countrycode=&number=${number}`)
+    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("blur").style.zIndex = "-3"
+    document.getElementById("blur").style.opacity = "0"
+}

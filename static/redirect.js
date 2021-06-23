@@ -17,59 +17,57 @@ function minutes(time, before){
 }
 
 async function start(username, links, sort) {
+    console.log("started")
     open = setInterval(async () => {
         let date = new Date()
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        let start_json = await fetch(`/db?username=${username}`)
         user_links = await start_json.json()
         for (let link of user_links) {
-            let days = JSON.parse(link["days"].replaceAll("'", '"'))
+            let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
                 continue
             }
             if (parseInt(link['starts']) > 0) {
-                pause(username, user_links, sort, 46000)
+                continue
             }
-            if (isNaN(link['repeat'][0])) {
+            if (link['repeat'] === 'never') {
+                if (link['days'].length > 1) {
+                    console.log(link)
+                    console.log(link['days'])
+                    console.log(typeof link['days'])
+                    link['days'].splice(link['days'].indexOf(day), 1)
+                    await fetch(`/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    // TODO: TEST THIS OUT
+                }
+                else {
+                    await fetch(`/delete?id=${link['id']}`)
+                }
+                console.log("did an open")
                 window.open(link['link'])
-                if (link['repeat'] === 'never') {
-                    await fetch(`http://127.0.0.1:5002/delete?id=${link['id']}`)
-                    load_links(username, sort)
-                }
-                pause(username, user_links, sort, 46000)
+                return await pause(username, user_links, sort, 46000, "load_links")
             }
-            // Work on making the linkjoin-messenger check the occurrences the way it does here
-            // What this does: First, it checks if it repeats every week. No need to check for occurrences if it does.
-            // Next, if it doesn't repeat every week, it checks the occurrences.
-            if ('occurrences' in link) {
-                let accept = []
-                for (let x = 0; x < days.length; x++) {
-                    accept.push(parseInt(link['repeat'][0]) * days.length + x - 1)
-                }
-                if (parseInt(link['occurrences']) === 0) {
-                    window.open(link['link'])
-                    pause(username, user_links, sort, 46000)
-                } else if (accept.includes(parseInt(link['occurrences']))) {
-                    window.open(link['link'])
-                    pause(username, user_links, sort, 46000)
-                }
-            }
-
+            window.open(link['link'])
+            console.log("opened")
+            await pause(username, user_links, sort, 46000)
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
             console.log("refresh")
-            load_links(username, sort);
+            await load_links(username, sort);
         }
     }, 15000)
 }
 
 
-async function pause(username, links, sort, wait) {
+async function pause(username, links, sort, wait, action) {
     clearInterval(open)
+    console.log("pausing")
     await sleep(wait)
+    console.log("done pausing")
+    if (action === "load_links") {return load_links(username, sort)}
     start(username, links, sort)
 }
 
