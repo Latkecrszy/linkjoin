@@ -45,7 +45,7 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <script>let global_premium = "{{ premium }}"</script>
+    <script>let global_premium = "{{ premium }}";</script>
     <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
         <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
         <div id="page">
@@ -375,11 +375,4 @@
         <!--TODO: Make the change phone number button at the top of the page-->
     </body>
 <script src="{{ url_for('static', filename='links.js') }}"></script>
-<script>
-    if (!tutorial_active) {
-    if (number === "None") {
-        show_add_number()
-    }
-}
-</script>
 </html>

@@ -299,6 +299,7 @@ async function load_links(username, sort) {
     //await sleep(200)
     await refresh()
     link_events.forEach((link) => {insert.appendChild(link)})
+    await check_if_tutorial()
     clearInterval(open)
     start(username, links, sort)
     // MAKE IT STOP RUNNING THE NEWTAB MULTIPLE TIMES
@@ -385,6 +386,7 @@ function browser() {
 
 
 async function tutorial(item, skip) {
+    tutorial_active = true
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
         document.getElementById("blur").style.opacity = "0.4";
@@ -481,7 +483,6 @@ async function tutorial(item, skip) {
         tutorial_complete = true
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
-    tutorial_active = true
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
@@ -521,4 +522,17 @@ async function no_add_number() {
     document.getElementById("add_number_div").style.display = "none"
     document.getElementById("blur").style.zIndex = "-3"
     document.getElementById("blur").style.opacity = "0"
+}
+
+
+async function check_if_tutorial() {
+    let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${global_username}`)
+    tutorial_completed = await tutorial_completed.json()
+    console.log(tutorial_completed['tutorial'])
+    console.log(number)
+    if (tutorial_completed['tutorial'] === "done") {
+        if (number === "None") {
+        show_add_number()
+    }
+    }
 }
