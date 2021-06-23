@@ -502,11 +502,14 @@ document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x
 
 
 async function add_number() {
-    let country = await fetch('https://extreme-ip-lookup.com/json/')
+    let country = await fetch('https://linkjoin.xyz/location')
     country = await country.json()
-    const countryCode = countryCodes[country['countryCode']]
+    const countryCode = countryCodes[country['country']]
     let number = document.getElementById("number").value
     await fetch(`/change_var?username=${global_username}&countrycode=${countryCode}&number=${number}`)
+    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("blur").style.zIndex = "-3"
+    document.getElementById("blur").style.opacity = "0"
 }
 
 function show_add_number() {
