@@ -432,7 +432,7 @@ def receive_vonage_message():
 @app.route("/location")
 def location():
     x = requests.get(f'http://ip-api.com/json/{request.remote_addr}')
-    print(x.headers)
+    print(dict(x.headers))
     print(x.json())
     return x.json(), dict(x.headers)
 
