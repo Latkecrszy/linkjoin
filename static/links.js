@@ -482,8 +482,7 @@ async function tutorial(item, skip) {
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     tutorial_active = true
-    document.getElementById("blur").style.zIndex = "-3"
-    document.getElementById("blur").style.opacity = "0"
+    document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
     try {document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"}
