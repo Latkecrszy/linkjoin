@@ -515,13 +515,6 @@ function show_add_number() {
         blur.style.zIndex = "3"
 }
 
-if (!tutorial_active) {
-    if (number === "None") {
-        show_add_number()
-    }
-
-}
-
 async function no_add_number() {
     if (number === "None") {number = ''}
     await fetch(`/add_number?username=${global_username}&countrycode=&number=${number}`)

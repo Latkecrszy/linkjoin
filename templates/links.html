@@ -375,4 +375,11 @@
         <!--TODO: Make the change phone number button at the top of the page-->
     </body>
 <script src="{{ url_for('static', filename='links.js') }}"></script>
+<script>
+    if (!tutorial_active) {
+    if (number === "None") {
+        show_add_number()
+    }
+}
+</script>
 </html>
