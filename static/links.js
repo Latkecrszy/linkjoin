@@ -509,7 +509,7 @@ async function add_number() {
     console.log(country['country'])
     console.log(countryCodes[country['country']])
     let number = document.getElementById("number").value
-    await fetch(`https://linkjoin.xyz/change_var?username=${global_username}&countrycode=${countryCode['code']}&number=${number}`)
+    await fetch(`/add_number?username=${global_username}&countrycode=${countryCode['code']}&number=${number}`)
     document.getElementById("add_number_div").style.display = "none"
     document.getElementById("blur").style.zIndex = "-3"
     document.getElementById("blur").style.opacity = "0"
