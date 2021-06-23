@@ -44,7 +44,7 @@ def message():
         # Create a dictionary with all the needed info about the time
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
-        for document in links.find({"username": "setharaphael7@gmail.com"}):
+        for document in links.find():
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             if user is None:
                 print(user)
