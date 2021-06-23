@@ -78,7 +78,7 @@
             console.log(country)
             const countryCodes = {{ country_codes|tojson|safe }}
             console.log(country['country'])
-            location.replace(`/signup_error?redirect={{ redirect }}&email=${email}&password=${password}&refer={{ refer }}&keep=${keep}&number=${number}&countrycode=${countryCodes[country['countryCode']]['code']}`)
+            location.replace(`/signup_error?redirect={{ redirect }}&email=${email}&password=${password}&refer={{ refer }}&keep=${keep}&number=${number}&countrycode=${countryCodes[country['country']]['code']}`)
         }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
