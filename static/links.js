@@ -482,6 +482,9 @@ async function tutorial(item, skip) {
     }
     await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
     tutorial_active = true
+    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("blur").style.zIndex = "-3"
+    document.getElementById("blur").style.opacity = "0"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
     try {document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"}
@@ -519,11 +522,6 @@ if (!tutorial_active) {
         show_add_number()
     }
 
-}
-else {
-    document.getElementById("add_number_div").style.display = "none"
-    document.getElementById("blur").style.zIndex = "-3"
-    document.getElementById("blur").style.opacity = "0"
 }
 
 async function no_add_number() {
