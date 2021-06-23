@@ -506,7 +506,7 @@ async function add_number() {
     country = await country.json()
     const countryCode = countryCodes[country['country']]
     let number = document.getElementById("number").value
-    await fetch(`/change_var?username=${global_username}&countrycode=${countryCode}&number=${number}`)
+    await fetch(`https://linkjoin.xyz/change_var?username=${global_username}&countrycode=${countryCode}&number=${number}`)
     document.getElementById("add_number_div").style.display = "none"
     document.getElementById("blur").style.zIndex = "-3"
     document.getElementById("blur").style.opacity = "0"
