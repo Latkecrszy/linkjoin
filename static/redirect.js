@@ -42,18 +42,19 @@ async function start(username, links, sort) {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
                     console.log("working 5")
+                    window.open(link['link'])
                     await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
                     console.log("working 6")
                 }
                 else {
+                    window.open(link['link'])
                     await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
                 }
                 console.log("did an open")
-                window.open(link['link'])
                 console.log("working 7")
                 return await pause(username, user_links, sort, 46000, "load_links")
             }
-            window.open(link['link'])
+
             console.log("opened")
             console.log("working 8")
             await pause(username, user_links, sort, 46000)
