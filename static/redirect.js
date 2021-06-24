@@ -36,12 +36,8 @@ async function start(username, links, sort) {
             }
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
-                    console.log(link)
-                    console.log(link['days'])
-                    console.log(typeof link['days'])
                     link['days'].splice(link['days'].indexOf(day), 1)
                     await fetch(`/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
-                    // TODO: TEST THIS OUT
                 }
                 else {
                     await fetch(`/delete?id=${link['id']}`)
