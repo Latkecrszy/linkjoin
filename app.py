@@ -263,7 +263,7 @@ def sort():
     return response
 
 
-@app.route('/change_var')
+@app.route('/changevar')
 def change_var():
     links_db = mongo.db.links
     links_db.find_one_and_update({'username': request.args.get('username'), 'id': int(request.args.get('id'))},

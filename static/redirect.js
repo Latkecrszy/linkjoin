@@ -43,11 +43,11 @@ async function start(username, links, sort) {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
                     console.log("working 5")
-                    //await fetch(`/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    await fetch(`/changevar?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
                     console.log("working 6")
                 }
                 else {
-                    //await fetch(`/delete?id=${link['id']}`)
+                    await fetch(`/delete?id=${link['id']}`)
                 }
                 console.log("did an open")
                 console.log("working 7")
