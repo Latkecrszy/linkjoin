@@ -19,13 +19,17 @@ function minutes(time, before){
 async function start(username, links, sort) {
     console.log("started")
     open = setInterval(async () => {
+        console.log("working 1")
         let date = new Date()
         let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
+        console.log("working 2")
         let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+        console.log("working 3")
         user_links = await start_json.json()
+        console.log("working 4")
         for (let link of user_links) {
             let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
@@ -37,17 +41,21 @@ async function start(username, links, sort) {
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
+                    console.log("working 5")
                     await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    console.log("working 6")
                 }
                 else {
                     await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
                 }
                 console.log("did an open")
                 window.open(link['link'])
+                console.log("working 7")
                 return await pause(username, user_links, sort, 46000, "load_links")
             }
             window.open(link['link'])
             console.log("opened")
+            console.log("working 8")
             await pause(username, user_links, sort, 46000)
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {
