@@ -24,7 +24,7 @@ async function start(username, links, sort) {
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`/db?username=${username}`)
+        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
         user_links = await start_json.json()
         for (let link of user_links) {
             let days = link['days']
@@ -37,10 +37,10 @@ async function start(username, links, sort) {
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
-                    await fetch(`/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    await fetch(`https://linkjoin.xyz/change_var?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
                 }
                 else {
-                    await fetch(`/delete?id=${link['id']}`)
+                    await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
                 }
                 console.log("did an open")
                 window.open(link['link'])
