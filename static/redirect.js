@@ -26,7 +26,7 @@ async function start(username, links, sort) {
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
         console.log("working 2")
-        let start_json = await fetch(`/db?username=${username}`)
+        let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
         console.log("working 3")
         user_links = await start_json.json()
         console.log("working 4")
@@ -43,11 +43,11 @@ async function start(username, links, sort) {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
                     console.log("working 5")
-                    await fetch(`/changevar?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    await fetch(`https://linkjoin.xyz/changevar?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
                     console.log("working 6")
                 }
                 else {
-                    await fetch(`/delete?id=${link['id']}`)
+                    await fetch(`https://linkjoin.xyz/delete?id=${link['id']}`)
                 }
                 console.log("did an open")
                 console.log("working 7")
