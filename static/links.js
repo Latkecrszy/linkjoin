@@ -71,7 +71,7 @@ async function load_links(username, sort) {
         placeholder.classList.add("placeholder")
         insert.append(placeholder)
     }
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`/db?username=${username}`)
     let links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
