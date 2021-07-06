@@ -4,6 +4,18 @@ let tutorial_active = false;
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
+function createElement(type="div", _class=[], id=null, text=null, style={}, html= null, other={}) {
+    const newElement = document.createElement(type)
+    _class.forEach((className) => newElement.classList.add(className))
+    id !== null ? newElement.id = id : null
+    newElement.innerText = text
+    Object.entries(style).forEach(([key, value]) => newElement.style[key] = value)
+    html !== null ? newElement.innerHTML = id : null
+    Object.entries(other).forEach(([key, value]) => newElement[key] = value)
+    return newElement
+}
+
+
 
 async function popUp(popup, premium, link_names) {
     if (premium === "false" && link_names.length >= 10) {
@@ -18,7 +30,7 @@ async function popUp(popup, premium, link_names) {
             document.documentElement.style.setProperty("--progress", `${amount}%`)
             await sleep(11)
         }
-        while (position>= -350) {
+        while (position >= -350) {
             document.documentElement.style.setProperty("--right", `${position}px`)
             await sleep(1)
             position -= 3.5
@@ -27,13 +39,13 @@ async function popUp(popup, premium, link_names) {
     }
     hide('popup')
     document.getElementById(popup).style.display = "flex"
-    let blur = document.getElementById("blur")
-    let submit = document.getElementById("submit")
+    const blur = document.getElementById("blur")
+    const submit = document.getElementById("submit")
     blur.style.opacity = "0.4"
     blur.style.zIndex = "3"
     submit.innerHTML = null
     submit.innerText = "Create"
-    submit.setAttribute("onclick", `register_link("register")`)
+    submit.addEventListener("click", () => register_link("register"))
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("hour").value = 1
@@ -41,7 +53,7 @@ async function popUp(popup, premium, link_names) {
     document.getElementById("password").value = null
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
-    let date = new Date()
+    const date = new Date()
     for (let child of document.getElementById("days").children) {
         if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]) {
             child.classList.remove("selected")
@@ -65,14 +77,12 @@ async function load_links(username, sort) {
     global_username = username
     global_sort = sort
     let link_events = []
-    let insert = document.getElementById("insert")
+    const insert = document.getElementById("insert")
     for (let i=0; i<3; i++) {
-        let placeholder = document.createElement("div")
-        placeholder.classList.add("placeholder")
-        insert.append(placeholder)
+        insert.append(createElement("div", ["placeholder"]))
     }
-    let start_json = await fetch(`/db?username=${username}`)
-    let links = await start_json.json()
+    const start_json = await fetch(`/db?username=${username}`)
+    const links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
@@ -81,90 +91,66 @@ async function load_links(username, sort) {
     else {
         let final = []
         if (sort === "day") {
-            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
             for (const link_info of links) {link_list[link_info['days'][0]].push(link_info)}
             for (const day in link_list) {for (let key of link_list[day]) {final.push(key)}}
         }
         else if (sort === "time") {
-            let times = []
-            let add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
-            let time_links_list = {}
+            const times = []
+            const add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
+            const time_links_list = {}
             for (const link_info of links) {
                 times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]])
                 time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]] = link_info
             }
             for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
-            let link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
             for (const link_info of final) {link_list[link_info['days'][0]].push(link_info)}
-            /*let real_final = []
-            for (const day in link_list) {for (let key of link_list[day]) {real_final.push(key)}}
-            console.log(real_final)*/
         }
         else if (sort === "datetime") {
-            let link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
-            let other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
+            const link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
+            const other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
             for (const link_info of links) {
-                console.log(typeof link_info['days'])
-                console.log(link_info['days'])
-                console.log(link_info['days'][0])
-                console.log(link_dict[link_info['days'][0]])
                 link_dict[link_info['days'][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)] = link_info
                 other_link_list[link_info['days'][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`))
             }
-            for (let day_name in other_link_list) {
+            for (const day_name in other_link_list) {
                 other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
             }
-            for (let day_name in other_link_list) {
+            for (const day_name in other_link_list) {
                 for (let time_info of other_link_list[day_name]) {final.push(link_dict[day_name][time_info])}
             }
         }
         else {final = links}
         let iterator = 0;
-        for (let link of final) {
-            let link_event = document.createElement("div")
-            link_event.classList.add("link_event")
-            link_event.id = iterator.toString()
-            let time_div = document.createElement("div")
-            time_div.classList.add("time")
-            let time = link["time"]
-            let time_list = time.split(":")
+        for (const link of final) {
+            const link_event = createElement("div", ["link_event"], iterator.toString())
+            const time = link["time"]
+            const time_list = time.split(":")
             let pm = "am"
             if (parseInt(time_list[0]) === 12) {pm = "pm"}
             else if (parseInt(time_list[0]) === 24) {time_list[0] = 12}
             else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
-            time_div.innerText = (time_list.join(":"))+" "+pm
-            link_event.appendChild(time_div)
-            let name = document.createElement("div")
-            let name_container = document.createElement("div")
-            name_container.style.cursor = "pointer"
-            name.classList.add("link_event_title")
-            name.innerText = link["name"]
+            link_event.appendChild(createElement("div", ["time"], null, (time_list.join(":"))+" "+pm))
+            const nameContainer = createElement("div", [], null, null, {'cursor': 'pointer'})
+            const name = createElement("div", ["link_event_title"], null, link['name'])
             if (link["active"] === "true") {name.style.color = "#2B8FD8"}
             else {name.style.color = "#B7C0C7"}
-            let join_now = document.createElement("div")
-            join_now.classList.add("join_now")
-            join_now.innerText = "Click to join the room now"
-            name.setAttribute("onclick", `window.open("${link['link']}")`)
-            join_now.setAttribute("onclick", `window.open("${link['link']}")`)
-            name_container.appendChild(name)
-            name_container.appendChild(join_now)
-            link_event.appendChild(name_container)
-            let days = document.createElement("div")
-            days.classList.add("days")
-            days.innerText = link['days'].join(", ")
-            link_event.appendChild(days)
-            let buttons = document.createElement("img")
-            buttons.classList.add("menu_buttons")
-            buttons.src = "static/images/menu_buttons3.svg"
-            buttons.height = 20
-            buttons.width = 8
+            const join_now = createElement("div", ['join_now'], null, "Click to join the room now")
+            nameContainer.addEventListener("click", () => {window.open(link['link']); console.log("clicked")})
+            nameContainer.append(name, join_now)
+            const days = createElement("div", ["days"], null, link['days'].join(", "))
+            link_event.append(nameContainer, days)
+            const buttons = createElement("img", ["menu_buttons"], null, null, {}, null,
+                {src: "static/images/menu_buttons3.svg", height: 20, width: 8})
+            buttons.addEventListener("click", (e) => {menu.style.display = "flex"; e.stopPropagation()})
             /*Create the menu*/
-            let menu = document.createElement("div")
-            menu.classList.add("menu")
+            const menu = createElement("div", ["menu"])
+            menu.addEventListener("click", (e) => e.stopPropagation())
             /*Make the edit button*/
-            let edit = document.createElement("div")
+            const edit = createElement("div", [], null, "Edit")
             edit.addEventListener("click", () => {
-                let element = document.getElementById("popup")
+                const element = document.getElementById("popup")
                 element.style.display = "flex"
                 document.getElementById("blur").style.opacity = "0.4"
                 document.getElementById("blur").style.zIndex = "3"
@@ -186,7 +172,7 @@ async function load_links(username, sort) {
                 else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
                 document.getElementById("minute").value = link['time'].split(":")[1]
                 document.getElementById("submit").innerText = "Update"
-                document.getElementById("submit").setAttribute("onclick", `register_link("${link['id']}")`)
+                document.getElementById("submit").addEventListener("click", () => register_link(link['id']))
                 document.getElementById("title").innerText = "Edit your meeting"
                 for (let day of ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"]) {document.getElementById(day).classList.remove("selected")}
                 for (let day_abbrev of link['days']) {
@@ -198,13 +184,10 @@ async function load_links(username, sort) {
                 if (link['starts']) {document.getElementById(link['starts']).selected = "selected"}
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
             })
-            edit.innerText = "Edit"
             /*Make the first line*/
-            let hr = document.createElement("hr")
-            hr.classList.add("menu_line")
+            const hr = createElement("hr", ["menu_line"])
             /*Make the delete button*/
-            let del = document.createElement("div")
-            del.innerText = "Delete"
+            const del = createElement("div", [], null, "Delete")
             del.addEventListener("click", () => {
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 document.getElementById("popup_delete").style.display = "flex"
@@ -212,15 +195,12 @@ async function load_links(username, sort) {
                     hide('popup_delete')
                     await fetch(`/delete?id=${link['id']}`)
                     await refresh()
-                    await load_links(username, sort)
-                })
+                    await load_links(username, sort)})
                 })
             /*Make the second line*/
-            let hr2 = document.createElement("hr")
-            hr2.classList.add("menu_line")
+            const hr2 = createElement("hr", ["menu_line"])
             /*Make the share button*/
-            let share = document.createElement("div")
-            share.innerText = "Share"
+            const share = createElement("div", [], null, "Share")
             share.addEventListener("click", () => {
                 document.getElementById("popup_share").style.zIndex = "11"
                 document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
@@ -229,23 +209,18 @@ async function load_links(username, sort) {
                 document.getElementById("blur").style.zIndex = "3"
                 window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
                 })
-            /*Add menu click events*/
-            buttons.addEventListener("click", (e) => {menu.style.display = "flex"; e.stopPropagation()})
-            menu.addEventListener("click", (e) => e.stopPropagation())
+
+            /*Add menu click event*/
             document.addEventListener("click", () => menu.style.display = "none")
             /*Append everything*/
             menu.append(edit, hr, del, hr2, share)
             /*Make the password button and third line*/
             if ("password" in link) {
                 menu.style.height = "145px"
-                let hr3 = document.createElement("hr")
-                hr3.classList.add("menu_line")
-                let password = document.createElement("div")
-                password.innerText = "Password"
-                password.id = link['id'].toString()
+                const hr3 = createElement("hr", ["menu_line"])
+                const password = createElement("div", [], link['id'].toString(), "Password")
                 password.addEventListener('click', async () => {
-                    let p = document.createElement("input")
-                    p.value = link['password']
+                    const p = createElement("input", [], null, null, {}, null, {value: link['password']})
                     document.getElementById("links_body").appendChild(p)
                     p.select()
                     document.execCommand("copy")
@@ -259,27 +234,22 @@ async function load_links(username, sort) {
             link_event.appendChild(menu)
 
             /*Create the switch*/
-            let toggle_switch_checkbox = document.createElement("input")
-            toggle_switch_checkbox.id = `toggle${iterator}`
-            toggle_switch_checkbox.type = "checkbox"
-            toggle_switch_checkbox.classList.add("checkbox")
-            toggle_switch_checkbox.checked = true
-            link_event.appendChild(toggle_switch_checkbox)
-            let toggle_switch = document.createElement("label")
-            toggle_switch.htmlFor = `toggle${iterator}`
-            toggle_switch.classList.add("switch")
-            toggle_switch.addEventListener("click", async () => {
+            const toggleSwitchCheckbox = createElement("input", ["checkbox"], `toggle${iterator}`, null,
+                {}, null, {type: "checkbox", checked: true})
+            link_event.appendChild(toggleSwitchCheckbox)
+            const toggleSwitch = createElement("label", ["switch"], null, null, {}, null,
+                {htmlFor: `toggle${iterator}`})
+            toggleSwitch.addEventListener("click", async () => {
                 await fetch(`/disable?id=${link['id']}`)
                 await refresh()
                 await load_links(username, sort)
             })
-            link_event.appendChild(toggle_switch)
-            link_event.appendChild(buttons)
+            link_event.append(toggleSwitch, buttons)
             if (link['active'] === "false") {
-                link_event.style.opacity = 0.6
+                link_event.style.opacity = "0.6"
                 name.style.color = "#B7C0C7"
-                name_container.style.opacity = 0.7
-                toggle_switch_checkbox.checked = false
+                nameContainer.style.opacity = "0.7"
+                toggleSwitchCheckbox.checked = false
             }
             link_events.push(link_event)
             iterator += 1

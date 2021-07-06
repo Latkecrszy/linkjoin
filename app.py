@@ -360,8 +360,7 @@ def settutorial():
 @app.route("/tutorial_complete")
 def tutorial_complete():
     login_db = mongo.db.login
-    user = login_db.find_one({"username": request.args.get("username").lower()})
-    user = {i: j for i, j in user.items() if i != '_id' and i != 'password'}
+    user = login_db.find_one({"username": request.args.get("username").lower()}, projection={"_id": 0, "password": 0})
     if user:
         return jsonify(dict(user))
     return 'done', 200
