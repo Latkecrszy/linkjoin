@@ -73,6 +73,7 @@
             const keep = document.getElementById("keep").checked
             let number = document.getElementById("phone").value
             let country = await fetch('https://linkjoin.xyz/location')
+            const date = new Date()
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             console.log(country)
@@ -85,6 +86,7 @@
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
+                const date = new Date()
                 let offset = (date.getTimezoneOffset()/60).toString()
                 if (!offset.includes(".")) {offset = `${offset}.0`}
                 let profile = await googleUser.getBasicProfile()
