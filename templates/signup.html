@@ -73,18 +73,22 @@
             const keep = document.getElementById("keep").checked
             let number = document.getElementById("phone").value
             let country = await fetch('https://linkjoin.xyz/location')
+            let offset = (date.getTimezoneOffset()/60).toString()
+            if (!offset.includes(".")) {offset = `${offset}.0`}
             console.log(country)
             country = await country.json()
             console.log(country)
             const countryCodes = {{ country_codes|tojson|safe }}
             console.log(country['country'])
-            location.replace(`/signup_error?redirect={{ redirect }}&email=${email}&password=${password}&refer={{ refer }}&keep=${keep}&number=${number}&countrycode=${countryCodes[country['country']]['code']}`)
+            location.replace(`/signup_error?redirect={{ redirect }}&email=${email}&password=${password}&refer={{ refer }}&keep=${keep}&number=${number}&countrycode=${countryCodes[country['country']]['code']}&offset=${offset}`)
         }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
+                let offset = (date.getTimezoneOffset()/60).toString()
+                if (!offset.includes(".")) {offset = `${offset}.0`}
                 let profile = await googleUser.getBasicProfile()
-                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}&keep=${document.getElementById("keep").checked}&number=${document.getElementById("phone").value}`
+                let link = `/signup_error?redirect={{ redirect }}&email=${profile.getEmail()}&refer={{ refer }}&keep=${document.getElementById("keep").checked}&number=${document.getElementById("phone").value}&offset=${offset}`
                 location.replace(link)
             }
        }

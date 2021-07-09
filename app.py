@@ -101,7 +101,7 @@ def signup():
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while id in [dict(document)['refer'] for document in login_db.find() if 'refer' in document]:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
-    insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': -1}
+    insert = {'username': email, 'premium': 'false', 'refer': id, 'tutorial': -1, 'offset': request.args.get('offset')}
     if request.args.get('password'):
         insert['password'] = hasher.hash(request.args.get('password'))
     if request.args.get('number'):
