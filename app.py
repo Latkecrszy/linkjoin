@@ -283,10 +283,46 @@ def addlink():
                 if encoder.decrypt(
                         dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
                     new_link = dict(doc)
+        user = mongo.db.login.find_one({"username": login_info['username']})
+        owner = mongo.db.login.find_one({"username": new_link['username']})
         if new_link is None:
             return render_template('invalid_link.html')
         new_link = {key: value for key, value in dict(new_link).items() if
                     key != '_id' and key != 'id' and key != 'username' and key != 'share'}
+        hour, minute = new_link['time'].split(":")
+        offset_hour, offset_minute = user['offset'].split(".")
+        offset_minute = (int(offset_minute)/(10*len(str(offset_minute))))*60
+        hour = int(int(hour) + int(offset_hour)) - int(owner['offset'].split(".")[0])
+        minute = int(int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1])/(10*len(str(offset_minute)))*60)
+        days_to_nums = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
+        nums_to_days = {0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'}
+        if minute > 59:
+            hour += 1
+            minute -= 60
+        elif minute < 0:
+            hour -= 1
+            minute += 60
+        if hour < 1:
+            hour += 24
+            new_days = []
+            for day in new_link['days']:
+                day_num = days_to_nums[day]-1
+                if day_num not in nums_to_days:
+                    day_num = 6
+                new_days.append(nums_to_days[day_num])
+            new_link['days'] = new_days
+        if hour > 24:
+            hour -= 24
+            new_days = []
+            for day in new_link['days']:
+                day_num = days_to_nums[day]+1
+                if day_num not in nums_to_days:
+                    day_num = 0
+                new_days.append(nums_to_days[day_num])
+            new_link['days'] = new_days
+        if len(str(minute)) == 1:
+            minute = "0" + str(minute)
+        new_link['time'] = f"{hour}:{minute}"
         new_link['username'] = login_info['username']
         new_link['id'] = int(dict(id_db.find_one({'_id': 'id'}))['id'])
         ids = [encoder.decrypt(dict(document)['share']).decode() for document in links_db.find() if 'share' in document]
