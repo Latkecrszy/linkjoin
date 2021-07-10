@@ -142,7 +142,7 @@ async function load_links(username, sort) {
             const days = createElement("div", ["days"], null, link['days'].join(", "))
             link_event.append(nameContainer, days)
             const buttons = createElement("img", ["menu_buttons"], null, null, {}, null,
-                {src: "static/images/menu_buttons3.svg", height: 20, width: 8})
+                {src: "static/images/ellipsis.svg", height: 20, width: 8})
             buttons.addEventListener("click", (e) => {menu.style.display = "flex"; e.stopPropagation()})
             /*Create the menu*/
             const menu = createElement("div", ["menu"])

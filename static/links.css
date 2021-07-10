@@ -32,7 +32,7 @@
     margin-top: 15px
 }
 
-#links_html {background-color: #091B30; overflow: visible;  margin-bottom: 30px; }
+#links_html {background-color: #091B30; overflow-y: visible; overflow-x: hidden; margin-bottom: 30px; }
 
 #home {margin: 22px min(140px, 5vw) 0 0;}
 
@@ -173,11 +173,24 @@ input {color: white; font-family: Montserrat;}
     min-width: 150px;
     height: max(4vw, 65px);
     background-color: #2B8FD8;
-    border-radius: 84px;
+    border-radius: 10px;
     text-align: center;
     border: 0 solid;
     font: 600 max(1.25vw, 20px) Montserrat;
     margin-left: 40px;
+    transition: 0.5s;
+}
+
+#add_number:hover, #submit:hover {
+    box-shadow: 5px 5px 10px black;
+    height: 55px;
+    width: 120px;
+
+}
+
+#submit:hover{
+    width: max(10.2vw, 160px);
+    height: max(4.2vw, 70px);
 }
 
 #submit_dates {margin: 50px 50px 0 0;}

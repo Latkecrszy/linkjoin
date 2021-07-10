@@ -26,7 +26,7 @@ header img {margin: 0 auto 0 20px}
 }
 
 footer {
-    opacity: 0.7;
+    opacity: 0.9;
     height: 100px;
     margin: 50px 20px 0 0;
 }
@@ -72,13 +72,24 @@ footer {
 
 /*Left Content*/
 .get_started {
-    border-radius: 84px;
+    border-radius: 10px;
     font: 600 20px Montserrat;
     height: 75px;
     background-color: #2B8FD8;
     border: none;
     margin-top: 35px;
+    transition: 0.5s;
 }
+
+.get_started:hover {
+    margin: 40px 0 0 5px;
+    box-shadow: 5px 5px 10px black
+}
+
+.get_started:focus {
+    box-shadow: none
+}
+
 
 #motto {font-weight: 100; font-size: 46px; max-width: 500px; margin-bottom: 10px}
 
@@ -136,7 +147,7 @@ footer {
 /*Footer*/
 .line {display: flex; justify-content: space-between;}
 
-.footer_image {height: 18px; width: 18px;}
+.footer_image {height: 18px; width: 18px; margin-top: 5px}
 
 .footer_link {margin: 0 20px 20px 0}
 
@@ -227,7 +238,7 @@ footer {
     text-align: left;
     width: 95%;
     line-height: 30px;
-    }
+}
 
 
 .plus {margin: 0 20px 0 auto; font-size: 50px; padding-top: 10px;}

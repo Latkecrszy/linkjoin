@@ -81,8 +81,8 @@ svg {
     height: 60px;
     min-width: 890px;
     max-width: 960px;
-    margin: 100px 5vw -20px max(0px, calc(45% - 400px));
-    border-radius: 72px;
+    margin: 100px 5vw 0 max(0px, calc(45% - 400px));
+    border-radius: 10px;
     background-color: #142539;
     text-align: center;
     display: flex;
@@ -173,7 +173,7 @@ input:invalid {box-shadow: none}
 .login_button {
     background: none;
     border: 2px solid white;
-    border-radius: 70px;
+    border-radius: 10px;
     margin: 15px 30px 20px 20px;
     height: 50px;
     width: 110px;
@@ -181,6 +181,7 @@ input:invalid {box-shadow: none}
     text-align: center;
     box-sizing: border-box;
     padding-top: 11.5px;
+    transition: 0.5s;
 }
 
 .login_button:hover {

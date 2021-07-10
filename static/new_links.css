@@ -172,7 +172,6 @@
 
 #hamburger_dropdown {
     display: none;
-    height: 230px;
     flex-direction: column;
     margin-left: auto;
     background: #142539;
@@ -232,7 +231,7 @@
     font-size: 14px;
     display: inline;
     height: 50px;
-    width: 100px;
+    width: 110px;
     min-width: 100px
 }
 
