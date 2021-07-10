@@ -205,8 +205,8 @@
 }
 
 #add_number_div {
-    width: 500px;
-    height: 300px;
+    width: min(500px, calc(100vw - 30px));
+    height: min(300px, fit-content);
     padding: 15px 10px;
     background: #091B30;
     position: absolute;
@@ -225,7 +225,7 @@
     top: -30px
 }
 
-#number {display: inline; width: 60%}
+#number {display: inline; width: 60%; margin-bottom: 15px}
 
 #add_number {
     font-size: 14px;
@@ -238,7 +238,7 @@
 #dismiss_add_number {
     position: relative;
     top: 0;
-    right: 235px;
+    right: 45%;
     cursor: pointer
 }
 

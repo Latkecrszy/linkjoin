@@ -512,3 +512,10 @@ async function check_if_tutorial() {
     }
     }
 }
+
+document.addEventListener("click", (e) => {
+    if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
+        !document.getElementById("hamburger").contains(e.target)) {
+    document.getElementById("hamburger_dropdown").classList.remove("expand")
+    document.getElementById("hamburger").classList.remove("expand")
+}})
