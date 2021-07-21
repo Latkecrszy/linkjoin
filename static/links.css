@@ -181,16 +181,9 @@ input {color: white; font-family: Montserrat;}
     transition: 0.5s;
 }
 
-#add_number:hover, #submit:hover {
+#submit:hover, #add_number:hover {
+    margin: 5px -5px 0 45px;
     box-shadow: 5px 5px 10px black;
-    height: 55px;
-    width: 120px;
-
-}
-
-#submit:hover{
-    width: max(10.2vw, 160px);
-    height: max(4.2vw, 70px);
 }
 
 #submit_dates {margin: 50px 50px 0 0;}

@@ -12,6 +12,8 @@ a {
     font-family: Montserrat;
 }
 
+select {cursor: pointer}
+
 .footer_text {
     left: 10px;
     display: inline;

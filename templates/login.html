@@ -47,12 +47,10 @@
             </div>
             <div id="right_content">
                 <div id="welcome">Welcome Back</div>
-                {% if error == "username_not_found" %}
-                    <div class="error">No account is associated with this email</div>
-                {% elif error == "incorrect_password" %}
-                    <div class="error">Incorrect Password</div>
-                {% elif error == "not_logged_in" %}
-                    <div class="error" style="font-size: 17px">Log in to view your links</div>
+                <div class="error" id="email_not_found" style="display: none">No account is associated with this email</div>
+                <div class="error" id="incorrect_password" style="display: none">Incorrect Password</div>
+                {% if error == "not_logged_in" %}
+                    <div class="error" style="font-size: 17px" id="not_logged_in">Log in to view your links</div>
                 {% endif %}
                 <div data-onsuccess="onLogIn" onclick="loggedIn()" id="gsignin" class="g-signin2">Log In With Google</div>
                 <div style="width: 100%; height: 10px; border-bottom: 2px solid white; text-align: center; opacity: 0.4; margin-top: 20px;">
@@ -70,15 +68,26 @@
     </body>
     <script>
         let logged = false
-        function logIn() {
-            location.href = `/login_error?redirect={{ redirect }}&email=${document.getElementById("email").value}&password=${document.getElementById("password").value}&keep=${document.getElementById("keep").checked}`
+        async function logIn() {
+            const data = await fetch('/login', {
+                    headers: {'Content-Type': 'application/json'},
+                    method: "POST",
+                    body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
+                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value})
+                })
+            await processData(data)
         }
         function loggedIn() {logged = true;}
         async function onLogIn(googleUser) {
             if (logged) {
                 let profile = await googleUser.getBasicProfile()
-                let link = `/login_error?redirect={{ redirect }}&email=${profile.getEmail()}&keep=${document.getElementById("keep").checked}`
-                location.replace(link)
+                const data = await fetch('/login', {
+                    headers: {'Content-Type': 'application/json'},
+                    method: "POST",
+                    body: JSON.stringify({email: profile.getEmail(), redirect: "{{ redirect }}",
+                    keep: document.getElementById("keep").checked})
+                })
+                await processData(data)
             }
        }
     function renderButton() {
@@ -94,6 +103,30 @@
 
     if (!(navigator.userAgent.indexOf("Chrome") > -1 || navigator.userAgent.indexOf("Firefox") > -1 || navigator.userAgent.indexOf("Safari") > -1)) {
         document.getElementById("gsignin").remove()
+    }
+    async function processData(data) {
+        ['email_not_found', 'incorrect_password', 'not_logged_in'].forEach((i) => {try {document.getElementById(i).style.display = "none"} catch {}})
+        document.getElementById('email').style.border = "none"
+        document.getElementById('password').style.border = "none"
+        data = await data.json()
+        if (data['error'] === '') {
+            if (data['keep'] === 'true') {
+                document.cookie = `email=${data['email']}; expires=Wed, 01 Jan 3000 00:00:00 UTC`
+            }
+            else {
+                document.cookie = `email=${data['email']}; max-age=172800`
+            }
+            location.replace(data['url'])
+        }
+        else {
+            document.getElementById(data['error']).style.display = "block"
+            if (data['error'] === 'email_not_found') {
+                document.getElementById("email").style.border = "2px solid red"
+            }
+            else {
+                document.getElementById("password").style.border = "2px solid red"
+            }
+        }
     }
   </script>
   <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>

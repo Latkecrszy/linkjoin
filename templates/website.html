@@ -13,7 +13,7 @@
 
           gtag('config', 'UA-192814042-1');
         </script>
-        <!-- Hotjar Tracking Code for linkjoin.xyz -->
+        <!-- Hotjar Tracking Code for linkjoin.xyz
         <script>
             (function(h,o,t,j,a,r){
                 h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
@@ -23,7 +23,7 @@
                 r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
                 a.appendChild(r);
             })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-        </script>
+        </script>-->
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -49,7 +49,6 @@
         </svg>
         <header>
             <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo">
-            <a href="/premium">Premium</a>
             <a href="/links">My Links</a>
             <a href="/signup">Sign Up</a>
             <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
@@ -60,9 +59,8 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
-                    <a href="/login">Log In</a>
-                    <a href="/premium">Premium</a>
+                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/signup">Sign Up</a>
                     <a href="/links">Links</a>
                 </div>
             </div>

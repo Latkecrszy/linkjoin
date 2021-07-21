@@ -7,7 +7,7 @@ header {
 
 }
 
-header a {margin: 15px 40px 0 40px; z-index: 9; font: 600 18px Montserrat}
+header a {margin: 15px 40px 10px 40px; z-index: 9; font: 600 18px Montserrat}
 
 header img {margin: 0 auto 0 20px}
 
@@ -37,7 +37,7 @@ footer {
 
 #hamburger_dropdown.expand {display: flex; margin-left: auto}
 
-#hamburger_dropdown.expand a {display: block; margin-left: auto}
+#hamburger_dropdown.expand a {display: block; text-align: center}
 
 #dropdown {display: none; flex-direction: column}
 
@@ -132,7 +132,7 @@ footer {
     height: 550px;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 50px;
+    margin: 50px 0 50px 0;
 }
 
 .pair img {height: 600px; width: 600px;}
@@ -154,59 +154,6 @@ footer {
 .footer_text {text-decoration: none; font-size: 14px; cursor: pointer;}
 
 .footer_text:hover {color: #0AFFED}
-
-
-/*Media Queries*/
-@media (max-width: 1230px) {
-    .pair img {height: 50vw; width: 50vw}
-}
-@media (max-width: 890px) {
-    .pair img {display: none;}
-}
-@media (max-width: 450px) {
-    .get_started {width: 200px}
-}
-
-@media (min-width: 1700px) {
-    #motto {font-size: 3vw; max-width: 40vw; margin: 10vh 0 0 5vw;}
-    #description {font-size: 1.5vw; max-width: 35vw; margin: 1.5vh 0 0 5vw; line-height: 2.3vw}
-    .get_started {width: 28vw !important; height: 6vw; font-size: 1.8vw; margin: 2.5vh 0 0 5vw; border-radius: 5vw; }
-    .get_started img {height: 1.8vw; width: 1.8vw; margin-left: 1vw;}
-    #logo {width: 15vw; height: 3.5vw; margin-top: 0.5vw;}
-    header a {font-size: 1.2vw;}
-    .login_button {height: 3vw !important; width: 7vw !important; padding-top: 0.6vw !important;}
-    .login_button img {height: 0.9vw; width: 0.6vw;}
-    #main_html {margin-right: 3vw}
-    .footer_image {height: 1vw !important; width: 1vw !important; margin-right: 0.3vw !important}
-    .footer_text {font-size: 1vw;}
-}
-
-@media (max-width: 870px) {
-    header a {
-        display: none;
-    }
-    #hamburger {
-        display: inline-block;
-    }
-    #motto, #description {margin-left: -30px;}
-    #dropdown {
-        display: flex;
-    }
-    #hamburger a {
-        display: block;
-    }
-    #hamburger_dropdown {
-        display: inline-block;
-        z-index: 9;
-    }
-    .row {flex-direction: column}
-    svg {display: none}
-    #main_html {background: #091B30;}
-}
-
-@media(max-width: 180vh), (max-height: 36vw) {
-    #calendar_guy {display: none;}
-}
 
 
 /*FAQ*/
@@ -261,3 +208,76 @@ footer {
 .left {margin-right: auto}
 
 .right {margin-left: auto}
+
+/*Media Queries*/
+@media (max-width: 1230px) {
+    .pair img {height: 50vw; width: 50vw}
+}
+@media (max-width: 890px) {
+    .pair img {display: none;}
+}
+@media (max-width: 450px) {
+    .get_started {width: 200px}
+}
+
+@media (max-width: 370px) {
+    #left_content {
+        margin-left: 20%;
+    }
+}
+
+@media (max-width: 312px) {
+    .pair {
+        margin-top: 150px;
+    }
+}
+@media (min-width: 1700px) {
+    #motto {font-size: 3vw; max-width: 40vw; margin: 10vh 0 0 5vw;}
+    #description {font-size: 1.5vw; max-width: 35vw; margin: 1.5vh 0 0 5vw; line-height: 2.3vw}
+    .get_started {width: 28vw !important; height: 6vw; font-size: 1.8vw; margin: 2.5vh 0 0 5vw; border-radius: 5vw; }
+    .get_started img {height: 1.8vw; width: 1.8vw; margin-left: 1vw;}
+    #logo {width: 15vw; height: 3.5vw; margin-top: 0.5vw;}
+    header a {font-size: 1.2vw;}
+    .login_button {height: 3vw !important; width: 7vw !important; padding-top: 0.6vw !important;}
+    .login_button img {height: 0.9vw; width: 0.6vw;}
+    #main_html {margin-right: 3vw}
+    .footer_image {height: 1vw !important; width: 1vw !important; margin-right: 0.3vw !important}
+    .footer_text {font-size: 1vw;}
+}
+
+@media (max-width: 870px) {
+    header a {
+        display: none;
+    }
+    #hamburger {
+        display: inline-block;
+    }
+    #motto, #description {margin-left: -30px;}
+    #dropdown {
+        display: flex;
+    }
+    #hamburger a {
+        display: block;
+    }
+    #hamburger_dropdown {
+        display: none;
+        flex-direction: column;
+        z-index: 9;
+        background: #142539;
+        border-radius: 3px;
+        margin-right: 30px;
+        padding: 10px;
+        height: 200px;
+        box-sizing: border-box;
+        justify-content: center;
+        align-content: center;
+        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.25)
+    }
+    .row {flex-direction: column}
+    svg {display: none}
+    #main_html {background: #091B30;}
+}
+
+@media(max-width: 180vh), (max-height: 36vw) {
+    #calendar_guy {display: none;}
+}

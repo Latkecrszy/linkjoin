@@ -1,5 +1,6 @@
 let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
+let created = false;
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
@@ -17,7 +18,7 @@ function createElement(type="div", _class=[], id=null, text=null, style={}, html
 
 
 
-async function popUp(popup, premium, link_names) {
+async function popUp(popup, link_names, premium="true") {
     if (premium === "false" && link_names.length >= 10) {
         document.documentElement.style.setProperty("--right", "-350px")
         document.getElementById("popup_premium").style.display = "flex"
@@ -97,11 +98,13 @@ async function load_links(username, sort) {
         }
         else if (sort === "time") {
             const times = []
+            let added_time = 0.0000001
             const add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
             const time_links_list = {}
             for (const link_info of links) {
-                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]])
-                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]] = link_info
+                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time)
+                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time] = link_info
+                added_time += 0.0000001
             }
             for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
             const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
@@ -220,14 +223,12 @@ async function load_links(username, sort) {
                 const hr3 = createElement("hr", ["menu_line"])
                 const password = createElement("div", [], link['id'].toString(), "Password")
                 password.addEventListener('click', async () => {
-                    const p = createElement("input", [], null, null, {}, null, {value: link['password']})
-                    document.getElementById("links_body").appendChild(p)
-                    p.select()
-                    document.execCommand("copy")
-                    password.innerText = "Copied!"
-                    p.remove()
-                    await sleep(2000)
-                    password.innerText = "Password"
+                    navigator.clipboard.writeText(link['password']).then(async () => {
+                        password.innerText = "Copied!"
+                        p.remove()
+                        await sleep(2000)
+                        password.innerText = "Password"
+                    })
                 })
                 menu.append(hr3, password)
             }
@@ -256,11 +257,11 @@ async function load_links(username, sort) {
         }
     }
     document.getElementById("click_to_copy").addEventListener('click', async () => {
-        document.getElementById("share_link").select()
-        document.execCommand("copy")
-        document.getElementById("click_to_copy").innerText = "Copied!"
-        await sleep(2000)
-        document.getElementById("click_to_copy").innerText = "Click to Copy"
+        navigator.clipboard.writeText(document.getElementById("share_link").value).then(async () => {
+            document.getElementById("click_to_copy").innerText = "Copied!"
+            await sleep(2000)
+            document.getElementById("click_to_copy").innerText = "Click to Copy"
+        })
     })
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
@@ -293,6 +294,8 @@ function sort() {location.replace("/sort?sort="+document.getElementById("sort").
 
 
 async function register_link(parameter) {
+    if (created) {return}
+    created = true
     let name = document.getElementById("name").value
     let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
@@ -328,7 +331,7 @@ async function register_link(parameter) {
     location.reload()
 }
 
-function logOut() {document.cookie = "login_info=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; location.reload()}
+function logOut() {document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; location.replace('/login')}
 
 
 function checkNever() {

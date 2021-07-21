@@ -235,6 +235,12 @@
     min-width: 100px
 }
 
+/*#add_number:hover {
+    box-shadow: 5px 5px 10px black;
+    height: 55px;
+    width: 115px;
+}*/
+
 #dismiss_add_number {
     position: relative;
     top: 0;

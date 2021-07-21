@@ -45,18 +45,14 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <script>let global_premium = "{{ premium }}";</script>
     <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
-        <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
+        <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
-                <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", "{{ premium }}", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
+                <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
                     <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
-                    {% if premium == "false" %}
-                        <a href="/premium"><div class="button header_button">Premium</div></a>
-                    {% endif %}
                     <a href="/login"><div class="button header_button">Switch Account</div></a>
                     <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 </div>
@@ -68,9 +64,6 @@
                     </div>
                     <div id="hamburger_dropdown">
                         <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
-                        {% if premium == "false" %}
-                            <a href="/premium"><div class="button header_button">Premium</div></a>
-                        {% endif %}
                         <a href="/login"><div class="button header_button">Switch Account</div></a>
                         <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                     </div>

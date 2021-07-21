@@ -51,9 +51,7 @@
 }
 
 #submit:hover {
-    width: 185px;
-    height: 70px;
-    font-size: 20px;
+    margin: 5px -5px 10px 5px;
     box-shadow: 5px 5px 10px black
 }
 
