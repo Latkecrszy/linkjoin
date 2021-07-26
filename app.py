@@ -288,8 +288,8 @@ def disable():
 
 @app.route('/db', methods=['GET'])
 def db():
-    if not authenticated(request.cookies, request.args.get('email')):
-        return 'Not logged in', 403
+    """if not authenticated(request.cookies, request.args.get('email')):
+        return 'Not logged in', 403"""
     links_db = mongo.db.links
     links_list = links_db.find({'username': request.args.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
