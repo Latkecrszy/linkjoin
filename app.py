@@ -80,7 +80,7 @@ def login():
         if data.get('token') not in tokens:
             print(tokens)
             print(data.get('token'))
-            return {"error": "signup_failed", "url": redirect_link}
+            return {"error": "login_failed", "url": redirect_link}
         if mongo.db.login.find_one({'username': email}) is None:
             return {'redirect': data['redirect'], "error": 'email_not_found'}
         if data.get('password') is not None:
