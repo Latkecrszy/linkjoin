@@ -23,8 +23,7 @@ async function start(username, links, sort) {
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`/db?email=${username}`, {method: 'GET'})
-        user_links = await start_json.json()
+        user_links = await db(username)
         for (let link of user_links) {
             let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {

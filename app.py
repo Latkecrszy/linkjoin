@@ -165,8 +165,10 @@ def set_cookie():
     return response
 
 
-@app.route('/get_session', methods=['POST'])
+@app.route('/get_session', methods=['GET'])
 def get_session():
+    if not authenticated(request.cookies, request.args.get('email')):
+        return 'Not logged in', 403
     return jsonify(mongo.db.sessions.find_one({'username': request.args.get('email')}, projection={"_id": 0}))
 
 
@@ -288,8 +290,8 @@ def disable():
 
 @app.route('/db', methods=['GET'])
 def db():
-    """if not authenticated(request.cookies, request.args.get('email')):
-        return 'Not logged in', 403"""
+    if not authenticated(request.cookies, request.args.get('email')):
+        return 'Not logged in', 403
     links_db = mongo.db.links
     links_list = links_db.find({'username': request.args.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
@@ -456,7 +458,7 @@ def settutorial():
 
 @app.route("/tutorial_complete", methods=['POST'])
 def tutorial_complete():
-    if not authenticated(request.cookies, request.args.get('email')):
+    if not authenticated(request.cookies, request.args.get('username')):
         return 'Not logged in', 403
     login_db = mongo.db.login
     user = login_db.find_one({"username": request.args.get("username").lower()}, projection={"_id": 0, "password": 0})

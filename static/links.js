@@ -18,6 +18,13 @@ function blur(show) {
     }
 }
 
+async function db(username) {
+    if (await fetch(`/db?email=${username}`).then(response => response.text()) === 'Not logged in') {
+        return location.replace('/login')
+    }
+    return await fetch(`/db?email=${username}`).then(response => response.json())
+}
+
 async function popUp(popup) {
     hide('popup')
     document.getElementById(popup).style.display = "flex"
@@ -101,7 +108,7 @@ function share(link) {
 }
 
 async function disable(link, username) {
-    await fetch(`/disable?id=${link['id']}&email=${link['usernme']}`)
+    await fetch(`/disable?id=${link['id']}&email=${link['usernme']}`, {method: 'POST'})
     await refresh()
     await load_links(username, global_sort)
 }
@@ -116,7 +123,7 @@ function copyPassword(id, password) {
 
 async function load_links(username, sort) {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-    const sessionId = await fetch(`/get_session?email=${username}`, {method: 'POST'}).then(id => id.json())
+    const sessionId = await fetch(`/get_session?email=${username}`).then(id => id.json())
     if (sessionId === null) {location.replace('/login')}
     else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login')}
     global_username = username
@@ -128,8 +135,7 @@ async function load_links(username, sort) {
         placeHolder.classList.add("placeholder")
         insert.appendChild(placeHolder)
     }
-    const start_json = await fetch(`/db?email=${username}`, {method: 'GET'})
-    const links = await start_json.json()
+    const links = await db(username)
     if (links.toString() === '') {
         await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
@@ -235,9 +241,9 @@ async function load_links(username, sort) {
             clickToCopy.innerText = "Click to Copy"
         })
     })
-    /*let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
+    let tutorial_completed = await fetch(`/tutorial_complete?username=${username}`, {method: 'POST'})
     tutorial_completed = await tutorial_completed.json()
-    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}*/
+    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
     //await sleep(200)
     await refresh()
@@ -249,8 +255,7 @@ async function load_links(username, sort) {
 
 async function check_day(username) {
     let date = new Date()
-    let start_json = await fetch(`https://linkjoin.xyz/db?email=${username}`)
-    let links = await start_json.json()
+    const links = await db(username)
     let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
     let children = document.getElementById("days").children
     if (links.length <= 3) {
@@ -337,13 +342,13 @@ async function tutorial(item, skip) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
-            await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=1`)
+            await fetch(`/tutorial?username=${global_username}&step=1`, {method: 'POST'})
             document.getElementById("box").style.zIndex = "5"
             document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
-        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=0`)
+        await fetch(`/tutorial?username=${global_username}&step=0`, {method: 'POST'})
         document.getElementById(`tutorial0`).style.display = "flex"
         return document.getElementById("check_popup").style.display = "none"
     }
@@ -415,10 +420,10 @@ async function tutorial(item, skip) {
     }
     if (item === 11) {
         document.getElementById("tutorial9").style.display = "none"
-        await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)
+        await fetch(`/tutorial?username=${global_username}&step=done`, {method: 'POST'})
         tutorial_complete = true
     }
-    await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=${item}`)
+    await fetch(`/tutorial?username=${global_username}&step=${item}`, {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
@@ -426,7 +431,7 @@ async function tutorial(item, skip) {
     catch {}
 }
 
-async function skipTutorial() {return await fetch(`https://linkjoin.xyz/tutorial?username=${global_username}&step=done`)}
+async function skipTutorial() {return await fetch(`/tutorial?username=${global_username}&step=done`, {method: 'POST'})}
 
 
 async function refresh() {
@@ -455,7 +460,7 @@ async function no_add_number() {
 
 
 async function checkTutorial() {
-    const tutorial_completed = await (await fetch(`https://linkjoin.xyz/tutorial_complete?username=${global_username}`)).json()
+    const tutorial_completed = await (await fetch(`/tutorial_complete?username=${global_username}`, {method: 'POST'})).json()
     if (tutorial_completed['tutorial'] === "done") {
         if (number === "None") {
             document.getElementById("add_number_div").style.display = "block"
