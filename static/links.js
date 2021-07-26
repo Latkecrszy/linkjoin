@@ -235,9 +235,9 @@ async function load_links(username, sort) {
             clickToCopy.innerText = "Click to Copy"
         })
     })
-    let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
+    /*let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
     tutorial_completed = await tutorial_completed.json()
-    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
+    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}*/
     await check_day(username)
     //await sleep(200)
     await refresh()
