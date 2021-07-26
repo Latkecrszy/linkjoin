@@ -23,7 +23,7 @@ async function start(username, links, sort) {
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         let time = `${date.getHours()}:${minute}`
-        let start_json = await fetch(`/db?username=${username}`)
+        let start_json = await fetch(`/db?email=${username}`, {method: 'GET'})
         user_links = await start_json.json()
         for (let link of user_links) {
             let days = link['days']
@@ -37,10 +37,10 @@ async function start(username, links, sort) {
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
-                    await fetch(`/changevar?username=${username}&id=${link['id']}&var=days&days=${link['days']}`)
+                    await fetch(`/changevar?email=${username}&id=${link['id']}&var=days&days=${link['days']}`, {method: 'POST'})
                 }
                 else {
-                    await fetch(`/delete?id=${link['id']}`)
+                    await fetch(`/delete?id=${link['id']}`, {method: 'POST'})
                 }
                 return await pause(username, user_links, sort, 46000, "load_links")
             }

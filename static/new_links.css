@@ -145,7 +145,7 @@
 @media (max-width: 730px) {
     #plus {display: flex !important}
     #plus_button {display: none}
-    #popup {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 520px}
+    #popup {width: 100vw; max-width: 520px}
     #popup_delete {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 550px}
     #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
@@ -244,7 +244,7 @@
 #dismiss_add_number {
     position: relative;
     top: 0;
-    right: 45%;
+    right: 0;
     cursor: pointer
 }
 

@@ -5,45 +5,24 @@ let created = false;
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
-function createElement(type="div", _class=[], id=null, text=null, style={}, html= null, other={}) {
-    const newElement = document.createElement(type)
-    _class.forEach((className) => newElement.classList.add(className))
-    id !== null ? newElement.id = id : null
-    newElement.innerText = text
-    Object.entries(style).forEach(([key, value]) => newElement.style[key] = value)
-    html !== null ? newElement.innerHTML = id : null
-    Object.entries(other).forEach(([key, value]) => newElement[key] = value)
-    return newElement
+
+function blur(show) {
+    const blurElement = document.getElementById("blur")
+    if (show) {
+        blurElement.style.opacity = "0.4"
+        blurElement.style.zIndex = "3"
+    }
+    else {
+        blurElement.style.zIndex = "-3"
+        blurElement.style.opacity = "0"
+    }
 }
 
-
-
-async function popUp(popup, link_names, premium="true") {
-    if (premium === "false" && link_names.length >= 10) {
-        document.documentElement.style.setProperty("--right", "-350px")
-        document.getElementById("popup_premium").style.display = "flex"
-        let position;
-        for (position = -350; position <= 50; position += 3.5) {
-            document.documentElement.style.setProperty("--right", `${position}px`)
-            await sleep(1)
-        }
-        for (let amount = 1; amount <= 110; amount += 0.25) {
-            document.documentElement.style.setProperty("--progress", `${amount}%`)
-            await sleep(11)
-        }
-        while (position >= -350) {
-            document.documentElement.style.setProperty("--right", `${position}px`)
-            await sleep(1)
-            position -= 3.5
-        }
-        return document.getElementById("popup_premium").style.display = "none"
-    }
+async function popUp(popup) {
     hide('popup')
     document.getElementById(popup).style.display = "flex"
-    const blur = document.getElementById("blur")
     const submit = document.getElementById("submit")
-    blur.style.opacity = "0.4"
-    blur.style.zIndex = "3"
+    blur(true)
     submit.innerHTML = null
     submit.innerText = "Create"
     submit.addEventListener("click", () => register_link("register"))
@@ -54,7 +33,6 @@ async function popUp(popup, link_names, premium="true") {
     document.getElementById("password").value = null
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
-    const date = new Date()
     for (let child of document.getElementById("days").children) {
         if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]) {
             child.classList.remove("selected")
@@ -66,23 +44,91 @@ async function popUp(popup, link_names, premium="true") {
 
 function hide(popup) {
     document.getElementById(popup).style.display = "none"
-    document.getElementById("blur").style.zIndex = "-3"
-    document.getElementById("blur").style.opacity = "0"
+    blur(false)
 }
 
-document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
+function edit(link) {
+    const element = document.getElementById("popup")
+    element.style.display = "flex"
+    blur(true)
+    document.getElementById("name").value = link["name"]
+    document.getElementById("link").value = link["link"]
+    document.getElementById("text_select").value = link["text"].toString()
+    document.getElementById("starts_select").value = link["starts"].toString()
+    if ("password" in link) {document.getElementById("password").value = link["password"]}
+    else {document.getElementById("password").value = null}
+    if (parseInt(link['time'].split(":")[0]) === 12) {
+        document.getElementById("pm").selected = "selected"
+        document.getElementById("hour").value = 12
+    }
+    else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
+    else if (parseInt(link['time'].split(":")[0]) > 12) {
+        document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
+        document.getElementById("pm").selected = "selected"
+    }
+    else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
+    document.getElementById("minute").value = link['time'].split(":")[1]
+    document.getElementById("submit").innerText = "Update"
+    document.getElementById("submit").setAttribute('onClick', `register_link(${link['id']})`)
+    document.getElementById("title").innerText = "Edit your meeting";
+    ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"].forEach(i => document.getElementById(i).classList.remove("selected"))
+    link['days'].forEach(day => {if (document.getElementById(day)) {document.getElementById(day).classList.add("selected")}})
+    document.getElementById(link['repeat']).selected = "selected"
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+    console.log(link['starts']/link['days'].length)
+    // TODO: Finish updating method (changing to post) and putting in authentication for flask endpoints
+    link['starts'] ? document.getElementById((link['starts']/link['days'].length).toString()).selected = "selected" : null
+}
 
+async function delete_(link) {
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+    document.getElementById("popup_delete").style.display = "flex"
+    document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
+    document.getElementById("delete_button").addEventListener('click', async () => {
+        hide('popup_delete')
+        await fetch(`/delete?id=${link['id']}&email=${link['username']}`, {method: 'POST'})
+        await refresh()
+        await load_links(link['username'], global_sort)
+    })
+}
+
+function share(link) {
+    document.getElementById("popup_share").style.zIndex = "11"
+    document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
+    document.getElementById("share_link").value = link['share']
+    blur(true)
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+}
+
+async function disable(link, username) {
+    await fetch(`/disable?id=${link['id']}&email=${link['usernme']}`)
+    await refresh()
+    await load_links(username, global_sort)
+}
+
+function copyPassword(id, password) {
+    navigator.clipboard.writeText(password).then(async () => {
+        document.getElementById(id).innerText = "Copied!"
+        await sleep(2000)
+        document.getElementById(id).innerText = "Password"
+    })
+}
 
 async function load_links(username, sort) {
-    console.log("restart")
+    const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
+    const sessionId = await fetch(`/get_session?email=${username}`, {method: 'POST'}).then(id => id.json())
+    if (sessionId === null) {location.replace('/login')}
+    else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login')}
     global_username = username
     global_sort = sort
     let link_events = []
     const insert = document.getElementById("insert")
     for (let i=0; i<3; i++) {
-        insert.append(createElement("div", ["placeholder"]))
+        const placeHolder = document.createElement("div")
+        placeHolder.classList.add("placeholder")
+        insert.appendChild(placeHolder)
     }
-    const start_json = await fetch(`/db?username=${username}`)
+    const start_json = await fetch(`/db?email=${username}`, {method: 'GET'})
     const links = await start_json.json()
     if (links.toString() === '') {
         await refresh()
@@ -129,140 +175,64 @@ async function load_links(username, sort) {
         else {final = links}
         let iterator = 0;
         for (const link of final) {
-            const link_event = createElement("div", ["link_event"], iterator.toString())
             const time = link["time"]
             const time_list = time.split(":")
             let pm = "am"
             if (parseInt(time_list[0]) === 12) {pm = "pm"}
             else if (parseInt(time_list[0]) === 24) {time_list[0] = 12}
             else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
-            link_event.appendChild(createElement("div", ["time"], null, (time_list.join(":"))+" "+pm))
-            const nameContainer = createElement("div", [], null, null, {'cursor': 'pointer'})
-            const name = createElement("div", ["link_event_title"], null, link['name'])
-            if (link["active"] === "true") {name.style.color = "#2B8FD8"}
-            else {name.style.color = "#B7C0C7"}
-            const join_now = createElement("div", ['join_now'], null, "Click to join the room now")
-            nameContainer.addEventListener("click", () => {window.open(link['link']); console.log("clicked")})
-            nameContainer.append(name, join_now)
-            const days = createElement("div", ["days"], null, link['days'].join(", "))
-            link_event.append(nameContainer, days)
-            const buttons = createElement("img", ["menu_buttons"], null, null, {}, null,
-                {src: "static/images/ellipsis.svg", height: 20, width: 8})
-            buttons.addEventListener("click", (e) => {menu.style.display = "flex"; e.stopPropagation()})
-            /*Create the menu*/
-            const menu = createElement("div", ["menu"])
-            menu.addEventListener("click", (e) => e.stopPropagation())
-            /*Make the edit button*/
-            const edit = createElement("div", [], null, "Edit")
-            edit.addEventListener("click", () => {
-                const element = document.getElementById("popup")
-                element.style.display = "flex"
-                document.getElementById("blur").style.opacity = "0.4"
-                document.getElementById("blur").style.zIndex = "3"
-                document.getElementById("name").value = link["name"]
-                document.getElementById("link").value = link["link"]
-                document.getElementById("text_select").value = link["text"].toString()
-                document.getElementById("starts_select").value = link["starts"].toString()
-                if ("password" in link) {document.getElementById("password").value = link["password"]}
-                else {document.getElementById("password").value = null}
-                if (parseInt(link['time'].split(":")[0]) === 12) {
-                    document.getElementById("pm").selected = "selected"
-                    document.getElementById("hour").value = 12
-                }
-                else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
-                else if (parseInt(link['time'].split(":")[0]) > 12) {
-                    document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
-                    document.getElementById("pm").selected = "selected"
-                }
-                else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
-                document.getElementById("minute").value = link['time'].split(":")[1]
-                document.getElementById("submit").innerText = "Update"
-                document.getElementById("submit").addEventListener("click", () => register_link(link['id']))
-                document.getElementById("title").innerText = "Edit your meeting"
-                for (let day of ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"]) {document.getElementById(day).classList.remove("selected")}
-                for (let day_abbrev of link['days']) {
-                    if (document.getElementById(day_abbrev)) {
-                        document.getElementById(day_abbrev).classList.add("selected")
-                    }
-                }
-                document.getElementById(link['repeat']).selected = "selected"
-                if (link['starts']) {document.getElementById(link['starts']).selected = "selected"}
-                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-            })
-            /*Make the first line*/
-            const hr = createElement("hr", ["menu_line"])
-            /*Make the delete button*/
-            const del = createElement("div", [], null, "Delete")
-            del.addEventListener("click", () => {
-                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-                document.getElementById("popup_delete").style.display = "flex"
-                document.getElementById("delete_button").addEventListener('click', async () => {
-                    hide('popup_delete')
-                    await fetch(`/delete?id=${link['id']}`)
-                    await refresh()
-                    await load_links(username, sort)})
-                })
-            /*Make the second line*/
-            const hr2 = createElement("hr", ["menu_line"])
-            /*Make the share button*/
-            const share = createElement("div", [], null, "Share")
-            share.addEventListener("click", () => {
-                document.getElementById("popup_share").style.zIndex = "11"
-                document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-                document.getElementById("share_link").value = link['share']
-                document.getElementById("blur").style.opacity = "0.4";
-                document.getElementById("blur").style.zIndex = "3"
-                window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-                })
-
-            /*Add menu click event*/
-            document.addEventListener("click", () => menu.style.display = "none")
-            /*Append everything*/
-            menu.append(edit, hr, del, hr2, share)
-            /*Make the password button and third line*/
+            const linkTime = time_list.join(":") + " " + pm
+            let password = '';
+            let menuHeight = "110px"
             if ("password" in link) {
-                menu.style.height = "145px"
-                const hr3 = createElement("hr", ["menu_line"])
-                const password = createElement("div", [], link['id'].toString(), "Password")
-                password.addEventListener('click', async () => {
-                    navigator.clipboard.writeText(link['password']).then(async () => {
-                        password.innerText = "Copied!"
-                        p.remove()
-                        await sleep(2000)
-                        password.innerText = "Password"
-                    })
-                })
-                menu.append(hr3, password)
+                password = `<hr class="menu_line"><div id="${link['id'].toString()}" onclick="copyPassword('${link['id']}', '${link['password']}')">Password</div>`
+                menuHeight = "145px"
             }
-            link_event.appendChild(menu)
-
-            /*Create the switch*/
-            const toggleSwitchCheckbox = createElement("input", ["checkbox"], `toggle${iterator}`, null,
-                {}, null, {type: "checkbox", checked: true})
-            link_event.appendChild(toggleSwitchCheckbox)
-            const toggleSwitch = createElement("label", ["switch"], null, null, {}, null,
-                {htmlFor: `toggle${iterator}`})
-            toggleSwitch.addEventListener("click", async () => {
-                await fetch(`/disable?id=${link['id']}`)
-                await refresh()
-                await load_links(username, sort)
-            })
-            link_event.append(toggleSwitch, buttons)
+            let linkOpacity = 1
+            let nameContainerOpacity = 1
+            let checkboxChecked = true
             if (link['active'] === "false") {
-                link_event.style.opacity = "0.6"
-                name.style.color = "#B7C0C7"
-                nameContainer.style.opacity = "0.7"
-                toggleSwitchCheckbox.checked = false
+                linkOpacity = 0.6
+                nameContainerOpacity = 0.7
+                checkboxChecked = false
             }
-            link_events.push(link_event)
+            const parameterLink = JSON.stringify(link).replaceAll('"', "'")
+            link_events.push(`<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+                <div class="time">${linkTime}</div>
+                <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
+                    <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
+                    <div class="join_now">Click to join the room now</div>
+                </div>
+                <div class="days">${link['days'].join(", ")}</div>
+                <div class="menu" style="height: ${menuHeight}" id="menu${iterator}">
+                    <div onclick="edit(${parameterLink})">Edit</div>
+                    <hr class="menu_line"> 
+                    <div onclick="delete_(${parameterLink})">Delete</div>
+                    <hr class="menu_line">
+                    <div onclick="share(${parameterLink})">Share</div>
+                    ${password}
+                </div>
+                <input class="checkbox" id="toggle${iterator}" type="checkbox" checked="${checkboxChecked}">
+                <label class="switch" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')"></label>
+                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
+            </div>`)
             iterator += 1
         }
+        document.addEventListener("click", (e) => {
+            for (let i = 0; i < iterator; i++) {
+                if (e.target.parentElement.id !== i.toString()) {
+                    document.getElementById(`menu${i}`).style.display = "none"
+                }
+
+            }
+        })
     }
-    document.getElementById("click_to_copy").addEventListener('click', async () => {
+    const clickToCopy = document.getElementById("click_to_copy")
+    clickToCopy.addEventListener('click', async () => {
         navigator.clipboard.writeText(document.getElementById("share_link").value).then(async () => {
-            document.getElementById("click_to_copy").innerText = "Copied!"
+            clickToCopy.innerText = "Copied!"
             await sleep(2000)
-            document.getElementById("click_to_copy").innerText = "Click to Copy"
+            clickToCopy.innerText = "Click to Copy"
         })
     })
     let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${username}`)
@@ -271,19 +241,17 @@ async function load_links(username, sort) {
     await check_day(username)
     //await sleep(200)
     await refresh()
-    link_events.forEach((link) => {insert.appendChild(link)})
-    await check_if_tutorial()
+    link_events.forEach(link => insert.innerHTML += link)
+    await checkTutorial()
     clearInterval(open)
     start(username, links, sort)
-    // MAKE IT STOP RUNNING THE NEWTAB MULTIPLE TIMES
 }
 
-//window.addEventListener("resize", () => {document.getElementById("blur").style.height = `${document.getElementById("insert").offsetHeight+500}px`})
 async function check_day(username) {
     let date = new Date()
-    let start_json = await fetch(`https://linkjoin.xyz/db?username=${username}`)
+    let start_json = await fetch(`https://linkjoin.xyz/db?email=${username}`)
     let links = await start_json.json()
-    let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[parseInt(date.getDay())]
+    let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
     let children = document.getElementById("days").children
     if (links.length <= 3) {
         for (let child of children) {
@@ -292,54 +260,48 @@ async function check_day(username) {
     }
 }
 
-function sort() {location.replace("/sort?sort="+document.getElementById("sort").value.toString())}
+async function sort() {
+    location.replace("/sort?sort="+document.getElementById("sort").value.toString())
+}
 
 
 async function register_link(parameter) {
     if (created) {return}
     created = true
-    let name = document.getElementById("name").value
-    let link = document.getElementById("link").value
     let hour = parseInt(document.getElementById("hour").value)
-    let text = document.getElementById("text_select").value
-    let minute = document.getElementById("minute").value
-    let repeats = document.getElementById("select").value
+    const minute = document.getElementById("minute").value
     if (document.getElementById("am").value === "pm") {if (hour !== 12) {hour += 12}}
     else {if (hour === 12) {hour += 12}}
-    let time = `${hour}:${minute}`
-    let password = document.getElementById("password").value
     let days = []
     for (let child of document.getElementById("days").children) {
         if (child.classList.contains("selected")) {
             days.push(child.value)
         }
     }
-    let starts = parseInt(document.getElementById("starts_select").value)*days.length
-    let url
-    if (parameter === "register") {
-        url = `/register?name=${name}&link=${link}&time=${time}&repeats=${repeats}&days=${days}&starts=${starts}&text=${text}`
+    const args = {
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify({
+            name: document.getElementById("name").value,
+            link: document.getElementById("link").value, time: `${hour}:${minute}`,
+            repeats: document.getElementById("select").value, days: days,
+            starts: parseInt(document.getElementById("starts_select").value)*days.length,
+            text: document.getElementById("text_select").value,
+            id: parameter, email: global_username
+        })
     }
-    else {
-        url = `/update?name=${name}&link=${link}&time=${time}&repeats=${repeats}&days=${days}&id=${parameter}&starts=${starts}&text=${text}`
-    }
-    if (password.length > 0) {url += `&password=${password}`}
-    if (!name) {return document.getElementById("error").innerText = "Please specify a name for your meeting"}
-    if (!link) {return document.getElementById("error").innerText = "Please specify a link for your meeting"}
-    if (days.length === 0) {return document.getElementById("error").innerText = "Please specify days or dates for your meeting."}
+    if (document.getElementById("password").value.length > 0) {args['password'] = document.getElementById("password").value}
+    const url = parameter === 'register' ? '/register' : '/update'
+    if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
+    if (!document.getElementById("link").value) {return document.getElementById("error").innerText = "Please provide a link for your meeting"}
+    if (days.length === 0) {return document.getElementById("error").innerText = "Please provide days for your meeting."}
     skipTutorial()
-    url = url.replace("#", "%23")
     hide('popup')
-    await fetch(url)
+    await fetch(url, args)
     location.reload()
 }
 
 function logOut() {document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; location.replace('/login')}
-
-
-function checkNever() {
-    if (document.getElementById("select").value === "never") {document.getElementById("repeats_text").innerText = "Repeats"}
-    else {document.getElementById("repeats_text").innerText = "Repeats every"}
-}
 
 
 function browser() {
@@ -364,8 +326,7 @@ async function tutorial(item, skip) {
     tutorial_active = true
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
-        document.getElementById("blur").style.opacity = "0.4";
-        document.getElementById("blur").style.zIndex = "3"
+        blur(true)
         if (item >= 4) {await popUp('popup')}
     }
     if (item === 0) {
@@ -473,54 +434,46 @@ async function refresh() {
     while (insert.firstChild) {insert.removeChild(insert.firstChild)}
 }
 
-document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
 
 
 async function add_number() {
-    let country = await fetch('https://linkjoin.xyz/location')
-    country = await country.json()
+    let country = await (await fetch('https://linkjoin.xyz/location')).json()
     const countryCode = countryCodes[country['country']]
-    console.log(countryCodes)
-    console.log(country['country'])
-    console.log(countryCodes[country['country']])
     let number = document.getElementById("number").value
-    await fetch(`/add_number?username=${global_username}&countrycode=${countryCode['code']}&number=${number}`)
+    await fetch(`/add_number?username=${global_username}&countrycode=${countryCode['code']}&number=${number}`,
+        {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
-    document.getElementById("blur").style.zIndex = "-3"
-    document.getElementById("blur").style.opacity = "0"
-}
-
-function show_add_number() {
-    document.getElementById("add_number_div").style.display = "block"
-        let blur = document.getElementById("blur")
-        blur.style.opacity = "0.4"
-        blur.style.zIndex = "3"
+    blur(false)
 }
 
 async function no_add_number() {
     if (number === "None") {number = ''}
-    await fetch(`/add_number?username=${global_username}&countrycode=&number=${number}`)
+    await fetch(`/add_number?username=${global_username}&countrycode=&number=${number}`, {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
-    document.getElementById("blur").style.zIndex = "-3"
-    document.getElementById("blur").style.opacity = "0"
+    blur(false)
 }
 
 
-async function check_if_tutorial() {
-    let tutorial_completed = await fetch(`https://linkjoin.xyz/tutorial_complete?username=${global_username}`)
-    tutorial_completed = await tutorial_completed.json()
-    console.log(tutorial_completed['tutorial'])
-    console.log(number)
+async function checkTutorial() {
+    const tutorial_completed = await (await fetch(`https://linkjoin.xyz/tutorial_complete?username=${global_username}`)).json()
     if (tutorial_completed['tutorial'] === "done") {
         if (number === "None") {
-        show_add_number()
-    }
+            document.getElementById("add_number_div").style.display = "block"
+            blur(true)
+        }
     }
 }
 
 document.addEventListener("click", (e) => {
     if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
         !document.getElementById("hamburger").contains(e.target)) {
-    document.getElementById("hamburger_dropdown").classList.remove("expand")
-    document.getElementById("hamburger").classList.remove("expand")
-}})
+        document.getElementById("hamburger_dropdown").classList.remove("expand")
+        document.getElementById("hamburger").classList.remove("expand")
+    }
+
+})
+
+document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
+
+document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
+

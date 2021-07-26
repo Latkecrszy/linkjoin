@@ -73,7 +73,8 @@
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value})
+                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value,
+                    token: '{{ token }}'})
                 })
             await processData(data)
         }
@@ -85,7 +86,8 @@
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({email: profile.getEmail(), redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked})
+                    keep: document.getElementById("keep").checked}),
+                    token: '{{ token }}'
                 })
                 await processData(data)
             }
@@ -110,13 +112,7 @@
         document.getElementById('password').style.border = "none"
         data = await data.json()
         if (data['error'] === '') {
-            if (data['keep'] === 'true') {
-                document.cookie = `email=${data['email']}; expires=Wed, 01 Jan 3000 00:00:00 UTC`
-            }
-            else {
-                document.cookie = `email=${data['email']}; max-age=172800`
-            }
-            location.replace(data['url'])
+            location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token={{ token }}`)
         }
         else {
             document.getElementById(data['error']).style.display = "block"

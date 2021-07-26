@@ -55,9 +55,10 @@
     height: 34vw;
     min-height: 550px;
     position: absolute;
-    top: 100px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     border-radius: 10px;
-    left: 35vw;
     box-shadow: 6px 6px 16px black;
     z-index: 5;
 }

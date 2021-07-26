@@ -18,7 +18,7 @@
             let number = "{{ number|safe }}"
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
-            fetch(`/setoffset?offset=${offset}&username={{username}}`)
+            fetch(`/setoffset?offset=${offset}&email={{username}}`, {method: 'POST'})
             const countryCodes = {{ country_codes|tojson|safe }}
 
         </script>
@@ -52,7 +52,7 @@
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
-                    <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
+                    <a><div class="button header_button" onclick="document.getElementById('add_number_div').style.display = 'flex'">Add Number</div></a>
                     <a href="/login"><div class="button header_button">Switch Account</div></a>
                     <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                 </div>
@@ -63,7 +63,7 @@
                         <div id="line3"></div>
                     </div>
                     <div id="hamburger_dropdown">
-                        <a><div class="button header_button" onclick="show_add_number()">Add Number</div></a>
+                        <a><div class="button header_button" onclick="document.getElementById('add_number_div').style.display = 'flex'">Add Number</div></a>
                         <a href="/login"><div class="button header_button">Switch Account</div></a>
                         <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
                     </div>
@@ -118,7 +118,7 @@
             </footer>
         </div>
         <div class="popup_delete" id="popup_delete">
-            <div>Are you sure you want to delete this meeting?</div>
+            <div>Are you sure you want to delete</div>
             <div id="delete_buttons_container">
                 <a><button id="button_no" onclick="hide('popup_delete')">No</button></a>
                 <a id="delete_button"><button id="button_yes">Yes</button></a>
