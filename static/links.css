@@ -169,7 +169,7 @@ input {color: white; font-family: Montserrat;}
     font: 400 18px Roboto;
 }
 
-#submit, #add_number {
+#submit, #add_number, #change_number {
     width: max(10vw, 150px);
     min-width: 150px;
     height: max(4vw, 65px);
@@ -182,7 +182,7 @@ input {color: white; font-family: Montserrat;}
     transition: 0.5s;
 }
 
-#submit:hover, #add_number:hover {
+#submit:hover, #add_number:hover, #change_number:hover{
     margin: 5px -5px 0 45px;
     box-shadow: 5px 5px 10px black;
 }

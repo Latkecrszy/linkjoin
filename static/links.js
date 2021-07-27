@@ -20,6 +20,7 @@ function blur(show) {
 
 async function db(username) {
     if (await fetch(`/db?email=${username}`).then(response => response.text()) === 'Not logged in') {
+        console.log('test')
         return location.replace('/login')
     }
     return await fetch(`/db?email=${username}`).then(response => response.json())
@@ -241,7 +242,7 @@ async function load_links(username, sort) {
             clickToCopy.innerText = "Click to Copy"
         })
     })
-    let tutorial_completed = await fetch(`/tutorial_complete?username=${username}`, {method: 'POST'})
+    let tutorial_completed = await fetch(`/tutorial_complete?email=${username}`, {method: 'POST'})
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
@@ -342,13 +343,13 @@ async function tutorial(item, skip) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
-            await fetch(`/tutorial?username=${global_username}&step=1`, {method: 'POST'})
+            await fetch(`/tutorial?email=${global_username}&step=1`, {method: 'POST'})
             document.getElementById("box").style.zIndex = "5"
             document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
-        await fetch(`/tutorial?username=${global_username}&step=0`, {method: 'POST'})
+        await fetch(`/tutorial?email=${global_username}&step=0`, {method: 'POST'})
         document.getElementById(`tutorial0`).style.display = "flex"
         return document.getElementById("check_popup").style.display = "none"
     }
@@ -420,10 +421,10 @@ async function tutorial(item, skip) {
     }
     if (item === 11) {
         document.getElementById("tutorial9").style.display = "none"
-        await fetch(`/tutorial?username=${global_username}&step=done`, {method: 'POST'})
+        await fetch(`/tutorial?email=${global_username}&step=done`, {method: 'POST'})
         tutorial_complete = true
     }
-    await fetch(`/tutorial?username=${global_username}&step=${item}`, {method: 'POST'})
+    await fetch(`/tutorial?email=${global_username}&step=${item}`, {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
@@ -431,7 +432,7 @@ async function tutorial(item, skip) {
     catch {}
 }
 
-async function skipTutorial() {return await fetch(`/tutorial?username=${global_username}&step=done`, {method: 'POST'})}
+async function skipTutorial() {return await fetch(`/tutorial?email=${global_username}&step=done`, {method: 'POST'})}
 
 
 async function refresh() {
@@ -445,7 +446,7 @@ async function add_number() {
     let country = await (await fetch('https://linkjoin.xyz/location')).json()
     const countryCode = countryCodes[country['country']]
     let number = document.getElementById("number").value
-    await fetch(`/add_number?username=${global_username}&countrycode=${countryCode['code']}&number=${number}`,
+    await fetch(`/add_number?email=${global_username}&countrycode=${countryCode['code']}&number=${number}`,
         {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
     blur(false)
@@ -453,16 +454,17 @@ async function add_number() {
 
 async function no_add_number() {
     if (number === "None") {number = ''}
-    await fetch(`/add_number?username=${global_username}&countrycode=&number=${number}`, {method: 'POST'})
+    await fetch(`/add_number?email=${global_username}&countrycode=&number=${number}`, {method: 'POST'})
     document.getElementById("add_number_div").style.display = "none"
     blur(false)
 }
 
 
 async function checkTutorial() {
-    const tutorial_completed = await (await fetch(`/tutorial_complete?username=${global_username}`, {method: 'POST'})).json()
+    const tutorial_completed = await (await fetch(`/tutorial_complete?email=${global_username}`, {method: 'POST'})).json()
     if (tutorial_completed['tutorial'] === "done") {
         if (number === "None") {
+            console.log(tutorial_completed)
             document.getElementById("add_number_div").style.display = "block"
             blur(true)
         }

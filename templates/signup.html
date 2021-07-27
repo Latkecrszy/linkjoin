@@ -78,8 +78,7 @@
                 body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
                 keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                 offset: offset, password: document.getElementById("password").value,
-                countrycode: countryCodes[country['country']]['code']}),
-                token: '{{ token }}'
+                countrycode: countryCodes[country['country']]['code'], token: '{{ token }}'}),
             })
             await processData(data)
         }

@@ -74,6 +74,12 @@ def login():
                                redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
                                token=token)
     else:
+        # TODO: In here, check if there is no password. If not, they've used sign in with google.
+        # TODO: Then, use the CLIENT_ID in the .env file (refer to chrome) to authenticate that they have a valid id.
+        # TODO: Take in an id from the javascript. This eliminates the need for a token, and makes the interaction more secure.
+        # TODO: Finally, add google.oauth2 and google.auth.transport to requirements.txt
+        # TODO: Also, remove tokens from signup as it isn't needed because they're not authenticating.
+        # TODO: Good luck future me!
         data = request.get_json()
         email = data.get('email').lower()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
@@ -108,6 +114,8 @@ def signup():
         data = request.get_json()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         email = data.get('email').lower()
+        print(data.get('token'))
+        print(tokens)
         if data.get('token') not in tokens:
             return {"error": "signup_failed", "url": redirect_link}
         if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
@@ -441,27 +449,17 @@ def tutorial():
     if not authenticated(request.cookies, request.args.get('email')):
         return 'Not logged in', 403
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": request.args.get("username").lower()},
-                                 {"$set": {"tutorial": request.args.get("step")}})
-    return 'done'
-
-
-@app.route("/settutorial", methods=['POST'])
-def settutorial():
-    if not authenticated(request.cookies, request.args.get('email')):
-        return 'Not logged in', 403
-    login_db = mongo.db.login
-    login_db.find_one_and_update({"username": "test4@gmail.com"},
+    login_db.find_one_and_update({"username": request.args.get("email").lower()},
                                  {"$set": {"tutorial": request.args.get("step")}})
     return 'done'
 
 
 @app.route("/tutorial_complete", methods=['POST'])
 def tutorial_complete():
-    if not authenticated(request.cookies, request.args.get('username')):
+    if not authenticated(request.cookies, request.args.get('email')):
         return 'Not logged in', 403
     login_db = mongo.db.login
-    user = login_db.find_one({"username": request.args.get("username").lower()}, projection={"_id": 0, "password": 0})
+    user = login_db.find_one({"username": request.args.get("email").lower()}, projection={"_id": 0, "password": 0})
     if user:
         return jsonify(dict(user))
     return 'done', 200
@@ -510,7 +508,7 @@ def add_number():
         number = request.args.get('countrycode') + str(number)
     if number.isdigit():
         number = int(number)
-    mongo.db.login.find_one_and_update({"username": request.args.get("username")}, {"$set": {"number": number}})
+    mongo.db.login.find_one_and_update({"username": request.args.get("email")}, {"$set": {"number": number}})
     return 'done', 200
 
 

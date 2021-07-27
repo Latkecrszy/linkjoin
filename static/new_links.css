@@ -204,7 +204,7 @@
     border-radius: 100px
 }
 
-#add_number_div {
+#add_number_div, #change_number_div {
     width: min(500px, calc(100vw - 30px));
     height: min(300px, fit-content);
     padding: 15px 10px;
@@ -220,14 +220,14 @@
     display: none;
 }
 
-#add_number_div.content {
+#add_number_div .content, #change_number_div .content {
     position: relative;
     top: -30px
 }
 
-#number {display: inline; width: 60%; margin-bottom: 15px}
+#number, #number_change {display: inline; width: 60%; margin-bottom: 15px}
 
-#add_number {
+#add_number, #change_number {
     font-size: 14px;
     display: inline;
     height: 50px;
@@ -235,13 +235,7 @@
     min-width: 100px
 }
 
-/*#add_number:hover {
-    box-shadow: 5px 5px 10px black;
-    height: 55px;
-    width: 115px;
-}*/
-
-#dismiss_add_number {
+#dismiss_add_number, #dismiss_change_number {
     position: relative;
     top: 0;
     right: 0;

@@ -364,8 +364,14 @@
                 <button id="add_number" onclick="add_number()">Add Number</button>
             </div>
         </div>
-        <!--TODO: Make the phone number input box appear if they don't have a phone number on file-->
-        <!--TODO: Make the change phone number button at the top of the page-->
+        <!--<div id="change_number_div">
+            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" id="dismiss_change_number" onclick="dismiss_change_number()" alt="back to links page">
+            <div class="content">
+                <h2>Change your phone number</h2>
+                <input id="number_change" type="text" placeholder="Phone number">
+                <button id="change_number" onclick="change_number()">Update Number</button>
+            </div>
+        </div>-->
     </body>
 <script src="{{ url_for('static', filename='links.js') }}"></script>
 </html>
