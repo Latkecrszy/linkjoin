@@ -65,10 +65,13 @@ def message():
                 # Check if the link is active or if it has yet to start
                 if document['active'] == "false":
                     continue
-                if int(document['starts']) > 0:
-                    print("updated")
-                    links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
-                    continue
+                try:
+                    if int(document['starts']) > 0:
+                        print("updated")
+                        links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
+                        continue
+                except KeyError:
+                    links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
                 if document['repeat'][0].isdigit():
                     accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1 for x in
                               range(len(user_info['days']))]

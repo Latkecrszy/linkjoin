@@ -74,12 +74,6 @@ def login():
                                redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
                                token=token)
     else:
-        # TODO: In here, check if there is no password. If not, they've used sign in with google.
-        # TODO: Then, use the CLIENT_ID in the .env file (refer to chrome) to authenticate that they have a valid id.
-        # TODO: Take in an id from the javascript. This eliminates the need for a token, and makes the interaction more secure.
-        # TODO: Finally, add google.oauth2 and google.auth.transport to requirements.txt
-        # TODO: Also, remove tokens from signup as it isn't needed because they're not authenticating.
-        # TODO: Good luck future me!
         data = request.get_json()
         email = data.get('email').lower()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
@@ -157,7 +151,7 @@ def set_cookie():
     if request.args.get('token') not in tokens:
         return 'Invalid Token', 403
     tokens.pop(tokens.index(request.args.get('token')))
-    mongo.db.tokens.find_one_and_update({'_id': 'tokens'}, {'$set': {'tokens': tokens}})
+    mongo.db.tokens.find_one_and_replace({'_id': 'tokens'}, {'_id': 'tokens', 'tokens': tokens})
     print(mongo.db.tokens.find_one({'_id': 'tokens'}))
     response = make_response(redirect(request.args.get('url')))
     response.set_cookie('email', request.args.get('email'))

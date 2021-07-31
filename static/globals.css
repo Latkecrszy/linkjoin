@@ -83,7 +83,7 @@ svg {
     height: 60px;
     min-width: 890px;
     max-width: 960px;
-    margin: 100px 5vw 0 max(0px, calc(45% - 400px));
+    margin: 80vh 5vw 0 max(0px, calc(45% - 400px));
     border-radius: 10px;
     background-color: #142539;
     text-align: center;

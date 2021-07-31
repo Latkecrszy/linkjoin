@@ -117,7 +117,7 @@
         padding: 5px 15px 15px 15px !important;
         display: flex;
         flex-direction: column !important;
-        margin-left: max(0px, calc(45% - 100px)) !important
+        margin-left: max(0px, calc(45% - 100px)) !important;
     }
     #blur {height: calc(100% + 250px) !important}
 }
@@ -207,7 +207,7 @@
 #add_number_div, #change_number_div {
     width: min(500px, calc(100vw - 30px));
     height: min(300px, fit-content);
-    padding: 15px 10px;
+    padding: 10px 10px;
     background: #091B30;
     position: absolute;
     border: 5px solid white;
@@ -222,7 +222,7 @@
 
 #add_number_div .content, #change_number_div .content {
     position: relative;
-    top: -30px
+    top: -10px
 }
 
 #number, #number_change {display: inline; width: 60%; margin-bottom: 15px}

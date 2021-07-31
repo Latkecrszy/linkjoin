@@ -244,7 +244,8 @@ async function load_links(username, sort) {
     })
     let tutorial_completed = await fetch(`/tutorial_complete?email=${username}`, {method: 'POST'})
     tutorial_completed = await tutorial_completed.json()
-    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
+
+    if (tutorial_completed['tutorial'] !== "done" && window.innerWidth >= 1000) {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
     //await sleep(200)
     await refresh()
@@ -443,7 +444,7 @@ async function refresh() {
 
 
 async function add_number() {
-    let country = await (await fetch('https://linkjoin.xyz/location')).json()
+    let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
     const countryCode = countryCodes[country['country']]
     let number = document.getElementById("number").value
     await fetch(`/add_number?email=${global_username}&countrycode=${countryCode['code']}&number=${number}`,
@@ -459,15 +460,17 @@ async function no_add_number() {
     blur(false)
 }
 
+// TODO: Add notes feature where in the dot menu for each link, you can add notes.
+// TODO: Store all notes for links (deleted or not) in menu below sort by, where you can click and there's a
+// TODO: Paginator and search bar for your meeting notes, as well as an option to delete the note.
 
 async function checkTutorial() {
-    const tutorial_completed = await (await fetch(`/tutorial_complete?email=${global_username}`, {method: 'POST'})).json()
-    if (tutorial_completed['tutorial'] === "done") {
-        if (number === "None") {
-            console.log(tutorial_completed)
-            document.getElementById("add_number_div").style.display = "block"
-            blur(true)
-        }
+    const tutorial_completed = await fetch(`/tutorial_complete?email=${global_username}`, {method: 'POST'})
+        .then(response => response.json())
+    if (tutorial_completed['tutorial'] === "done" && number === "None" && window.innerWidth >= 1000) {
+        console.log(tutorial_completed)
+        document.getElementById("add_number_div").style.display = "block"
+        blur(true)
     }
 }
 

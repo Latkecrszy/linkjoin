@@ -1,9 +1,6 @@
-function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms))}
+let open, user_links
 
-let open
-let user_links
-
-function minutes(time, before){
+function minutes(time, before) {
     let minute = parseInt(time.split(":")[1])-before
     let hour = parseInt(time.split(":")[0])
     if (minute < 0) {
@@ -18,11 +15,11 @@ function minutes(time, before){
 
 async function start(username, links, sort) {
     open = setInterval(async () => {
-        let date = new Date()
-        let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
+        const date = new Date()
+        const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
         let minute = date.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
-        let time = `${date.getHours()}:${minute}`
+        const time = `${date.getHours()}:${minute}`
         user_links = await db(username)
         for (let link of user_links) {
             let days = link['days']
@@ -58,5 +55,3 @@ async function pause(username, links, sort, wait, action) {
     if (action === "load_links") {return load_links(username, sort)}
     start(username, links, sort)
 }
-
-function redirect(redirect_to) {window.open("/"+redirect_to)}
