@@ -112,7 +112,7 @@
         document.getElementById('password').style.border = "none"
         data = await data.json()
         if (data['error'] === '') {
-            location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token={{ token }}`)
+            location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
         }
         else {
             document.getElementById(data['error']).style.display = "block"

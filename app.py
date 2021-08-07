@@ -87,29 +87,22 @@ def login():
                 id_token.verify_oauth2_token(data.get('token'), requests.Request(), CLIENT_ID)
             except ValueError:
                 return {'redirect': data['redirect'], "error": 'google_login_failed'}
-        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep')}
+        token = gen_session()
+        mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    tokens = list(mongo.db.tokens.find_one({"_id": "tokens"})['tokens'])
     if request.method == 'GET':
-        token = gen_session()
-        tokens.append(token)
-        mongo.db.tokens.find_one_and_replace({"_id": "tokens"}, {"_id": "tokens", "tokens": tokens})
         return render_template('signup.html', error=request.args.get('error'),
                                redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
                                refer=request.args.get('refer') if request.args.get('refer') else 'none',
-                               country_codes=json.load(open("country_codes.json")),
-                               token=token)
+                               country_codes=json.load(open("country_codes.json")))
     else:
         data = request.get_json()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         email = data.get('email').lower()
-        print(data.get('token'))
-        print(tokens)
-        if data.get('token') not in tokens:
-            return {"error": "signup_failed", "url": redirect_link}
         if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
             return {"error": "invalid_email", "url": redirect_link}
         if mongo.db.login.find_one({'username': email}) is not None:
@@ -121,15 +114,20 @@ def signup():
             if len(data.get('password')) < 5:
                 return {"error": "password_too_short", "url": redirect_link}
             account['password'] = hasher.hash(data.get('password'))
+        elif data.get('password') is None:
+            try:
+                id_token.verify_oauth2_token(data.get('token'), requests.Request(), CLIENT_ID)
+            except ValueError:
+                return {'redirect': data['redirect'], "error": 'google_signup_failed'}
         if data.get('number'):
             number = ''.join([i for i in data.get('number') if i in '1234567890'])
             if len(number) < 11:
                 number = data.get('countrycode') + str(number)
             account['number'] = int(number)
-        if mongo.db.login.find({'refer': data.get('refer')}):
-            mongo.db.login.find_one_and_update({'refer': data.get('refer')}, {'$set': {'premium': 'true'}})
         mongo.db.login.insert_one(account)
-        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep')}
+        token = gen_session()
+        mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
 @app.route('/start_session', methods=['POST'])
@@ -145,12 +143,11 @@ def start_session():
 
 @app.route('/set_cookie', methods=['GET'])
 def set_cookie():
-    tokens = list(mongo.db.tokens.find_one({'_id': 'tokens'})['tokens'])
-    if request.args.get('token') not in tokens:
-        return 'Invalid Token', 403
-    tokens.pop(tokens.index(request.args.get('token')))
-    mongo.db.tokens.find_one_and_replace({'_id': 'tokens'}, {'_id': 'tokens', 'tokens': tokens})
-    print(mongo.db.tokens.find_one({'_id': 'tokens'}))
+    # TODO: Receive token generated in login/signup endpoint and validate in database. Because it's coming from
+    # TODO: Login/signup endpoint, it can be associated with email address to validate it's the right token.
+    if not mongo.db.tokens.find_one({'email': request.args.get('email'), 'token': request.args.get('token')}):
+        return redirect('/login')
+    mongo.db.tokens.find_one_and_delete({'email': request.args.get('email'), 'token': request.args.get('token')})
     response = make_response(redirect(request.args.get('url')))
     response.set_cookie('email', request.args.get('email'))
     session_id = gen_session()
