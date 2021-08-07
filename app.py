@@ -24,7 +24,7 @@ url = 'https://accounts.google.com/.well-known/openid-configuration'
 cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
                             r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
                             r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
-                            r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
+                            r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
                             r'/set_cookie/*': {'origins': ['https://linkjoin.xyz']},
                             r'/get_session/*': {'origins': ['https://linkjoin.xyz']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
