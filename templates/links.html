@@ -15,7 +15,7 @@
         </script>
         <script>
             let date = new Date()
-            let number = "{{ number|safe }}"
+            let number = "{{ number }}"
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch(`/setoffset?offset=${offset}&email={{username}}`, {method: 'POST'})
@@ -40,6 +40,7 @@
         webshims.polyfill('forms forms-ext');
         </script>
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
+        <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <title>LinkJoin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name=”robots” content="index, follow"/>
@@ -52,9 +53,11 @@
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo_text.png') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
-                    <a><div class="button header_button" onclick="document.getElementById('add_number_div').style.display = 'flex'">Add Number</div></a>
-                    <a href="/login"><div class="button header_button">Switch Account</div></a>
-                    <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
+                    <a><div class="button header_button underline" onclick="addNumberShow()">
+                        {% if number == "None" %} Add Number {% else %} Change Number {% endif %}
+                    </div></a>
+                    <a href="/login"><div class="button header_button underline">Switch Account</div></a>
+                    <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                 </div>
                 <div id="dropdown">
                     <div id="hamburger">
@@ -63,38 +66,23 @@
                         <div id="line3"></div>
                     </div>
                     <div id="hamburger_dropdown">
-                        <a><div class="button header_button" onclick="document.getElementById('add_number_div').style.display = 'flex'">Add Number</div></a>
-                        <a href="/login"><div class="button header_button">Switch Account</div></a>
-                        <a><div class="button header_button" onclick="logOut()">Log Out</div></a>
+                        <a><div class="button header_button underline" onclick="addNumberShow()">
+                            {% if number == "None" %} Add Number {% else %} Change Number {% endif %}
+                        </div></a>
+                        <a href="/login"><div class="button header_button underline">Switch Account</div></a>
+                        <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                     </div>
                 </div>
             </header>
             <div id="box">
                 <div id="sort_by">Sort By:</div>
                 <select onchange="sort()" id="sort">
-                    {% if sort == "no" %}
-                        <option value="none" style="color: white" selected>None</option>
-                    {% else %}
-                        <option value="none" style="color: white">None</option>
-                    {% endif %}
-                    {% if sort == "day" %}
-                        <option value="day" style="color: white" selected>Day</option>
-                    {% else %}
-                        <option value="day" style="color: white">Day</option>
-                    {% endif %}
-                    {% if sort == "time" %}
-                        <option value="time" style="color: white" selected>Time</option>
-                    {% else %}
-                        <option value="time" style="color: white">Time</option>
-                    {% endif %}
-                    {% if sort == "datetime" %}
-                        <option value="datetime" style="color: white" selected>Day & Time</option>
-                    {% else %}
-                        <option value="datetime" style="color: white">Day & Time</option>
-                    {% endif %}
+                    <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
+                    <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
+                    <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
+                    <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
                 </select>
             </div>
-
                 <div class="gone" id="disappear">
                     <img src="{{ url_for('static', filename='images/links_loader.png') }}" height="430" width="450" alt="Man with clock">
                     <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
@@ -240,7 +228,7 @@
                     <div class="vertical_line"></div>
                     <div id="starts">Starts
                         <select class="popup_select" id="starts_select">
-                            <option value="0" id="0">Today</option>
+                            <option value="0" id="0">This week</option>
                             <option value="1" id="1">in 1 week</option>
                             <option value="2" id="2">in 2 weeks</option>
                             <option value="3" id="3">in 3 weeks</option>
@@ -355,14 +343,6 @@
                 <button id="add_number" onclick="add_number()">Add Number</button>
             </div>
         </div>
-        <!--<div id="change_number_div">
-            <img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" id="dismiss_change_number" onclick="dismiss_change_number()" alt="back to links page">
-            <div class="content">
-                <h2>Change your phone number</h2>
-                <input id="number_change" type="text" placeholder="Phone number">
-                <button id="change_number" onclick="change_number()">Update Number</button>
-            </div>
-        </div>-->
     </body>
 <script src="{{ url_for('static', filename='links.js') }}"></script>
 </html>

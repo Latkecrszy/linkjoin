@@ -50,6 +50,7 @@
                 <div class="error" id="email_not_found" style="display: none">No account is associated with this email</div>
                 <div class="error" id="incorrect_password" style="display: none">Incorrect Password</div>
                 <div class="error" id="login_failed" style="display: none">Login failed, please try again</div>
+                <div class="error" id="google_login_failed" style="display: none">Google login failed, please try again</div>
                 {% if error == "not_logged_in" %}
                     <div class="error" style="font-size: 17px" id="not_logged_in">Log in to view your links</div>
                 {% endif %}
@@ -74,8 +75,7 @@
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value,
-                    token: '{{ token }}'})
+                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value})
                 })
             await processData(data)
         }
@@ -87,7 +87,7 @@
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({email: profile.getEmail(), redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, token: '{{ token }}'}),
+                    keep: document.getElementById("keep").checked, token: googleUser.getAuthResponse().id_token})
                 })
                 await processData(data)
             }

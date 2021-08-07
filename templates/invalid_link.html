@@ -34,7 +34,6 @@
         </header>
     </body>
     <script>
-        document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
         function myFunction(x) {
             if (x.matches) {document.getElementById("get_started").innerText = "Get started"; document.getElementById("get_started").style.width = "250px"; document.getElementById("learn_more").style.width = "250px"}
             else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`; document.getElementById("get_started").style.width = "321px"; document.getElementById("learn_more").style.width = "321px"}

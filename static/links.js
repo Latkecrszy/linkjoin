@@ -2,10 +2,6 @@ let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
 let created = false;
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
 function blur(show) {
     const blurElement = document.getElementById("blur")
     if (show) {
@@ -84,7 +80,6 @@ function edit(link) {
     document.getElementById(link['repeat']).selected = "selected"
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     console.log(link['starts']/link['days'].length)
-    // TODO: Finish updating method (changing to post) and putting in authentication for flask endpoints
     link['starts'] ? document.getElementById((link['starts']/link['days'].length).toString()).selected = "selected" : null
 }
 
@@ -122,6 +117,14 @@ function copyPassword(id, password) {
     })
 }
 
+function copyLink(link, id) {
+    navigator.clipboard.writeText(link).then(async () => {
+        document.getElementById(id).innerText = "Copied!"
+        await sleep(2000)
+        document.getElementById(id).innerText = "Copy link"
+    })
+}
+
 async function load_links(username, sort) {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch(`/get_session?email=${username}`).then(id => id.json())
@@ -143,6 +146,8 @@ async function load_links(username, sort) {
         document.getElementById("disappear").classList.remove("gone")
     }
     else {
+        document.getElementById('footer_links').style.marginTop = '100px'
+        console.log("changed")
         let final = []
         if (sort === "day") {
             const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
@@ -190,10 +195,10 @@ async function load_links(username, sort) {
             else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
             const linkTime = time_list.join(":") + " " + pm
             let password = '';
-            let menuHeight = "110px"
+            let menuHeight = "145px"
             if ("password" in link) {
                 password = `<hr class="menu_line"><div id="${link['id'].toString()}" onclick="copyPassword('${link['id']}', '${link['password']}')">Password</div>`
-                menuHeight = "145px"
+                menuHeight = "190px"
             }
             let linkOpacity = 1
             let nameContainerOpacity = 1
@@ -217,6 +222,8 @@ async function load_links(username, sort) {
                     <div onclick="delete_(${parameterLink})">Delete</div>
                     <hr class="menu_line">
                     <div onclick="share(${parameterLink})">Share</div>
+                    <hr class="menu_line">
+                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')">Copy link</div>
                     ${password}
                 </div>
                 <input class="checkbox" id="toggle${iterator}" type="checkbox" checked="${checkboxChecked}">
@@ -474,6 +481,22 @@ async function checkTutorial() {
     }
 }
 
+async function addNumberShow() {
+    const content = document.getElementById('add_number_div').children[1]
+    if (number === "None") {
+        content.children[0].innerText = 'Add phone number'
+        content.children[1].innerText = "We noticed that you haven't added a phone number to your account. This means that you won't receive text reminders for your links. To add a number, type it in below. If you don't want to add your number, click the arrow in the upper left."
+        content.children[3].innerText = 'Add Number'
+    }
+    else {
+        content.children[0].innerText = 'Change phone number'
+        content.children[1].innerText = "To change the phone number for your text reminders, type it in below and click 'Change Number'."
+        content.children[3].innerText = 'Change Number'
+    }
+    document.getElementById('add_number_div').style.display = 'flex'
+    blur(true)
+}
+
 document.addEventListener("click", (e) => {
     if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
         !document.getElementById("hamburger").contains(e.target)) {
@@ -484,6 +507,3 @@ document.addEventListener("click", (e) => {
 })
 
 document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
-
-document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
-

@@ -529,3 +529,5 @@ option {color: black}
 
 #disappear img {margin-top: 100px}
 
+.underline:after {left: -8px}
+

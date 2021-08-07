@@ -209,6 +209,7 @@ footer {
 
 .right {margin-left: auto}
 
+
 /*Media Queries*/
 @media (max-width: 1230px) {
     .pair img {height: 50vw; width: 50vw}

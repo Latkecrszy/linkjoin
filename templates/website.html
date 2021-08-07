@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html id="main_html" lang="en">
     <head>
+        <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <!--<script data-ad-client="ca-pub-8945030271612534" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
         <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
         <meta name="google-site-verification" content="VbpkfOqinCsmH2-WLGUFCS2Ptj6I-rnvLwv2y-hn4E8" />
@@ -38,10 +39,10 @@
         <meta property="og:title" content="LinkJoin">
         <meta property="og:description" content="LinkJoin helps you join meetings at exactly the right time, even when you forget.">
         <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
-        <meta name="description" content="LinkJoin helps you join meetings at exactly the right time, even when you forget. Never be late again with LinkJoin.">
+        <meta name="description" content="Auto join Zoom meetings and classes with ease. Never be late again, with LinkJoin.">
         <meta name=”robots” content="index, follow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting">
+        <meta name="keywords" content="late, automate, on time, linkjoin, link, join, zoom, meeting, auto">
     </head>
     <body id="main_body">
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
@@ -49,9 +50,9 @@
         </svg>
         <header>
             <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo">
-            <a href="/links">My Links</a>
-            <a href="/signup">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/links" class="underline">My Links</a>
+            <a href="/signup" class="underline">Sign Up</a>
+            <a href="/login" class="login_button underline" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -60,8 +61,8 @@
                 </div>
                 <div id="hamburger_dropdown">
                     <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
-                    <a href="/signup">Sign Up</a>
-                    <a href="/links">Links</a>
+                    <a href="/signup" class="underline">Sign Up</a>
+                    <a href="/links" class="underline">Links</a>
                 </div>
             </div>
         </header>
@@ -69,8 +70,8 @@
             <div id="left_content">
                 <h1 id="motto">Never Be Late Again.</h1>
                 <h4 id="description">LinkJoin helps you join meetings at exactly the right time, even when you forget.</h4>
-                <a href="/signup"><button class="get_started" id="get_started">Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
-                <a href="#what"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
+                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
+                <a onclick="document.getElementById('what').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
                 <img src="{{ url_for('static', filename='images/calendar_guy.png') }}" id="calendar_guy" alt="Man surrounded by calendars">
@@ -198,14 +199,20 @@
         </footer>
     </body>
     <script>
-        document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
-        function myFunction(x) {
-            if (x.matches) {document.getElementById("get_started").innerText = "Get started"; document.getElementById("get_started").style.width = "250px"; document.getElementById("learn_more").style.width = "250px"}
-            else {document.getElementById("get_started").innerHTML = `Get started. It's free. <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`; document.getElementById("get_started").style.width = "321px"; document.getElementById("learn_more").style.width = "321px"}
+        function resize() {
+            if (window.innerWidth < 450) {
+                document.getElementById("get_started").innerText = "Get started"
+                document.getElementById("get_started").style.width = "250px"
+                document.getElementById("learn_more").style.width = "250px"
+            }
+            else {
+                document.getElementById("get_started").innerHTML = `Get started now! <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`
+                document.getElementById("get_started").style.width = "270px"
+                document.getElementById("learn_more").style.width = "270px"
+            }
         }
-        let x = window.matchMedia("(max-width: 450px)")
-        myFunction(x)
-        x.addListener(myFunction)
+        resize()
+        window.addEventListener('resize', resize)
         function expand(index) {
             let answers = document.getElementsByClassName("answer")
             let questions = document.getElementsByClassName("question")

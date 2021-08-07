@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
         <meta name=”robots” content="noindex, nofollow">
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
@@ -16,8 +17,8 @@
     <body>
         <header>
             <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo" onclick="window.open('/')" style="cursor: pointer">
-            <a href="/links">My Links</a>
-            <a href="/signup">Sign Up</a>
+            <a href="/links" class="underline">My Links</a>
+            <a href="/signup" class="underline">Sign Up</a>
             <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
@@ -27,8 +28,8 @@
                 </div>
                 <div id="hamburger_dropdown">
                     <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
-                    <a href="/login">Log In</a>
-                    <a href="/links">Links</a>
+                    <a href="/login" class="underline">Log In</a>
+                    <a href="/links" class="underline">Links</a>
                 </div>
             </div>
         </header>
@@ -54,7 +55,4 @@
             </p>
         </div>
     </body>
-    <script>
-        document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x.target.matches("#line1") || x.target.matches("#line2") || x.target.matches("#line3")) {document.getElementById("hamburger").classList.toggle("expand"); document.getElementById("hamburger_dropdown").classList.toggle("expand")}})
-    </script>
 </html>

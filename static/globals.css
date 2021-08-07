@@ -1,3 +1,9 @@
+:root {
+    --underline-1-width: 0%;
+    --underline-2-width: 0%;
+    --underline-3-width: 0%;
+}
+
 button:focus{outline: none}
 
 input:focus {outline: none}
@@ -192,4 +198,26 @@ input:invalid {box-shadow: none}
 
 .login_button img {
     margin-left: 3px;
+}
+
+.underline {
+  position: relative;
+}
+
+.underline:after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  top: 23px;
+  left: 0;
+  background-color: white;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.underline:hover:after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }

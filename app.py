@@ -5,6 +5,8 @@ from argon2 import PasswordHasher, exceptions
 from flask_cors import CORS
 from cryptography.fernet import Fernet
 from message import message
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -15,6 +17,7 @@ dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
+CLIENT_ID = os.environ.get('CLIENT_ID')
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -65,22 +68,13 @@ def location():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    tokens = mongo.db.tokens.find_one({"_id": "tokens"})['tokens']
     if request.method == 'GET':
-        token = gen_session()
-        tokens.append(token)
-        mongo.db.tokens.find_one_and_replace({"_id": "tokens"}, {"_id": "tokens", "tokens": tokens})
         return render_template('login.html', error=request.args.get('error'),
-                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
-                               token=token)
+                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links')
     else:
         data = request.get_json()
         email = data.get('email').lower()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
-        if data.get('token') not in tokens:
-            print(tokens)
-            print(data.get('token'))
-            return {"error": "login_failed", "url": redirect_link}
         if mongo.db.login.find_one({'username': email}) is None:
             return {'redirect': data['redirect'], "error": 'email_not_found'}
         if data.get('password') is not None:
@@ -88,7 +82,11 @@ def login():
                 ph.verify(mongo.db.login.find_one({'username': email})['password'], data.get('password'))
             except exceptions.VerifyMismatchError:
                 return {"redirect": data['redirect'], "error": 'incorrect_password'}
-
+        else:
+            try:
+                id_token.verify_oauth2_token(data.get('token'), requests.Request(), CLIENT_ID)
+            except ValueError:
+                return {'redirect': data['redirect'], "error": 'google_login_failed'}
         return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep')}
 
 
@@ -213,8 +211,6 @@ def links():
     if not authenticated(request.cookies, request.cookies.get('email')):
         return redirect('/login')
     email = request.cookies.get('email')
-    print(email)
-    print(request.cookies)
     user = mongo.db.login.find_one({"username": email})
     number = dict(user).get('number')
     links_db = mongo.db.links
