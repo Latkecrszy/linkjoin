@@ -21,12 +21,13 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
-cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
-                            r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
-                            r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002']},
+cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+                            r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+                            r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
                             r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/set_cookie/*': {'origins': ['https://linkjoin.xyz']},
-                            r'/get_session/*': {'origins': ['https://linkjoin.xyz']}})
+                            r'/set_cookie/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
+                            r'/get_session/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
+                            r'/location/*': {'origins': ['https://linkjoin-beta.herokuapp.com', 'https://linkjoin.xyz', 'http://127.0.0.1:5002']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 mongo = PyMongo(app)
 hasher = PasswordHasher()
