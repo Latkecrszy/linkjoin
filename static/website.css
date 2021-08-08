@@ -209,7 +209,9 @@ footer {
 }
 
 #main_body {
+    overflow: hidden;
     margin: 0 30px 0 0;
+    padding-bottom: 60px;
     display: flex;
     flex-direction: column;
 }
@@ -226,11 +228,21 @@ footer {
 @media (max-width: 890px) {
     .pair img {display: none;}
 }
+
+@media (max-width: 500px) {
+    #faq {width: 80vw;}
+}
 @media (max-width: 450px) {
     .get_started {width: 200px}
 }
 
-@media (max-width: 370px) {
+@media (max-width: 475px) {
+    #main_body {
+        padding-bottom: 110px
+    }
+}
+
+@media (max-width: 380px) {
     #left_content {
         margin-left: 20%;
     }
