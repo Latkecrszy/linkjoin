@@ -40,6 +40,7 @@ footer {
     height: 2.5rem;
     width: 2.5rem;
     cursor: pointer;
+    margin-right: 20px;
 }
 
 #hamburger_dropdown.expand {display: flex; margin-left: auto}
