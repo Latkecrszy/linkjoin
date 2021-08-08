@@ -84,19 +84,6 @@
 
 }
 
-@media (max-width: 985px) {
-    #left_content {display: none}
-    #password, #email, #phone {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
-    #gsignin {width: 70vw; max-width: 300px; min-width: 150px;}
-    #welcome {margin-right: 0}
-
-}
-
-@media (max-width: 730px) {
-    svg {display: none}
-    #login_html, #login_body {background: #091B30; overflow-x: visible !important;}
-}
-
 .error {
     font-size: 14px;
     opacity: 0.7;
@@ -135,4 +122,29 @@
     font: 400 15px Roboto;
     border: none;
     border-bottom: 2px solid white;
+}
+
+@media (max-width: 985px) {
+    #left_content {display: none}
+    #password, #email, #phone {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
+    #gsignin {width: 70vw; max-width: 300px; min-width: 150px;}
+    #welcome {margin-right: 0}
+
+}
+
+@media (max-width: 730px) {
+    svg {display: none}
+    #login_html, #login_body {background: #091B30}
+}
+
+@media (max-width: 500px) {
+    #password, #email, #phone {
+        max-width: 60vw;
+    }
+}
+
+@media (max-width: 350px) {
+    #password, #email, #phone {
+        max-width: 50vw;
+    }
 }
