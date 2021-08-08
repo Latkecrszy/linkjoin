@@ -33,7 +33,14 @@ footer {
 
 
 /*Hamburger Menu*/
-#hamburger {cursor: pointer; display: none; margin: 0 30px 0 auto;}
+#hamburger {
+    display: none;
+    flex-flow: column wrap;
+    justify-content: space-between;
+    height: 2.5rem;
+    width: 2.5rem;
+    cursor: pointer;
+}
 
 #hamburger_dropdown.expand {display: flex; margin-left: auto}
 
@@ -42,12 +49,13 @@ footer {
 #dropdown {display: none; flex-direction: column}
 
 #line1, #line2, #line3 {
-  width: 35px;
-  height: 5px;
-  background-color: white;
-  margin: 6px 0;
-  transition: 0.4s;
-  border-radius: 5px;
+    height: 5px;
+    width: 32px;
+    background: white;
+    border-radius: 5px;
+    margin: 3px 0;
+    transform-origin: left;
+    transition: all 0.5s;
 }
 
 #hamburger_dropdown {
@@ -55,19 +63,19 @@ footer {
     height: 230px;
     flex-direction: column;
     justify-content: space-between;
-    margin-left: auto;
+    position: absolute;
+    top: 70px;
+    right: -5px;
 }
 
 .expand #line1 {
-    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-    transform: rotate(-45deg) translate(-9px, 6px);
+    transform: rotate(45deg);
 }
 
 .expand #line2 {opacity: 0}
 
 .expand #line3 {
-    -webkit-transform: rotate(45deg) translate(-8px, -8px);
-    transform: rotate(45deg) translate(-8px, -8px);
+    transform: rotate(-45deg);
 }
 
 /*Left Content*/
@@ -250,15 +258,10 @@ footer {
     header a {
         display: none;
     }
-    #hamburger {
-        display: inline-block;
-    }
+    #hamburger {display: flex;}
     #motto, #description {margin-left: -30px;}
     #dropdown {
         display: flex;
-    }
-    #hamburger a {
-        display: block;
     }
     #hamburger_dropdown {
         display: none;
