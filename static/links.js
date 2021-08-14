@@ -17,7 +17,7 @@ function blur(show) {
 async function db(username) {
     if (await fetch(`/db?email=${username}`).then(response => response.text()) === 'Not logged in') {
         console.log('test')
-        return location.replace('/login')
+        return location.replace('/login?error=not_logged_in')
     }
     return await fetch(`/db?email=${username}`).then(response => response.json())
 }
@@ -128,8 +128,8 @@ function copyLink(link, id) {
 async function load_links(username, sort) {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch(`/get_session?email=${username}`).then(id => id.json())
-    if (sessionId === null) {location.replace('/login')}
-    else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login')}
+    if (sessionId === null) {location.replace('/login?error=not_logged_in')}
+    else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
     let link_events = []

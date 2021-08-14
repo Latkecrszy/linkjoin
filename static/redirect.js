@@ -36,7 +36,7 @@ async function start(username, links, sort) {
                     await fetch(`/changevar?email=${username}&id=${link['id']}&var=days&days=${link['days']}`, {method: 'POST'})
                 }
                 else {
-                    await fetch(`/delete?id=${link['id']}`, {method: 'POST'})
+                    await fetch(`/delete?id=${link['id']}&email=${username}`, {method: 'POST'})
                 }
                 return await pause(username, user_links, sort, 46000, "load_links")
             }

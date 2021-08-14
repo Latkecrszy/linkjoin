@@ -69,6 +69,7 @@
         </div>
     </body>
     <script>
+        document.getElementById('{{ error }}').style.display = "block"
         let logged = false
         async function logIn() {
             const data = await fetch('/login', {

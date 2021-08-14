@@ -207,7 +207,7 @@ def register():
 @app.route('/links', methods=['GET'])
 def links():
     if not authenticated(request.cookies, request.cookies.get('email')):
-        return redirect('/login')
+        return redirect('/login?error=not_logged_in')
     email = request.cookies.get('email')
     user = mongo.db.login.find_one({"username": email})
     number = dict(user).get('number')
@@ -225,7 +225,7 @@ def links():
     print(number)
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
-                           country_codes=json.load(open("country_codes.json")))
+                           country_codes=json.load(open("country_codes.json")), error=request.args.get('error'))
 
 
 @app.route('/delete', methods=['POST'])
@@ -403,23 +403,10 @@ def reset_password():
     return render_template('forgot_password.html')
 
 
-@app.route('/premium', methods=['GET'])
-def premium():
-    if request.cookies.get('email'):
-        logged_in = 'true'
-        login_db = mongo.db.login
-        refer = f'https://linkjoin.xyz/signup?refer={dict(login_db.find_one({"username": request.cookies.get("email")}))["refer"]}'
-    else:
-        logged_in = 'false'
-        refer = 'none'
-    return render_template('premium.html', logged_in=logged_in, refer=refer)
-
-
 @app.route("/users", methods=['GET'])
 def users():
-    login_db = mongo.db.login
-    print('\n'.join([str(doc) for doc in login_db.find()]))
-    print(len([_ for _ in login_db.find()]))
+    print('\n'.join([str(doc) for doc in mongo.db.login.find()]))
+    print(len([_ for _ in mongo.db.login.find()]))
     return render_template('404.html')
 
 
