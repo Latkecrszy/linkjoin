@@ -14,12 +14,18 @@ function blur(show) {
     }
 }
 
+const buildUrl = (base, ...queryParams) => {
+    const url = new URL(base, document.location.href);
+    for (const [name, value] of queryParams)
+      url.searchParams.append(name, `${value}`);
+    return url.toString();
+}
+
 async function db(username) {
-    if (await fetch(`/db?email=${username}`).then(response => response.text()) === 'Not logged in') {
-        console.log('test')
+    if (await fetch(`/db`).then(response => response.text()) === 'Not logged in') {
         return location.replace('/login?error=not_logged_in')
     }
-    return await fetch(`/db?email=${username}`).then(response => response.json())
+    return await fetch(`/db`).then(response => response.json())
 }
 
 async function popUp(popup) {

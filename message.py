@@ -49,7 +49,6 @@ def message():
             if user is None:
                 print(user)
                 print(document['username'])
-            # TODO: Find workaround to waiting 60 seconds, as that may skip minutes
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
                 user_info = {"days": document['days'],

@@ -144,8 +144,6 @@ def start_session():
 
 @app.route('/set_cookie', methods=['GET'])
 def set_cookie():
-    # TODO: Receive token generated in login/signup endpoint and validate in database. Because it's coming from
-    # TODO: Login/signup endpoint, it can be associated with email address to validate it's the right token.
     if not mongo.db.tokens.find_one({'email': request.args.get('email'), 'token': request.args.get('token')}):
         return redirect('/login')
     mongo.db.tokens.find_one_and_delete({'email': request.args.get('email'), 'token': request.args.get('token')})
@@ -156,6 +154,7 @@ def set_cookie():
         mongo.db.sessions.find_one_and_update({'username': request.args.get('email')}, {'$set': {'session_id': session_id}})
     else:
         mongo.db.sessions.insert_one({'username': request.args.get('email'), 'session_id': session_id})
+    print(request.args.get('keep'))
     if request.args.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
@@ -286,7 +285,7 @@ def disable():
 
 @app.route('/db', methods=['GET'])
 def db():
-    if not authenticated(request.cookies, request.args.get('email')):
+    if not authenticated(request.cookies, request.cookies.get('email')):
         return 'Not logged in', 403
     links_db = mongo.db.links
     links_list = links_db.find({'username': request.args.get('email')})
@@ -497,6 +496,11 @@ def receive_vonage_message():
                 "text": "Ok, we won't remind you about this link again"}
         response = requests.post("https://rest.nexmo.com/sms/json", data=data)
     return 'done', 200
+
+
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
