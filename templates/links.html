@@ -16,12 +16,14 @@
         <script>
             let date = new Date()
             let number = "{{ number }}"
+            console.log(number)
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch(`/setoffset?offset=${offset}&email={{username}}`, {method: 'POST'})
             const countryCodes = {{ country_codes|tojson|safe }}
 
         </script>
+        <script src="{{ url_for('static', filename='links.js') }}"></script>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% if style == "old" %}
             <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
@@ -54,7 +56,7 @@
                 <img src="{{ url_for('static', filename='images/plus.png') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
                     <a><div class="button header_button underline" onclick="addNumberShow()">
-                        {% if number == "None" %} Add Number {% else %} Change Number {% endif %}
+                        {% if number == None %} Add Number {% else %} Change Number {% endif %}
                     </div></a>
                     <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
@@ -67,7 +69,7 @@
                     </div>
                     <div id="hamburger_dropdown">
                         <a><div class="button header_button underline" onclick="addNumberShow()">
-                            {% if number == "None" %} Add Number {% else %} Change Number {% endif %}
+                            {% if number == None %} Add Number {% else %} Change Number {% endif %}
                         </div></a>
                         <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                         <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
@@ -344,5 +346,4 @@
             </div>
         </div>
     </body>
-<script src="{{ url_for('static', filename='links.js') }}"></script>
 </html>
