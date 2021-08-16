@@ -1,6 +1,7 @@
 let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
 let created = false;
+console.log('test1')
 
 function blur(show) {
     const blurElement = document.getElementById("blur")
