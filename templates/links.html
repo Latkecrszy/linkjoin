@@ -33,19 +33,32 @@
             <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
         {% endif %}
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
+        <script>console.log('test8')</script>
         <link rel="preconnect" href="https://fonts.gstatic.com">
+        <script>console.log('test9')</script>
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <script>console.log('test10')</script>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <script>console.log('test11')</script>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <script>console.log('test12')</script>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+        <script>console.log('test13')</script>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <script>console.log('test14')</script>
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <script>console.log('test15')</script>
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
+        <script>console.log('test16')</script>
         <script src="{{ url_for('static', filename='globals.js') }}"></script>
+        <script>console.log('test17')</script>
         <title>LinkJoin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <script>console.log('test18')</script>
         <meta name=”robots” content="index, follow"/>
+        <script>console.log('test19')</script>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
+        <script>console.log('test20')</script>
     </head>
     <body id="links_body">
         <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
