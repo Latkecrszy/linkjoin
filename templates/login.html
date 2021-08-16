@@ -70,7 +70,7 @@
     </body>
     <script>
         document.getElementById('{{ error }}').style.display = "block"
-        let logged = false
+        var logged = false;
         async function logIn() {
             const data = await fetch('/login', {
                     headers: {'Content-Type': 'application/json'},

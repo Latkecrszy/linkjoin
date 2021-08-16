@@ -443,7 +443,9 @@ async function tutorial(item, skip) {
         await fetch(`/tutorial?email=${global_username}&step=done`, {method: 'POST'})
         tutorial_complete = true
     }
-    await fetch(`/tutorial?email=${global_username}&step=${item}`, {method: 'POST'})
+    else {
+        await fetch(`/tutorial?email=${global_username}&step=${item}`, {method: 'POST'})
+    }
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}

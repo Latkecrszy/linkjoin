@@ -65,7 +65,7 @@
         </div>
     </body>
     <script>
-        let signed = false
+        var signed = false;
         const date = new Date()
         let offset = (date.getTimezoneOffset()/60).toString()
         if (!offset.includes(".")) {offset = `${offset}.0`}
