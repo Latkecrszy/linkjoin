@@ -133,10 +133,12 @@ function copyLink(link, id) {
 }
 
 async function load_links(username, sort) {
+    console.log('test4')
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch(`/get_session?email=${username}`).then(id => id.json())
     if (sessionId === null) {location.replace('/login?error=not_logged_in')}
     else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
+    console.log('test5')
     global_username = username
     global_sort = sort
     let link_events = []
@@ -147,6 +149,7 @@ async function load_links(username, sort) {
         insert.appendChild(placeHolder)
     }
     const links = await db(username)
+    console.log('test6')
     if (links.toString() === '') {
         await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
@@ -266,7 +269,7 @@ async function load_links(username, sort) {
     link_events.forEach(link => insert.innerHTML += link)
     await checkTutorial()
     clearInterval(open)
-    console.log('test4')
+    console.log('test7')
     start(username, links, sort)
 }
 
