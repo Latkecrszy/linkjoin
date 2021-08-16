@@ -36,11 +36,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <script src="https://cdn.jsdelivr.net/webshim/1.14.5/polyfiller.js"></script>
-        <script>
-        webshims.setOptions('forms-ext', {types: 'date'});
-        webshims.polyfill('forms forms-ext');
-        </script>
         <script src="{{ url_for('static', filename='redirect.js') }}"></script>
         <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <title>LinkJoin</title>
