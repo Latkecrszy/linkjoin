@@ -266,6 +266,7 @@ async function load_links(username, sort) {
     link_events.forEach(link => insert.innerHTML += link)
     await checkTutorial()
     clearInterval(open)
+    console.log('test4')
     start(username, links, sort)
 }
 
@@ -514,3 +515,4 @@ document.addEventListener("click", (e) => {
 })
 
 document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
+console.log('test2')
