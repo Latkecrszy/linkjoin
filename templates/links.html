@@ -26,6 +26,7 @@
         <script src="{{ url_for('static', filename='links.js') }}"></script>
         <script>
             console.log('test3')
+            load_links('{{ username }}', '{{ sort }}')
         </script>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
         {% if style == "old" %}
@@ -46,7 +47,7 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <body id="links_body" onload="load_links('{{ username }}', '{{ sort }}')">
+    <body id="links_body">
         <img src="{{ url_for('static', filename='images/plus.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
