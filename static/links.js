@@ -204,6 +204,7 @@ async function load_links(username, sort) {
         }
         else {final = links}
         let iterator = 0;
+        const checked = []
         await refresh()
         for (const link of final) {
             const time = link["time"]
@@ -232,7 +233,7 @@ async function load_links(username, sort) {
                 checkboxChecked = false
             }
             const parameterLink = JSON.stringify(link).replaceAll('"', "'")
-            link_events.push(`<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+            const link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
                 <div class="time">${linkTime}</div>
                 <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
                     <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
@@ -249,16 +250,12 @@ async function load_links(username, sort) {
                     <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')">Copy link</div>
                     ${password}
                 </div>
-                <input class="checkbox" id="toggle${iterator}" type="checkbox" checked="${checkboxChecked}">
-                <label class="switch" id="for${iterator}" for="toggle${iterator}"></label>
+                <input class="checkbox" id="toggle${iterator}" type="checkbox">
+                <label class="switch" id="for${iterator}" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')"></label>
                 <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
-            </div>`)
-            insert.innerHTML += link_events[link_events.length-1]
-            if (!checkboxChecked) {
-                console.log('clicking')
-                document.getElementById(`toggle${iterator}`).click()
-            }
-            document.getElementById(`for${iterator}`).setAttribute('onclick', `disable(${parameterLink}, '${username}')`)
+            </div>`
+            checked.push(checkboxChecked)
+            insert.innerHTML += link_event
             iterator += 1
         }
         document.addEventListener("click", (e) => {
@@ -269,6 +266,12 @@ async function load_links(username, sort) {
 
             }
         })
+        for (const [index, Checked] of checked.entries()) {
+            if (Checked) {
+                document.getElementById('toggle'+index).checked = 'checked'
+            }
+
+        }
     }
     const clickToCopy = document.getElementById("click_to_copy")
     clickToCopy.addEventListener('click', async () => {
