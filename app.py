@@ -21,13 +21,17 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
-cors = CORS(app, resources={r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/tutorial_complete/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/tutorial/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/set_cookie/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/get_session/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
-                            r'/location/*': {'origins': ['https://linkjoin-beta.herokuapp.com', 'https://linkjoin.xyz', 'http://127.0.0.1:5002']}})
+cors = CORS(app, resources={
+    r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+    r'/tutorial_complete/*': {
+        'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+    r'/tutorial/*': {
+        'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+    r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
+    r'/set_cookie/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
+    r'/get_session/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
+    r'/location/*': {
+        'origins': ['https://linkjoin-beta.herokuapp.com', 'https://linkjoin.xyz', 'http://127.0.0.1:5002']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 mongo = PyMongo(app)
 hasher = PasswordHasher()
@@ -46,7 +50,8 @@ def gen_session():
 
 def authenticated(cookies, email):
     try:
-        return cookies.get('email') == email and mongo.db.sessions.find_one({'username': email})['session_id'] == cookies.get('session_id')
+        return cookies.get('email') == email and mongo.db.sessions.find_one({'username': email})[
+            'session_id'] == cookies.get('session_id')
     except TypeError:
         return False
 
@@ -74,6 +79,7 @@ def login():
                                redirect=request.args.get('redirect') if request.args.get('redirect') else '/links')
     else:
         data = request.get_json()
+        print(request.get_json())
         email = data.get('email').lower()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         if mongo.db.login.find_one({'username': email}) is None:
@@ -144,17 +150,17 @@ def start_session():
 
 @app.route('/set_cookie', methods=['GET'])
 def set_cookie():
-    if not mongo.db.tokens.find_one({'email': request.args.get('email'), 'token': request.args.get('token')}):
+    email = request.args.get('email').lower()
+    if not mongo.db.tokens.find_one({'email': email, 'token': request.args.get('token')}):
         return redirect('/login')
-    mongo.db.tokens.find_one_and_delete({'email': request.args.get('email'), 'token': request.args.get('token')})
+    mongo.db.tokens.find_one_and_delete({'email': email, 'token': request.args.get('token')})
     response = make_response(redirect(request.args.get('url')))
-    response.set_cookie('email', request.args.get('email'))
+    response.set_cookie('email', email)
     session_id = gen_session()
-    if mongo.db.sessions.find_one({'username': request.args.get('email')}):
-        mongo.db.sessions.find_one_and_update({'username': request.args.get('email')}, {'$set': {'session_id': session_id}})
+    if mongo.db.sessions.find_one({'username': email}):
+        mongo.db.sessions.find_one_and_update({'username': email}, {'$set': {'session_id': session_id}})
     else:
-        mongo.db.sessions.insert_one({'username': request.args.get('email'), 'session_id': session_id})
-    print(request.args.get('keep'))
+        mongo.db.sessions.insert_one({'username': email, 'session_id': session_id})
     if request.args.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
@@ -164,9 +170,9 @@ def set_cookie():
 
 @app.route('/get_session', methods=['GET'])
 def get_session():
-    if not authenticated(request.cookies, request.args.get('email')):
+    if not authenticated(request.cookies, request.headers.get('email')):
         return 'Not logged in', 403
-    return jsonify(mongo.db.sessions.find_one({'username': request.args.get('email')}, projection={"_id": 0}))
+    return jsonify(mongo.db.sessions.find_one({'username': request.headers.get('email')}, projection={"_id": 0}))
 
 
 @app.route('/register', methods=['POST'])
@@ -205,9 +211,9 @@ def register():
 
 @app.route('/links', methods=['GET'])
 def links():
-    if not authenticated(request.cookies, request.cookies.get('email')):
+    email = request.cookies.get('email').lower()
+    if not authenticated(request.cookies, email):
         return redirect('/login?error=not_logged_in')
-    email = request.cookies.get('email')
     user = mongo.db.login.find_one({"username": email})
     number = dict(user).get('number')
     links_db = mongo.db.links
@@ -217,11 +223,7 @@ def links():
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
         for link in links_db.find({'username': email})]
     link_names = [link['name'] for link in links_list]
-    sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and \
-                                                                   json.loads(request.cookies.get('sort'))[
-                                                                       'sort'] in ['time', 'day',
-                                                                                   'datetime'] else 'no'
-    print(number)
+    sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'))
@@ -229,10 +231,11 @@ def links():
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
     links_db = mongo.db.links
-    links_db.find_one_and_delete({'username': request.cookies.get('email'), 'id': int(request.args.get('id'))})
+    links_db.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     return 'done', 200
 
 
@@ -248,7 +251,6 @@ def update():
         else:
             link = data.get('link')
         email = request.cookies.get('email')
-        # 'share': links_db.find_one({'id': int(data.get('id'))})['share'],
         insert = {'username': email, 'id': int(data.get('id')),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': 'true',
@@ -269,26 +271,27 @@ def update():
 
 @app.route("/disable", methods=['POST'])
 def disable():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email')):
         return 'Not logged in', 403
     links_db = mongo.db.links
     email = request.cookies.get('email')
-    link = links_db.find_one({"username": email, 'id': int(request.args.get("id"))})
+    link = links_db.find_one({"username": email, 'id': int(data.get("id"))})
     if link['active'] == "true":
-        links_db.find_one_and_update({"username": email, 'id': int(request.args.get("id"))},
+        links_db.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'false'}})
     else:
-        links_db.find_one_and_update({"username": email, 'id': int(request.args.get("id"))},
+        links_db.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'true'}})
     return 'done', 200
 
 
 @app.route('/db', methods=['GET'])
 def db():
-    if not authenticated(request.cookies, request.args.get('email')):
+    if not authenticated(request.cookies, request.headers.get('email')):
         return 'Not logged in', 403
     links_db = mongo.db.links
-    links_list = links_db.find({'username': request.args.get('email')})
+    links_list = links_db.find({'username': request.headers.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for index, i in enumerate(links_list):
@@ -310,12 +313,14 @@ def sort():
 
 @app.route('/changevar', methods=['POST'])
 def change_var():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
     links_db = mongo.db.links
-    links_db.find_one_and_update({'username': request.args.get('username'), 'id': int(request.args.get('id'))},
+    links_db.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {
-                                     request.args.get('var'): request.args.get(request.args.get('var')).split(",")}})
+                                     data.get('variable'): data.get(data.get('variable'))}})
+    print(data.get(data.get('variable')))
     return redirect('/links')
 
 
@@ -420,20 +425,22 @@ def viewlinks():
 
 @app.route("/tutorial", methods=['POST'])
 def tutorial():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
     login_db = mongo.db.login
-    login_db.find_one_and_update({"username": request.args.get("email").lower()},
-                                 {"$set": {"tutorial": request.args.get("step")}})
+    login_db.find_one_and_update({"username": data.get('email').lower()},
+                                 {"$set": {"tutorial": data.get("step")}})
     return 'done'
 
 
 @app.route("/tutorial_complete", methods=['POST'])
 def tutorial_complete():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
     login_db = mongo.db.login
-    user = login_db.find_one({"username": request.args.get("email").lower()}, projection={"_id": 0, "password": 0})
+    user = login_db.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
     if user:
         return jsonify(dict(user))
     return 'done', 200
@@ -467,22 +474,28 @@ def unsubscribe():
 
 @app.route("/setoffset", methods=['POST'])
 def setoffset():
-    if not authenticated(request.cookies, request.args.get('email')):
+    print(request.method)
+    print(request.get_data())
+    print(request.get_json())
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
-    mongo.db.login.find_one_and_update({"username": request.args.get("username")}, {"$set": {"offset": request.args.get("offset")}})
+    mongo.db.login.find_one_and_update({"username": data.get("email").lower()},
+                                       {"$set": {"offset": data.get("offset")}})
     return 'done', 200
 
 
 @app.route("/add_number", methods=['POST'])
 def add_number():
-    if not authenticated(request.cookies, request.args.get('email')):
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
         return 'Not logged in', 403
-    number = ''.join([i for i in request.args.get('number') if i in '1234567890'])
+    number = ''.join([i for i in data.get('number') if i in '1234567890'])
     if len(number) < 11:
-        number = request.args.get('countrycode') + str(number)
+        number = data.get('countrycode') + str(number)
     if number.isdigit():
         number = int(number)
-    mongo.db.login.find_one_and_update({"username": request.args.get("email")}, {"$set": {"number": number}})
+    mongo.db.login.find_one_and_update({"username": data.get("email")}, {"$set": {"number": number}})
     return 'done', 200
 
 

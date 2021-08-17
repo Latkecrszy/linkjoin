@@ -33,10 +33,18 @@ async function start(username, links, sort) {
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)
-                    await fetch(`/changevar?email=${username}&id=${link['id']}&var=days&days=${link['days']}`, {method: 'POST'})
+                    await fetch('/changevar', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({email: username, id: link['id'], variable: 'days', days: link['days']})
+                    })
                 }
                 else {
-                    await fetch(`/delete?id=${link['id']}&email=${username}`, {method: 'POST'})
+                    await fetch('/delete', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({id: link['id'], email: username})
+                    })
                 }
                 return await pause(username, user_links, sort, 46000, "load_links")
             }

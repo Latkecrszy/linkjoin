@@ -19,7 +19,8 @@
             console.log(number)
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
-            fetch(`/setoffset?offset=${offset}&email={{username}}`, {method: 'POST'})
+            fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({offset: offset, email: '{{username}}'})})
             const countryCodes = {{ country_codes|tojson|safe }}
 
         </script>
@@ -74,15 +75,19 @@
                     </div>
                 </div>
             </header>
-            <div id="box">
-                <div id="sort_by">Sort By:</div>
-                <select onchange="sort()" id="sort">
-                    <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
-                    <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
-                    <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
-                    <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
-                </select>
+            <div id="boxes">
+                <div id="box">
+                    <div id="sort_by">Sort By:</div>
+                    <select onchange="sort()" id="sort">
+                        <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
+                        <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
+                        <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
+                        <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
+                    </select>
+                </div>
+
             </div>
+
                 <div class="gone" id="disappear">
                     <img src="{{ url_for('static', filename='images/links_loader.svg') }}" height="430" width="450" alt="Man with clock">
                     <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
@@ -342,6 +347,12 @@
                 <input id="number" type="text" placeholder="Phone number">
                 <button id="add_number" onclick="add_number()">Add Number</button>
             </div>
+        </div>
+        <div id="popup_notes">
+            <h2>Meeting notes for </h2>
+            <textarea>
+
+            </textarea>
         </div>
     </body>
 </html>

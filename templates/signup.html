@@ -71,31 +71,33 @@
         if (!offset.includes(".")) {offset = `${offset}.0`}
         const countryCodes = {{ country_codes|tojson|safe }}
         async function signUp() {
-            let country = await fetch('https://linkjoin.xyz/location')
-            country = await country.json()
+            let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
             const data = await fetch('/signup', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
-                body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
-                keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
-                offset: offset, password: document.getElementById("password").value,
-                countrycode: countryCodes[country['country']]['code']}),
+                body: JSON.stringify({
+                    email: document.getElementById("email").value, redirect: "{{ redirect }}",
+                    keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
+                    offset: offset, password: document.getElementById("password").value,
+                    countrycode: countryCodes[country['country']]['code']
+                }),
             })
             await processData(data)
         }
         function signedUp() {signed = true}
         async function onSignUp(googleUser) {
             if (signed) {
-                let country = await fetch('https://linkjoin.xyz/location')
-                country = await country.json()
+                let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
                 let profile = await googleUser.getBasicProfile()
                 const data = await fetch('/signup', {
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
-                    body: JSON.stringify({email: profile.getEmail(), redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
-                    offset: offset, countrycode: countryCodes[country['country']]['code'],
-                    token: googleUser.getAuthResponse().id_token})
+                    body: JSON.stringify({
+                        email: profile.getEmail(), redirect: "{{ redirect }}",
+                        keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
+                        offset: offset, countrycode: countryCodes[country['country']]['code'],
+                        token: googleUser.getAuthResponse().id_token
+                    })
                 })
                 await processData(data)
             }

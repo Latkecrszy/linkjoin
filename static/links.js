@@ -23,10 +23,10 @@ const buildUrl = (base, ...queryParams) => {
 }
 
 async function db(username) {
-    if (await fetch(`/db?email=${username}`).then(response => response.text()) === 'Not logged in') {
+    if (await fetch('/db', {headers: {'email': username}}).then(response => response.text()) === 'Not logged in') {
         return location.replace('/login?error=not_logged_in')
     }
-    return await fetch(`/db?email=${username}`).then(response => response.json())
+    return await fetch('/db', {headers: {'email': username}}).then(response => response.json())
 }
 
 async function popUp(popup) {
@@ -96,7 +96,11 @@ async function delete_(link) {
     document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
     document.getElementById("delete_button").addEventListener('click', async () => {
         hide('popup_delete')
-        await fetch(`/delete?id=${link['id']}&email=${link['username']}`, {method: 'POST'})
+        await fetch('/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: link['id'], email: link['username']})
+        })
         await refresh()
         await load_links(link['username'], global_sort)
     })
@@ -111,7 +115,11 @@ function share(link) {
 }
 
 async function disable(link, username) {
-    await fetch(`/disable?id=${link['id']}&email=${link['usernme']}`, {method: 'POST'})
+    await fetch('/disable', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: link['username'], id: link['id']})
+    })
     await refresh()
     await load_links(username, global_sort)
 }
@@ -135,7 +143,7 @@ function copyLink(link, id) {
 async function load_links(username, sort) {
     console.log('test4')
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-    const sessionId = await fetch(`/get_session?email=${username}`).then(id => id.json())
+    const sessionId = await fetch('/get_session', {headers: {'email': username}}).then(id => id.json())
     if (sessionId === null) {location.replace('/login?error=not_logged_in')}
     else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
     console.log('test5')
@@ -196,6 +204,7 @@ async function load_links(username, sort) {
         }
         else {final = links}
         let iterator = 0;
+        await refresh()
         for (const link of final) {
             const time = link["time"]
             const time_list = time.split(":")
@@ -213,6 +222,10 @@ async function load_links(username, sort) {
             let linkOpacity = 1
             let nameContainerOpacity = 1
             let checkboxChecked = true
+            console.log(link['active'])
+            if (link['active'] !== 'true') {
+                console.log('thing')
+            }
             if (link['active'] === "false") {
                 linkOpacity = 0.6
                 nameContainerOpacity = 0.7
@@ -237,9 +250,15 @@ async function load_links(username, sort) {
                     ${password}
                 </div>
                 <input class="checkbox" id="toggle${iterator}" type="checkbox" checked="${checkboxChecked}">
-                <label class="switch" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')"></label>
+                <label class="switch" id="for${iterator}" for="toggle${iterator}"></label>
                 <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
             </div>`)
+            insert.innerHTML += link_events[link_events.length-1]
+            if (!checkboxChecked) {
+                console.log('clicking')
+                document.getElementById(`toggle${iterator}`).click()
+            }
+            document.getElementById(`for${iterator}`).setAttribute('onclick', `disable(${parameterLink}, '${username}')`)
             iterator += 1
         }
         document.addEventListener("click", (e) => {
@@ -259,14 +278,15 @@ async function load_links(username, sort) {
             clickToCopy.innerText = "Click to Copy"
         })
     })
-    let tutorial_completed = await fetch(`/tutorial_complete?email=${username}`, {method: 'POST'})
+    let tutorial_completed = await fetch('/tutorial_complete', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({'email': username})})
     tutorial_completed = await tutorial_completed.json()
 
     if (tutorial_completed['tutorial'] !== "done" && window.innerWidth >= 1000) {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
     //await sleep(200)
-    await refresh()
-    link_events.forEach(link => insert.innerHTML += link)
     await checkTutorial()
     clearInterval(open)
     console.log('test7')
@@ -362,13 +382,21 @@ async function tutorial(item, skip) {
         let newWindow = window.open()
         if (newWindow) {
             document.getElementById(`tutorial1`).style.display = "flex"
-            await fetch(`/tutorial?email=${global_username}&step=1`, {method: 'POST'})
+            await fetch(`/tutorial`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'email': global_username, 'step': 1})
+            })
             document.getElementById("box").style.zIndex = "5"
             document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
-        await fetch(`/tutorial?email=${global_username}&step=0`, {method: 'POST'})
+        await fetch(`/tutorial`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'email': global_username, 'step': 0})
+        })
         document.getElementById(`tutorial0`).style.display = "flex"
         return document.getElementById("check_popup").style.display = "none"
     }
@@ -440,11 +468,19 @@ async function tutorial(item, skip) {
     }
     if (item === 11) {
         document.getElementById("tutorial9").style.display = "none"
-        await fetch(`/tutorial?email=${global_username}&step=done`, {method: 'POST'})
+        await fetch(`/tutorial`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'email': global_username, 'step': 'done'})
+        })
         tutorial_complete = true
     }
     else {
-        await fetch(`/tutorial?email=${global_username}&step=${item}`, {method: 'POST'})
+        await fetch(`/tutorial`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'email': global_username, 'step': item})
+        })
     }
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
@@ -453,7 +489,13 @@ async function tutorial(item, skip) {
     catch {}
 }
 
-async function skipTutorial() {return await fetch(`/tutorial?email=${global_username}&step=done`, {method: 'POST'})}
+async function skipTutorial() {
+    return await fetch(`/tutorial`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({'email': global_username, 'step': 'done'})
+    })
+}
 
 
 async function refresh() {
@@ -467,15 +509,24 @@ async function add_number() {
     let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
     const countryCode = countryCodes[country['country']]
     let number = document.getElementById("number").value
-    await fetch(`/add_number?email=${global_username}&countrycode=${countryCode['code']}&number=${number}`,
-        {method: 'POST'})
+    await fetch('/add_number',
+        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+                'email': global_username,
+                'countrycode': countryCode['code'],
+                'number': number})}
+    )
     document.getElementById("add_number_div").style.display = "none"
     blur(false)
 }
 
 async function no_add_number() {
     if (number === "None") {number = ''}
-    await fetch(`/add_number?email=${global_username}&countrycode=&number=${number}`, {method: 'POST'})
+    await fetch('/add_number',
+        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
+                'email': global_username,
+                'countrycode': '',
+                'number': number})}
+    )
     document.getElementById("add_number_div").style.display = "none"
     blur(false)
 }
@@ -485,7 +536,8 @@ async function no_add_number() {
 // TODO: Paginator and search bar for your meeting notes, as well as an option to delete the note.
 
 async function checkTutorial() {
-    const tutorial_completed = await fetch(`/tutorial_complete?email=${global_username}`, {method: 'POST'})
+    const tutorial_completed = await fetch('/tutorial_complete',
+        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: global_username})})
         .then(response => response.json())
     if (tutorial_completed['tutorial'] === "done" && number === "None" && window.innerWidth >= 1000) {
         console.log(tutorial_completed)
