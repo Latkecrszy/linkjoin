@@ -7,17 +7,17 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
         <title>404 Not Found</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
         <meta name=”robots” content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
     </head>
     <body style="background-color: #091B30; margin: 0; padding-right: 15px; overflow: hidden;">
         <header>
-            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <img id="logo" src="{{ url_for('static', filename='images/logo-text.svg') }}" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
             <a href="/links" class="underline">Links</a>
             <a href="/login" class="underline">Log In</a>
-            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -25,12 +25,12 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/login" class="underline">Log In</a>
                     <a href="/links" class="underline">Links</a>
                 </div>
             </div>
         </header>
-        <img src="{{ url_for('static', filename='images/404.png') }}" style="height: max(50vw, 400px); width: max(50vw, 400px); margin: max(-70px, -8vh) 0 0 28vw">
+        <img src="{{ url_for('static', filename='images/404.svg') }}" style="height: max(50vw, 400px); width: max(50vw, 400px); margin: max(-70px, -8vh) 0 0 28vw">
     </body>
 </html>

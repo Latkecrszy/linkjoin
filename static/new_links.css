@@ -218,6 +218,53 @@
     pointer-events: auto;
 }
 
+.notes::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px
+}
+
+.notes {
+    font-size: 18px;
+    border: 1px solid white;
+    border-radius: 4px;
+    height: 80%;
+    width: 80%;
+    background: #142539;
+    margin-left: 10%;
+    color: white;
+    box-sizing: border-box;
+    padding: 10px;
+    resize: none;
+    overflow-y: scroll;
+    transition: 0.1s
+}
+
+.notes:focus {
+    outline: none;
+    border: 2px solid white;
+}
+
+.notes::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notes::-webkit-scrollbar-track {
+  border-radius: 12px;
+}
+
+.notes::-webkit-scrollbar-thumb {
+  background: #2B8FD8;
+  border-radius: 12px;
+}
+
+.back_arrow {
+    margin: 10px 0 -40px 20px;
+    height: max(2vw, 35px);
+    width: max(1.2vw, 26px);
+    cursor: pointer;
+    z-index: 2;
+}
+#popup_notes h2 {text-align: center}
 
 @media (max-width: 900px) {
     .link_event {margin: 0 0 5px 0; width: 100%; height: 150px;}

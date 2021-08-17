@@ -31,14 +31,14 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
         <title>LinkJoin | Auto Join Zoom Meetings With Ease</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
         <!--<script data-ad-client="ca-pub-8945030271612534" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://linkjoin.xyz">
         <meta property="og:title" content="LinkJoin">
         <meta property="og:description" content="LinkJoin helps you join meetings at exactly the right time, even when you forget.">
-        <meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
+        <meta property="og:image" content="{{ url_for('static', filename='images/logo.svg') }}">
         <meta name="description" content="Auto join Zoom meetings and classes with ease. Never be late again, with LinkJoin.">
         <meta name=”robots” content="index, follow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -49,10 +49,10 @@
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header>
-            <img id="logo" src="{{ url_for('static', filename='images/logo_text.png') }}" height="40" alt="LinkJoin Logo">
+            <img id="logo" src="{{ url_for('static', filename='images/logo-text.svg') }}" height="40" alt="LinkJoin Logo">
             <a href="/links" class="underline">My Links</a>
             <a href="/signup" class="underline">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -60,7 +60,7 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/signup" class="underline">Sign Up</a>
                     <a href="/links" class="underline">Links</a>
                 </div>
@@ -70,8 +70,8 @@
             <div id="left_content">
                 <h1 id="motto">Never Be Late Again.</h1>
                 <h4 id="description">LinkJoin helps you join meetings at exactly the right time, even when you forget.</h4>
-                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button></a>
-                <a onclick="document.getElementById('what').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/down_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Down arrow"></button></a>
+                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button></a>
+                <a onclick="document.getElementById('what').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/arrow-down.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
                 <img src="{{ url_for('static', filename='images/calendar_guy.svg') }}" id="calendar_guy" alt="Man surrounded by calendars">
@@ -206,7 +206,7 @@
                 document.getElementById("learn_more").style.width = "250px"
             }
             else {
-                document.getElementById("get_started").innerHTML = `Get started now! <img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow">`
+                document.getElementById("get_started").innerHTML = `Get started now! <img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow">`
                 document.getElementById("get_started").style.width = "270px"
                 document.getElementById("learn_more").style.width = "270px"
             }

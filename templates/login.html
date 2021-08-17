@@ -22,8 +22,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.png') }}" class="logo">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
         <title>LinkJoin | Log In</title>
         <meta name="description" content="Welcome Back! Log in to have your meetings opened for you.">
         <meta name=”robots” content="index, follow">
@@ -35,13 +35,13 @@
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header id="header_links">
-            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow_left.png') }}" height="20px" width="20px" alt="back arrow"></a>
+            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow-left.svg') }}" height="25px" width="25px" alt="back arrow"></a>
             <div style="padding-left: 40px">Don't have an account?</div>
-            <a href="/signup?redirect={{ redirect }}" class="login_button">Sign Up <img src="{{ url_for('static', filename='images/pointy_thing.png') }}" height="12px" width="8px" alt="right arrow"></a>
+            <a href="/signup?redirect={{ redirect }}" class="login_button">Sign Up <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="right arrow"></a>
         </header>
         <div id="main_page">
             <div id="left_content">
-                <img src="{{ url_for('static', filename='images/Frame.png') }}" id="logo" alt="LinkJoin logo">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" id="logo" alt="LinkJoin logo">
                 <div id="signup_title">LinkJoin</div>
                 <div id="signup_text">Never be late again</div>
             </div>
@@ -61,7 +61,7 @@
                 <input type="email" name="email" id="email" placeholder="Email" required><br>
                 <input id="password" name="password" placeholder="Password" type="password" required><br>
                 <div id="keep_div"><input type="checkbox" name="keep" id="keep"><p id="keep_text">Keep me logged in</p></div>
-                <button id="submit" onclick="logIn()">Log In<img src="{{ url_for('static', filename='images/right_arrow.png') }}" style="top: 3px; left: 8px; position: relative;" width="20px" height="20px" alt="Right arrow"></button>
+                <button id="submit" onclick="logIn()">Log In<img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button>
                 {% if error == "incorrect_password" %}
                     <a href="/reset_password" id="reset">Forgot password?</a>
                 {% endif %}
