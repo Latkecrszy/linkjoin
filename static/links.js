@@ -585,6 +585,8 @@ async function showNotes(changing) {
     if (notes.length !== 0) {
         if (changing !== true) {
             notesInfo['index'] = 0
+        }
+        if (notesInfo['notes'] === undefined) {
             notesInfo['notes'] = notes
         }
         await popUp('popup_notes')
