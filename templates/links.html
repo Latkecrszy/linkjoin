@@ -16,7 +16,6 @@
         <script>
             let date = new Date()
             let number = "{{ number }}"
-            console.log(number)
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},

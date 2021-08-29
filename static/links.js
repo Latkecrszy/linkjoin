@@ -2,7 +2,6 @@ let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
 let created = false;
 const notesInfo = {}
-console.log('test1')
 
 function blur(show) {
     const blurElement = document.getElementById("blur")
@@ -87,7 +86,6 @@ function edit(link) {
     link['days'].forEach(day => {if (document.getElementById(day)) {document.getElementById(day).classList.add("selected")}})
     document.getElementById(link['repeat']).selected = "selected"
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-    console.log(link['starts']/link['days'].length)
     link['starts'] ? document.getElementById((link['starts']/link['days'].length).toString()).selected = "selected" : null
 }
 
@@ -142,12 +140,10 @@ function copyLink(link, id) {
 }
 
 async function load_links(username, sort) {
-    console.log('test4')
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch('/get_session', {headers: {'email': username}}).then(id => id.json())
     if (sessionId === null) {location.replace('/login?error=not_logged_in')}
     else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
-    console.log('test5')
     global_username = username
     global_sort = sort
     let link_events = []
@@ -158,7 +154,6 @@ async function load_links(username, sort) {
         insert.appendChild(placeHolder)
     }
     const links = await db(username)
-    console.log('test6')
     if (links.toString() === '') {
         await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
@@ -166,7 +161,6 @@ async function load_links(username, sort) {
     }
     else {
         document.getElementById('footer_links').style.marginTop = '100px'
-        console.log("changed")
         let final = []
         if (sort === "day") {
             const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
@@ -224,10 +218,6 @@ async function load_links(username, sort) {
             let linkOpacity = 1
             let nameContainerOpacity = 1
             let checkboxChecked = true
-            console.log(link['active'])
-            if (link['active'] !== 'true') {
-                console.log('thing')
-            }
             if (link['active'] === "false") {
                 linkOpacity = 0.6
                 nameContainerOpacity = 0.7
@@ -295,7 +285,6 @@ async function load_links(username, sort) {
     //await sleep(200)
     await checkTutorial()
     clearInterval(open)
-    console.log('test7')
     start(username, links, sort)
 }
 
@@ -546,7 +535,6 @@ async function checkTutorial() {
         {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: global_username})})
         .then(response => response.json())
     if (tutorial_completed['tutorial'] === "done" && number === "None" && window.innerWidth >= 1000) {
-        console.log(tutorial_completed)
         document.getElementById("add_number_div").style.display = "block"
         blur(true)
     }
@@ -578,7 +566,6 @@ document.addEventListener("click", (e) => {
 })
 
 document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
-console.log('test2')
 
 async function showNotes(changing) {
     const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
@@ -625,11 +612,7 @@ async function unRenderNotes() {
     document.getElementById('notes_div').style.display = 'none'
     document.getElementById('notes_textarea').style.display = 'block'
     notesInfo['notes'].forEach(i => {
-        console.log(i['name'])
-        console.log(notesInfo['name'])
         if (i['name'] === notesInfo['name'] && i['id'] === notesInfo['id']) {
-            console.log(i)
-            console.log(notesInfo)
             document.getElementById('notes_textarea').value = i['markdown']
         }
     })
@@ -648,7 +631,6 @@ async function saveNotes() {
 
 
 async function sendNotif(text, color) {
-    console.log('working')
     const notif = document.getElementById('notif')
     notif.style.zIndex = "2"
     notif.style.borderLeftColor = color
@@ -673,7 +655,6 @@ async function createNote(name, id) {
             notesInfo['name'] = name
             notesInfo['id'] = parseInt(id)
             notesInfo['index'] = index
-            console.log(notesInfo)
             showNotes(true)
             found = true
         }
