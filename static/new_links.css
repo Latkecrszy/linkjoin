@@ -392,6 +392,6 @@ pre {
 
 @media (max-width: 500px) {
     html, body {overflow-x: visible !important}
-    #popup {left: 0 !important; top: 0 !important; transform: none}
+    #popup, #popup_notes, #popup_delete, #popup_share {left: 0 !important; top: 0 !important; transform: none}
 }
 
