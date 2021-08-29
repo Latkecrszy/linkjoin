@@ -1,3 +1,7 @@
+:root {
+    --scrollbar: #091B30;
+}
+
 .link_event_title {
     font-size: 16px;
     font-weight: bolder;
@@ -224,10 +228,10 @@
 }
 
 .notes {
-    font-size: 18px;
+    font-size: 16px;
     border: 1px solid white;
     border-radius: 4px;
-    height: 80%;
+    height: 65%;
     width: 80%;
     background: #142539;
     margin-left: 10%;
@@ -236,25 +240,21 @@
     padding: 10px;
     resize: none;
     overflow-y: scroll;
-    transition: 0.1s
+    transition: 0.1s;
+    cursor: text;
 }
 
-.notes:focus {
-    outline: none;
+#popup_notes {padding-bottom: 30px; box-sizing: border-box}
+
+#notes_textarea {
     border: 2px solid white;
+    display: none;
+    outline: none;
 }
 
-.notes::-webkit-scrollbar {
-  width: 8px;
-}
-
-.notes::-webkit-scrollbar-track {
-  border-radius: 12px;
-}
-
-.notes::-webkit-scrollbar-thumb {
-  background: #2B8FD8;
-  border-radius: 12px;
+#notes_div * {
+    padding-top: 0;
+    margin-top: 0;
 }
 
 .back_arrow {
@@ -264,7 +264,86 @@
     cursor: pointer;
     z-index: 2;
 }
-#popup_notes h2 {text-align: center}
+#popup_notes h2 {text-align: center; margin-top: 50px;}
+
+#notif {
+    width: 350px;
+    height: 100px;
+    background: #142539;
+    border-left: 3px solid #14db38;
+    border-radius: 3px;
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    opacity: 0;
+    z-index: -1;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+    box-shadow: 5px 5px 8px black
+}
+
+code {
+    background: #5d6066;
+    padding: 1px;
+    border-radius: 4px;
+}
+
+pre {
+    background: #5d6066;
+    padding: 5px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    word-break: break-all;
+}
+
+.notes_buttons {
+    width: 80%;
+    margin: 20px 0 0 10%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.notes_button {
+    height: 50px;
+    width: 100px;
+    background: #2B8FD8;
+    border: none;
+    font: 400 18px Roboto;
+    transition: 0.5s;
+    border-radius: 4px;
+}
+
+.notes_button:hover {
+    background: #3da7f5
+}
+
+.back {
+    background: none;
+    border: 2px solid white;
+}
+
+.notes_button.back:hover {
+    background: #2B8FD8;
+}
+
+#notes_search {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #142539;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    height: 30px;
+    width: 150px;
+    box-sizing: border-box;
+    padding: 2px 4px;
+}
+
+#notes_search::placeholder {
+    color: rgba(255, 255, 255, 0.7)
+}
 
 @media (max-width: 900px) {
     .link_event {margin: 0 0 5px 0; width: 100%; height: 150px;}
@@ -309,5 +388,10 @@
     #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
+}
+
+@media (max-width: 500px) {
+    html, body {overflow-x: visible !important}
+    #popup {left: 0 !important; top: 0 !important; transform: none}
 }
 

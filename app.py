@@ -7,6 +7,8 @@ from cryptography.fernet import Fernet
 from message import message
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from mistune import Markdown
+
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -18,6 +20,7 @@ app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 CLIENT_ID = os.environ.get('CLIENT_ID')
+markdown = Markdown()
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -171,7 +174,7 @@ def set_cookie():
 @app.route('/get_session', methods=['GET'])
 def get_session():
     if not authenticated(request.cookies, request.headers.get('email')):
-        return 'Not logged in', 403
+        return 'Forbidden', 403
     return jsonify(mongo.db.sessions.find_one({'username': request.headers.get('email')}, projection={"_id": 0}))
 
 
@@ -179,10 +182,8 @@ def get_session():
 def register():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email')):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
-    id_db = mongo.db.id
-    ids = [dict(document)['share'] for document in links_db.find() if 'share' in document]
+        return 'Forbidden', 403
+    ids = [dict(document)['share'] for document in mongo.db.links.find() if 'share' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
@@ -192,7 +193,7 @@ def register():
         else:
             link = data.get('link')
         email = request.cookies.get('email')
-        insert = {'username': email, 'id': int(dict(id_db.find_one({'_id': 'id'}))['id']),
+        insert = {'username': email, 'id': int(dict(mongo.db.id.find_one({'_id': 'id'}))['id']),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': 'true',
                   'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
@@ -203,25 +204,24 @@ def register():
             insert['password'] = encoder.encrypt(data.get('password').encode())
         if data.get('repeats')[0].isdigit():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-        links_db.insert_one(insert)
-        id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+        mongo.db.links.insert_one(insert)
+        mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
         return 'done', 200
-    return 'not logged in', 403
+    return 'Forbidden', 403
 
 
 @app.route('/links', methods=['GET'])
 def links():
-    email = request.cookies.get('email').lower()
+    email = request.cookies.get('email')
     if not authenticated(request.cookies, email):
         return redirect('/login?error=not_logged_in')
+    email = email.lower()
     user = mongo.db.login.find_one({"username": email})
     number = dict(user).get('number')
-    links_db = mongo.db.links
-    login_db = mongo.db.login
-    premium = dict(login_db.find_one({'username': email}))['premium']
+    premium = dict(mongo.db.login.find_one({'username': email}))['premium']
     links_list = [
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
-        for link in links_db.find({'username': email})]
+        for link in mongo.db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
@@ -233,9 +233,8 @@ def links():
 def delete():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
-    links_db.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
+        return 'Forbidden', 403
+    mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     return 'done', 200
 
 
@@ -243,8 +242,7 @@ def delete():
 def update():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email')):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
+        return 'Forbidden', 403
     if request.cookies.get('email'):
         if 'https' not in data.get('link'):
             link = f"https://{data.get('link')}"
@@ -254,7 +252,7 @@ def update():
         insert = {'username': email, 'id': int(data.get('id')),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': 'true',
-                  'share': links_db.find_one({'id': int(data.get('id'))})['share'],
+                  'share': mongo.db.links.find_one({'id': int(data.get('id'))})['share'],
                   'repeat': data.get('repeats'), 'days': data.get('days'),
                   'text': data.get('text'),
                   'starts': int(data.get('starts')) if data.get('starts') else 0}
@@ -264,24 +262,23 @@ def update():
             insert['password'] = password
         if data.get('repeats')[0].isdigit():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-        links_db.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+        mongo.db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
         return 'done', 200
-    return 'not logged in', 403
+    return 'Forbidden', 403
 
 
 @app.route("/disable", methods=['POST'])
 def disable():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email')):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
+        return 'Forbidden', 403
     email = request.cookies.get('email')
-    link = links_db.find_one({"username": email, 'id': int(data.get("id"))})
+    link = mongo.db.links.find_one({"username": email, 'id': int(data.get("id"))})
     if link['active'] == "true":
-        links_db.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+        mongo.db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'false'}})
     else:
-        links_db.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+        mongo.db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'true'}})
     return 'done', 200
 
@@ -289,9 +286,8 @@ def disable():
 @app.route('/db', methods=['GET'])
 def db():
     if not authenticated(request.cookies, request.headers.get('email')):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
-    links_list = links_db.find({'username': request.headers.get('email')})
+        return 'Forbidden', 403
+    links_list = mongo.db.links.find({'username': request.headers.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for index, i in enumerate(links_list):
@@ -315,9 +311,8 @@ def sort():
 def change_var():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
-    links_db = mongo.db.links
-    links_db.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
+        return 'Forbidden', 403
+    mongo.db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {
                                      data.get('variable'): data.get(data.get('variable'))}})
     print(data.get(data.get('variable')))
@@ -358,8 +353,6 @@ def convert_time(hour, minute, link):
 
 @app.route('/addlink', methods=['GET'])
 def addlink():
-    links_db = mongo.db.links
-    id_db = mongo.db.id
     try:
         email = request.cookies.get('email')
     except TypeError:
@@ -367,7 +360,7 @@ def addlink():
     if not authenticated(request.cookies, email):
         return redirect(f'/login?redirect=https://linkjoin.xyz/addlink?id={request.args.get("id")}')
     new_link = None
-    for doc in links_db.find():
+    for doc in mongo.db.links.find():
         if 'share' in dict(doc):
             if encoder.decrypt(
                     dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
@@ -386,14 +379,14 @@ def addlink():
         int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1]) / (10 * len(str(offset_minute))) * 60)
     new_link['time'] = convert_time(hour, minute, new_link)
     new_link['username'] = email
-    new_link['id'] = int(dict(id_db.find_one({'_id': 'id'}))['id'])
-    ids = [encoder.decrypt(dict(document)['share']).decode() for document in links_db.find() if 'share' in document]
+    new_link['id'] = int(dict(mongo.db.id.find_one({'_id': 'id'}))['id'])
+    ids = [encoder.decrypt(dict(document)['share']).decode() for document in mongo.db.links.find() if 'share' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
-    id_db.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-    links_db.insert_one(new_link)
+    mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    mongo.db.links.insert_one(new_link)
     return redirect('/links')
 
 
@@ -417,9 +410,8 @@ def users():
 @app.route("/viewlinks", methods=['GET'])
 def viewlinks():
     pp = pprint.PrettyPrinter(indent=4)
-    links_db = mongo.db.links
-    pp.pprint([doc for doc in links_db.find()])
-    print(len([_ for _ in links_db.find()]))
+    pp.pprint([doc for doc in mongo.db.links.find()])
+    print(len([_ for _ in mongo.db.links.find()]))
     return render_template('404.html')
 
 
@@ -427,9 +419,8 @@ def viewlinks():
 def tutorial():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
-    login_db = mongo.db.login
-    login_db.find_one_and_update({"username": data.get('email').lower()},
+        return 'Forbidden', 403
+    mongo.db.login.find_one_and_update({"username": data.get('email').lower()},
                                  {"$set": {"tutorial": data.get("step")}})
     return 'done'
 
@@ -438,9 +429,8 @@ def tutorial():
 def tutorial_complete():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
-    login_db = mongo.db.login
-    user = login_db.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
+        return 'Forbidden', 403
+    user = mongo.db.login.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
     if user:
         return jsonify(dict(user))
     return 'done', 200
@@ -456,11 +446,6 @@ def ads():
     return send_file('ads.txt', attachment_filename='ads.txt')
 
 
-@app.route('/tos', methods=['GET'])
-def tos():
-    return render_template("tos.html")
-
-
 @app.route('/privacy', methods=['GET'])
 def privacy():
     return render_template("privacy.html")
@@ -474,12 +459,9 @@ def unsubscribe():
 
 @app.route("/setoffset", methods=['POST'])
 def setoffset():
-    print(request.method)
-    print(request.get_data())
-    print(request.get_json())
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
+        return 'Forbidden', 403
     mongo.db.login.find_one_and_update({"username": data.get("email").lower()},
                                        {"$set": {"offset": data.get("offset")}})
     return 'done', 200
@@ -489,7 +471,7 @@ def setoffset():
 def add_number():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return 'Not logged in', 403
+        return 'Forbidden', 403
     number = ''.join([i for i in data.get('number') if i in '1234567890'])
     if len(number) < 11:
         number = data.get('countrycode') + str(number)
@@ -507,7 +489,7 @@ def receive_vonage_message():
         data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                 "from": "18336535326", "to": str(request.args.get("msisdn")),
                 "text": "Ok, we won't remind you about this link again"}
-        response = requests.post("https://rest.nexmo.com/sms/json", data=data)
+        requests.post("https://rest.nexmo.com/sms/json", data=data)
     return 'done', 200
 
 
@@ -516,7 +498,36 @@ def pricing():
     return render_template('pricing.html')
 
 
-app.register_error_handler(404, lambda e: render_template('404.html'))
+@app.route('/notes', methods=['GET', 'POST'])
+def notes():
+    if not authenticated(request.cookies, request.headers.get('email')):
+        return 'Forbidden', 403
+    if request.method == 'GET':
+        return jsonify(list(mongo.db.login.find_one({'username': request.headers.get('email')})['notes'].values())), 200
+    elif request.method == 'POST':
+        data = request.get_json()
+        print(data)
+        user_notes = mongo.db.login.find_one({'username': request.headers.get('email')})['notes']
+        user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'), 'markdown': data.get('markdown'), 'date': data.get('date')}
+        mongo.db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
+        return jsonify(user_notes), 200
+    else:
+        return 'Unknown method'
 
+
+@app.route('/markdown_to_html', methods=['POST'])
+def markdown_to_html():
+    data = request.get_json()
+    print(data.get('markdown'))
+    print(markdown(data.get('markdown')))
+    return markdown(data.get('markdown'))
+
+
+@app.route('/send_email')
+def send_email():
+    pass
+
+
+app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
     app.run(port=os.environ.get("port", 5002), threaded=True)

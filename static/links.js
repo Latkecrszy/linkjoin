@@ -1,6 +1,7 @@
 let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
 let created = false;
+const notesInfo = {}
 console.log('test1')
 
 function blur(show) {
@@ -215,10 +216,10 @@ async function load_links(username, sort) {
             else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
             const linkTime = time_list.join(":") + " " + pm
             let password = '';
-            let menuHeight = "145px"
+            let menuHeight = "190px"
             if ("password" in link) {
                 password = `<hr class="menu_line"><div id="${link['id'].toString()}" onclick="copyPassword('${link['id']}', '${link['password']}')">Password</div>`
-                menuHeight = "190px"
+                menuHeight = "235px"
             }
             let linkOpacity = 1
             let nameContainerOpacity = 1
@@ -246,6 +247,8 @@ async function load_links(username, sort) {
                     <div onclick="delete_(${parameterLink})">Delete</div>
                     <hr class="menu_line">
                     <div onclick="share(${parameterLink})">Share</div>
+                    <hr class="menu_line">
+                    <div onclick="createNote('${link['name']}', '${link['id']}')">Notes</div>
                     <hr class="menu_line">
                     <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')">Copy link</div>
                     ${password}
@@ -576,3 +579,138 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
 console.log('test2')
+
+async function showNotes(changing) {
+    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
+    if (notes.length !== 0) {
+        if (changing !== true) {
+            notesInfo['index'] = 0
+            notesInfo['notes'] = notes
+        }
+        await popUp('popup_notes')
+        notesInfo['id'] = notesInfo['notes'][notesInfo['index']]['id']
+        notesInfo['name'] = notesInfo['notes'][notesInfo['index']]['name']
+        document.getElementById('popup_notes').children[2].innerText = `Meeting notes for ${notesInfo['notes'][notesInfo['index']]['name']}`
+        const html = await fetch('/markdown_to_html',
+        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({markdown: notesInfo['notes'][notesInfo['index']]['markdown']})}).then(r => r.text())
+        document.getElementById('notes_div').innerHTML = html
+    }
+    else {
+        await sendNotif('You do not have any meeting notes. Try creating some from the dot menus of your links!', '#ba1a1a')
+    }
+
+
+}
+
+function pageSetup() {
+    document.getElementById('notes_div').addEventListener('click', unRenderNotes)
+    document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
+    document.getElementById('notes_textarea').addEventListener('change', saveNotes)
+
+}
+
+async function renderNotes() {
+    const html = await fetch('/markdown_to_html',
+        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({markdown: document.getElementById('notes_textarea').value})}).then(r => r.text())
+    const divNotes = document.getElementById('notes_div')
+    divNotes.innerHTML = html
+    divNotes.style.display = 'block'
+    document.getElementById('notes_textarea').style.display = 'none'
+}
+
+async function unRenderNotes() {
+    if (document.activeElement === document.getElementById('notes_textarea')) {return}
+    document.getElementById('notes_div').style.display = 'none'
+    document.getElementById('notes_textarea').style.display = 'block'
+    notesInfo['notes'].forEach(i => {
+        console.log(i['name'])
+        console.log(notesInfo['name'])
+        if (i['name'] === notesInfo['name'] && i['id'] === notesInfo['id']) {
+            console.log(i)
+            console.log(notesInfo)
+            document.getElementById('notes_textarea').value = i['markdown']
+        }
+    })
+    document.getElementById('notes_textarea').focus()
+}
+
+async function saveNotes() {
+    await fetch('/notes', {method: 'POST', headers: {'Content-Type': 'application/json', email: global_username},
+        body: JSON.stringify({
+            id: notesInfo['id'],
+            name: notesInfo['name'],
+            date: new Date().toLocaleString('en-us',{month:'long', year:'numeric', day: 'numeric'}),
+            markdown: document.getElementById('notes_textarea').value
+        })})
+}
+
+
+async function sendNotif(text, color) {
+    console.log('working')
+    const notif = document.getElementById('notif')
+    notif.style.zIndex = "2"
+    notif.style.borderLeftColor = color
+    notif.innerText = text
+    for (let i = 0; i < 1; i += 0.01) {
+        notif.style.opacity = (i).toString()
+        await sleep(3)
+    }
+    await sleep(5000)
+    for (let i = 1; i > 0; i -= 0.01) {
+        notif.style.opacity = (notif.style.opacity-0.01).toString()
+        await sleep(3)
+    }
+}
+
+
+async function createNote(name, id) {
+    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
+    let found = false
+    notes.forEach((i, index) => {
+        if (i['name'] === name && i['id'] === parseInt(id)) {
+            notesInfo['name'] = name
+            notesInfo['id'] = parseInt(id)
+            notesInfo['index'] = index
+            console.log(notesInfo)
+            showNotes(true)
+            found = true
+        }
+    })
+    if (found) {return}
+    await fetch('/notes', {method: 'POST', headers: {'Content-Type': 'application/json', email: global_username},
+        body: JSON.stringify({
+            id: parseInt(id),
+            name: name,
+            markdown: '',
+            date: new Date().toLocaleString('en-us',{month:'long', year:'numeric', day: 'numeric'}),
+        })})
+    notesInfo['name'] = name
+    notesInfo['id'] = parseInt(id)
+    notesInfo['index'] = notes.length
+    await showNotes(true)
+}
+
+
+async function notesNext(direction) {
+    if (direction === 'next') {
+        notesInfo['index'] !== notesInfo['notes'].length-1 ? notesInfo['index']++ : null
+    }
+    else {
+        notesInfo['index'] !== 0 ? notesInfo['index']-- : null
+    }
+    await showNotes(true)
+}
+
+
+async function searchNotes(content) {
+    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
+    const newNotes = []
+    notes.forEach(i => {
+        if (i['name'].toLowerCase().includes(content) || i['date'].toLowerCase().includes(content)) {
+            newNotes.push(i)
+        }
+    })
+    notesInfo['notes'] = newNotes
+    notesInfo['index'] = 0
+    await showNotes(true)
+}

@@ -504,11 +504,6 @@ input[type=date] {
 
 #tutorial10 {top: 430px; right: 10px}
 
-/*When user logs into the site for the first time, get their current time and compare it to utc to figure out their tz*/
-/*Then, set a loop in the application itself to check if the texts need to be sent*/
-/*Ask for their phone number in a prompt, add option to email instead if they don't want to provide it*/
-/*Add phone number field to signup page*/
-
 #blur {
     width: 100%;
     z-index: -3;

@@ -47,7 +47,8 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <body id="links_body">
+    <img src="{{ url_for('static', filename='images/plus-mobile.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
+    <body id="links_body" onload="pageSetup()">
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
@@ -84,7 +85,7 @@
                         <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
                     </select>
                 </div>
-
+                <button id="notes" onclick="showNotes()">Meeting Notes</button>
             </div>
 
                 <div class="gone" id="disappear">
@@ -349,8 +350,15 @@
         </div>
         <div id="popup_notes">
             <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" class="back_arrow" onclick="hide('popup_notes')" alt="back to links page">
+            <input type="text" onchange="searchNotes(this.value.toLowerCase())" id="notes_search" placeholder="Search for notes">
             <h2>Meeting notes for </h2>
-            <textarea class="notes" placeholder="What happened at your meeting? What do you want to keep track of? ..."></textarea>
+            <textarea id="notes_textarea" class="notes" placeholder="What happened at your meeting? What do you want to keep track of? ..."></textarea>
+            <div contenteditable="true" id="notes_div" class="notes"></div>
+            <div class="notes_buttons">
+                <button class="notes_button back" onclick="notesNext('back')">Back</button>
+                <button class="notes_button next" onclick="notesNext('next')">Next</button>
+            </div>
         </div>
+        <div id="notif"></div>
     </body>
 </html>

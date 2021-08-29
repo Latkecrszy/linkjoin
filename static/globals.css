@@ -87,6 +87,7 @@ svg {
 
 .footer_links {
     height: 60px;
+    min-height: 60px;
     min-width: 890px;
     max-width: 960px;
     margin: 80vh 5vw 0 max(0px, calc(45% - 400px));
@@ -161,7 +162,7 @@ select {-webkit-appearance:none}
     padding: 0 40px 20px 15px;
     display: flex;
     justify-content: space-between;
-    width: 96% !important;
+    width: 98% !important;
 }
 
 .button {
@@ -220,4 +221,23 @@ input:invalid {box-shadow: none}
 .underline:hover:after {
   transform: scaleX(1);
   transform-origin: bottom left;
+}
+
+html::-webkit-scrollbar, .notes::-webkit-scrollbar {
+    width: 8px;
+
+}
+
+html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track {
+    border-radius: 12px;
+    /*margin-bottom: 300px;*/
+}
+
+html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
+    background: #2B8FD8;
+    border-radius: 5px;
+}
+
+.nobar::-webkit-scrollbar-thumb {
+    display: none;
 }
