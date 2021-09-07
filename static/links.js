@@ -627,6 +627,8 @@ async function saveNotes() {
             date: new Date().toLocaleString('en-us',{month:'long', year:'numeric', day: 'numeric'}),
             markdown: document.getElementById('notes_textarea').value
         })})
+    notesInfo['notes'][notesInfo['index']]['markdown'] = document.getElementById('notes_textarea').value
+
 }
 
 
