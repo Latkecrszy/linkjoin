@@ -89,8 +89,8 @@ def message():
                     print(dict(user).get('number'))
                     # Create the data to send to vonage
                     messages = [
-                        'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. To see this link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. Text {id} to stop receiving reminders for this link.',
-                        'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. If you want to open your link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. To stop being texted a reminder for this link, text {id}.',
+                        'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. To see this link in LinkJoin, go to https://lkjn.xyz/links?id={id}. Text {id} to stop receiving reminders for this link.',
+                        'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. If you want to open your link in LinkJoin, go to https://lkjn.xyz/links?id={id}. To stop being texted a reminder for this link, text {id}.',
                     ]
                     data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                             "from": "18336535326", "to": user['number'], "text":
