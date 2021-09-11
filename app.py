@@ -226,7 +226,8 @@ def links():
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
-                           country_codes=json.load(open("country_codes.json")), error=request.args.get('error'))
+                           country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
+                           highlight=request.args.get('id'))
 
 
 @app.route('/delete', methods=['POST'])
@@ -510,6 +511,7 @@ def notes():
         user_notes = mongo.db.login.find_one({'username': request.headers.get('email')})['notes']
         user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'), 'markdown': data.get('markdown'), 'date': data.get('date')}
         mongo.db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
+        print(user_notes)
         return jsonify(user_notes), 200
     else:
         return 'Unknown method'
