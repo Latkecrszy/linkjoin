@@ -16,6 +16,7 @@
         <script>
             let date = new Date()
             let number = "{{ number }}"
+            const highlight = "{{ highlight }}"
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -97,7 +98,7 @@
                 <div><img src="{{ url_for('static', filename='images/discord.svg') }}" class="links_footer_image" alt="discord logo"><a href="https://discord.gg/MbqYAA36fx"><div class="footer_link">Join the Discord</div></a></div>
                 <div><img src="{{ url_for('static', filename='images/github.svg') }}" class="links_footer_image" alt="github logo"><a href="https://github.com/Latkecrszy/linkjoin"><div class="footer_link">Contribute on Github</div></a></div>
                 <div><img src="{{ url_for('static', filename='images/phone.svg') }}" class="links_footer_image" alt="phone"><a href="https://mail.google.com/mail/u/0/?fs=1&to=linkjoin.xyz@gmail.com&tf=cm" class="footer_link">Get in Contact</a></div>
-                <div><img src="{{ url_for('static', filename='images/link_footer.svg') }}" class="links_footer_image" alt="link"><a href="https://storyset.com/work" class="footer_link">Illustration by Freepik Storyset</a></div>
+                <div><img src="{{ url_for('static', filename='images/link_footer.svg') }}" class="links_footer_image" alt="link"><a href="https://storyset.com/work" class="footer_link" target="">Illustration by Freepik Storyset</a></div>
             </footer>
         </div>
         <div class="popup_delete" id="popup_delete">

@@ -65,6 +65,12 @@
         </div>
     </body>
     <script>
+        document.addEventListener("keyup", e => {
+            if (e.key === "Enter" || e.keyCode === 13) {
+                e.preventDefault();
+                document.getElementById("submit").click()
+            }
+        });
         var signed = false;
         const date = new Date()
         let offset = (date.getTimezoneOffset()/60).toString()

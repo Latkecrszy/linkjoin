@@ -223,8 +223,10 @@ async function load_links(username, sort) {
                 nameContainerOpacity = 0.7
                 checkboxChecked = false
             }
+            let highlightDiv = highlight === link['id'].toString() ? '<div class="highlight"></div>' : ''
             const parameterLink = JSON.stringify(link).replaceAll('"', "'")
             const link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+                ${highlightDiv}
                 <div class="time">${linkTime}</div>
                 <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
                     <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
@@ -286,6 +288,12 @@ async function load_links(username, sort) {
     await checkTutorial()
     clearInterval(open)
     start(username, links, sort)
+    if (document.getElementsByClassName('highlight').length > 0) {
+        document.getElementsByClassName('highlight')[0].scrollIntoView(true)
+        await sleep(3000)
+        document.getElementsByClassName('highlight')[0].style.background = 'none'
+    }
+
 }
 
 async function check_day(username) {
