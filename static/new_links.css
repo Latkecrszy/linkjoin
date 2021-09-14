@@ -413,7 +413,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 @media (max-width: 500px) {
-    html, body {overflow-x: visible !important}
     #popup, #popup_notes, #popup_delete, #popup_share {left: 0 !important; top: 0 !important; transform: none}
 }
 

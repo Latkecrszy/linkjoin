@@ -8,7 +8,7 @@ from message import message
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from mistune import Markdown
-
+from twilio.rest import Client
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -19,7 +19,8 @@ dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
-CLIENT_ID = os.environ.get('CLIENT_ID')
+CLIENT_ID = os.environ.get('CLIENT_ID', None)
+twilio_client = Client(os.environ.get('TWILIO_SID'), os.environ.get('TWILIO_TOKEN'))
 markdown = Markdown()
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()

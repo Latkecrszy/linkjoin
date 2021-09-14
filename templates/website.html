@@ -78,39 +78,93 @@
             </div>
         </div>
         <div id="what">
-            <div class="pair">
-                <img src="{{ url_for('static', filename='images/meeting.svg') }}" alt="woman in meeting">
-                <div class="info">
-                    <div class="main_question">
-                        What is LinkJoin?
-                    </div>
-                    <div class="main_answer">
-                        LinkJoin is a website that organizes and automatically opens your meetings for you. It's as simple as making an account and scheduling your links, and you'll never be late again.
-                    </div>
+            <h1 class="what-is-linkjoin">What is LinkJoin?</h1>
+            <div class="description desktop">
+                LinkJoin is a tool created by a student, for students. Getting to class on time is hard, especially
+                when links are buried deep within other platforms. That's where LinkJoin can help: instead of having
+                to dig through all the assignments, posts, and other content just to find the link to your classes,
+                LinkJoin keeps all your links organized in one place, accessible from anywhere. And the best part is,
+                classes automatically open at the right time! No need to spend your small, precious breaks staring at
+                the clock, waiting for the time to turn to the class for fear of missing it. Just keep LinkJoin open
+                on your computer, and your classes will open all on their own. Keep scrolling to see all the great
+                features that LinkJoin has to offer!
+            </div>
+            <div class="description mobile">
+                LinkJoin is a website that organizes and automatically opens virtual classes and meetings at the right
+                time. Instead of having links scattered all about the internet and constantly scrambling to find them,
+                you can have them all neatly organized in LinkJoin and have them open on their own.
+            </div>
+            <!--
+            Auto-join meetings - mouse
+            Take notes - pen
+            Share links - paper airplane
+            Text reminders - phone
+            Sort links - list
+            Useful for anyone - person with whiteboard
+             -->
+            <div id="info-boxes">
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/mouse-pointer.svg') }}" class="info-image">
+                    <h2>Auto-join Meetings</h2>
+                    <p>
+                        In virtual life, it's much too easy to get distracted on the computer and forget to join a
+                        meeting. After all, who wants to sit around for the extra 10 minutes before a meeting waiting to
+                        join the meeting? With LinkJoin though, your meetings will automatically open at the right time,
+                        so you'll never be late again.
+                    </p>
+                </div>
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/pen.svg') }}" class="info-image">
+                    <h2>Take Notes</h2>
+                    <p>
+                        Taking notes during a meeting is always a struggle - where do you take them? Where are the notes
+                        from the previous meeting? How do you keep track of which notes go to which meeting? That's where
+                        LinkJoin comes in: you can take notes on each individual meeting right in LinkJoin, so keeping
+                        track of them is a breeze.
+                    </p>
+                </div>
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/paper-plane.svg') }}" class="info-image">
+                    <h2>Share Links</h2>
+                    <p>
+                        Without LinkJoin, sending a meeting link guarantees only one thing: your guests will have the
+                        link. But what it doesn't guarantee is that they'll remember to join the meeting. That's why
+                        LinkJoin offers built-in link sharing, so your guests can add the meeting to their LinkJoin
+                        with just the click of a link.
+                    </p>
+                </div>
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/mobile-phone.svg') }}" class="info-image">
+                    <h2>Receive Reminders</h2>
+                    <p>
+                        Getting distracted at the computer is certainly a problem, but another concern to keep in mind
+                        is getting distracted away from the computer. But one thing that you almost always have,
+                        regardless of what you're doing, is your phone. That's why LinkJoin sends text reminders to get
+                        you to your computer at the right time.
+                    </p>
+                </div>
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/list.svg') }}" class="info-image">
+                    <h2>Sort Links</h2>
+                    <p>
+                        One of the primary benefits of LinkJoin is its ability to store all of your meeting links in one
+                        central location, but you can actually expand on that further. To make links as easy as possible
+                        to find, you can choose to have them not sorted, as well as sorted by day (Monday-Sunday), time
+                        (12am-11pm), or both at once!
+                    </p>
+                </div>
+                <div class="info-box">
+                    <img src="{{ url_for('static', filename='images/whiteboard.svg') }}" class="info-image">
+                    <h2>Useful For All</h2>
+                    <p>
+                        The amazing thing about LinkJoin is that it's restricted to no one. Being an independent
+                        platform from other meeting software, it works for everyone all of the time. Regardless of
+                        whether you're a student, professional, or anything in between, LinkJoin will work with any
+                        meetings you can throw at it.
+                    </p>
                 </div>
             </div>
-            <div class="pair">
-                <div class="info">
-                    <div class="main_question">
-                        Why LinkJoin?
-                    </div>
-                    <div class="main_answer">
-                        When you receive a meeting invitation, the invite link usually remains in your inbox, getting buried under heaps of new emails. This can lead to accidentally deleting or losing track of that important link, and end with you missing that life changing meeting. With LinkJoin, however, your links remain in an accessible and convenient place, and open automatically at the right time.
-                    </div>
-                </div>
-                <img src="{{ url_for('static', filename='images/why_linkjoin.svg') }}" alt="woman sitting by computer">
-            </div>
-            <div class="pair">
-                <img src="{{ url_for('static', filename='images/from.svg') }}" alt="woman thinking">
-                <div class="info">
-                    <div class="main_question">
-                        Where did LinkJoin Come From?
-                    </div>
-                    <div class="main_answer">
-                        LinkJoin started as a simple tool to make getting to meetings on time easier, but has grown into much more. It is now a full fledged website dedicated to making your life easier by removing the stress of having to remember yet another meeting.                     </div>
-                    </div>
-                </div>
-            </div>
+        </div>
         <div id="info">
             <div id="faq">
                 <div class="question" onclick="expand(0)">
@@ -162,7 +216,7 @@
                     <div class="plus">+</div>
                     <div class="minus gone">-</div>
                 </div>
-                <div class="answer gone" onclick="expand(7)">At LinkJoin, all your information is fully encrypted from start to finish. When you make an account, your password is encrypted with argon2, one of the most secure ways to protect passwords. If you sign up with google, your password is never shared with LinkJoin at all. When you schedule a link, your link info is fully encrypted in binary from end to end, protecting against possible database breaches. Rest assured, your info is safe with LinkJoin.</div>
+                <div class="answer gone" onclick="expand(7)">At LinkJoin, all your information is fully encrypted from start to finish. From the second you make an account, your password is hashed, never stored. If you sign up with google, your password is never stored in LinkJoin at all. When you schedule a link, your link info is fully encrypted from end to end, protecting against possible database breaches. Rest assured, your info is safe with LinkJoin.</div>
             </div>
         </div>
         <footer>
@@ -197,8 +251,24 @@
                 </div>
             </div>
         </footer>
+        <!--<div id="popup-cookies">
+            <p>LinkJoin uses cookies to keep you logged in.</p>
+            <div>
+                <button class="sounds-good" onclick="hideCookiesPopup()">Fine.</button>
+                <button class="sounds-good" onclick="hideCookiesPopup()">Great!</button>
+            </div>
+        </div>-->
     </body>
     <script>
+        function hideCookiesPopup() {
+            document.getElementById('popup-cookies').style.opacity = '0'
+            document.getElementById('popup-cookies').style.pointerEvents = 'none'
+            const now = new Date();
+            const time = now.getTime();
+            const expireTime = time + 1000*36000;
+            now.setTime(expireTime);
+            document.cookie = `cookies=accepted; expires=${now.toUTCString()}`
+        }
         function resize() {
             if (window.innerWidth < 450) {
                 document.getElementById("get_started").innerText = "Get started"
@@ -219,6 +289,9 @@
             answers[parseInt(index)].classList.toggle("gone")
             questions[parseInt(index)].getElementsByTagName("div")[0].classList.toggle("gone")
             questions[parseInt(index)].getElementsByTagName("div")[1].classList.toggle("gone")
+        }
+        if (document.cookie.includes('cookies=accepted')) {
+            document.getElementById('popup-cookies').style.display = 'none'
         }
     </script>
 </html>
