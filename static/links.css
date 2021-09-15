@@ -344,7 +344,7 @@ input[type=date] {
      background-color: #2B8FD8;
 }
 
-#button_yes {background-color: #A40606;}
+#button_yes {background-color: #A40606 !important;}
 
 #insert {
     display: flex;
