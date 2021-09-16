@@ -374,9 +374,11 @@ def addlink():
     new_link = {key: value for key, value in dict(new_link).items() if
                 key != '_id' and key != 'id' and key != 'username' and key != 'share'}
     hour, minute = new_link['time'].split(":")
+    # offset: 4
+    # owner offset: 7
     offset_hour, offset_minute = user['offset'].split(".")
     offset_minute = (int(offset_minute) / (10 * len(str(offset_minute)))) * 60
-    hour = int(int(hour) + int(offset_hour)) - int(owner['offset'].split(".")[0])
+    hour = int(int(hour) - int(offset_hour)) + int(owner['offset'].split(".")[0])
     minute = int(
         int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1]) / (10 * len(str(offset_minute))) * 60)
     new_link['time'] = convert_time(hour, minute, new_link)
