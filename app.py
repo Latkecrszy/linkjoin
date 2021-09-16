@@ -377,12 +377,9 @@ def addlink():
     offset_hour, offset_minute = user['offset'].split(".")
     offset_minute = (int(offset_minute) / (10 * len(str(offset_minute)))) * 60
     hour = int(int(hour) + int(offset_hour)) - int(owner['offset'].split(".")[0])
-    print(hour)
     minute = int(
         int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1]) / (10 * len(str(offset_minute))) * 60)
-    print(minute)
     new_link['time'] = convert_time(hour, minute, new_link)
-    print(new_link['time'])
     new_link['username'] = email
     new_link['id'] = int(dict(mongo.db.id.find_one({'_id': 'id'}))['id'])
     ids = [encoder.decrypt(dict(document)['share']).decode() for document in mongo.db.links.find() if 'share' in document]
