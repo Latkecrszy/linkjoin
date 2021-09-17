@@ -584,7 +584,7 @@ async function showNotes(changing) {
             notesInfo['notes'] = notes
         }
         await popUp('popup_notes')
-        notesInfo['id'] = notesInfo['notes'][notesInfo['index']]['id']
+        notesInfo['id'] = notesInfo['notes'][parseInt(notesInfo['index'])]['id']
         notesInfo['name'] = notesInfo['notes'][notesInfo['index']]['name']
         document.getElementById('popup_notes').children[2].innerText = `Meeting notes for ${notesInfo['notes'][notesInfo['index']]['name']}`
         const html = await fetch('/markdown_to_html',
