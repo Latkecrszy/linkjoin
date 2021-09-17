@@ -279,10 +279,7 @@
         </div>
         <div id="tutorial-1" class="tutorial">
             Hi there! Welcome to LinkJoin! Let's get you set up and ready to be on time.
-            <div>
-                <button class="ok" onclick="tutorial(0)" style="margin-right: 20px">I'm ready!</button>
-                <button class="ok" onclick="skipTutorial()">Skip</button>
-            </div>
+            <button class="ok" onclick="tutorial(0)" style="margin-right: 20px">I'm ready!</button>
         </div>
         <div id="tutorial0" class="tutorial">
             <p>You should see an icon on the right side of your search bar indicating that popups are blocked.
@@ -293,7 +290,10 @@
             Let's get started by showing you around the page.
             This menu is where you can change how your links are organized.
             Choose from sorting by day, time, or both!
-            <button class="ok" onclick="tutorial(2)">Next</button>
+            <div>
+                <button class="ok" onclick="tutorial(2)">Next</button>
+                <button class="ok" onclick="skipTutorial()">Skip</button>
+            </div>
         </div>
         <div id="tutorial2" class="tutorial">
             Next, these buttons will let you manage your account. Switch accounts or log out at any time.
