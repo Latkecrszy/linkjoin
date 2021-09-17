@@ -343,10 +343,8 @@ async function register_link(parameter) {
     if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
     if (!document.getElementById("link").value) {return document.getElementById("error").innerText = "Please provide a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please provide days for your meeting."}
-    skipTutorial()
-    hide('popup')
     await fetch(url, args)
-    location.reload()
+    await skipTutorial()
 }
 
 function logOut() {document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; location.replace('/login')}
@@ -493,11 +491,12 @@ async function tutorial(item, skip) {
 }
 
 async function skipTutorial() {
-    return await fetch(`/tutorial`, {
+    await fetch(`/tutorial`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'email': global_username, 'step': 'done'})
     })
+    location.reload()
 }
 
 
