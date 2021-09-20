@@ -63,6 +63,7 @@ function edit(link) {
         document.getElementById("name").value = 'Tutorial Link'
         document.getElementById("link").value = 'https://linkjoin.xyz';
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
+        document.getElementById("submit").setAttribute('onClick', "register_link('tutorial')")
         return
 
     }
@@ -341,6 +342,7 @@ async function sort() {
 
 async function register_link(parameter) {
     if (created) {return}
+    if (parameter === 'tutorial') {location.reload()}
     created = true
     let hour = parseInt(document.getElementById("hour").value)
     const minute = document.getElementById("minute").value
