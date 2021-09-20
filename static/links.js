@@ -687,14 +687,24 @@ async function searchNotes(content) {
 
 function openTutorial() {
     document.getElementById('tutorial').classList.toggle('open')
-    document.getElementById('open-tutorial').classList.toggle('open')
+    if (document.getElementById('open-tutorial') !== null) {
+        document.getElementById('open-tutorial').classList.toggle('open')
+    }
+
 }
 
 function closeTutorial() {
     document.getElementById('tutorial').classList.remove('open')
-    document.getElementById('open-tutorial').classList.remove('open')
+    if (document.getElementById('open-tutorial') !== null) {
+        document.getElementById('open-tutorial').classList.remove('open')
+    }
 }
 
 function nextStep() {
 
+}
+
+async function tutorialFinished() {
+    await fetch('/tutorial_finished', {headers: {email: global_username}})
+    location.reload()
 }

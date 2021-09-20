@@ -20,7 +20,6 @@
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({offset: offset, email: '{{username}}'})})
             const countryCodes = {{ country_codes|tojson|safe }}
-
         </script>
         <script src="{{ url_for('static', filename='links.js') }}"></script>
         <script>
@@ -324,7 +323,9 @@
 
 
         <!--Tutorial-->
-        <div id="open-tutorial" onclick="openTutorial()">❮</div>
+        {% if tutorial != 'complete' %}
+            <div id="open-tutorial" onclick="openTutorial()">❮</div>
+        {% endif %}
         <div id="tutorial">
             <!--Scroll to these steps with document.getElementById('tutorial').children[x].scrollIntoView()-->
             <h1>Tutorial</h1>
@@ -369,7 +370,7 @@
                     To schedule a link, all you need to do is click the plus button and fill in the info.
                 </p>
                 <div class="demo">
-                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='nextStep(); popUp("popup", {{ link_names|tojson|safe }})' class="plus_button tutorial" alt="Click to schedule a link">
+                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='nextStep(); popUp("popup", {{ link_names|tojson|safe }})' style="display: flex !important" class="plus_button tutorial" alt="Click to schedule a link">
                 </div>
             </div>
             <div class="tutorial-step">
@@ -529,6 +530,8 @@
                 You're now up to date on all the features that LinkJoin has to offer. Now, start making some links and
                 never be late again!
             </p>
+            <button onclick="tutorialFinished()" id="tutorial-finished">Don't show again</button>
         </div>
+
     </body>
 </html>

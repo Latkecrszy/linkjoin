@@ -228,7 +228,7 @@ def links():
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
-                           highlight=request.args.get('id'))
+                           highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'))
 
 
 @app.route('/delete', methods=['POST'])
@@ -533,13 +533,12 @@ def send_email():
     pass
 
 
-@app.route('/insertlink')
-def insertlink():
-    mongo.db.links.find_one_and_replace({'id': -1}, {
-        'username': 'Tutorial', 'id': -1, 'time': '12:00',
-        'link': encoder.encrypt('https://linkjoin.xyz'.encode()), 'name': 'Tutorial', 'active': 'true',
-        'share': encoder.encrypt('https://linkjoin.xyz/addlink?id=tutorial'.encode()), 'repeat': 'week', 'days': ['Mon', 'Tue'],
-        'text': 'false', 'starts': 0})
+@app.route('/tutorial_finished')
+def tutorial_finished():
+    if not authenticated(request.cookies, request.headers.get('email')):
+        return 'Forbidden', 403
+    mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
+    return 'Success', 200
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

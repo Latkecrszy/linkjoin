@@ -436,6 +436,16 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 .plus_button.tutorial {margin: 0; padding: 0;}
 
+#tutorial-finished {
+    width: 50%;
+    margin: 20px 0 20px 25%;
+    border: none;
+    background: #2B8FD8;
+    border-radius: 3px;
+    height: 40px;
+    font-size: 16px;
+}
+
 @keyframes bob {
     from {padding-right: 0;}
     to {padding-right: 15px;}
