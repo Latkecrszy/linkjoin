@@ -62,6 +62,9 @@ function edit(link) {
         document.getElementById("submit").innerText = "Update"
         document.getElementById("name").value = 'Tutorial Link'
         document.getElementById("link").value = 'https://linkjoin.xyz';
+        document.getElementById("pm").selected = "selected";
+        document.getElementById("hour").value = 12;
+        document.getElementById("minute").value = "00";
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
         document.getElementById("submit").setAttribute('onClick', "register_link('tutorial')")
         return
@@ -281,6 +284,9 @@ async function load_links(username, sort) {
             }
             if (!e.target.parentElement.classList.contains('demo')) {
                 document.getElementById('tutorial-menu').style.display = 'none'
+            }
+            else if (!e.target.classList.contains('menu_buttons')) {
+                closeTutorial()
             }
             if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
                 && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'

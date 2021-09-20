@@ -204,14 +204,10 @@
                         <option>58</option>
                         <option>59</option>
                     </select>
-                    <!--<input type="number" id="hour" max="12" min="1" style="width: 50px" placeholder="hour" required>
-                    <input type="number" id="minute" max="59" min="1" style="width: 50px" placeholder="min" required>-->
                     <select class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; width: 30px;" id="am">
                         <option value="am">AM</option>
                         <option value="pm" id="pm">PM</option>
                     </select>
-                    <!--Put cell phone icon next to text me a reminder
-                    -->
                 </div>
                 <div class="flex">
                     <img id="password_img" src="{{ url_for('static', filename='images/lock.svg') }}" height="18px" width="15px" alt="lock symbol">
@@ -340,13 +336,15 @@
                 </div>
                 <p>You can choose how to sort your links with this dropdown menu. The options are none, day, time, or both!</p>
                 <div class="demo no-center">
-                    <div>Sort By:</div>
-                    <select class="sort" onclick="nextStep()">
-                        <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
-                        <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
-                        <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
-                        <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
-                    </select>
+                    <div>
+                        <div>Sort By:</div>
+                        <select class="sort" onclick="nextStep()">
+                            <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
+                            <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
+                            <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
+                            <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="tutorial-step">
@@ -382,8 +380,11 @@
                     your link will open automatically (blue means it will, gray means it will not).
                 </p>
                 <div class="demo">
-                    <input class="checkbox" id="switch-demo" type="checkbox">
-                <label class="switch" for="switch-demo" onclick="nextStep()"></label>
+                    <div>
+                        <input class="checkbox" id="switch-demo" type="checkbox">
+                        <label class="switch" for="switch-demo" onclick="nextStep()"></label>
+                    </div>
+
                 </div>
 
             </div>
