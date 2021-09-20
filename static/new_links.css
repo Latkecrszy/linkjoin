@@ -513,7 +513,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     #open-tutorial {
         z-index: 5;
         right: unset;
-        left: 10px;
+        left: 40px;
     }
     #tutorial {
         right: unset;
