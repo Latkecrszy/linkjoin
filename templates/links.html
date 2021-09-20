@@ -2,6 +2,7 @@
 <html id="links_html" lang="en">
     <head>
         <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
@@ -49,7 +50,7 @@
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
-                <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus_button" alt="Click to schedule a link">
+                <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
                     <a><div class="button header_button underline" onclick="addNumberShow()">
                         {% if number == None %} Add Number {% else %} Change Number {% endif %}
@@ -73,16 +74,16 @@
                 </div>
             </header>
             <div id="boxes">
-                <div id="box">
-                    <div id="sort_by">Sort By:</div>
-                    <select onchange="sort()" id="sort">
+                <div class="box">
+                    <div>Sort By:</div>
+                    <select onchange="sort()" class="sort">
                         <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
                         <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
                         <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
                         <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
                     </select>
                 </div>
-                <button id="notes" onclick="showNotes()">Meeting Notes</button>
+                <button class="show-notes" onclick="showNotes()">Meeting Notes</button>
             </div>
 
                 <div class="gone" id="disappear">
@@ -268,70 +269,31 @@
         <div id="popup_premium">
             <div>You have reached the limit of 10 free links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
-        <div id="check_popup" class="tutorial">Please wait, checking popup permissions...</div>
-        <div id="popups_not_enabled" class="tutorial">
+        <div id="check_popup" class="popup-warning">Please wait, checking popup permissions...</div>
+        <div id="popups_not_enabled" class="popup-warning">
             Popups are still not enabled.
             If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
-            If you think that there has been a mistake, please email me at linkjoin.xyz@gmail.com. If you wish, you may continue without enabling popups, but your links will not open.
+            If you think that there has been a mistake, please send us an email at linkjoin.xyz@gmail.com. If you wish, you may continue without enabling popups, but your links will not open automatically.
             <div>
             <button class="ok" style="height: 70px; margin-right: 20px" onclick="tutorial(1)">Check my popups</button>
             <button class="ok" style="height: 70px" onclick="tutorial(1, true)">Continue without popups</button></div>
         </div>
-        <div id="tutorial-1" class="tutorial">
+        <div id="tutorial-1" class="popup-warning">
             Hi there! Welcome to LinkJoin! Let's get you set up and ready to be on time.
             <button class="ok" onclick="tutorial(0)" style="margin-right: 20px">I'm ready!</button>
         </div>
-        <div id="tutorial0" class="tutorial">
+        <div id="tutorial0" class="popup-warning">
             <p>You should see an icon on the right side of your search bar indicating that popups are blocked.
                 Click on the icon and select Always allow pop-ups redirects from https://linkjoin.xyz.</p>
             <button class="ok" onclick="tutorial(1)">Check my popups</button>
         </div>
-        <div id="tutorial1" class="tutorial">
-            Let's get started by showing you around the page.
-            This menu is where you can change how your links are organized.
-            Choose from sorting by day, time, or both!
-            <div>
-                <button class="ok" onclick="tutorial(2)">Next</button>
-                <button class="ok" onclick="skipTutorial()">Skip</button>
-            </div>
+        <div id="tutorial1" class="popup-warning">
+            <p>
+                Now that popups are enabled, you can head on over to the tutorial at the bottom of the screen.
+                Enjoy LinkJoin!
+            </p>
+            <button class="ok" onclick="skipTutorial()">Thanks!</button>
         </div>
-        <div id="tutorial2" class="tutorial">
-            Next, these buttons will let you manage your account. Switch accounts or log out at any time.
-            <button class="ok" onclick="tutorial(3)">Next</button>
-        </div>
-        <div id="tutorial3" class="tutorial">
-            Now, the important part: Let's schedule our first link. Click on the big plus right there to get started.
-            <button class="ok" onclick="tutorial(4)">Next</button>
-        </div>
-        <div id="tutorial4" class="tutorial">
-            Nice! Now, let's give our new meeting a title.
-            <button class="ok" onclick="tutorial(5)">Next</button>
-        </div>
-        <div id="tutorial5" class="tutorial">
-            Next, add in a link, time, and an optional password.
-            <button class="ok" onclick="tutorial(6)">Next</button>
-        </div>
-        <div id="tutorial6" class="tutorial">
-            To change how often your link will open, select an option from the dropdown here. Go ahead, try it out!
-            <button class="ok" onclick="tutorial(7)">Next</button>
-        </div>
-        <div id="tutorial7" class="tutorial">
-            You can change when your link will start to open. It could be today, in a week, or more!
-            <button class="ok" onclick="tutorial(8)">Next</button>
-        </div>
-        <div id="tutorial8" class="tutorial">
-            To select days for your link to open, just click on the days that you want! They'll turn blue to let you know they are selected.
-            <button class="ok" onclick="tutorial(9)">Next</button>
-        </div>
-        <div id="tutorial9" class="tutorial">
-            Let LinkJoin text you before your meeting starts to remind you to get on the computer.
-            <button class="ok" onclick="tutorial(10)">Next</button>
-        </div>
-        <div id="tutorial10" class="tutorial">
-            Great job! All that's left is to click Create, and your link will be on the books. Enjoy LinkJoin!
-            <button class="ok" onclick="tutorial(11)">Thanks!</button>
-        </div>
-        <div id="spotlight"></div>
         <div id="blur"></div>
         <div id="add_number_div">
             <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" height="25px" width="25px" id="dismiss_add_number" onclick="no_add_number()" alt="back to links page">
@@ -359,5 +321,214 @@
             </div>
         </div>
         <div id="notif"></div>
+
+
+        <!--Tutorial-->
+        <div id="open-tutorial" onclick="openTutorial()">❮</div>
+        <div id="tutorial">
+            <!--Scroll to these steps with document.getElementById('tutorial').children[x].scrollIntoView()-->
+            <h1>Tutorial</h1>
+            <p>
+                Welcome to LinkJoin! This tutorial will guide you through how to use the site and all of its features.
+                In each step, you'll find a description of a part of the page, along with a demo to play
+                around with. Without further ado, let's get started!
+            </p>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Sort Links</h3>
+                </div>
+                <p>You can choose how to sort your links with this dropdown menu. The options are none, day, time, or both!</p>
+                <div class="demo no-center">
+                    <div>Sort By:</div>
+                    <select class="sort" onclick="nextStep()">
+                        <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
+                        <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
+                        <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
+                        <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
+                    </select>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Take Notes</h3>
+                </div>
+                <p>
+                    You can take notes on your meetings right in LinkJoin!
+                    Click on this box to view your meeting notes, if you have any.
+                </p>
+                <div class="demo">
+                    <button class="show-notes tutorial" onclick="nextStep(); showNotes()">Meeting Notes</button>
+                </div>
+
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Make a Link</h3>
+                </div>
+                <p>
+                    To schedule a link, all you need to do is click the plus button and fill in the info.
+                </p>
+                <div class="demo">
+                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='nextStep(); popUp("popup", {{ link_names|tojson|safe }})' class="plus_button tutorial" alt="Click to schedule a link">
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Disable and Enable Links</h3>
+                </div>
+                <p>
+                    Near the right side of your link, you'll see a blue switch. You can use this to change whether or not
+                    your link will open automatically (blue means it will, gray means it will not).
+                </p>
+                <div class="demo">
+                    <input class="checkbox" id="switch-demo" type="checkbox">
+                <label class="switch" for="switch-demo" onclick="nextStep()"></label>
+                </div>
+
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Dot Menu</h3>
+                </div>
+                <p>
+                    On the far right side of your link, you'll see 3 dots. That is the dot menu, where various actions
+                    for your link are stored.
+                </p>
+                <div class="demo">
+                    <div class="menu tutorial" style="height: 190px" id="tutorial-menu">
+                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link">Delete</div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 0)" title="Copy your meeting link">Copy link</div>
+                    </div>
+                    <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('tutorial-menu').style.display = 'flex'" alt="Three dots">
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Edit Links</h3>
+                </div>
+                <p>
+                    In the dot menu of your links, you'll see a variety of options, the first of which is the edit button.
+                    This lets you adjust your link's settings if you made a mistake, or just want to change something.
+                </p>
+                <div class="demo" style="height: 220px;">
+                    <div class="menu tutorial" style="height: 190px; display: flex;">
+                        <div onclick="edit('tutorial')" title="Edit your link settings"><b>Edit</b></div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link">Delete</div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 1)" title="Copy your meeting link">Copy link</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Delete Links</h3>
+                </div>
+                <p>
+                    The second button of the dot menu is the delete button. This allows you to permanently delete links
+                    from your LinkJoin. Use with caution, as this cannot be undone.
+                </p>
+                <div class="demo" style="height: 220px;">
+                    <div class="menu tutorial" style="height: 190px; display: flex;">
+                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link"><b>Delete</b></div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Share Links</h3>
+                </div>
+                <p>
+                    Below the delete button of the dot menu, you'll find the share button. This lets you copy a link
+                    that you can send to others that will add your link with all its information to their LinkJoin.
+                    This feature is especially useful for sending a link out to large volumes of people, because it
+                    guarantees that they have the correct time and date with just the click of a link.
+                </p>
+                <div class="demo" style="height: 220px;">
+                    <div class="menu tutorial" style="height: 190px; display: flex;">
+                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link">Delete</div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people"><b>Share</b></div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Take Notes</h3>
+                </div>
+                <p>
+                    The penultimate button in the dot menu is the notes button. This button creates a note for your meeting,
+                    letting you take notes about it right in LinkJoin. These notes are auto-saved within LinkJoin, and
+                    can be accessed by clicking the notes button again, or by clicking the <i>Meeting Notes</i> button
+                    and searching for the meeting.
+                </p>
+                <div class="demo" style="height: 220px;">
+                    <div class="menu tutorial" style="height: 190px; display: flex;">
+                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link">Delete</div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting"><b>Notes</b></div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Copy Link</h3>
+                </div>
+                <p>
+                    The last button you will always see in the dot menu of your links is the copy link button. All this
+                    button does is copy your meeting link. This is <b><u>not</u></b> the same as the Share button, which
+                    copies a link that will add your scheduled meeting to someone else's LinkJoin.
+                </p>
+                <div class="demo" style="height: 220px;">
+                    <div class="menu tutorial" style="height: 190px; display: flex;">
+                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <hr class="menu_line">
+                        <div onclick="delete_('tutorial')" title="Permanently delete your link">Delete</div>
+                        <hr class="menu_line">
+                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <hr class="menu_line">
+                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <hr class="menu_line">
+                        <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link"><b>Copy link</b></div>
+                    </div>
+                </div>
+            </div>
+            <h2>That's all, folks!</h2>
+            <p>
+                You're now up to date on all the features that LinkJoin has to offer. Now, start making some links and
+                never be late again!
+            </p>
+        </div>
     </body>
 </html>

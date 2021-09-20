@@ -225,12 +225,10 @@ input:invalid {box-shadow: none}
 
 html::-webkit-scrollbar, .notes::-webkit-scrollbar {
     width: 8px;
-
 }
 
 html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track {
     border-radius: 12px;
-    /*margin-bottom: 300px;*/
 }
 
 html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {

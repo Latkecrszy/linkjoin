@@ -202,7 +202,7 @@
     cursor: pointer
 }
 
-#notes {
+.show-notes {
     width: 130px;
     height: 50px;
     border-radius: 3px;
@@ -361,6 +361,96 @@ pre {
 
 html, body {scroll-behavior: smooth; overflow-x: visible;}
 
+#open-tutorial {
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    background: #2B8FD8;
+    width: 60px;
+    height: 60px;
+    border-radius: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: rotate(90deg);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.6);
+    font-size: 30px;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding-bottom: 2px;
+    transition: 0.5s;
+}
+
+#open-tutorial:hover {
+    animation: bob 1s ease-in-out infinite alternate;
+}
+
+#open-tutorial.open {
+    transform: rotate(270deg);
+}
+
+#open-tutorial.open:hover {
+    animation: none;
+}
+
+#tutorial {
+    z-index: 3;
+    position: fixed;
+    bottom: 90px;
+    right: 15px;
+    width: min(350px, calc(100vw - 15px));
+    background: #142539;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5), -3px -3px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding: 0 15px 15px 15px;
+    overflow: scroll;
+    opacity: 0;
+    pointer-events: none;
+    height: 0;
+    transition: 0.4s;
+}
+
+#tutorial h1 {
+    text-align: center;
+}
+
+#tutorial.open {
+    height: min(600px, calc(95vh - 70px));
+    opacity: 1;
+    pointer-events: all;
+}
+
+.demo {
+    padding: 15px 10px;
+    background: rgba(0, 0, 0, 0.3);
+    width: calc(100% - 20px);
+    border-radius: 1px;
+    display: flex;
+    justify-content: center;
+}
+
+.demo.no-center {display: block;}
+
+.show-notes.tutorial, .menu.tutorial {margin: 0;}
+
+.plus_button.tutorial {margin: 0; padding: 0;}
+
+@keyframes bob {
+    from {padding-right: 0;}
+    to {padding-right: 15px;}
+}
+
+@media (max-width: 400px) {
+    #tutorial {
+        top: 0;
+        left: 0;
+        height: 100vh !important;
+        width: calc(100vw - 30px);
+
+    }
+}
+
 @media (max-width: 900px) {
     .link_event {margin: 0 0 5px 0; width: 100%; height: 150px;}
     .highlight {
@@ -397,19 +487,28 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
         z-index: 9;
     }
     #header_links a {display: none;}
-    #plus_button {display: flex}
+    .plus_button {display: flex}
     #home {display: inline-block !important}
 
 }
 
 @media (max-width: 730px) {
     #plus {display: flex !important}
-    #plus_button {display: none}
+    .plus_button {display: none}
     #popup {width: 100vw; max-width: 520px}
     #popup_delete {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 550px}
     #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
+    #open-tutorial {
+        z-index: 5;
+        right: unset;
+        left: 10px;
+    }
+    #tutorial {
+        right: unset;
+        left: 15px;
+    }
 }
 
 @media (max-width: 500px) {

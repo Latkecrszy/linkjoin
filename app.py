@@ -288,7 +288,7 @@ def disable():
 @app.route('/db', methods=['GET'])
 def db():
     if not authenticated(request.cookies, request.headers.get('email')):
-        return 'Forbidden', 403
+        return 'Forbidden'
     links_list = mongo.db.links.find({'username': request.headers.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
@@ -531,6 +531,15 @@ def markdown_to_html():
 @app.route('/send_email')
 def send_email():
     pass
+
+
+@app.route('/insertlink')
+def insertlink():
+    mongo.db.links.find_one_and_replace({'id': -1}, {
+        'username': 'Tutorial', 'id': -1, 'time': '12:00',
+        'link': encoder.encrypt('https://linkjoin.xyz'.encode()), 'name': 'Tutorial', 'active': 'true',
+        'share': encoder.encrypt('https://linkjoin.xyz/addlink?id=tutorial'.encode()), 'repeat': 'week', 'days': ['Mon', 'Tue'],
+        'text': 'false', 'starts': 0})
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

@@ -23,9 +23,6 @@ const buildUrl = (base, ...queryParams) => {
 }
 
 async function db(username) {
-    if (await fetch('/db', {headers: {'email': username}}).then(response => response.text()) === 'Not logged in') {
-        return location.replace('/login?error=not_logged_in')
-    }
     return await fetch('/db', {headers: {'email': username}}).then(response => response.json())
 }
 
@@ -50,7 +47,6 @@ async function popUp(popup) {
         }
     }
     document.getElementById("0").selected = "selected"
-    await tutorial(4)
 }
 
 function hide(popup) {
@@ -62,6 +58,14 @@ function edit(link) {
     const element = document.getElementById("popup")
     element.style.display = "flex"
     blur(true)
+    if (link === 'tutorial') {
+        document.getElementById("submit").innerText = "Update"
+        document.getElementById("name").value = 'Tutorial Link'
+        document.getElementById("link").value = 'https://linkjoin.xyz';
+        ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
+        return
+
+    }
     document.getElementById("name").value = link["name"]
     document.getElementById("link").value = link["link"]
     document.getElementById("text_select").value = link["text"].toString()
@@ -92,6 +96,10 @@ function edit(link) {
 async function delete_(link) {
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     document.getElementById("popup_delete").style.display = "flex"
+    if (link === 'tutorial') {
+        document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>Tutorial</b>?'
+        return document.getElementById("delete_button").addEventListener('click', () => {location.reload()})
+    }
     document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
     document.getElementById("delete_button").addEventListener('click', async () => {
         hide('popup_delete')
@@ -108,7 +116,12 @@ async function delete_(link) {
 function share(link) {
     document.getElementById("popup_share").style.zIndex = "11"
     document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-    document.getElementById("share_link").value = link['share']
+    if (link === 'tutorial') {
+        document.getElementById("share_link").value = 'https://linkjoin.xyz/addlink?id=tutorial'
+    }
+    else {
+        document.getElementById("share_link").value = link['share']
+    }
     blur(true)
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 }
@@ -132,6 +145,9 @@ function copyPassword(id, password) {
 }
 
 function copyLink(link, id) {
+    if (link === 'tutorial') {
+        return navigator.clipboard.writeText('https://linkjoin.xyz')
+    }
     navigator.clipboard.writeText(link).then(async () => {
         document.getElementById(id).innerText = "Copied!"
         await sleep(2000)
@@ -218,10 +234,12 @@ async function load_links(username, sort) {
             let linkOpacity = 1
             let nameContainerOpacity = 1
             let checkboxChecked = true
+            let switchHoverText = 'Stop your link from opening automatically'
             if (link['active'] === "false") {
                 linkOpacity = 0.6
                 nameContainerOpacity = 0.7
                 checkboxChecked = false
+                switchHoverText = 'Make your link open automatically'
             }
             let highlightDiv = highlight === link['id'].toString() ? '<div class="highlight"></div>' : ''
             const parameterLink = JSON.stringify(link).replaceAll('"', "'")
@@ -234,19 +252,19 @@ async function load_links(username, sort) {
                 </div>
                 <div class="days">${link['days'].join(", ")}</div>
                 <div class="menu" style="height: ${menuHeight}" id="menu${iterator}">
-                    <div onclick="edit(${parameterLink})">Edit</div>
+                    <div onclick="edit(${parameterLink})" title="Edit your link settings">Edit</div>
                     <hr class="menu_line"> 
-                    <div onclick="delete_(${parameterLink})">Delete</div>
+                    <div onclick="delete_(${parameterLink})" title="Permanently delete your link">Delete</div>
                     <hr class="menu_line">
-                    <div onclick="share(${parameterLink})">Share</div>
+                    <div onclick="share(${parameterLink})" title="Share your scheduled link with other people">Share</div>
                     <hr class="menu_line">
-                    <div onclick="createNote('${link['name']}', '${link['id']}')">Notes</div>
+                    <div onclick="createNote('${link['name']}', '${link['id']}')" title="Take notes on your meeting">Notes</div>
                     <hr class="menu_line">
-                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')">Copy link</div>
+                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')" title="Copy your meeting link">Copy link</div>
                     ${password}
                 </div>
                 <input class="checkbox" id="toggle${iterator}" type="checkbox">
-                <label class="switch" id="for${iterator}" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')"></label>
+                <label class="switch" id="for${iterator}" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')" title="${switchHoverText}"></label>
                 <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
             </div>`
             checked.push(checkboxChecked)
@@ -259,6 +277,14 @@ async function load_links(username, sort) {
                     document.getElementById(`menu${i}`).style.display = "none"
                 }
 
+            }
+            if (!e.target.parentElement.classList.contains('demo')) {
+                document.getElementById('tutorial-menu').style.display = 'none'
+            }
+            if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
+                && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
+                || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
+                closeTutorial()
             }
         })
         for (const [index, Checked] of checked.entries()) {
@@ -282,7 +308,7 @@ async function load_links(username, sort) {
         body: JSON.stringify({'email': username})})
     tutorial_completed = await tutorial_completed.json()
 
-    if (tutorial_completed['tutorial'] !== "done" && window.innerWidth >= 1000) {await tutorial(tutorial_completed['tutorial'])}
+    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
     await check_day(username)
     //await sleep(200)
     await checkTutorial()
@@ -309,7 +335,7 @@ async function check_day(username) {
 }
 
 async function sort() {
-    location.replace("/sort?sort="+document.getElementById("sort").value.toString())
+    location.replace("/sort?sort="+document.getElementsByClassName("sort")[0].value.toString())
 }
 
 
@@ -403,8 +429,6 @@ async function tutorial(item, skip) {
     }
     else if (item === 1) {
         if (skip) {
-            document.getElementById("box").style.zIndex = "5"
-            document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("popups_not_enabled").style.display = "none"
             document.getElementById("tutorial1").style.display = "flex"
             return document.getElementById("check_popup").style.display = "none"
@@ -419,62 +443,13 @@ async function tutorial(item, skip) {
         let newWindow = window.open()
         if (newWindow) {newWindow.close()}
         else {return document.getElementById("popups_not_enabled").style.display = "flex"}
-        document.getElementById("box").style.zIndex = "5"
-        document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
+        document.getElementById("tutorial1").style.display = "flex"
     }
     else if (item === 2) {
         document.getElementById("box").style.zIndex = "auto"
         document.getElementById("box").style.background = null
         document.getElementById("links_menu").style.zIndex = "5"
         document.getElementById("links_menu").style.background = "rgba(255, 255, 255, 0.2)"
-    }
-    else if (item === 3) {
-        document.getElementById("links_menu").style.zIndex = "auto"
-        document.getElementById("links_menu").style.background = null
-        document.getElementById("plus_button").style.background = "rgba(255, 255, 255, 0.2)"
-        document.getElementById("plus_button").style.zIndex = "5"
-    }
-    else if (item === 4) {
-        if (document.getElementById("tutorial3").style.display !== "flex") {return}
-        if (document.getElementById("popup").style.display !== "flex") { popUp('popup')}
-        document.getElementById("plus_button").style.zIndex = "auto"
-        document.getElementById("plus_button").style.background = null
-    }
-    else if (item === 6) {
-        document.getElementById("select").style.background = "rgba(255, 255, 255, 0.2)"
-        document.getElementById("select").style.borderRadius = "5px"
-    }
-    else if (item === 7) {
-        document.getElementById("select").style.background = null
-        document.getElementById("starts_select").style.background = "rgba(255, 255, 255, 0.2)"
-        document.getElementById("starts_select").style.borderRadius = "5px"
-        document.getElementById("starts_select").style.padding = "5px"
-        document.getElementById("tutorial9").style.boxShadow = "-6px 16px 18px black;"
-    }
-    else if (item === 8) {
-        document.getElementById("starts_select").style.background = null
-        document.getElementById("starts_select").style.borderRadius = null
-        document.getElementById("days").style.background = "rgba(255, 255, 255, 0.2)"
-    }
-    else if (item === 9) {
-        document.getElementById("days").style.background = null
-        document.getElementById("text_select").style.background = "rgba(255, 255, 255, 0.2)"
-        document.getElementById("text_select").style.borderRadius = "5px"
-        document.getElementById("text_select").style.paddingLeft = "5px"
-    }
-    else if (item === 10) {
-        document.getElementById("text_select").style.background = null
-        document.getElementById("text_select").style.borderRadius = null
-        document.getElementById("text_select").style.paddingLeft = null
-    }
-    if (item === 11) {
-        document.getElementById("tutorial9").style.display = "none"
-        await fetch(`/tutorial`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({'email': global_username, 'step': 'done'})
-        })
-        tutorial_complete = true
     }
     else {
         await fetch(`/tutorial`, {
@@ -705,4 +680,19 @@ async function searchNotes(content) {
     notesInfo['notes'] = newNotes
     notesInfo['index'] = 0
     await showNotes(true)
+}
+
+
+function openTutorial() {
+    document.getElementById('tutorial').classList.toggle('open')
+    document.getElementById('open-tutorial').classList.toggle('open')
+}
+
+function closeTutorial() {
+    document.getElementById('tutorial').classList.remove('open')
+    document.getElementById('open-tutorial').classList.remove('open')
+}
+
+function nextStep() {
+
 }

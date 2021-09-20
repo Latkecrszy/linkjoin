@@ -7,7 +7,7 @@
     text-align: center;
 }
 
-#plus_button {
+.plus_button {
     margin-top: 20px;
     padding: 30px;
     cursor: pointer;
@@ -23,7 +23,7 @@
     text-align: center;
 }
 
-#sort {
+.sort {
     border-radius: 3px;
     background-color: #2B8FD8;
     color: white;
@@ -408,7 +408,7 @@ input[type=date] {
 
 #content {display: flex; justify-content: space-between;}
 
-#box {
+.box {
     margin: 80px auto 0 0;
     position: absolute;
     display: flex;
@@ -433,7 +433,7 @@ input[type=date] {
 }
 
 
-.tutorial {
+.popup-warning {
     z-index: 7;
     width: 350px;
     display: none;
@@ -476,33 +476,14 @@ input[type=date] {
     margin-right: 50px !important;
     pointer-events:none}
 
-#tutorial-1, #check_popup, #tutorial0, #popups_not_enabled {
+#tutorial-1, #check_popup, #tutorial0, #popups_not_enabled, #tutorial1 {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
 }
 
 #popups_not_enabled {height: 325px; width: 400px}
 
 #tutorial0 {height: 300px;}
-/*1000*/
-#tutorial1 {top: 47vh; left: 5vw;}
 
-#tutorial2 {top: 200px; right: 15vw;}
-
-#tutorial3 {top: 250px; right: 58vw;}
-
-#tutorial4 {top: 160px; right: 63vw;}
-
-#tutorial5 {top: 250px; right: 63vw;}
-
-#tutorial6 {top: 310px; right: 63vw}
-
-#tutorial7 {top: 370px; right: 63vw}
-
-#tutorial8 {top: 400px; right: 63vw}
-
-#tutorial9 {top: 400px; right: 63vw}
-
-#tutorial10 {top: 430px; right: 10px}
 
 #blur {
     width: 100%;
