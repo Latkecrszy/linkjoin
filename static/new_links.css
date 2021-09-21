@@ -446,6 +446,19 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     font-size: 16px;
 }
 
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.settings-row div h3 {
+
+}
+
+#settings h1 {
+    margin-bottom: 30px;
+}
+
 @keyframes bob {
     from {padding-right: 0;}
     to {padding-right: 15px;}

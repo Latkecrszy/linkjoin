@@ -4,22 +4,8 @@ let created = false;
 const notesInfo = {}
 
 function blur(show) {
-    const blurElement = document.getElementById("blur")
-    if (show) {
-        blurElement.style.opacity = "0.4"
-        blurElement.style.zIndex = "3"
-    }
-    else {
-        blurElement.style.zIndex = "-3"
-        blurElement.style.opacity = "0"
-    }
-}
-
-const buildUrl = (base, ...queryParams) => {
-    const url = new URL(base, document.location.href);
-    for (const [name, value] of queryParams)
-      url.searchParams.append(name, `${value}`);
-    return url.toString();
+    document.getElementById("blur").style.opacity = show ? "0.4" : "0"
+    document.getElementById("blur").style.zIndex = show ? "3" : "-3"
 }
 
 async function db(username) {
@@ -66,9 +52,7 @@ function edit(link) {
         document.getElementById("hour").value = 12;
         document.getElementById("minute").value = "00";
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
-        document.getElementById("submit").setAttribute('onClick', "register_link('tutorial')")
-        return
-
+        return document.getElementById("submit").setAttribute('onClick', "register_link('tutorial')")
     }
     document.getElementById("name").value = link["name"]
     document.getElementById("link").value = link["link"]
@@ -120,12 +104,7 @@ async function delete_(link) {
 function share(link) {
     document.getElementById("popup_share").style.zIndex = "11"
     document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
-    if (link === 'tutorial') {
-        document.getElementById("share_link").value = 'https://linkjoin.xyz/addlink?id=tutorial'
-    }
-    else {
-        document.getElementById("share_link").value = link['share']
-    }
+    document.getElementById("share_link").value = link === 'tutorial' ? 'https://linkjoin.xyz/addlink?id=tutorial' : link['share']
     blur(true)
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 }
@@ -162,17 +141,11 @@ function copyLink(link, id) {
 async function load_links(username, sort) {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch('/get_session', {headers: {'email': username}}).then(id => id.json())
-    if (sessionId === null) {location.replace('/login?error=not_logged_in')}
-    else if (cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
+    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
-    let link_events = []
     const insert = document.getElementById("insert")
-    for (let i=0; i<3; i++) {
-        const placeHolder = document.createElement("div")
-        placeHolder.classList.add("placeholder")
-        insert.appendChild(placeHolder)
-    }
+    for (let i=0; i<3; i++) {insert.innerHTMl += '<div class="placeholder"></div>'}
     const links = await db(username)
     if (links.toString() === '') {
         await refresh()
@@ -280,7 +253,6 @@ async function load_links(username, sort) {
                 if (e.target.parentElement.id !== i.toString()) {
                     document.getElementById(`menu${i}`).style.display = "none"
                 }
-
             }
             if (!e.target.parentElement.classList.contains('demo')) {
                 document.getElementById('tutorial-menu').style.display = 'none'
@@ -294,12 +266,7 @@ async function load_links(username, sort) {
                 closeTutorial()
             }
         })
-        for (const [index, Checked] of checked.entries()) {
-            if (Checked) {
-                document.getElementById('toggle'+index).checked = 'checked'
-            }
-
-        }
+        checked.forEach((Checked, index) => {if (Checked) {document.getElementById('toggle'+index).checked = 'checked'}})
     }
     const clickToCopy = document.getElementById("click_to_copy")
     clickToCopy.addEventListener('click', async () => {
@@ -314,10 +281,8 @@ async function load_links(username, sort) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'email': username})})
     tutorial_completed = await tutorial_completed.json()
-
-    if (tutorial_completed['tutorial'] !== "done") {await tutorial(tutorial_completed['tutorial'])}
+    if (tutorial_completed['tutorial'] !== "done") {await popupWarn(tutorial_completed['tutorial'])}
     await check_day(username)
-    //await sleep(200)
     await checkTutorial()
     clearInterval(open)
     start(username, links, sort)
@@ -402,12 +367,11 @@ function browser() {
 }
 
 
-async function tutorial(item, skip) {
+async function popupWarn(item, skip) {
     tutorial_active = true
     item = parseInt(item)
     if (document.getElementById("blur").style.opacity !== "0.4") {
         blur(true)
-        if (item >= 4) {await popUp('popup')}
     }
     if (item === 0) {
         browser()
@@ -453,33 +417,11 @@ async function tutorial(item, skip) {
         else {return document.getElementById("popups_not_enabled").style.display = "flex"}
         document.getElementById("tutorial1").style.display = "flex"
     }
-    else if (item === 2) {
-        document.getElementById("box").style.zIndex = "auto"
-        document.getElementById("box").style.background = null
-        document.getElementById("links_menu").style.zIndex = "5"
-        document.getElementById("links_menu").style.background = "rgba(255, 255, 255, 0.2)"
-    }
-    else {
-        await fetch(`/tutorial`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({'email': global_username, 'step': item})
-        })
-    }
     document.getElementById("add_number_div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
     try {document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"}
     catch {}
-}
-
-async function skipTutorial() {
-    await fetch(`/tutorial`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({'email': global_username, 'step': 'done'})
-    })
-    location.reload()
 }
 
 
@@ -488,7 +430,21 @@ async function refresh() {
     while (insert.firstChild) {insert.removeChild(insert.firstChild)}
 }
 
-
+async function addNumberShow() {
+    const content = document.getElementById('add_number_div').children[1]
+    if (number === "None") {
+        content.children[0].innerText = 'Add phone number'
+        content.children[1].innerText = "We noticed that you haven't added a phone number to your account. This means that you won't receive text reminders for your links. To add a number, type it in below. If you don't want to add your number, click the arrow in the upper left."
+        content.children[3].innerText = 'Add Number'
+    }
+    else {
+        content.children[0].innerText = 'Change phone number'
+        content.children[1].innerText = "To change the phone number for your text reminders, type it in below and click 'Change Number'."
+        content.children[3].innerText = 'Change Number'
+    }
+    document.getElementById('add_number_div').style.display = 'flex'
+    blur(true)
+}
 
 async function add_number() {
     let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
@@ -516,10 +472,6 @@ async function no_add_number() {
     blur(false)
 }
 
-// TODO: Add notes feature where in the dot menu for each link, you can add notes.
-// TODO: Store all notes for links (deleted or not) in menu below sort by, where you can click and there's a
-// TODO: Paginator and search bar for your meeting notes, as well as an option to delete the note.
-
 async function checkTutorial() {
     const tutorial_completed = await fetch('/tutorial_complete',
         {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: global_username})})
@@ -530,20 +482,13 @@ async function checkTutorial() {
     }
 }
 
-async function addNumberShow() {
-    const content = document.getElementById('add_number_div').children[1]
-    if (number === "None") {
-        content.children[0].innerText = 'Add phone number'
-        content.children[1].innerText = "We noticed that you haven't added a phone number to your account. This means that you won't receive text reminders for your links. To add a number, type it in below. If you don't want to add your number, click the arrow in the upper left."
-        content.children[3].innerText = 'Add Number'
-    }
-    else {
-        content.children[0].innerText = 'Change phone number'
-        content.children[1].innerText = "To change the phone number for your text reminders, type it in below and click 'Change Number'."
-        content.children[3].innerText = 'Change Number'
-    }
-    document.getElementById('add_number_div').style.display = 'flex'
-    blur(true)
+async function skipTutorial() {
+    await fetch(`/tutorial`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({'email': global_username, 'step': 'done'})
+    })
+    location.reload()
 }
 
 document.addEventListener("click", (e) => {
@@ -557,70 +502,31 @@ document.addEventListener("click", (e) => {
 
 document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
 
-async function showNotes(changing) {
-    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
-    if (notes.length !== 0) {
-        if (changing !== true) {
-            notesInfo['index'] = 0
-        }
-        if (notesInfo['notes'] === undefined) {
-            notesInfo['notes'] = notes
-        }
-        await popUp('popup_notes')
-        notesInfo['id'] = notesInfo['notes'][parseInt(notesInfo['index'])]['id']
-        notesInfo['name'] = notesInfo['notes'][notesInfo['index']]['name']
-        document.getElementById('popup_notes').children[2].innerText = `Meeting notes for ${notesInfo['notes'][notesInfo['index']]['name']}`
-        const html = await fetch('/markdown_to_html',
-        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({markdown: notesInfo['notes'][notesInfo['index']]['markdown']})}).then(r => r.text())
-        document.getElementById('notes_div').innerHTML = html
-    }
-    else {
-        await sendNotif('You do not have any meeting notes. Try creating some from the dot menus of your links!', '#ba1a1a')
-    }
-
-
-}
-
 function pageSetup() {
     document.getElementById('notes_div').addEventListener('click', unRenderNotes)
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
+}
+
+function openTutorial() {
+    document.getElementById('tutorial').classList.toggle('open')
+    if (document.getElementById('open-tutorial') !== null) {
+        document.getElementById('open-tutorial').classList.toggle('open')
+    }
 
 }
 
-async function renderNotes() {
-    const html = await fetch('/markdown_to_html',
-        {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({markdown: document.getElementById('notes_textarea').value})}).then(r => r.text())
-    const divNotes = document.getElementById('notes_div')
-    divNotes.innerHTML = html
-    divNotes.style.display = 'block'
-    document.getElementById('notes_textarea').style.display = 'none'
+function closeTutorial() {
+    document.getElementById('tutorial').classList.remove('open')
+    if (document.getElementById('open-tutorial') !== null) {
+        document.getElementById('open-tutorial').classList.remove('open')
+    }
 }
 
-async function unRenderNotes() {
-    if (document.activeElement === document.getElementById('notes_textarea')) {return}
-    document.getElementById('notes_div').style.display = 'none'
-    document.getElementById('notes_textarea').style.display = 'block'
-    notesInfo['notes'].forEach(i => {
-        if (i['name'] === notesInfo['name'] && i['id'] === notesInfo['id']) {
-            document.getElementById('notes_textarea').value = i['markdown']
-        }
-    })
-    document.getElementById('notes_textarea').focus()
+async function tutorialFinished() {
+    await fetch('/tutorial_finished', {headers: {email: global_username}})
+    location.reload()
 }
-
-async function saveNotes() {
-    await fetch('/notes', {method: 'POST', headers: {'Content-Type': 'application/json', email: global_username},
-        body: JSON.stringify({
-            id: notesInfo['id'],
-            name: notesInfo['name'],
-            date: new Date().toLocaleString('en-us',{month:'long', year:'numeric', day: 'numeric'}),
-            markdown: document.getElementById('notes_textarea').value
-        })})
-    notesInfo['notes'][notesInfo['index']]['markdown'] = document.getElementById('notes_textarea').value
-
-}
-
 
 async function sendNotif(text, color) {
     const notif = document.getElementById('notif')
@@ -638,79 +544,6 @@ async function sendNotif(text, color) {
     }
 }
 
-
-async function createNote(name, id) {
-    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
-    let found = false
-    notes.forEach((i, index) => {
-        if (i['name'] === name && i['id'] === parseInt(id)) {
-            notesInfo['name'] = name
-            notesInfo['id'] = parseInt(id)
-            notesInfo['index'] = index
-            showNotes(true)
-            found = true
-        }
-    })
-    if (found) {return}
-    await fetch('/notes', {method: 'POST', headers: {'Content-Type': 'application/json', email: global_username},
-        body: JSON.stringify({
-            id: parseInt(id),
-            name: name,
-            markdown: '',
-            date: new Date().toLocaleString('en-us',{month:'long', year:'numeric', day: 'numeric'}),
-        })})
-    notesInfo['name'] = name
-    notesInfo['id'] = parseInt(id)
-    notesInfo['index'] = notes.length
-    await showNotes(true)
-}
-
-
-async function notesNext(direction) {
-    if (direction === 'next') {
-        notesInfo['index'] !== notesInfo['notes'].length-1 ? notesInfo['index']++ : null
-    }
-    else {
-        notesInfo['index'] !== 0 ? notesInfo['index']-- : null
-    }
-    await showNotes(true)
-}
-
-
-async function searchNotes(content) {
-    const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
-    const newNotes = []
-    notes.forEach(i => {
-        if (i['name'].toLowerCase().includes(content) || i['date'].toLowerCase().includes(content)) {
-            newNotes.push(i)
-        }
-    })
-    notesInfo['notes'] = newNotes
-    notesInfo['index'] = 0
-    await showNotes(true)
-}
-
-
-function openTutorial() {
-    document.getElementById('tutorial').classList.toggle('open')
-    if (document.getElementById('open-tutorial') !== null) {
-        document.getElementById('open-tutorial').classList.toggle('open')
-    }
-
-}
-
-function closeTutorial() {
-    document.getElementById('tutorial').classList.remove('open')
-    if (document.getElementById('open-tutorial') !== null) {
-        document.getElementById('open-tutorial').classList.remove('open')
-    }
-}
-
 function nextStep() {
 
-}
-
-async function tutorialFinished() {
-    await fetch('/tutorial_finished', {headers: {email: global_username}})
-    location.reload()
 }
