@@ -120,7 +120,7 @@ def signup():
             return {"error": "email_in_use", "url": redirect_link}
         refer_id = gen_id()
         account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
-                   'offset': data.get('offset')}
+                   'offset': data.get('offset'), 'notes': {}}
         if data.get("password") or data.get('password') == '':
             if len(data.get('password')) < 5:
                 return {"error": "password_too_short", "url": redirect_link}
