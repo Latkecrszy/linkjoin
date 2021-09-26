@@ -145,7 +145,7 @@ async function load_links(username, sort) {
     global_username = username
     global_sort = sort
     const insert = document.getElementById("insert")
-    for (let i=0; i<3; i++) {insert.innerHTMl += '<div class="placeholder"></div>'}
+    for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
     const links = await db(username)
     if (links.toString() === '') {
         await refresh()
@@ -446,10 +446,10 @@ async function addNumberShow() {
     blur(true)
 }
 
-async function add_number() {
+async function add_number(id) {
     let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
     const countryCode = countryCodes[country['country']]
-    let number = document.getElementById("number").value
+    let number = document.getElementById(id).value
     await fetch('/add_number',
         {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({
                 'email': global_username,
@@ -458,6 +458,13 @@ async function add_number() {
     )
     document.getElementById("add_number_div").style.display = "none"
     blur(false)
+    if (id === 'number') {
+        hide('add_number_div')
+    }
+    else {
+        hide('settings')
+    }
+
 }
 
 async function no_add_number() {
@@ -524,7 +531,7 @@ function closeTutorial() {
 }
 
 async function tutorialFinished() {
-    await fetch('/tutorial_finished', {headers: {email: global_username}})
+    await fetch('/tutorial_changed', {headers: {email: global_username, finished: 'true'}})
     location.reload()
 }
 
@@ -546,4 +553,29 @@ async function sendNotif(text, color) {
 
 function nextStep() {
 
+}
+
+async function showTutorial(checked) {
+    if (checked) {
+        await fetch('/tutorial_changed', {headers: {email: global_username, finished: 'false'}})
+    }
+    else {
+        await fetch('/tutorial_changed', {headers: {email: global_username, finished: 'true'}})
+    }
+    location.reload()
+}
+
+
+function openSettings() {
+    document.getElementById('settings').style.display = 'flex'
+    blur(true)
+}
+
+
+async function openEarly() {
+    await fetch('/open_early', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: global_username, open: document.getElementById('settings-open-early').value})
+    })
 }

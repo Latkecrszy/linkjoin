@@ -18,6 +18,7 @@
             let date = new Date()
             let number = "{{ number }}"
             const highlight = "{{ highlight }}"
+            const open_early = "{{ open_early }}" === "None" ? 0 : parseInt("{{ open_early }}")
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -55,8 +56,8 @@
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
                 <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link">
                 <div id="links_menu">
-                    <a><div class="button header_button underline" onclick="addNumberShow()">
-                        {% if number == None %} Add Number {% else %} Change Number {% endif %}
+                    <a><div class="button header_button underline" onclick="openSettings()">
+                        Settings
                     </div></a>
                     <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
@@ -68,27 +69,15 @@
                         <div id="line3"></div>
                     </div>
                     <div id="hamburger_dropdown">
-                        <a><div class="button header_button underline" onclick="addNumberShow()">
-                            {% if number == None %} Add Number {% else %} Change Number {% endif %}
+                        <a><div class="button header_button underline" onclick="openSettings()">
+                            Settings
                         </div></a>
                         <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                         <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                     </div>
                 </div>
             </header>
-            <div id="boxes">
-                <div class="box">
-                    <div>Sort By:</div>
-                    <select onchange="sort()" class="sort">
-                        <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
-                        <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
-                        <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
-                        <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
-                    </select>
-                </div>
-                <button class="show-notes" onclick="showNotes()">Meeting Notes</button>
-            </div>
-
+            <button class="show-notes" onclick="showNotes()">Meeting Notes</button>
                 <div class="gone" id="disappear">
                     <img src="{{ url_for('static', filename='images/links_loader.svg') }}" height="430" width="450" alt="Man with clock">
                     <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
@@ -304,8 +293,8 @@
                     To add a number, type it in below.
                     If you don't want to add your number, click the arrow in the upper left.
                 </p>
-                <input id="number" type="text" placeholder="Phone number">
-                <button id="add_number" onclick="add_number()">Add Number</button>
+                <input class="number" id="number" type="text" placeholder="Phone number">
+                <button id="add_number" onclick="add_number('number')">Add Number</button>
             </div>
         </div>
         <div id="popup_notes" class="popup">
@@ -336,23 +325,6 @@
             </p>
             <div class="tutorial-step">
                 <div>
-                    <h3>Sort Links</h3>
-                </div>
-                <p>You can choose how to sort your links with this dropdown menu. The options are none, day, time, or both!</p>
-                <div class="demo no-center">
-                    <div>
-                        <div>Sort By:</div>
-                        <select class="sort" onclick="nextStep()">
-                            <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
-                            <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
-                            <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
-                            <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="tutorial-step">
-                <div>
                     <h3>Take Notes</h3>
                 </div>
                 <p>
@@ -363,6 +335,18 @@
                     <button class="show-notes tutorial" onclick="nextStep(); showNotes()">Meeting Notes</button>
                 </div>
 
+            </div>
+            <div class="tutorial-step">
+                <div>
+                    <h3>Change Settings</h3>
+                </div>
+                <p>
+                    Customize your LinkJoin experience and functionality with the settings menu. In settings, you can
+                    hide and show this tutorial, change how your links are sorted, and adjust many other settings.
+                </p>
+                <div class="demo">
+                    <a class="button header_button underline" style="margin: 0; height: unset;" onclick="openSettings()">Settings</a>
+                </div>
             </div>
             <div class="tutorial-step">
                 <div>
@@ -539,6 +523,61 @@
         </div>
 
 
-
+        <!--Settings-->
+        <div id="settings" class="popup">
+            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" class="back_arrow" onclick="hide('settings')" alt="back to links page">
+            <h1>LinkJoin Settings</h1>
+            <div class="settings-row">
+                <div class="settings-name">
+                    <h3>Show tutorial</h3>
+                    <p>Show or hide the tutorial.</p>
+                </div>
+                <input onclick="showTutorial(this.checked)" class="checkbox" type="checkbox" id="settings-show-tutorial" {% if tutorial != 'complete' %} checked="checked" {% endif %}>
+                <label class="switch" for="settings-show-tutorial"></label>
+            </div>
+            <div class="settings-row">
+                <div class="settings-name">
+                    <h3>Sort links</h3>
+                    <p>Change how your links are sorted.</p>
+                </div>
+                <select onchange="sort()" class="sort">
+                    <option value="none" style="color: white" {% if sort == "no" %}selected{% endif %}>None</option>
+                    <option value="day" style="color: white" {% if sort == "day" %}selected{% endif %}>Day</option>
+                    <option value="time" style="color: white" {% if sort == "time" %}selected{% endif %}>Time</option>
+                    <option value="datetime" style="color: white" {% if sort == "datetime" %}selected{% endif %}>Day & Time</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <div class="settings-name">
+                    <h3>Phone number</h3>
+                    <p>Change the phone number reminders are texted to.</p>
+                </div>
+                <input class="number" type="text" placeholder="Phone number" id="settings-phone-number">
+                <img src="{{ url_for('static', filename='images/check-box.svg') }}" onclick="add_number('settings-phone-number')" id="settings-change-number" class="settings-change-number">
+            </div>
+            <div class="settings-row">
+                <div class="settings-name">
+                    <h3>Open Links Early</h3>
+                    <p>Set your links to open a few minutes early.</p>
+                </div>
+                <select onchange="openEarly()" class="sort settings" id="settings-open-early">
+                    <option value="0" {% if open_early == "None" or open_early == "0" %}selected{% endif %}>Right on time</option>
+                    <option value="1" {% if open_early == "1" %}selected{% endif %}>1 minute early</option>
+                    <option value="2" {% if open_early == "2" %}selected{% endif %}>2 minutes early</option>
+                    <option value="3" {% if open_early == "3" %}selected{% endif %}>3 minutes early</option>
+                    <option value="5" {% if open_early == "5" %}selected{% endif %}>5 minutes early</option>
+                    <option value="10" {% if open_early == "10" %}selected{% endif %}>10 minutes early</option>
+                    <option value="15" {% if open_early == "15" %}selected{% endif %}>15 minutes early</option>
+                </select>
+            </div>
+            <!--
+            <div class="settings-row">
+                <div class="settings-name">
+                    <h3>Change password</h3>
+                    <p>Send an email to reset your password.</p>
+                </div>
+                <button class="reset-password" onclick="resetPassword()">Send</button>
+            </div>-->
+        </div>
     </body>
 </html>

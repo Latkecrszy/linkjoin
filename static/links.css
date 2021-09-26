@@ -33,6 +33,10 @@
     margin-top: 15px
 }
 
+.sort.settings {
+    width: unset;
+}
+
 #links_html {background-color: #091B30; overflow-y: visible; overflow-x: hidden; margin-bottom: 30px; }
 
 #home {margin: 22px min(140px, 5vw) 0 0;}
@@ -64,7 +68,7 @@
     z-index: 5;
 }
 
-#name, #link, #password, #number {
+#name, #link, #password, #number, .number {
     background-color: #091B30;
     border: none;
     border-bottom: 2px solid white;
@@ -78,7 +82,7 @@
 #name {margin-top: 3% !important}
 
 #name::placeholder, #link::placeholder, #password::placeholder,
-#hour::placeholder, #minute::placeholder, #number::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
+#hour::placeholder, #minute::placeholder, #number::placeholder, .number::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
 
 #title {
     font-size: max(1.3vw, 22px);

@@ -15,11 +15,11 @@ function minutes(time, before) {
 
 async function start(username, links, sort) {
     open = setInterval(async () => {
-        const date = new Date()
-        const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
-        let minute = date.getMinutes()
+        const newDate = new Date((Date.now() + 60000*open_early))
+        const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[newDate.getDay()]
+        let minute = newDate.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
-        const time = `${date.getHours()}:${minute}`
+        const time = `${newDate.getHours()}:${minute}`
         user_links = await db(username)
         for (let link of user_links) {
             let days = link['days']

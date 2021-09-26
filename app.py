@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
-import json, os, dotenv, re, random, string, requests, pprint, threading
+import json, os, dotenv, re, random, string, requests, pprint, threading, smtplib, ssl
 from argon2 import PasswordHasher, exceptions
 from flask_cors import CORS
 from cryptography.fernet import Fernet
@@ -9,6 +9,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from mistune import Markdown
 from twilio.rest import Client
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
@@ -219,16 +222,19 @@ def links():
     email = email.lower()
     user = mongo.db.login.find_one({"username": email})
     number = dict(user).get('number')
-    premium = dict(mongo.db.login.find_one({'username': email}))['premium']
+    premium = user['premium']
+    early_open = mongo.db.login.find_one({'username': email}).get('open_early')
     links_list = [
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
         for link in mongo.db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
+    print(dict(user).get('tutorialWidget'))
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
-                           highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'))
+                           highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'),
+                           open_early=str(early_open))
 
 
 @app.route('/delete', methods=['POST'])
@@ -528,16 +534,24 @@ def markdown_to_html():
     return markdown(data.get('markdown'))
 
 
-@app.route('/send_email')
-def send_email():
-    pass
-
-
-@app.route('/tutorial_finished')
-def tutorial_finished():
+@app.route('/tutorial_changed')
+def tutorial_changed():
     if not authenticated(request.cookies, request.headers.get('email')):
         return 'Forbidden', 403
-    mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
+    print(request.headers.get('finished'))
+    if request.headers.get('finished') == 'true':
+        mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
+    else:
+        mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'incomplete'}})
+    return 'Success', 200
+
+
+@app.route('/open_early', methods=['POST'])
+def open_early():
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email')):
+        return 'Forbidden', 403
+    mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'open_early': data.get('open')}})
     return 'Success', 200
 
 
