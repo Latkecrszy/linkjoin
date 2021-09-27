@@ -173,7 +173,9 @@ select {-webkit-appearance:none}
     cursor: pointer;
 }
 
-.gone {display: none !important}
+.gone {
+    display: none !important;
+}
 
 .flex {display: flex}
 

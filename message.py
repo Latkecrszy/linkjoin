@@ -66,32 +66,37 @@ def message():
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
                     continue
                 # Check if the link is active or if it has yet to start
-                if document['active'] == "false":
-                    continue
-                try:
-                    if int(document['starts']) > 0:
-                        print("updated")
-                        links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
-                        continue
-                except KeyError:
-                    links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
-                if document['repeat'][0].isdigit():
-                    accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1 for x in
-                              range(len(user_info['days']))]
-                    if int(document['occurrences']) == accept[-1]:
-                        links.find_one_and_update(dict(document), {"$set": {"occurrences": 0}})
-                    else:
-                        links.find_one_and_update(dict(document),
-                                                  {"$set": {"occurrences": int(document['occurrences']) + 1}})
-                        continue
+                if document['active'] != "false":
+                    try:
+                        if int(document['starts']) > 0:
+                            print("updated")
+                            links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
+                            continue
+                    except KeyError:
+                        links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
+                    if document['repeat'][0].isdigit():
+                        accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1 for x in
+                                  range(len(user_info['days']))]
+                        if int(document['occurrences']) == accept[-1]:
+                            links.find_one_and_update(dict(document), {"$set": {"occurrences": 0}})
+                        else:
+                            links.find_one_and_update(dict(document),
+                                                      {"$set": {"occurrences": int(document['occurrences']) + 1}})
+                            continue
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false":
                     print(dict(user).get('number'))
                     # Create the data to send to vonage
-                    messages = [
-                        'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. To see this link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. Text {id} to stop receiving reminders for this link.',
-                        'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. If you want to open your link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. To stop being texted a reminder for this link, text {id}.',
-                    ]
+                    if document['active'] == "false":
+                        messages = [
+                            'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. To see this link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. Text {id} to stop receiving reminders for this link.',
+                            'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. If you want to open your link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. To stop being texted a reminder for this link, text {id}.',
+                        ]
+                    else:
+                        messages = [
+                            'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. To see this link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. Text {id} to stop receiving reminders for this link.',
+                            'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. If you want to open your link in LinkJoin, go to https://linkjoin.xyz/links?id={id}. To stop being texted a reminder for this link, text {id}.',
+                        ]
                     data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                             "from": "18336535326", "to": user['number'], "text":
                                 random.choice(messages).format(name=document['name'], text=document['text'], id=document['id'])}

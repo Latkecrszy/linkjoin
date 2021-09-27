@@ -534,6 +534,14 @@ def markdown_to_html():
     return markdown(data.get('markdown'))
 
 
+@app.route('/send_email', methods=['POST'])
+def send_email():
+    msg = MIMEMultipart('alternative')
+    msg.attach(MIMEText('f'))
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
+        server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
+
+
 @app.route('/tutorial_changed')
 def tutorial_changed():
     if not authenticated(request.cookies, request.headers.get('email')):
