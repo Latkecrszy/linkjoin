@@ -45,7 +45,7 @@ def message():
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
-            documents = links.find({'username': 'setharaphael7@gmail.com'})
+            documents = links.find({'username': 'test@gmail.com'})
         else:
             documents = links.find()
         for document in documents:
