@@ -45,7 +45,7 @@ def message():
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
-            documents = links.find({'username': 'test@gmail.com'})
+            documents = links.find({'username': 'setharaphael7@gmail.com'})
         else:
             documents = links.find()
         for document in documents:
@@ -85,7 +85,6 @@ def message():
                             continue
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false":
-                    print(dict(user).get('number'))
                     # Create the data to send to vonage
                     if document['active'] == "false":
                         messages = [
