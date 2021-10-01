@@ -12,7 +12,7 @@ sent = {}
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
     days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before)-1
+    before = 0 if before == "false" or before is None else int(before)+1
     minute -= before
     if minute < 0:
         minute += 60
@@ -34,6 +34,7 @@ def get_time(hour: int, minute: int, days: list, before) -> tuple:
                 day = 0
             days[index] = {j: i for i, j in days_dict.items()}[day]
     return hour, minute, days
+
 
 def message():
     while True:
@@ -115,11 +116,11 @@ def message():
                     print(messages)
                     print(response)
                     print(response.text)
-                    sent[int(document['id'])] = 1
+                    sent[int(document['id'])] = 2
                 else:
                     print("no number or text off")
         for i in sent:
-            if sent[i] == 1:
-                sent[i] = 0
+            if sent[i] != 0:
+                sent[i] -= 1
         # Wait 60 seconds
         time.sleep(60-(time.time()-start))
