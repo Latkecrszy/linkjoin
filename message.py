@@ -93,6 +93,7 @@ def message():
                             continue
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false" and not sent.get(int(document['id'])):
+                    print(sent.get(int(document['id'])))
                     # Create the data to send to vonage
                     if document['active'] == "false":
                         messages = [
