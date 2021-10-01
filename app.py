@@ -257,9 +257,10 @@ def update():
         else:
             link = data.get('link')
         email = request.cookies.get('email')
+        active = mongo.db.links.find_one({'id': int(data.get('id'))})['active']
         insert = {'username': email, 'id': int(data.get('id')),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
-                  'name': data.get('name'), 'active': 'true',
+                  'name': data.get('name'), 'active': active,
                   'share': mongo.db.links.find_one({'id': int(data.get('id'))})['share'],
                   'repeat': data.get('repeats'), 'days': data.get('days'),
                   'text': data.get('text'),
@@ -532,6 +533,21 @@ def markdown_to_html():
     print(data.get('markdown'))
     print(markdown(data.get('markdown')))
     return markdown(data.get('markdown'))
+
+
+@app.route('/send_email', methods=['POST'])
+def send_email():
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email')):
+        return 'Forbidden', 403
+    msg = MIMEMultipart('alternative')
+    msg.attach(MIMEText('f'))
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
+        server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
+        server.sendmail('linkjoin.xyz@gmail.com', data.get('email'), '''\
+        Subject: LinkJoin password reset
+        
+        Your reset password code is: ''')
 
 
 @app.route('/tutorial_changed')

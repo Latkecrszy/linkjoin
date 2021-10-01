@@ -38,8 +38,7 @@ def get_time(hour: int, minute: int, days: list, before) -> tuple:
 
 def message():
     while True:
-        start = time.time()
-        x = 0
+        start = time.perf_counter()
         # Define the users db, links db, and current time
         users = mongo.zoom_opener.login
         links = mongo.zoom_opener.links
@@ -49,11 +48,9 @@ def message():
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
-            print("not heroku")
         else:
             documents = links.find()
         for document in documents:
-            x += 1
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             if user is None:
                 print(user)
@@ -125,5 +122,8 @@ def message():
             if sent[i] != 0:
                 sent[i] -= 1
         # Wait 60 seconds
-        print(f"waiting {60-(time.time()-start)}")
-        time.sleep(60-(time.time()-start))
+        print(60-(time.perf_counter()-start)/100)
+        print((time.perf_counter()-start)/100)
+        print((time.perf_counter() - start))
+        time.sleep(60-(time.perf_counter()-start))
+        print('looped')
