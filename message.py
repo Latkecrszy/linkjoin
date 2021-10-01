@@ -111,17 +111,19 @@ def message():
                                 random.choice(messages).format(name=document['name'], text=document['text'], id=document['id'])}
 
                     # Send the text message
-                    print("Sent")
                     response = requests.post("https://rest.nexmo.com/sms/json", data=data)
+                    sent[int(document['id'])] = 2
+                    print(sent)
+                    print("Sent")
                     print(data)
                     print(messages)
                     print(response)
                     print(response.text)
-                    sent[int(document['id'])] = 2
                 else:
                     print("no number or text off")
         for i in sent:
             if sent[i] != 0:
                 sent[i] -= 1
         # Wait 60 seconds
+        print(f"waiting {60-(time.time()-start)}")
         time.sleep(60-(time.time()-start))
