@@ -12,7 +12,7 @@ sent = {}
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
     days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before)
+    before = 0 if before == "false" or before is None else int(before)-1
     minute -= before
     if minute < 0:
         minute += 60
@@ -48,6 +48,7 @@ def message():
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
+            print("not heroku")
         else:
             documents = links.find()
         for document in documents:
@@ -102,12 +103,13 @@ def message():
                             'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
                             'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
                         ]
+                    print("Sending...")
                     data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                             "from": "18336535326", "to": user['number'], "text":
                                 random.choice(messages).format(name=document['name'], text=document['text'], id=document['id'])}
 
                     # Send the text message
-                    print("Sending...")
+                    print("Sent")
                     response = requests.post("https://rest.nexmo.com/sms/json", data=data)
                     print(data)
                     print(messages)
@@ -120,6 +122,4 @@ def message():
             if sent[i] == 1:
                 sent[i] = 0
         # Wait 60 seconds
-        print(x)
-        print(time.time()-start)
         time.sleep(60-(time.time()-start))
