@@ -91,38 +91,12 @@ def message():
 
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false":
-                    """data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
+                    data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
-                    response = requests.post("http://127.0.0.1:5002/send_message", json=data, headers={'Content-Type': 'application/json'})
-                    print(response)
-                    print(response.text)"""
-                    print(sent.get(int(document['id'])))
-                    # Create the data to send to vonage
-                    if document['active'] == "false":
-                        messages = [
-                            'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                            'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-                        ]
-                    else:
-                        messages = [
-                            'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                            'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-                        ]
-                    print("Sending...")
-                    data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                            "from": "18336535326", "to": user['number'], "text":
-                                random.choice(messages).format(name=document['name'], text=document['text'],
-                                                               id=document['id'])}
-
-                    # Send the text message
-                    response = requests.post("https://rest.nexmo.com/sms/json", data=data)
-                    sent[int(document['id'])] = 2
-                    print(sent)
-                    print("Sent")
-                    print(data)
-                    print(messages)
+                    response = requests.post("https://linkjoin.xyz/send_message", json=data, headers={'Content-Type': 'application/json'})
                     print(response)
                     print(response.text)
+
                 else:
                     print("no number or text off")
         # Wait 60 seconds
