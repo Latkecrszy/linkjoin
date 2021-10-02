@@ -4,9 +4,9 @@ import json, os, dotenv, re, random, string, requests, pprint, threading, smtpli
 from argon2 import PasswordHasher, exceptions
 from flask_cors import CORS
 from cryptography.fernet import Fernet
-from message import message
+from background import message
 from google.oauth2 import id_token
-from google.auth.transport import requests
+from google.auth.transport import requests as reqs
 from mistune import Markdown
 from twilio.rest import Client
 from email.mime.text import MIMEText
@@ -25,6 +25,7 @@ VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 CLIENT_ID = os.environ.get('CLIENT_ID', None)
 twilio_client = Client(os.environ.get('TWILIO_SID'), os.environ.get('TWILIO_TOKEN'))
 markdown = Markdown()
+sent = 0
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -53,6 +54,10 @@ def gen_id():
 
 def gen_session():
     return ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
+
+
+def gen_otp():
+    return ''.join(random.choices([*string.ascii_uppercase, *(str(i) for i in range(10))], k=10))
 
 
 def authenticated(cookies, email):
@@ -98,7 +103,7 @@ def login():
                 return {"redirect": data['redirect'], "error": 'incorrect_password'}
         else:
             try:
-                id_token.verify_oauth2_token(data.get('token'), requests.Request(), CLIENT_ID)
+                id_token.verify_oauth2_token(data.get('token'), reqs.Request(), CLIENT_ID)
             except ValueError:
                 return {'redirect': data['redirect'], "error": 'google_login_failed'}
         token = gen_session()
@@ -130,7 +135,7 @@ def signup():
             account['password'] = hasher.hash(data.get('password'))
         elif data.get('password') is None:
             try:
-                id_token.verify_oauth2_token(data.get('token'), requests.Request(), CLIENT_ID)
+                id_token.verify_oauth2_token(data.get('token'), reqs.Request(), CLIENT_ID)
             except ValueError:
                 return {'redirect': data['redirect'], "error": 'google_signup_failed'}
         if data.get('number'):
@@ -406,11 +411,6 @@ def invalid():
     return render_template('invalid_link.html')
 
 
-@app.route('/reset_password', methods=['GET'])
-def reset_password():
-    return render_template('forgot_password.html')
-
-
 @app.route("/users", methods=['GET'])
 def users():
     print('\n'.join([str(doc) for doc in mongo.db.login.find()]))
@@ -535,19 +535,40 @@ def markdown_to_html():
     return markdown(data.get('markdown'))
 
 
-@app.route('/send_email', methods=['POST'])
-def send_email():
+@app.route('/send_reset_email', methods=['POST'])
+def send_reset_email():
     data = request.get_json()
-    if not authenticated(request.cookies, data.get('email')):
-        return 'Forbidden', 403
     msg = MIMEMultipart('alternative')
+    otp = gen_otp()
+    mongo.db.otp.insert_one({'email': data.get('email'), 'pw': encoder.encrypt(otp.encode())})
     msg.attach(MIMEText('f'))
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
         server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
-        server.sendmail('linkjoin.xyz@gmail.com', data.get('email'), '''\
+        """server.sendmail('linkjoin.xyz@gmail.com', data.get('email'), f'''\
         Subject: LinkJoin password reset
         
-        Your reset password code is: ''')
+        To reset your password, go to https://lkjn.xyz/reset?e={data.get('email')}&pw={otp} and enter your new password.
+        
+        Do not send this link to anyone else, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information.
+        This link will expire in 15 minutes.
+        
+        Yours most truly,
+        LinkJoin
+        ''')"""
+
+
+@app.route('/reset')
+def reset_password():
+    pw = mongo.db.otp.find_one({'email': request.args.get('e'), 'pw': request.args.get('pw')})
+    if pw is not None:
+        token = gen_session()
+        mongo.db.tokens.find_one_and_update({'email': request.args.get('e')}, {'$set': {'token': token}}, upsert=True)
+        return render_template('forgot-password.html', token=token)
+
+
+@app.route('/forgot')
+def forgot():
+    return render_template('forgot-password.html')
 
 
 @app.route('/tutorial_changed')
@@ -569,6 +590,36 @@ def open_early():
         return 'Forbidden', 403
     mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'open_early': data.get('open')}})
     return 'Success', 200
+
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    global sent
+    data = request.get_json()
+    if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
+        sent = int(data.get('id'))
+        if data.get('active') == "false":
+            messages = [
+                'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
+                'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}.',
+            ]
+        else:
+            messages = [
+                'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
+                'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
+            ]
+        print("Sending...")
+        data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
+                "from": "18336535326", "to": data.get('number'), "text":
+                    random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
+        # Send the text message
+        response = requests.post("https://rest.nexmo.com/sms/json", data=data)
+        print(data)
+        print(response)
+        print(response.text)
+        return 'Success', 200
+    print(sent)
+    return 'failed', 200
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))

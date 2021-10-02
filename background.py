@@ -12,7 +12,7 @@ sent = {}
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
     days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before)+1
+    before = 0 if before == "false" or before is None else int(before)
     minute -= before
     if minute < 0:
         minute += 60
@@ -88,42 +88,16 @@ def message():
                             links.find_one_and_update(dict(document),
                                                       {"$set": {"occurrences": int(document['occurrences']) + 1}})
                             continue
-                # Get the user's phone number
-                if dict(user).get('number') and document['text'] != "false" and not sent.get(int(document['id'])):
-                    print(sent.get(int(document['id'])))
-                    # Create the data to send to vonage
-                    if document['active'] == "false":
-                        messages = [
-                            'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                            'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-                        ]
-                    else:
-                        messages = [
-                            'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                            'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-                        ]
-                    print("Sending...")
-                    data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                            "from": "18336535326", "to": user['number'], "text":
-                                random.choice(messages).format(name=document['name'], text=document['text'], id=document['id'])}
 
-                    # Send the text message
-                    response = requests.post("https://rest.nexmo.com/sms/json", data=data)
-                    sent[int(document['id'])] = 2
-                    print(sent)
-                    print("Sent")
-                    print(data)
-                    print(messages)
+                # Get the user's phone number
+                if dict(user).get('number') and document['text'] != "false":
+                    data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
+                            'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
+                    response = requests.post("http://127.0.0.1:5002/send_message", json=data, headers={'Content-Type': 'application/json'})
                     print(response)
                     print(response.text)
+
                 else:
                     print("no number or text off")
-        for i in sent:
-            if sent[i] != 0:
-                sent[i] -= 1
         # Wait 60 seconds
-        print(60-(time.perf_counter()-start)/100)
-        print((time.perf_counter()-start)/100)
-        print((time.perf_counter() - start))
         time.sleep(60-(time.perf_counter()-start))
-        print('looped')
