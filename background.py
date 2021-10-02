@@ -93,7 +93,7 @@ def message():
                 if dict(user).get('number') and document['text'] != "false":
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
-                    response = requests.post("http://127.0.0.1:5002/send_message", json=data, headers={'Content-Type': 'application/json'})
+                    response = requests.post("https://linkjoin.xyz/send_message", json=data, headers={'Content-Type': 'application/json'})
                     print(response)
                     print(response.text)
 
