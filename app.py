@@ -617,8 +617,8 @@ def send_message():
         print(data)
         print(response)
         print(response.text)
+        print(sent)
         return 'Success', 200
-    print(sent)
     return 'failed', 200
 
 
