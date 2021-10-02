@@ -592,45 +592,6 @@ def open_early():
     return 'Success', 200
 
 
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    global sent
-    data = request.get_json()
-    if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
-        print('first sent', sent)
-        if data.get('active') == "false":
-            messages = [
-                'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-            ]
-        else:
-            messages = [
-                'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
-            ]
-        print("Sending...")
-        content = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                "from": "18336535326", "to": data.get('number'), "text":
-                    random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
-        # Send the text message
-        print(sent)
-        print(type(sent))
-        print(data.get('id'))
-        print(type(data.get('id')))
-        print(data)
-        print(sent == data.get('id'))
-        if int(sent) != int(data.get('id')):
-            print(sent)
-            response = requests.post("https://rest.nexmo.com/sms/json", data=content)
-            print(content)
-            print(response)
-            print(response.text)
-        sent = int(data.get('id'))
-        print('second sent', sent)
-        return 'Success', 200
-    return 'failed', 200
-
-
 app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
