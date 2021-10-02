@@ -626,11 +626,6 @@ def send_message():
             print(response)
             print(response.text)
         sent = int(data.get('id'))
-        global sent
-        sent = int(data.get('id'))
-        global sent
-        sent = int(data.get('id'))
-        global sent
         print('second sent', sent)
         return 'Success', 200
     return 'failed', 200
@@ -638,4 +633,4 @@ def send_message():
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
-    app.run(port=os.environ.get("port", 5002), threaded=True)
+    app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
