@@ -626,6 +626,11 @@ def send_message():
             print(response)
             print(response.text)
         sent = int(data.get('id'))
+        global sent
+        sent = int(data.get('id'))
+        global sent
+        sent = int(data.get('id'))
+        global sent
         print('second sent', sent)
         return 'Success', 200
     return 'failed', 200
