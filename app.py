@@ -597,7 +597,7 @@ def send_message():
     global sent
     data = request.get_json()
     if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
-        sent = int(data.get('id'))
+        print('first sent', sent)
         if data.get('active') == "false":
             messages = [
                 'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
@@ -613,11 +613,14 @@ def send_message():
                 "from": "18336535326", "to": data.get('number'), "text":
                     random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
         # Send the text message
-        response = requests.post("https://rest.nexmo.com/sms/json", data=data)
-        print(data)
-        print(response)
-        print(response.text)
-        print(sent)
+        if int(sent) != int(data.get('id')):
+            print(sent)
+            response = requests.post("https://rest.nexmo.com/sms/json", data=data)
+            print(data)
+            print(response)
+            print(response.text)
+        sent = int(data.get('id'))
+        print('second sent', sent)
         return 'Success', 200
     return 'failed', 200
 
