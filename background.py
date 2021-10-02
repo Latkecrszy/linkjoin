@@ -91,6 +91,7 @@ def message():
 
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false":
+                    print("sending from background")
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
                     response = requests.post("https://linkjoin.xyz/send_message", json=data, headers={'Content-Type': 'application/json'})

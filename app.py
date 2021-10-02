@@ -594,6 +594,7 @@ def open_early():
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
+    print("sending...")
     sent = open('last-message.txt').read()
     data = request.get_json()
     if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
