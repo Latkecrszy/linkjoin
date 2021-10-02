@@ -25,7 +25,6 @@ VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 CLIENT_ID = os.environ.get('CLIENT_ID', None)
 twilio_client = Client(os.environ.get('TWILIO_SID'), os.environ.get('TWILIO_TOKEN'))
 markdown = Markdown()
-sent = 0
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -495,8 +494,9 @@ def add_number():
 @app.route("/receive_vonage_message", methods=["GET", "POST"])
 def receive_vonage_message():
     text = request.args.get("text")
-    if text.isdigit():
-        mongo.db.links.find_one_and_update({"id": int(text)}, {"$set": {"text": "false"}})
+    user = mongo.db.login.find_one({'number': int(request.args.get('msisdn'))})
+    if text.isdigit() and user:
+        mongo.db.links.find_one_and_update({"id": int(text), 'username': user['username']}, {"$set": {"text": "false"}})
         data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                 "from": "18336535326", "to": str(request.args.get("msisdn")),
                 "text": "Ok, we won't remind you about this link again"}
@@ -594,7 +594,7 @@ def open_early():
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
-    global sent
+    sent = open('last-message.txt').read()
     data = request.get_json()
     if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
         print('first sent', sent)
@@ -625,8 +625,9 @@ def send_message():
             print(content)
             print(response)
             print(response.text)
-        sent = int(data.get('id'))
-        print('second sent', sent)
+        with open('last-message.txt', 'w') as f:
+            f.write(str(data.get('id')))
+        print('second sent', open('last-message.txt', 'r').read())
         return 'Success', 200
     return 'failed', 200
 
