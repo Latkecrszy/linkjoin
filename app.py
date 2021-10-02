@@ -609,14 +609,20 @@ def send_message():
                 'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
             ]
         print("Sending...")
-        data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
+        content = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
                 "from": "18336535326", "to": data.get('number'), "text":
                     random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
         # Send the text message
+        print(sent)
+        print(type(sent))
+        print(data.get('id'))
+        print(type(data.get('id')))
+        print(data)
+        print(sent == data.get('id'))
         if int(sent) != int(data.get('id')):
             print(sent)
-            response = requests.post("https://rest.nexmo.com/sms/json", data=data)
-            print(data)
+            response = requests.post("https://rest.nexmo.com/sms/json", data=content)
+            print(content)
             print(response)
             print(response.text)
         sent = int(data.get('id'))
