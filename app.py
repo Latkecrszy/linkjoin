@@ -495,6 +495,8 @@ def add_number():
 def receive_vonage_message():
     text = request.args.get("text")
     user = mongo.db.login.find_one({'number': int(request.args.get('msisdn'))})
+    print(user)
+    print(request.args.get('msisdn'))
     if text.isdigit() and user:
         mongo.db.links.find_one_and_update({"id": int(text), 'username': user['username']}, {"$set": {"text": "false"}})
         data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
