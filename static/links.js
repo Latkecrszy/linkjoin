@@ -9,7 +9,14 @@ function blur(show) {
 }
 
 async function db(username) {
-    return await fetch('/db', {headers: {'email': username}}).then(response => response.json())
+    let result;
+    try {
+        result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
+    }
+    catch {
+        location.reload()
+    }
+    return result
 }
 
 async function popUp(popup) {
@@ -551,10 +558,6 @@ async function sendNotif(text, color) {
     }
 }
 
-function nextStep() {
-
-}
-
 async function showTutorial(checked) {
     if (checked) {
         await fetch('/tutorial_changed', {headers: {email: global_username, finished: 'false'}})
@@ -578,4 +581,16 @@ async function openEarly() {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: global_username, open: document.getElementById('settings-open-early').value})
     })
+}
+
+
+async function resetPassword() {
+    await fetch('/send_reset_email', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({'token': token, 'email': global_username})
+    })
+    document.getElementById('settings-reset-password').innerText = 'Sent!'
+    await sleep(3000)
+    document.getElementById('settings-reset-password').innerText = 'Send'
 }

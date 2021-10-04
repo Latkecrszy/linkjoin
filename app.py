@@ -9,8 +9,8 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as reqs
 from mistune import Markdown
 from twilio.rest import Client
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from email.message import EmailMessage
+
 
 
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -56,7 +56,7 @@ def gen_session():
 
 
 def gen_otp():
-    return ''.join(random.choices([*string.ascii_uppercase, *(str(i) for i in range(10))], k=10))
+    return ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
 
 
 def authenticated(cookies, email):
@@ -233,12 +233,13 @@ def links():
         for link in mongo.db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
-    print(dict(user).get('tutorialWidget'))
+    token = gen_session()
+    mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
                            highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'),
-                           open_early=str(early_open))
+                           open_early=str(early_open), token=token)
 
 
 @app.route('/delete', methods=['POST'])
@@ -540,32 +541,44 @@ def markdown_to_html():
 @app.route('/send_reset_email', methods=['POST'])
 def send_reset_email():
     data = request.get_json()
-    msg = MIMEMultipart('alternative')
+    if not mongo.db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
+        return 'Invalid token', 403
+    mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
     otp = gen_otp()
-    mongo.db.otp.insert_one({'email': data.get('email'), 'pw': encoder.encrypt(otp.encode())})
-    msg.attach(MIMEText('f'))
+    mongo.db.otp.find_one_and_update({'email': data.get('email')}, {'$set': {'pw': otp}}, upsert=True)
+    content = EmailMessage()
+    content.set_content(f'''Hey there, LinkJoin knocking!
+To reset your password, head over to https://lkjn.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
+
+Happy passwording,
+LinkJoin
+        ''')
+    content['Subject'] = 'LinkJoin password reset'
+    content['From'] = "linkjoin.xyz@gmail.com"
+    content['To'] = data.get('email')
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
         server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
-        """server.sendmail('linkjoin.xyz@gmail.com', data.get('email'), f'''\
-        Subject: LinkJoin password reset
-        
-        To reset your password, go to https://lkjn.xyz/reset?e={data.get('email')}&pw={otp} and enter your new password.
-        
-        Do not send this link to anyone else, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information.
-        This link will expire in 15 minutes.
-        
-        Yours most truly,
-        LinkJoin
-        ''')"""
+        server.send_message(content)
+        return 'Success', 200
 
 
-@app.route('/reset')
+@app.route('/reset', methods=['POST', 'GET'])
 def reset_password():
-    pw = mongo.db.otp.find_one({'email': request.args.get('e'), 'pw': request.args.get('pw')})
-    if pw is not None:
-        token = gen_session()
-        mongo.db.tokens.find_one_and_update({'email': request.args.get('e')}, {'$set': {'token': token}}, upsert=True)
-        return render_template('forgot-password.html', token=token)
+    if request.method == 'GET':
+        pws = [user['pw'] for user in mongo.db.otp.find()]
+        if request.args.get('pw') in pws:
+            email = mongo.db.otp.find_one({'pw': pws[pws.index(request.args.get('pw'))]})['email']
+            token = gen_session()
+            mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+            return render_template('forgot-password.html', token=token, email=email)
+        return redirect('/login')
+    else:
+        data = request.get_json()
+        if mongo.db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
+            mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
+            mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'password': hasher.hash(data.get('password'))}})
+            return 'Success', 200
+        return 'Invalid token', 403
 
 
 @app.route('/forgot')

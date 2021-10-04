@@ -17,6 +17,7 @@
         <script>
             let date = new Date()
             let number = "{{ number }}"
+            const token = "{{ token }}"
             const highlight = "{{ highlight }}"
             const open_early = "{{ open_early }}" === "None" ? 0 : parseInt("{{ open_early }}")
             let offset = (date.getTimezoneOffset()/60).toString()

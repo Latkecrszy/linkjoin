@@ -12,7 +12,7 @@ sent = {}
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
     days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before)
+    before = 0 if before == "false" or before is None else int(before)+1
     minute -= before
     if minute < 0:
         minute += 60
