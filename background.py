@@ -7,7 +7,6 @@ dotenv.load_dotenv()
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 mongo = MongoClient(os.environ.get('MONGO_URI', None))
-sent = {}
 
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
@@ -48,8 +47,10 @@ def message():
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
+            otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
         else:
             documents = links.find()
+            otps = mongo.zoom_opener.otp.find()
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             if user is None:
@@ -100,5 +101,13 @@ def message():
 
                 else:
                     print("no number or text off")
+        for document in otps:
+            if document['time']-1 == 0:
+                mongo.zoom_opener.otp.find_one_and_delete({'pw': document['pw']})
+                print('deleted')
+                print(datetime.datetime.now().strftime("%M"))
+            else:
+                mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
+        print(list(mongo.zoom_opener.otp.find()))
         # Wait 60 seconds
         time.sleep(60-(time.perf_counter()-start))

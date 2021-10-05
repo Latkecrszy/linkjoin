@@ -497,6 +497,14 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     cursor: pointer;
 }
 
+.reset-password {
+    border: none;
+    background: #2B8FD8;
+    width: 50px;
+    height: 25px;
+    border-radius: 3px;
+}
+
 @keyframes bob {
     from {padding-right: 0;}
     to {padding-right: 15px;}

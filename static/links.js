@@ -14,7 +14,8 @@ async function db(username) {
         result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
     }
     catch {
-        location.reload()
+        await load_links(username, global_sort)
+        console.log('reloaded')
     }
     return result
 }
@@ -585,12 +586,12 @@ async function openEarly() {
 
 
 async function resetPassword() {
+    document.getElementById('settings-reset-password').innerText = 'Sent!'
     await fetch('/send_reset_email', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'token': token, 'email': global_username})
     })
-    document.getElementById('settings-reset-password').innerText = 'Sent!'
     await sleep(3000)
     document.getElementById('settings-reset-password').innerText = 'Send'
 }

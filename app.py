@@ -545,7 +545,7 @@ def send_reset_email():
         return 'Invalid token', 403
     mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
     otp = gen_otp()
-    mongo.db.otp.find_one_and_update({'email': data.get('email')}, {'$set': {'pw': otp}}, upsert=True)
+    mongo.db.otp.find_one_and_update({'email': data.get('email')}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
     content = EmailMessage()
     content.set_content(f'''Hey there, LinkJoin knocking!
 To reset your password, head over to https://lkjn.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
