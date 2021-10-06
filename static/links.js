@@ -14,8 +14,7 @@ async function db(username) {
         result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
     }
     catch {
-        await load_links(username, global_sort)
-        console.log('reloaded')
+        location.reload()
     }
     return result
 }
