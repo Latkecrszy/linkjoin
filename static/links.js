@@ -14,7 +14,12 @@ async function db(username) {
         result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
     }
     catch {
-        location.reload()
+        try {
+            result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
+        }
+        catch {
+            location.reload()
+        }
     }
     return result
 }
