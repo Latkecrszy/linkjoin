@@ -538,28 +538,35 @@ def markdown_to_html():
     return markdown(data.get('markdown'))
 
 
-@app.route('/send_reset_email', methods=['POST'])
+@app.route('/send_reset_email', methods=['GET', 'POST'])
 def send_reset_email():
-    data = request.get_json()
-    if not mongo.db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
-        return 'Invalid token', 403
-    mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
-    otp = gen_otp()
-    mongo.db.otp.find_one_and_update({'email': data.get('email')}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
-    content = EmailMessage()
-    content.set_content(f'''Hey there, LinkJoin knocking!
+    if request.method == 'POST':
+        data = request.get_json()
+        email = data.get('email').lower()
+        if not mongo.db.tokens.find_one({'email': email, 'token': data.get('token')}) and not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
+            return 'Invalid token', 403
+        mongo.db.tokens.find_one_and_delete({'email': email, 'token': data.get('token')})
+        mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+        otp = gen_otp()
+        mongo.db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
+        content = EmailMessage()
+        content.set_content(f'''Hey there, LinkJoin knocking!
 To reset your password, head over to https://lkjn.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
 
 Happy passwording,
 LinkJoin
-        ''')
-    content['Subject'] = 'LinkJoin password reset'
-    content['From'] = "linkjoin.xyz@gmail.com"
-    content['To'] = data.get('email')
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
-        server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
-        server.send_message(content)
-        return 'Success', 200
+            ''')
+        content['Subject'] = 'LinkJoin password reset'
+        content['From'] = "linkjoin.xyz@gmail.com"
+        content['To'] = email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
+            server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
+            server.send_message(content)
+            return 'Success', 200
+    else:
+        token = gen_session()
+        mongo.db.anonymous_token.insert_one({'token': token})
+        return render_template('forgot-password-email.html', token=token)
 
 
 @app.route('/reset', methods=['POST', 'GET'])

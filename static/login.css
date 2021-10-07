@@ -105,7 +105,13 @@
 
 #gsignin {margin-top: 20px;}
 
-#reset {font-size: 12px; text-decoration: underline;}
+#reset {
+    font-size: 12px;
+    text-decoration: underline;
+    display: none;
+    margin: -12px 0 15px 3px;
+}
+
 #reset:hover {color: red; opacity: 0.8;}
 
 #keep_div {display: flex; width: 170px; justify-content: space-between}
