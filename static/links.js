@@ -10,18 +10,14 @@ function blur(show) {
 
 async function db(username) {
     let result;
-    try {
-        result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
+    for (let i = 0; i < 5; i++) {
+         try {
+             result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
+             return result
+         }
+        catch {console.log('retrying'); await sleep(5000)}
     }
-    catch {
-        try {
-            result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
-        }
-        catch {
-            location.reload()
-        }
-    }
-    return result
+   location.reload()
 }
 
 async function popUp(popup) {
