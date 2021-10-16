@@ -25,6 +25,13 @@ async function db(username) {
 }
 
 async function popUp(popup) {
+    console.log(confirmed)
+    if (confirmed === 'false') {
+        if (popup === 'popup') {
+            return await sendNotif(`Before you make your first link, please check your inbox for ${global_username} to confirm your email address.`, '#ba1a1a')
+        }
+        return await sendNotif(`Check your inbox for ${global_username} to confirm your email address.`, '#ba1a1a')
+    }
     hide('popup')
     document.getElementById(popup).style.display = "flex"
     const submit = document.getElementById("submit")
@@ -561,6 +568,7 @@ async function sendNotif(text, color) {
         notif.style.opacity = (notif.style.opacity-0.01).toString()
         await sleep(3)
     }
+    notif.style.zIndex = "-1"
 }
 
 async function showTutorial(checked) {

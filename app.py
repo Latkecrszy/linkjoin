@@ -52,11 +52,17 @@ def gen_id():
 
 
 def gen_session():
-    return ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
+    session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
+    while session in [_session['session_id'] for _session in mongo.db.sessions.find()]:
+        session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
+    return session
 
 
 def gen_otp():
-    return ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
+    otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
+    while otp in [_otp['pw'] for _otp in mongo.db.otp.find()]:
+        otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
+    return otp
 
 
 def authenticated(cookies, email):
@@ -86,66 +92,56 @@ def location():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        token = gen_session()
+        mongo.db.anonymous_token.insert_one({'token': token})
         return render_template('login.html', error=request.args.get('error'),
-                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links')
+                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
+                               token=token)
     else:
         data = request.get_json()
         print(request.get_json())
         email = data.get('email').lower()
+        if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
+            return 'Invalid token', 403
+        mongo.db.anonymous_token.find_one_and_delete({'email': email, 'token': data.get('token')})
+        token = gen_session()
+        mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         if mongo.db.login.find_one({'username': email}) is None:
-            return {'redirect': data['redirect'], "error": 'email_not_found'}
+            return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
+        elif mongo.db.login.find_one({'username': email})['confirmed'] == "false":
+            return {'redirect': data['redirect'], "error": 'not_confirmed', 'token': token}
         if data.get('password') is not None:
             try:
                 ph.verify(mongo.db.login.find_one({'username': email})['password'], data.get('password'))
             except exceptions.VerifyMismatchError:
-                return {"redirect": data['redirect'], "error": 'incorrect_password'}
+                return {"redirect": data['redirect'], "error": 'incorrect_password', 'token': token}
+            except KeyError:
+                return {"url": redirect_link, "error": 'no_password', 'email': email, 'keep': data.get('keep'), 'token': token}
         else:
             try:
-                id_token.verify_oauth2_token(data.get('token'), reqs.Request(), CLIENT_ID)
+                id_token.verify_oauth2_token(data.get('g_token'), reqs.Request(), CLIENT_ID)
             except ValueError:
-                return {'redirect': data['redirect'], "error": 'google_login_failed'}
-        token = gen_session()
-        mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+                return {'redirect': data['redirect'], "error": 'google_login_failed', 'token': token}
         return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/signup', methods=['GET'])
 def signup():
     if request.method == 'GET':
+        if mongo.db.login.find_one({'token': request.args.get('tk')}) and request.args.get('tk') is not None:
+            mongo.db.login.find_one_and_update({'token': request.args.get('tk')}, {'$set': {'confirmed': 'true'}})
+            token = gen_session()
+            email = mongo.db.login.find_one({"token": request.args.get("tk")})["username"]
+            mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+            return redirect(f'/set_cookie?email={email}&token={token}&url=/links')
+        token = gen_session()
+        mongo.db.anonymous_token.insert_one({'token': token})
         return render_template('signup.html', error=request.args.get('error'),
                                redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
                                refer=request.args.get('refer') if request.args.get('refer') else 'none',
-                               country_codes=json.load(open("country_codes.json")))
-    else:
-        data = request.get_json()
-        redirect_link = data.get('redirect') if data.get('redirect') else "/links"
-        email = data.get('email').lower()
-        if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-            return {"error": "invalid_email", "url": redirect_link}
-        if mongo.db.login.find_one({'username': email}) is not None:
-            return {"error": "email_in_use", "url": redirect_link}
-        refer_id = gen_id()
-        account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
-                   'offset': data.get('offset'), 'notes': {}}
-        if data.get("password") or data.get('password') == '':
-            if len(data.get('password')) < 5:
-                return {"error": "password_too_short", "url": redirect_link}
-            account['password'] = hasher.hash(data.get('password'))
-        elif data.get('password') is None:
-            try:
-                id_token.verify_oauth2_token(data.get('token'), reqs.Request(), CLIENT_ID)
-            except ValueError:
-                return {'redirect': data['redirect'], "error": 'google_signup_failed'}
-        if data.get('number'):
-            number = ''.join([i for i in data.get('number') if i in '1234567890'])
-            if len(number) < 11:
-                number = data.get('countrycode') + str(number)
-            account['number'] = int(number)
-        mongo.db.login.insert_one(account)
-        token = gen_session()
-        mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
-        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
+                               country_codes=json.load(open("country_codes.json")), token=token)
+
 
 
 @app.route('/start_session', methods=['POST'])
@@ -176,6 +172,7 @@ def set_cookie():
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
         response.set_cookie('session_id', session_id, max_age=259200)
+    print(response)
     return response
 
 
@@ -225,7 +222,10 @@ def links():
         return redirect('/login?error=not_logged_in')
     email = email.lower()
     user = mongo.db.login.find_one({"username": email})
-    number = dict(user).get('number')
+    try:
+        number = dict(user).get('number')
+    except TypeError:
+        return redirect('/links')
     premium = user['premium']
     early_open = mongo.db.login.find_one({'username': email}).get('open_early')
     links_list = [
@@ -239,7 +239,7 @@ def links():
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
                            highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'),
-                           open_early=str(early_open), token=token)
+                           open_early=str(early_open), token=token, confirmed=user.get('confirmed'))
 
 
 @app.route('/delete', methods=['POST'])
@@ -567,6 +567,56 @@ LinkJoin
         token = gen_session()
         mongo.db.anonymous_token.insert_one({'token': token})
         return render_template('forgot-password-email.html', token=token)
+
+
+@app.route('/confirm_email', methods=['POST'])
+def confirm_email():
+    data = request.get_json()
+    email = data.get('email').lower()
+    if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
+        return 'Invalid token', 403
+    mongo.db.anonymous_token.find_one_and_delete({'email': email, 'token': data.get('token')})
+    redirect_link = data.get('redirect') if data.get('redirect') else "/links"
+    if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
+        return {"error": "invalid_email", "url": redirect_link}
+    if mongo.db.login.find_one({'username': email}) is not None and mongo.db.login.find_one({'username': email})['confirmed'] != "false":
+        return {"error": "email_in_use", "url": redirect_link}
+    refer_id = gen_id()
+    token = gen_otp()
+    account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
+               'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': token}
+    if data.get("password") or data.get('password') == '':
+        if len(data.get('password')) < 5:
+            return {"error": "password_too_short", "url": redirect_link}
+        account['password'] = hasher.hash(data.get('password'))
+    elif data.get('password') is None:
+        try:
+            id_token.verify_oauth2_token(data.get('g_token'), reqs.Request(), CLIENT_ID)
+        except ValueError:
+            return {'redirect': data['redirect'], "error": 'google_signup_failed'}
+    if data.get('number'):
+        number = ''.join([i for i in data.get('number') if i in '1234567890'])
+        if len(number) < 11:
+            number = data.get('countrycode') + str(number)
+        account['number'] = int(number)
+    mongo.db.login.insert_one(account)
+    mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+    content = EmailMessage()
+    content.set_content(f'''LinkJoin here!
+To confirm your email, go to https://lkjn.xyz/signup?tk={token}. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in one hour.
+
+Yours truly,
+LinkJoin
+                    ''')
+    content['Subject'] = 'LinkJoin: Confirm email address'
+    content['From'] = "linkjoin.xyz@gmail.com"
+    content['To'] = email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
+        server.login('linkjoin.xyz@gmail.com', os.environ.get('GMAIL_PWD'))
+        server.send_message(content)
+    return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
+
+
 
 
 @app.route('/reset', methods=['POST', 'GET'])

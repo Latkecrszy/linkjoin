@@ -80,14 +80,14 @@
         const countryCodes = {{ country_codes|tojson|safe }}
         async function signUp() {
             let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
-            const data = await fetch('/signup', {
+            const data = await fetch('/confirm_email', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
                 body: JSON.stringify({
                     email: document.getElementById("email").value, redirect: "{{ redirect }}",
                     keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                     offset: offset, password: document.getElementById("password").value,
-                    countrycode: countryCodes[country['country']]['code']
+                    countrycode: countryCodes[country['country']]['code'], token: "{{ token }}"
                 }),
             })
             await processData(data)
@@ -97,14 +97,14 @@
             if (signed) {
                 let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
                 let profile = await googleUser.getBasicProfile()
-                const data = await fetch('/signup', {
+                const data = await fetch('/confirm_email', {
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({
                         email: profile.getEmail(), redirect: "{{ redirect }}",
                         keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                         offset: offset, countrycode: countryCodes[country['country']]['code'],
-                        token: googleUser.getAuthResponse().id_token
+                        g_token: googleUser.getAuthResponse().id_token, token: "{{ token }}"
                     })
                 })
                 await processData(data)

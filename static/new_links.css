@@ -198,7 +198,7 @@
 #dismiss_add_number, #dismiss_change_number {
     position: relative;
     top: 0;
-    right: 0;
+    right: 47%;
     cursor: pointer
 }
 

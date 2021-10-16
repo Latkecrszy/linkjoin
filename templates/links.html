@@ -20,6 +20,7 @@
             const token = "{{ token }}"
             const highlight = "{{ highlight }}"
             const open_early = "{{ open_early }}" === "None" ? 0 : parseInt("{{ open_early }}")
+            const confirmed = "{{ confirmed }}"
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -50,12 +51,12 @@
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
     </head>
-    <img src="{{ url_for('static', filename='images/plus-mobile.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link">
+    <img src="{{ url_for('static', filename='images/plus-mobile.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
     <body id="links_body" onload="pageSetup()">
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
-                <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link">
+                <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
                 <div id="links_menu">
                     <a><div class="button header_button underline" onclick="openSettings()">
                         Settings
@@ -258,7 +259,7 @@
         <div id="popup_premium">
             <div>You have reached the limit of 10 free links. To add more, <a href="/premium" target="_blank">try premium</a>!</div>
         </div>
-        <div id="check_popup" class="popup-warning">Please wait, checking popup permissions...</div>
+        <div id="check_popup" class="popup-warning">Checking popup permissions, please wait 5 seconds. Then, you can close the white window that appears.</div>
         <div id="popups_not_enabled" class="popup-warning">
             Popups are still not enabled.
             If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
@@ -333,7 +334,7 @@
                     Click on this box to view your meeting notes, if you have any.
                 </p>
                 <div class="demo">
-                    <button class="show-notes tutorial" onclick="nextStep(); showNotes()">Meeting Notes</button>
+                    <button class="show-notes tutorial" onclick="showNotes()">Meeting Notes</button>
                 </div>
 
             </div>
@@ -357,7 +358,7 @@
                     To schedule a link, all you need to do is click the plus button and fill in the info.
                 </p>
                 <div class="demo">
-                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='nextStep(); popUp("popup", {{ link_names|tojson|safe }})' style="display: flex !important" class="plus_button tutorial" alt="Click to schedule a link">
+                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' style="display: flex !important" class="plus_button tutorial" alt="Click to schedule a link">
                 </div>
             </div>
             <div class="tutorial-step">
@@ -371,11 +372,9 @@
                 <div class="demo">
                     <div>
                         <input class="checkbox" id="switch-demo" type="checkbox">
-                        <label class="switch" for="switch-demo" onclick="nextStep()"></label>
+                        <label class="switch" for="switch-demo"></label>
                     </div>
-
                 </div>
-
             </div>
             <div class="tutorial-step">
                 <div>

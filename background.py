@@ -48,9 +48,12 @@ def message():
         if os.environ.get('IS_HEROKU') == 'false':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
+            anonymous_token = []
+            # anonymous_token = mongo.zoom_opener.anonymous_token.find()
         else:
             documents = links.find()
             otps = mongo.zoom_opener.otp.find()
+            anonymous_token = mongo.zoom_opener.anonymous_token.find()
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             if user is None:
@@ -104,10 +107,18 @@ def message():
         for document in otps:
             if document['time']-1 == 0:
                 mongo.zoom_opener.otp.find_one_and_delete({'pw': document['pw']})
-                print('deleted')
-                print(datetime.datetime.now().strftime("%M"))
             else:
                 mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
-        print(list(mongo.zoom_opener.otp.find()))
+        for document in anonymous_token:
+            print(document)
+            if document.get('time'):
+                if document['time'] - 1 == 0:
+                    mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': document['token']})
+                else:
+                    mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
+                                                              {'$set': {'time': document['time'] - 1}})
+            else:
+                mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
+                                                          {'$set': {'time': 59}})
         # Wait 60 seconds
-        time.sleep(60-(time.perf_counter()-start))
+        time.sleep(abs(60-(time.perf_counter()-start)))
