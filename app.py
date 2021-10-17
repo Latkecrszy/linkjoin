@@ -109,7 +109,7 @@ def login():
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         if mongo.db.login.find_one({'username': email}) is None:
             return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
-        elif mongo.db.login.find_one({'username': email})['confirmed'] == "false":
+        elif mongo.db.login.find_one({'username': email}).get('confirmed') == "false":
             return {'redirect': data['redirect'], "error": 'not_confirmed', 'token': token}
         if data.get('password') is not None:
             try:
@@ -579,7 +579,7 @@ def confirm_email():
     redirect_link = data.get('redirect') if data.get('redirect') else "/links"
     if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
         return {"error": "invalid_email", "url": redirect_link}
-    if mongo.db.login.find_one({'username': email}) is not None and mongo.db.login.find_one({'username': email})['confirmed'] != "false":
+    if mongo.db.login.find_one({'username': email}) is not None and mongo.db.login.find_one({'username': email}).get('confirmed') != "false":
         return {"error": "email_in_use", "url": redirect_link}
     refer_id = gen_id()
     token = gen_otp()
