@@ -45,6 +45,7 @@ async function start(username, links, sort) {
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({id: link['id'], email: username})
                     })
+                    if ((await db(global_username)).length === 0) {return location.reload()}
                 }
                 return await pause(username, user_links, sort, 46000, "load_links")
             }
