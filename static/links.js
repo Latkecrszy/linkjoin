@@ -111,6 +111,7 @@ async function delete_(link) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({id: link['id'], email: link['username']})
         })
+        if ((await db(global_username)).length === 0) {return location.reload()}
         await refresh()
         await load_links(link['username'], global_sort)
     })
@@ -153,13 +154,13 @@ function copyLink(link, id) {
     })
 }
 
-async function load_links(username, sort) {
+async function load_links(username, sort, id="insert") {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch('/get_session', {headers: {'email': username}}).then(id => id.json())
     if (sessionId === null || cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
-    const insert = document.getElementById("insert")
+    const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
     const links = await db(username)
     if (links.toString() === '') {
