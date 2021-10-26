@@ -4,7 +4,7 @@ async function showNotes(changing) {
         if (changing !== true) {
             notesInfo['index'] = 0
         }
-        if (notesInfo['notes'] === undefined) {
+        if (notesInfo['notes'] === undefined || notesInfo['notes'].length === notesInfo['index']) {
             notesInfo['notes'] = notes
         }
         await popUp('popup_notes')
