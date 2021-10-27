@@ -8,10 +8,12 @@ function blur(show) {
     document.getElementById("blur").style.zIndex = show ? "3" : "-3"
 }
 
-async function db(username) {
+async function db(username, id) {
     let result;
     for (let i = 0; i < 5; i++) {
          try {
+             /*const deleted = id === 'insert' ? 'false' : 'true'
+             result = await fetch('/db', {headers: {'email': username, 'deleted': deleted}}).then(response => response.json())*/
              result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
              return result
          }
@@ -156,13 +158,17 @@ function copyLink(link, id) {
 
 async function load_links(username, sort, id="insert") {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-    const sessionId = await fetch('/get_session', {headers: {'email': username}}).then(id => id.json())
-    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
+    const sessionId = await fetch('/get_session', {headers: {'email': username, 'token': token}}).then(id => id.json())
+    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {console.log(sessionId['session_id']); location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
     const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
-    const links = await db(username)
+    const links = await db(username, id)
+    if (id !== 'insert') {
+        document.getElementById(id).style.display = 'flex'
+        blur(true)
+    }
     if (links.toString() === '') {
         await refresh()
         document.getElementById("header_links").style.margin = "0 0 0 0"
@@ -236,7 +242,9 @@ async function load_links(username, sort, id="insert") {
             }
             let highlightDiv = highlight === link['id'].toString() ? '<div class="highlight"></div>' : ''
             const parameterLink = JSON.stringify(link).replaceAll('"', "'")
-            const link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+            let link_event;
+            if (id === "insert") {
+                link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
                 ${highlightDiv}
                 <div class="time">${linkTime}</div>
                 <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
@@ -260,6 +268,26 @@ async function load_links(username, sort, id="insert") {
                 <label class="switch" id="for${iterator}" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')" title="${switchHoverText}"></label>
                 <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
             </div>`
+            }
+            else {
+                link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+                <div class="time">${linkTime}</div>
+                <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
+                    <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
+                    <div class="join_now">Click to join the room now</div>
+                </div>
+                <div class="days">${link['days'].join(", ")}</div>
+                <div class="menu" style="height: ${menuHeight}">
+                    <div onclick="permDelete(${parameterLink})" title="Permanently delete your link">Delete</div>
+                    <hr class="menu_line">
+                    <div onclick="createNote('${link['name']}', '${link['id']}')" title="View your meeting notes">Notes</div>
+                    <hr class="menu_line">
+                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')" title="Copy your meeting link">Copy link</div>
+                    ${password}
+                </div>
+                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
+            </div>`
+            }
             checked.push(checkboxChecked)
             insert.innerHTML += link_event
             iterator += 1
@@ -282,7 +310,10 @@ async function load_links(username, sort, id="insert") {
                 closeTutorial()
             }
         })
-        checked.forEach((Checked, index) => {if (Checked) {document.getElementById('toggle'+index).checked = 'checked'}})
+        try {
+            checked.forEach((Checked, index) => {if (Checked) {document.getElementById('toggle'+index).checked = 'checked'}})
+        }
+        catch {}
     }
     const clickToCopy = document.getElementById("click_to_copy")
     clickToCopy.addEventListener('click', async () => {

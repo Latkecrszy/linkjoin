@@ -164,10 +164,7 @@ def set_cookie():
     response = make_response(redirect(request.args.get('url')))
     response.set_cookie('email', email)
     session_id = gen_session()
-    if mongo.db.sessions.find_one({'username': email}):
-        mongo.db.sessions.find_one_and_update({'username': email}, {'$set': {'session_id': session_id}})
-    else:
-        mongo.db.sessions.insert_one({'username': email, 'session_id': session_id})
+    mongo.db.sessions.find_one_and_update({'username': email}, {'$set': {'session_id': session_id}}, upsert=True)
     if request.args.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
@@ -178,7 +175,7 @@ def set_cookie():
 
 @app.route('/get_session', methods=['GET'])
 def get_session():
-    if not authenticated(request.cookies, request.headers.get('email')):
+    if not authenticated(request.cookies, request.headers.get('email')) or not mongo.db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
         return 'Forbidden', 403
     return jsonify(mongo.db.sessions.find_one({'username': request.headers.get('email')}, projection={"_id": 0}))
 
@@ -248,6 +245,7 @@ def delete():
     if not authenticated(request.cookies, data.get('email').lower()):
         return 'Forbidden', 403
     mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
+    # mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
     return 'done', 200
 
 
@@ -301,7 +299,12 @@ def disable():
 def db():
     if not authenticated(request.cookies, request.headers.get('email')):
         return 'Forbidden'
+    print(request.headers.get('deleted'))
     links_list = mongo.db.links.find({'username': request.headers.get('email')})
+    """if request.headers.get('deleted') == 'true':
+        links_list = mongo.db.deleted_links.find({'username': request.headers.get('email')})
+    else:
+        links_list = mongo.db.links.find({'username': request.headers.get('email')})"""
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for index, i in enumerate(links_list):
