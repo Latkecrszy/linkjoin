@@ -545,7 +545,6 @@ def send_reset_email():
         email = data.get('email').lower()
         if not mongo.db.tokens.find_one({'email': email, 'token': data.get('token')}) and not mongo.db.anonymous_token.find_one({'token': data.get('token')}) or not mongo.db.login.find_one({'username': email}):
             return 'Invalid token', 403
-        mongo.db.tokens.find_one_and_delete({'email': email, 'token': data.get('token')})
         mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
         otp = gen_otp()
         mongo.db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
