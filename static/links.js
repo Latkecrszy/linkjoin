@@ -159,7 +159,7 @@ function copyLink(link, id) {
 async function load_links(username, sort, id="insert") {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
     const sessionId = await fetch('/get_session', {headers: {'email': username, 'token': token}}).then(id => id.json())
-    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {console.log(sessionId['session_id']); location.replace('/login?error=not_logged_in')}
+    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
     const insert = document.getElementById(id)
