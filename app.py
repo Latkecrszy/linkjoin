@@ -134,7 +134,7 @@ def signup():
             token = gen_session()
             email = mongo.db.login.find_one({"token": request.args.get("tk")})["username"]
             mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
-            return redirect(f'/set_cookie?email={email}&token={token}&url=/links')
+            return redirect('/links')
         token = gen_session()
         mongo.db.anonymous_token.insert_one({'token': token})
         return render_template('signup.html', error=request.args.get('error'),
@@ -148,10 +148,7 @@ def signup():
 def start_session():
     data = request.get_json()
     session_id = gen_session()
-    if mongo.db.sessions.find_one({'username': data.get('email')}):
-        mongo.db.sessions.find_one_and_update({'username': data.get('email')}, {'$set': {'session_id': session_id}})
-    else:
-        mongo.db.sessions.insert_one({'username': data.get('email'), 'session_id': session_id})
+    mongo.db.sessions.find_one_and_update({'username': data.get('email')}, {'$set': {'session_id': session_id}}, upsert=True)
     return session_id
 
 
