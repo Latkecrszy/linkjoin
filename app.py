@@ -738,6 +738,11 @@ def add_accounts():
         mongo.db.links.insert_one(link)
 
 
+@app.route('/robots.txt')
+def robots():
+    return send_file('robots.txt')
+
+
 app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)

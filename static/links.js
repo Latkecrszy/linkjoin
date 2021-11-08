@@ -1,7 +1,11 @@
 let global_username, global_sort, tutorial_complete
 let tutorial_active = false;
 let created = false;
+let connected = true;
 const notesInfo = {}
+
+window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
+window.addEventListener('online', async () => {console.log('reconnected'); connected = true; await refresh()})
 
 function blur(show) {
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
@@ -9,17 +13,7 @@ function blur(show) {
 }
 
 async function db(username, id) {
-    let result;
-    for (let i = 0; i < 5; i++) {
-         try {
-             /*const deleted = id === 'insert' ? 'false' : 'true'
-             result = await fetch('/db', {headers: {'email': username, 'deleted': deleted}}).then(response => response.json())*/
-             result = await fetch('/db', {headers: {'email': username}}).then(response => response.json())
-             return result
-         }
-        catch {console.log('retrying'); await sleep(5000)}
-    }
-   location.reload()
+    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : []
 }
 
 async function popUp(popup) {
@@ -45,7 +39,7 @@ async function popUp(popup) {
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
     for (let child of document.getElementById("days").children) {
-        if (child.value !== {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]) {
+        if (child.value !== ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]) {
             child.classList.remove("selected")
         }
     }
@@ -627,7 +621,7 @@ async function openEarly() {
 
 async function resetPassword() {
     document.getElementById('settings-reset-password').innerText = 'Sent!'
-    await fetch('/send_reset_email', {
+    await fetch('/reset-password', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'token': token, 'email': global_username})

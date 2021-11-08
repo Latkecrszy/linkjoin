@@ -1,4 +1,5 @@
 async function showNotes(changing) {
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     const notes = await fetch('/notes', {headers: {'email': global_username}}).then(r => r.json())
     if (notes.length !== 0) {
         if (changing !== true) {
