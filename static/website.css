@@ -1,10 +1,13 @@
+:root {}
+
+
 /*Page Sections*/
 header {
     display: flex;
     width: 100%;
-    padding: 30px;
+    padding: 20px 30px 40px 30px;
     height: 1px;
-
+    box-sizing: border-box;
 }
 
 header a {margin: 15px 40px 10px 40px; z-index: 9; font: 600 18px Montserrat}
@@ -26,11 +29,74 @@ header img {margin: 0 auto 0 20px}
 }
 
 footer {
-    opacity: 0.9;
-    height: 100px;
     margin: 50px 20px 0 0;
+    background: #091B30;
+    min-height: 400px;
+    width: 100vw;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
 }
 
+.column-container {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.footer-column a, .footer-column p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+}
+
+.footer-column .title {
+    font-size: 25px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.footer-column a:hover {
+    color: #0AFFED;
+}
+
+.copyright {
+    width: 100%;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.copyright hr {
+    opacity: 0.3;
+    width: 90%;
+}
+
+.footer-logo {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 15px;
+    text-align: center;
+}
+
+.footer-logo img {
+    width: 300px;
+    margin-top: 15px;
+}
+
+.footer-logo p {
+    font-size: 18px;
+    margin: -5px 0 0 65px;
+    color: rgba(255, 255, 255, 0.7)
+}
 
 /*Hamburger Menu*/
 #hamburger {
@@ -114,18 +180,6 @@ footer {
 }
 
 
-/*Info*/
-.row {display: flex; margin-top: 70px;}
-
-.info_box {display: flex; flex-direction: column; margin: 75px; text-align: center}
-
-.title {font: 600 43px Montserrat; margin-bottom: 20px;}
-
-.desc {font: 400 24px Roboto; opacity: 0.6;}
-
-.desc a {color: #2B8FD8; font: 400 24px Roboto;}
-
-
 /*Q and A*/
 #what {
     width: 84vw;
@@ -152,58 +206,95 @@ footer {
 
 .main_answer {font-size: 22px; max-width: 550px; opacity: 0.9; line-height: 32px;}
 
-
-/*Footer*/
-.line {display: flex; justify-content: space-between;}
-
-.footer_image {height: 18px; width: 18px; margin-top: 5px}
-
-.footer_link {margin: 0 20px 20px 0}
-
-.footer_text {text-decoration: none; font-size: 14px; cursor: pointer;}
-
-.footer_text:hover {color: #0AFFED}
-
-
 /*FAQ*/
 #info {width: 100vw; background: none; min-height: 500px; padding-top: 75px; margin-top: 200px;}
+
+
 #faq {
     display: flex;
     flex-direction: column;
-    width: 85vw;
-    margin-left: 8vw;
+    justify-content: center;
+    align-content: center;
+    width: 80%;
+    padding: 50px 6%;
+    margin-left: 4%;
+    border-radius: 5px;
 }
 
-.question, .answer {
+.faq-question {
     width: 100%;
-    min-height: 60px;
-    background-color: #142539;
-    border: 2px solid white;
+    position: relative;
+    font-size: 30px;
+    background: #091B30;
+    box-sizing: border-box;
+    padding: 0 55px 0 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 6px 5px rgba(0, 0, 0, 0.2);
     border-radius: 3px;
     cursor: pointer;
-    display: flex;
-    transition: 0.2s;
-}
-
-.question p, .answer p {font: 600 27px Montserrat; margin-left: 30px;}
-
-.answer {
-    font: 600 18px Montserrat;
-    background-color: #043565;
-    padding: 20px 2.5% 20px 2.5%;
-    min-height: 40px;
-    text-align: left;
-    width: 95%;
-    line-height: 30px;
-    opacity: 1;
+    overflow: hidden;
     transition: 0.3s;
 }
 
+.faq-question.expanding, .faq-question.shrinking {}
 
-.plus {margin: 0 20px 0 auto; font-size: 50px; padding-top: 10px;}
+.faq-down {
+    position: absolute;
+    top: -15px;
+    right: 30px;
+    font-size: 40px;
+    transform: rotate(270deg);
+    transition: 0.3s
+}
 
-.minus {margin: 0 20px 0 auto; font-size: 50px; padding-top: 10px;}
+.faq-down.flipped {
+    transform: rotate(90deg);
+}
 
+.faq-answer {
+    background: #142539;
+    font-size: 16px;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 2px;
+    display: none;
+    width: 100%;
+}
+
+.faq-answer p {
+    color: #2B8FD8;
+    display: inline;
+}
+
+#faq-intro h1, #faq-intro p {text-align: center}
+
+#faq-intro h1 {font-size: 45px; margin-top: -20px;}
+
+#faq-intro p {
+    font-size: 20px;
+    margin: -20px 0 50px 0
+}
+
+
+.down {
+    height: 50px;
+    display: block;
+    margin: 50px auto -50px auto;
+    cursor: pointer;
+    animation: bounce 1.2s ease-in-out alternate infinite;
+}
+
+@keyframes bounce {
+    from {
+        margin-top: 50px;
+        margin-bottom: -50px;
+    }
+
+    to {
+        margin-top: 75px;
+        margin-bottom: -75px;
+    }
+}
 
 /*Other*/
 #main_html {
@@ -213,8 +304,7 @@ footer {
 
 #main_body {
     overflow: hidden;
-    margin: 0 30px 0 0;
-    padding-bottom: 60px;
+    margin: 0 0 0 0;
     display: flex;
     flex-direction: column;
 }
@@ -235,15 +325,25 @@ footer {
     border-radius: 10px;
     font-size: 20px;
     line-height: 28px;
-    background: #091B30;
     box-sizing: border-box;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -2px -3px 10px rgba(255, 255, 255, 0.1)
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -2px -3px 10px rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.description .background {
+    background: url("images/curve.svg");
+    filter: blur(200px);
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .description.mobile {
     display: none;
     padding: 15px;
     text-align: center;
+    width: 96%;
+    margin: 40px 2% 0 2%;
 }
 
 #info-boxes {
@@ -310,21 +410,13 @@ footer {
     background: #2B8FD8;
 }
 
-.hidden {
-    margin-top: -87px;
-    opacity: 0;
-    z-index: -1;
-}
+
+
+
+
 
 
 /*Media Queries*/
-@media (max-width: 1230px) {
-    .pair img {height: 50vw; width: 50vw}
-}
-@media (max-width: 890px) {
-    .pair img {display: none;}
-}
-
 @media (max-width: 500px) {
     #faq {width: 80vw;}
 }
@@ -332,23 +424,12 @@ footer {
     .get_started {width: 200px}
 }
 
-@media (max-width: 475px) {
-    #main_body {
-        padding-bottom: 110px
-    }
-}
-
 @media (max-width: 380px) {
-    #left_content {
-        margin-left: 20%;
-    }
+    #left_content {margin-left: 20%;}
+    .footer-logo p {margin: -5px 0 0 63px; width: fit-content}
+    .footer-logo img {width: 200px;}
 }
 
-@media (max-width: 312px) {
-    .pair {
-        margin-top: 150px;
-    }
-}
 @media (min-width: 1700px) {
     #motto {font-size: 3vw; max-width: 40vw; margin: 10vh 0 0 5vw;}
     #description {font-size: 1.5vw; max-width: 35vw; margin: 1.5vh 0 0 5vw; line-height: 2.3vw}
@@ -359,19 +440,13 @@ footer {
     .login_button {height: 3vw !important; width: 7vw !important; padding-top: 0.6vw !important;}
     .login_button img {height: 0.9vw; width: 0.6vw;}
     #main_html {margin-right: 3vw}
-    .footer_image {height: 1vw !important; width: 1vw !important; margin-right: 0.3vw !important}
-    .footer_text {font-size: 1vw;}
 }
 
 @media (max-width: 870px) {
-    header a {
-        display: none;
-    }
+    header a {display: none;}
     #hamburger {display: flex;}
     #motto, #description {margin-left: -30px;}
-    #dropdown {
-        display: flex;
-    }
+    #dropdown {display: flex;}
     #hamburger_dropdown {
         display: none;
         flex-direction: column;
@@ -389,19 +464,18 @@ footer {
     .row {flex-direction: column}
     svg {display: none}
     #main_html {background: #091B30;}
-}
-
-@media(max-width: 180vh), (max-height: 36vw) {
-    #calendar_guy {display: none;}
+    footer {background: #142539}
+    #right_content {display: none;}
+    #faq {background: #142539; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
 }
 
 @media (max-width: 600px) {
-    .description.desktop {
-        display: none;
-    }
-    .description.mobile {
-        display: block;
-    }
+    .description.desktop {display: none;}
+    .description.mobile {display: block;}
+}
+
+@media (max-width: 815px) {
+    .info-box {width: 80%;}
 }
 
 @media (max-width: 400px) {
@@ -409,4 +483,10 @@ footer {
         font-size: 18px;
         line-height: 24px;
     }
+
+    .column-container {justify-content: flex-start;}
+}
+
+@media (max-width: 370px) {
+
 }

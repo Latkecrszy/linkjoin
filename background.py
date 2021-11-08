@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import os, dotenv, requests, time, datetime, random, logging
+import os, dotenv, requests, time, datetime, random, logging, json
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()
@@ -56,9 +56,6 @@ def message():
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
-            if user is None:
-                print(user)
-                print(document['username'])
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
                 user_info = {"days": document['days'],
@@ -78,7 +75,6 @@ def message():
                 if document['active'] != "false":
                     try:
                         if int(document['starts']) > 0:
-                            print("updated")
                             links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
                             continue
                     except KeyError:
@@ -95,13 +91,11 @@ def message():
 
                 # Get the user's phone number
                 if dict(user).get('number') and document['text'] != "false":
-                    print("sending from background")
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
-                    response = requests.post("https://linkjoin.xyz/send_message", json=data, headers={'Content-Type': 'application/json'})
+                    response = requests.post("http://127.0.0.1:5002/send_message", json=data, headers={'Content-Type': 'application/json'})
                     print(response)
                     print(response.text)
-
                 else:
                     print("no number or text off")
         for document in otps:
@@ -110,7 +104,6 @@ def message():
             else:
                 mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
         for document in anonymous_token:
-            print(document)
             if document.get('time'):
                 if document['time'] - 1 == 0:
                     mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': document['token']})
@@ -120,5 +113,12 @@ def message():
             else:
                 mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
                                                           {'$set': {'time': 59}})
+        sent = json.load(open('last-message.json'))
+        for id, time_left in {i: j for i, j in sent.items()}.items():
+            if time_left > 0:
+                sent[id] = time_left-1
+            else:
+                sent.pop(id)
+        json.dump(sent, open('last-message.json', 'w'), indent=4)
         # Wait 60 seconds
         time.sleep(abs(60-(time.perf_counter()-start)))

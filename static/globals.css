@@ -229,6 +229,10 @@ html::-webkit-scrollbar, .notes::-webkit-scrollbar {
     width: 8px;
 }
 
+.noscroll::-webkit-scrollbar {
+    width: 0;
+}
+
 html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track {
     border-radius: 12px;
 }

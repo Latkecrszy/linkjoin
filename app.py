@@ -44,6 +44,25 @@ mongo = PyMongo(app)
 hasher = PasswordHasher()
 
 
+def analytics(_type, **kwargs):
+    analytics_info = dict(mongo.db.analytics.find_one({'id': 'analytics'}))
+    if _type == 'links_made':
+        mongo.db.analytics.find_one_and_update({'id': 'analytics'}, {'$set': {'links_made': analytics_info['links_made']+1}})
+    elif _type == 'logins':
+        analytics_info['total_monthly_logins'][-1] += 1
+        mongo.db.analytics.find_one_and_update({'id': 'analytics'}, {'$set': {'total_monthly_logins': analytics_info['total_monthly_logins']}})
+    elif _type == 'signups':
+        analytics_info['total_monthly_signups'][-1] += 1
+        mongo.db.analytics.find_one_and_update({'id': 'analytics'}, {'$set': {'total_monthly_signups': analytics_info['total_monthly_signups']}})
+    elif _type == 'users':
+        if kwargs['email'] not in analytics_info['monthly_users'][-1]:
+            analytics_info['monthly_users'][-1].append(kwargs['email'])
+            mongo.db.analytics.find_one_and_update({'id': 'analytics'}, {'$set': {'monthly_users': analytics_info['monthly_users']}})
+        if kwargs['email'] not in analytics_info['daily_users'][-1]:
+            analytics_info['daily_users'][-1].append(kwargs['email'])
+            mongo.db.analytics.find_one_and_update({'id': 'analytics'}, {'$set': {'daily_users': analytics_info['daily_users']}})
+
+
 def gen_id():
     id = ''.join(random.choices(string.ascii_letters, k=16))
     while id in [dict(document)['refer'] for document in mongo.db.login.find() if 'refer' in document]:
@@ -99,7 +118,6 @@ def login():
                                token=token)
     else:
         data = request.get_json()
-        print(request.get_json())
         email = data.get('email').lower()
         if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
             return 'Invalid token', 403
@@ -123,6 +141,7 @@ def login():
                 id_token.verify_oauth2_token(data.get('g_token'), reqs.Request(), CLIENT_ID)
             except ValueError:
                 return {'redirect': data['redirect'], "error": 'google_login_failed', 'token': token}
+        analytics('logins')
         return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
@@ -130,10 +149,18 @@ def login():
 def signup():
     if request.method == 'GET':
         if mongo.db.login.find_one({'token': request.args.get('tk')}) and request.args.get('tk') is not None:
-            mongo.db.login.find_one_and_update({'token': request.args.get('tk')}, {'$set': {'confirmed': 'true'}})
-            token = gen_session()
             email = mongo.db.login.find_one({"token": request.args.get("tk")})["username"]
+            accounts = mongo.db.login.find({'username': email})
+            account = None
+            for i in accounts:
+                if account is None:
+                    account = i
+                else:
+                    mongo.db.find_one_and_delete({'token': i['token']})
+            mongo.db.login.find_one_and_update({'token': account['token']}, {'$set': {'confirmed': 'true'}})
+            token = gen_session()
             mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+            analytics('signups')
             return redirect('/links')
         token = gen_session()
         mongo.db.anonymous_token.insert_one({'token': token})
@@ -166,7 +193,6 @@ def set_cookie():
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
         response.set_cookie('session_id', session_id, max_age=259200)
-    print(response)
     return response
 
 
@@ -196,8 +222,7 @@ def register():
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': 'true',
                   'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
-                  'repeat': data.get('repeats'), 'days': data.get('days'),
-                  'text': data.get('text'),
+                  'repeat': data.get('repeats'), 'days': data.get('days'), 'text': data.get('text'),
                   'starts': int(data.get('starts')) if data.get('starts') else 0}
         if data.get('password'):
             insert['password'] = encoder.encrypt(data.get('password').encode())
@@ -205,6 +230,7 @@ def register():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
         mongo.db.links.insert_one(insert)
         mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+        analytics('links_made')
         return 'done', 200
     return 'Forbidden', 403
 
@@ -229,6 +255,7 @@ def links():
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
     mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
+    analytics('users', email=email)
     return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
                            premium=premium, style="old", number=number,
                            country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
@@ -296,7 +323,6 @@ def disable():
 def db():
     if not authenticated(request.cookies, request.headers.get('email')):
         return 'Forbidden'
-    print(request.headers.get('deleted'))
     links_list = mongo.db.links.find({'username': request.headers.get('email')})
     """if request.headers.get('deleted') == 'true':
         links_list = mongo.db.deleted_links.find({'username': request.headers.get('email')})
@@ -329,7 +355,6 @@ def change_var():
     mongo.db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {
                                      data.get('variable'): data.get(data.get('variable'))}})
-    print(data.get(data.get('variable')))
     return redirect('/links')
 
 
@@ -520,11 +545,9 @@ def notes():
         return jsonify(list(mongo.db.login.find_one({'username': request.headers.get('email')})['notes'].values())), 200
     elif request.method == 'POST':
         data = request.get_json()
-        print(data)
         user_notes = mongo.db.login.find_one({'username': request.headers.get('email')})['notes']
         user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'), 'markdown': data.get('markdown'), 'date': data.get('date')}
         mongo.db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
-        print(user_notes)
         return jsonify(user_notes), 200
     else:
         return 'Unknown method'
@@ -533,12 +556,10 @@ def notes():
 @app.route('/markdown_to_html', methods=['POST'])
 def markdown_to_html():
     data = request.get_json()
-    print(data.get('markdown'))
-    print(markdown(data.get('markdown')))
     return markdown(data.get('markdown'))
 
 
-@app.route('/send_reset_email', methods=['GET', 'POST'])
+@app.route('/reset-password', methods=['GET', 'POST'])
 def send_reset_email():
     if request.method == 'POST':
         data = request.get_json()
@@ -598,6 +619,8 @@ def confirm_email():
         if len(number) < 11:
             number = data.get('countrycode') + str(number)
         account['number'] = int(number)
+    if mongo.db.login.find_one({'username': email}):
+        return
     mongo.db.login.insert_one(account)
     mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
     content = EmailMessage()
@@ -646,7 +669,6 @@ def forgot():
 def tutorial_changed():
     if not authenticated(request.cookies, request.headers.get('email')):
         return 'Forbidden', 403
-    print(request.headers.get('finished'))
     if request.headers.get('finished') == 'true':
         mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
     else:
@@ -666,10 +688,9 @@ def open_early():
 @app.route('/send_message', methods=['POST'])
 def send_message():
     print("sending...")
-    sent = open('last-message.txt').read()
+    sent = json.load(open('last-message.json'))
     data = request.get_json()
-    if int(data.get('id')) != sent and os.environ.get('TEXT_KEY') == data.get('key'):
-        print('first sent', sent)
+    if int(data.get('id')) not in sent and os.environ.get('TEXT_KEY') == data.get('key'):
         if data.get('active') == "false":
             messages = [
                 'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
@@ -685,23 +706,36 @@ def send_message():
                 "from": "18336535326", "to": data.get('number'), "text":
                     random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
         # Send the text message
-        print(sent)
-        print(type(sent))
-        print(data.get('id'))
-        print(type(data.get('id')))
-        print(data)
-        print(sent == data.get('id'))
-        if int(sent) != int(data.get('id')):
-            print(sent)
+        if int(data.get('id')) not in sent:
             response = requests.post("https://rest.nexmo.com/sms/json", data=content)
-            print(content)
-            print(response)
-            print(response.text)
-        with open('last-message.txt', 'w') as f:
-            f.write(str(data.get('id')))
-        print('second sent', open('last-message.txt', 'r').read())
+        sent[int(data.get('id'))] = 3
+        json.dump(sent, open('last-message.json', 'w'), indent=4)
         return 'Success', 200
     return 'failed', 200
+
+
+@app.route('/add_accounts', methods=['POST'])
+def add_accounts():
+    data = request.get_json()
+    if data.get('token') != os.environ.get('ADD_ACCOUNTS_TOKEN'):
+        return
+    preexisting = []
+    accounts = data.get('accounts')
+    _links = data.get('links')
+    for account in accounts:
+        if not mongo.db.login.find_one({'username': account['email']}):
+            mongo.db.login.insert_one(account)
+        else:
+            preexisting.append(account)
+
+    for link in _links:
+        # Provided with: link, days (in a list), email, name, time
+        link = {'username': link['email'], 'id': int(dict(mongo.db.id.find_one({'_id': 'id'}))['id']),
+                'time': link['time'], 'link': encoder.encrypt(link['link'].encode()), 'active': 'true',
+                'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={link["id"]}'.encode()),
+                'repeat': 'week', 'days': link['days'], 'text': 'none', 'starts': 0}
+        mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+        mongo.db.links.insert_one(link)
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
