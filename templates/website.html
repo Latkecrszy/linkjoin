@@ -203,6 +203,14 @@
                         <p>Allow</p>. Then, you're all set!
                     </div>
                 </div>
+                <div class="faq-question" onclick="openFAQ(this)">
+                    <p class="faq-down">❮</p>
+                    <p>Does LinkJoin work on mobile?</p>
+                    <div class="faq-answer">
+                        Due to restrictions on mobile devices, links will <p>not</p> automatically open on mobile.
+                        However, your links are still fully accessible, and just need to be clicked to open the meeting.
+                    </div>
+                </div>
             </div>
         </div>
         <footer>
@@ -236,6 +244,7 @@
         let FAQHeights = []
         let FAQExpandedHeights = []
         async function setUpFAQ() {
+            await sleep(100)
             for (let i = 0; i < document.getElementById('faq').children.length; i++) {
                 const e = document.getElementById('faq').children[i]
                 FAQHeights.push(e.clientHeight)
