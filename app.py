@@ -605,6 +605,9 @@ def confirm_email():
     token = gen_otp()
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': token}
+    if mongo.db.login.find_one({'username': email}) is not None:
+        return
+    mongo.db.login.insert_one(account)
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:
             return {"error": "password_too_short", "url": redirect_link}
@@ -619,9 +622,6 @@ def confirm_email():
         if len(number) < 11:
             number = data.get('countrycode') + str(number)
         account['number'] = int(number)
-    if mongo.db.login.find_one({'username': email}):
-        return
-    mongo.db.login.insert_one(account)
     mongo.db.tokens.find_one_and_update({'email': email}, {'$set': {'token': token}}, upsert=True)
     content = EmailMessage()
     content.set_content(f'''LinkJoin here!
