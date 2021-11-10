@@ -1,11 +1,11 @@
-let global_username, global_sort, tutorial_complete
-let tutorial_active = false;
-let created = false;
-let connected = true;
+var global_username, global_sort, tutorial_complete, global_links
+var tutorial_active = false;
+var created = false;
+var connected = true;
 const notesInfo = {}
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
-window.addEventListener('online', async () => {console.log('reconnected'); connected = true; await refresh()})
+window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
 
 function blur(show) {
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
@@ -13,7 +13,7 @@ function blur(show) {
 }
 
 async function db(username, id) {
-    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : []
+    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links
 }
 
 async function popUp(popup) {

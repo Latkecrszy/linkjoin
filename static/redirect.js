@@ -21,6 +21,7 @@ async function start(username, links, sort) {
         if (minute.toString().length === 1) {minute = `0${minute}`}
         const time = `${newDate.getHours()}:${minute}`
         user_links = await db(username)
+        global_links = user_links
         for (let link of user_links) {
             let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
