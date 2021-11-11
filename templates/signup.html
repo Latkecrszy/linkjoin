@@ -61,7 +61,7 @@
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <input id="password" name="password" placeholder="Password" type="password" required>
                 <input id="phone" name="phone" placeholder="Phone Number (Optional)" type="text"><br>
-                <div id="keep_div"><input type="checkbox" name="keep" id="keep"><p id="keep_text">Keep me logged in</p></div>
+                <div id="keep_div"><input type="checkbox" name="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
                 <button id="submit" onclick="signUp()">Sign Up<img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button>
             </div>
         </div>
