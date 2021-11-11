@@ -13,7 +13,7 @@ function blur(show) {
 }
 
 async function db(username, id) {
-    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links
+    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links || []
 }
 
 async function popUp(popup) {
@@ -159,6 +159,7 @@ async function load_links(username, sort, id="insert") {
     const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
     const links = await db(username, id)
+    global_links = links
     if (id !== 'insert') {
         document.getElementById(id).style.display = 'flex'
         blur(true)
@@ -367,23 +368,24 @@ async function register_link(parameter) {
         }
     }
     const args = {
-        headers: {'Content-Type': 'application/json'},
-        method: 'POST',
-        body: JSON.stringify({
             name: document.getElementById("name").value,
             link: document.getElementById("link").value, time: `${hour}:${minute}`,
             repeats: document.getElementById("select").value, days: days,
             starts: parseInt(document.getElementById("starts_select").value)*days.length,
             text: document.getElementById("text_select").value,
             id: parameter, email: global_username
-        })
-    }
+        }
     if (document.getElementById("password").value.length > 0) {args['password'] = document.getElementById("password").value}
+    const payload = {
+        headers: {'Content-Type': 'application/json'},
+        method: 'POST',
+        body: JSON.stringify(args)
+    }
     const url = parameter === 'register' ? '/register' : '/update'
     if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
     if (!document.getElementById("link").value) {return document.getElementById("error").innerText = "Please provide a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please provide days for your meeting."}
-    await fetch(url, args)
+    await fetch(url, payload)
     await skipTutorial()
 }
 
