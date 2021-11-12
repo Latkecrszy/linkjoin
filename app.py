@@ -71,6 +71,7 @@ def analytics_endpoint():
         data = request.get_json()
         if data.get('field') == 'links_opened':
             analytics('links_opened')
+        return 'Success', 200
 
 
 def gen_id():
