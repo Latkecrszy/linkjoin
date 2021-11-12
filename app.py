@@ -593,7 +593,7 @@ def send_reset_email():
         otp = gen_otp()
         mongo.db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
         content = EmailMessage()
-        content.set_content('''Hey there, LinkJoin knocking!
+        content.set_content(f'''Hey there, LinkJoin knocking!
 To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
 
 Happy passwording,
