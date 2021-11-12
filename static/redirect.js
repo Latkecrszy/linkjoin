@@ -31,6 +31,7 @@ async function start(username, links, sort) {
                 continue
             }
             window.open(link['link'])
+            await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
             if (link['repeat'] === 'never') {
                 if (link['days'].length > 1) {
                     link['days'].splice(link['days'].indexOf(day), 1)

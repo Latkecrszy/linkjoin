@@ -120,5 +120,17 @@ def message():
             else:
                 sent.pop(id)
         json.dump(sent, open('last-message.json', 'w'), indent=4)
+        if os.environ.get('IS_HEROKU') == 'true':
+            analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'analytics'})
+            if analytics_data['day'] != int(current_time.strftime('%d')):
+                analytics_data['daily_users'].append([])
+                analytics_data['day'] = int(current_time.strftime('%d'))
+                mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
+            if analytics_data['month'] != int(current_time.strftime('%m')):
+                analytics_data['month'] = int(current_time.strftime('%m'))
+                analytics_data['monthly_users'].append([])
+                analytics_data['total_monthly_logins'].append(0)
+                analytics_data['total_monthly_signups'].append(0)
+                mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         # Wait 60 seconds
         time.sleep(abs(60-(time.perf_counter()-start)))

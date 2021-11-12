@@ -3,3 +3,12 @@ document.addEventListener("click", x => {if (x.target.matches("#hamburger") || x
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
+
+window.addEventListener('unload', async () => {console.log('unloading'); await fetch('/invalidate-token', {
+    method: 'POST',
+    headers:  {'Content-Type': 'application/json'},
+    body: JSON.stringify({'token': token})
+    }
+)})
+
+// for (let document.getElementsByClassName('afterLoad').forEach(i => )

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html id="login_html" lang="en" class="nobar">
     <head>
+        <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
         <script type="application/javascript">
           (function(b,o,n,g,s,r,c){if(b[s])return;b[s]={};b[s].scriptToken="XzE3MDA3NTg5Mzg";b[s].callsQueue=[];b[s].api=function(){b[s].callsQueue.push(arguments);};r=o.createElement(n);c=o.getElementsByTagName(n)[0];r.async=1;r.src=g;r.id=s+n;c.parentNode.insertBefore(r,c);})(window,document,"script","https://cdn.oribi.io/XzE3MDA3NTg5Mzg/oribi.js","ORIBI");
@@ -67,6 +68,7 @@
         </div>
     </body>
     <script>
+        const token = "{{ token }}"
         document.addEventListener("keyup", e => {
             if (e.key === "Enter" || e.keyCode === 13) {
                 e.preventDefault();
@@ -87,7 +89,7 @@
                     email: document.getElementById("email").value, redirect: "{{ redirect }}",
                     keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                     offset: offset, password: document.getElementById("password").value,
-                    countrycode: countryCodes[country['country']]['code'], token: "{{ token }}"
+                    countrycode: countryCodes[country['country']]['code'], token: token
                 }),
             })
             await processData(data)
@@ -104,7 +106,7 @@
                         email: profile.getEmail(), redirect: "{{ redirect }}",
                         keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                         offset: offset, countrycode: countryCodes[country['country']]['code'],
-                        g_token: googleUser.getAuthResponse().id_token, token: "{{ token }}"
+                        g_token: googleUser.getAuthResponse().id_token, token: token
                     })
                 })
                 await processData(data)
