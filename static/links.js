@@ -13,7 +13,9 @@ function blur(show) {
 }
 
 async function db(username, id) {
-    return connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links || []
+    let results = connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links || []
+    if (results['error'] === 'Forbidden') {return location.reload()}
+    return results
 }
 
 async function popUp(popup) {
@@ -68,7 +70,7 @@ function edit(link) {
     document.getElementById("name").value = link["name"]
     document.getElementById("link").value = link["link"]
     document.getElementById("text_select").value = link["text"].toString()
-    document.getElementById("starts_select").value = link["starts"].toString()
+    document.getElementById("starts_select").value = (parseInt(link["starts"])%5).toString()
     if ("password" in link) {document.getElementById("password").value = link["password"]}
     else {document.getElementById("password").value = null}
     if (parseInt(link['time'].split(":")[0]) === 12) {
