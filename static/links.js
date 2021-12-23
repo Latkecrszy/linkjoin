@@ -1,19 +1,30 @@
-var global_username, global_sort, tutorial_complete, global_links
-var tutorial_active = false;
-var created = false;
-var connected = true;
+let global_username, global_sort, tutorial_complete, global_links
+let tutorial_active = false;
+let created = false;
+let connected = true;
 const notesInfo = {}
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
 window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
 
 function blur(show) {
+    console.log(show)
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
     document.getElementById("blur").style.zIndex = show ? "3" : "-3"
 }
 
+function getOffset(el) {
+    const rect = el.getBoundingClientRect();
+    return {
+        left: rect.left + window.scrollX,
+        top: rect.top + window.scrollY
+    }
+}
+
 async function db(username, id) {
-    let results = connected ? await fetch('/db', {headers: {'email': username}}).then(response => response.json()) : global_links || []
+    const deleted = id === 'deleted-links-body' ? 'true' : 'false'
+    let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}}).then(response => response.json()) : global_links || []
+    if (id === 'deleted-links') {console.log(results)}
     if (results['error'] === 'Forbidden') {return location.reload()}
     return results
 }
@@ -48,9 +59,9 @@ async function popUp(popup) {
     document.getElementById("0").selected = "selected"
 }
 
-function hide(popup) {
+function hide(popup, showBlur=false) {
     document.getElementById(popup).style.display = "none"
-    blur(false)
+    blur(showBlur)
 }
 
 function edit(link) {
@@ -113,6 +124,7 @@ async function delete_(link) {
         await refresh()
         await load_links(link['username'], global_sort)
     })
+    blur(true)
 }
 
 function share(link) {
@@ -152,27 +164,58 @@ function copyLink(link, id) {
     })
 }
 
+function permDelete(link) {
+    hide('deleted-links', true)
+    window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
+    document.getElementById("popup_delete").style.display = "flex"
+    document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to permanently delete <b>'+link['name']+'</b>? This action cannot be undone.'
+    document.getElementById("delete_button").addEventListener('click', async () => {
+        hide('popup_delete')
+        await fetch('/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id: link['id'], email: link['username'], permanent: 'true'})
+        })
+        location.reload()
+    })
+}
+
+async function restore(id, email) {
+    await fetch('/restore', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id, email: email})
+    })
+    location.reload()
+}
+
 async function load_links(username, sort, id="insert") {
     const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-    const sessionId = await fetch('/get_session', {headers: {'email': username, 'token': token}}).then(id => id.json())
-    if (sessionId === null || cookieSessionId !== sessionId['session_id']) {location.replace('/login?error=not_logged_in')}
+    const sessionIds = await fetch('/get_session', {headers: {'email': username, 'token': token}}).then(id => id.json())
+    if (sessionIds === null || !sessionIds.includes(cookieSessionId)) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
+    document.getElementById(id).style.display = 'flex'
+    if (id === 'deleted-links') {id = 'deleted-links-body'}
     const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
     const links = await db(username, id)
     global_links = links
     if (id !== 'insert') {
-        document.getElementById(id).style.display = 'flex'
         blur(true)
     }
-    if (links.toString() === '') {
-        await refresh()
+    if (links.toString() === '' && id === 'insert') {
+        await refresh(id)
         document.getElementById("header_links").style.margin = "0 0 0 0"
         document.getElementById("disappear").classList.remove("gone")
     }
+    else if (links.toString() === '' && id !== 'insert') {
+        insert.classList.add('empty')
+        return insert.innerHTML = `<h2>After you delete a link, it will show up here.</h2>
+                            <img src="/static/images/trash.svg" alt="trash can">
+                            `
+    }
     else {
-        document.getElementById('footer_links').style.marginTop = '100px'
         let final = []
         if (sort === "day") {
             const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
@@ -212,7 +255,7 @@ async function load_links(username, sort, id="insert") {
         else {final = links}
         let iterator = 0;
         const checked = []
-        await refresh()
+        await refresh(id)
         for (const link of final) {
             const time = link["time"]
             const time_list = time.split(":")
@@ -222,26 +265,24 @@ async function load_links(username, sort, id="insert") {
             else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
             const linkTime = time_list.join(":") + " " + pm
             let password = '';
-            let menuHeight = "190px"
+            let menuHeight = id === 'insert' ? '190px' : '145px'
             if ("password" in link) {
                 password = `<hr class="menu_line"><div id="${link['id'].toString()}" onclick="copyPassword('${link['id']}', '${link['password']}')">Password</div>`
-                menuHeight = "235px"
+                menuHeight = id === 'insert' ? "235px" : "190px"
             }
-            let linkOpacity = 1
             let nameContainerOpacity = 1
             let checkboxChecked = true
-            let switchHoverText = 'Stop your link from opening automatically'
+            let switchHoverText = 'Disable automatic meeting opening'
             if (link['active'] === "false") {
-                linkOpacity = 0.6
                 nameContainerOpacity = 0.7
                 checkboxChecked = false
-                switchHoverText = 'Make your link open automatically'
+                switchHoverText = 'Enable automatic meeting opening'
             }
             let highlightDiv = highlight === link['id'].toString() ? '<div class="highlight"></div>' : ''
             const parameterLink = JSON.stringify(link).replaceAll('"', "'")
             let link_event;
             if (id === "insert") {
-                link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+                link_event = `<div class="link_event ${link['active'] === 'false' ? 'disabled' : 'enabled'}" id="${iterator}">
                 ${highlightDiv}
                 <div class="time">${linkTime}</div>
                 <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
@@ -267,46 +308,59 @@ async function load_links(username, sort, id="insert") {
             </div>`
             }
             else {
-                link_event = `<div class="link_event" id="${iterator}" style="opacity: ${link['active'] === 'false' ? 0.6 : 1}">
+                link_event = `<div class="link_event" id="${iterator}">
                 <div class="time">${linkTime}</div>
                 <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
                     <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
                     <div class="join_now">Click to join the room now</div>
                 </div>
                 <div class="days">${link['days'].join(", ")}</div>
-                <div class="menu" style="height: ${menuHeight}">
+                <div class="menu deleted" id="deletedMenu${iterator}" style="height: ${menuHeight}">
                     <div onclick="permDelete(${parameterLink})" title="Permanently delete your link">Delete</div>
                     <hr class="menu_line">
-                    <div onclick="createNote('${link['name']}', '${link['id']}')" title="View your meeting notes">Notes</div>
+                    <div onclick="createNote('${link['name']}', '${link['id']}'); hide('deleted-links')" title="View your meeting notes">Notes</div>
                     <hr class="menu_line">
                     <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')" title="Copy your meeting link">Copy link</div>
+                    <hr class="menu_line">
+                    <div onclick="restore('${link['id']}', '${link['username']}')" title="Restore your deleted link">Restore</div>
                     ${password}
                 </div>
-                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
+                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('deletedMenu${iterator}').style.display = 'flex'" alt="Three dots">
             </div>`
             }
             checked.push(checkboxChecked)
             insert.innerHTML += link_event
             iterator += 1
         }
-        document.addEventListener("click", (e) => {
-            for (let i = 0; i < iterator; i++) {
-                if (e.target.parentElement.id !== i.toString()) {
-                    document.getElementById(`menu${i}`).style.display = "none"
+        if (id === 'insert') {
+            document.addEventListener("click", (e) => {
+                for (let i = 0; i < iterator; i++) {
+                    let elementId;
+                    if (e.target.parentElement.id !== i.toString() && e.target.parentElement.parentElement.id !== 'deleted-links') {
+                        elementId = `menu${i}`
+                    }
+                    if (e.target.parentElement.id !== i.toString()  && document.getElementById('deleted-links').contains(e.target)) {
+                        elementId = `deletedMenu${i}`
+                    }
+                    if (document.getElementById(elementId)) {
+                        document.getElementById(elementId).style.display = "none"
+                    }
+
                 }
-            }
-            if (!e.target.parentElement.classList.contains('demo')) {
-                document.getElementById('tutorial-menu').style.display = 'none'
-            }
-            else if (!e.target.classList.contains('menu_buttons')) {
-                closeTutorial()
-            }
-            if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
-                && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
-                || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
-                closeTutorial()
-            }
-        })
+                if (!e.target.parentElement.classList.contains('demo')) {
+                    document.getElementById('tutorial-menu').style.display = 'none'
+                }
+                else if (!e.target.classList.contains('menu_buttons')) {
+                    closeTutorial()
+                }
+                if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
+                    && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
+                    || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
+                    closeTutorial()
+                }
+            })
+        }
+
         try {
             checked.forEach((Checked, index) => {if (Checked) {document.getElementById('toggle'+index).checked = 'checked'}})
         }
@@ -329,6 +383,10 @@ async function load_links(username, sort, id="insert") {
     await check_day(username)
     await checkTutorial()
     clearInterval(open)
+    if (error === 'link_not_found') {
+        history.pushState('data', 'LinkJoin', '/links')
+        await sendNotif('The link you are trying to add could not be found. Please contact the owner of this link for more information.', '#ba1a1a')
+    }
     start(username, links, sort)
     if (document.getElementsByClassName('highlight').length > 0) {
         document.getElementsByClassName('highlight')[0].scrollIntoView(true)
@@ -391,7 +449,11 @@ async function register_link(parameter) {
     await skipTutorial()
 }
 
-function logOut() {document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;"; location.replace('/login')}
+async function logOut() {
+    document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    await fetch(`/logout?email=${global_username}&session_id=${document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''}`);
+    location.replace('/login')
+}
 
 
 function browser() {
@@ -431,8 +493,6 @@ async function popupWarn(item, skip) {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({'email': global_username, 'step': 1})
             })
-            document.getElementById("box").style.zIndex = "5"
-            document.getElementById("box").style.background = "rgba(255, 255, 255, 0.1)"
             document.getElementById("check_popup").style.display = "none"
             return newWindow.close()
         }
@@ -470,8 +530,8 @@ async function popupWarn(item, skip) {
 }
 
 
-async function refresh() {
-    let insert = document.getElementById("insert")
+async function refresh(id="insert") {
+    let insert = document.getElementById(id)
     while (insert.firstChild) {insert.removeChild(insert.firstChild)}
 }
 
@@ -632,4 +692,22 @@ async function resetPassword() {
     })
     await sleep(3000)
     document.getElementById('settings-reset-password').innerText = 'Send'
+}
+
+
+async function openDeletedLinks() {
+    hide('settings')
+    blur(true)
+    await load_links(global_username, global_sort, "deleted-links")
+    document.getElementById('deleted-links').style.display = 'flex'
+}
+
+
+function dropDown(el) {
+    const dropdownMenu = document.createElement('div')
+    dropdownMenu.classList.add('dropdown-menu')
+    dropdownMenu.style.left = getOffset(el).left.toString()
+    dropdownMenu.style.top = getOffset(el).top.toString()
+    dropdownMenu.append(...el.children)
+
 }

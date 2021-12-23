@@ -13,7 +13,7 @@
 .link_event {
     background: #142539;
     border-radius: 3px;
-    margin: 0 130px 20px 130px;
+    margin-bottom: 20px;
     display: flex;
     height: 100px;
     padding: 0 50px;
@@ -23,6 +23,11 @@
     align-items: center;
     position: relative;
     transition: 0.5s;
+}
+
+.link_event.disabled {
+    opacity: 0.7;
+    z-index: 1;
 }
 
 .days {
@@ -48,11 +53,17 @@
     flex-direction: column;
     background: #142539;
     border-radius: 4px;
-    height: 110px;
+    height: 190px;
     width: 100px;
     margin: 0 0 -100px 72vw;
     position: absolute;
     box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.25)
+}
+
+.menu.deleted {
+    height: 145px;
+    top: 55px;
+    right: -30px;
 }
 
 .menu div {margin-left: 5px; cursor: pointer}
@@ -164,7 +175,7 @@
     border-radius: 100px
 }
 
-#add_number_div, #change_number_div {
+#add_number_div {
     width: min(500px, calc(100vw - 30px));
     height: min(300px, fit-content);
     padding: 10px 10px;
@@ -180,14 +191,14 @@
     display: none;
 }
 
-#add_number_div .content, #change_number_div .content {
+#add_number_div .content {
     position: relative;
     top: -10px
 }
 
-#number, #number_change {display: inline; width: 60%; margin-bottom: 15px}
+#number {display: inline; width: 60%; margin-bottom: 15px}
 
-#add_number, #change_number {
+#add_number {
     font-size: 14px;
     display: inline;
     height: 50px;
@@ -195,7 +206,7 @@
     min-width: 100px
 }
 
-#dismiss_add_number, #dismiss_change_number {
+#dismiss_add_number {
     position: relative;
     top: 0;
     right: 47%;
@@ -215,18 +226,6 @@
     position: absolute;
     margin: 125px 0 0 30px;
     font: 400 16px Roboto;
-}
-
-#boxes {
-    position: absolute;
-    width: 100vw;
-    display: flex;
-    pointer-events: none;
-    justify-content: space-between;
-}
-
-#boxes * {
-    pointer-events: auto;
 }
 
 .notes::placeholder {
@@ -271,6 +270,7 @@
     cursor: pointer;
     z-index: 2;
 }
+
 #popup_notes h2 {text-align: center; margin-top: 50px;}
 
 #notif {
@@ -288,20 +288,6 @@
     padding: 10px;
     font-size: 16px;
     box-shadow: 5px 5px 8px black
-}
-
-code {
-    background: #5d6066;
-    padding: 1px;
-    border-radius: 4px;
-}
-
-pre {
-    background: #5d6066;
-    padding: 5px;
-    box-sizing: border-box;
-    border-radius: 6px;
-    word-break: break-all;
 }
 
 .notes_buttons {
@@ -384,6 +370,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     box-sizing: border-box;
     padding-bottom: 2px;
     transition: 0.5s;
+    z-index: 2
 }
 
 #open-tutorial:hover {
@@ -449,12 +436,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     border-radius: 3px;
     height: 40px;
     font-size: 16px;
-}
-
-#open-settings {
-    margin: 125px auto 0 30px;
-    width: 80px;
-    height: 40px;
 }
 
 #settings {
@@ -526,23 +507,14 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 @media (max-width: 900px) {
-    .link_event {margin: 0 0 5px 0; width: 100%; height: 150px;}
+    .link_event {margin: 0 0 10px 0; width: calc(100% - 100px); height: 150px;}
     .highlight {
         left: 0;
         top: 0;
         height: 150px;
         width: 100%;
     }
-    .footer_links {
-        height: 225px !important;
-        width: 225px !important;
-        min-width: 200px !important;
-        border-radius: 15px !important;
-        padding: 5px 15px 15px 15px !important;
-        display: flex;
-        flex-direction: column !important;
-        margin-left: max(0px, calc(45% - 100px)) !important;
-    }
+
     #blur {height: calc(100% + 250px) !important}
 }
 
@@ -570,7 +542,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     #plus {display: flex !important}
     .plus_button {display: none}
     #popup {width: 100vw; max-width: 520px}
-    #popup_delete {width: 100vw; left: max(0px, calc(90% - 520px)); max-width: 550px}
     #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
@@ -586,10 +557,17 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 @media (max-width: 500px) {
-    #popup, #popup_notes, #popup_delete, #popup_share {
+    #popup, #popup_notes, #popup_share {
         left: 0 !important;
         top: 0 !important;
         transform: none
+    }
+}
+
+@media (max-width: 550px) {
+    #deleted-links {
+        width: 100%;
+
     }
 }
 

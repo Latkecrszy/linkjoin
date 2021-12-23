@@ -13,6 +13,7 @@ from email.message import EmailMessage
 
 
 
+
 # from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 # from oauthlib.oauth2 import WebApplicationClient
 
@@ -25,6 +26,7 @@ VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 CLIENT_ID = os.environ.get('CLIENT_ID', None)
 twilio_client = Client(os.environ.get('TWILIO_SID'), os.environ.get('TWILIO_TOKEN'))
 markdown = Markdown()
+pp = pprint.PrettyPrinter(indent=4)
 url = 'https://accounts.google.com/.well-known/openid-configuration'
 # login_manager = LoginManager()
 # login_manager.init_app(app)
@@ -97,8 +99,7 @@ def gen_otp():
 
 def authenticated(cookies, email):
     try:
-        return cookies.get('email') == email and mongo.db.sessions.find_one({'username': email})[
-            'session_id'] == cookies.get('session_id')
+        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in mongo.db.sessions.find({'username': email})]
     except TypeError:
         return False
 
@@ -156,6 +157,14 @@ def login():
         return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    if request.method == 'POST':
+        data = request.get_json()
+        mongo.db.sessions.find_one_and_delete({'session_id': data.get('session_id'), 'email': data.get('email')})
+        return {'msg': 'Success'}, 200
+
+
 @app.route('/signup', methods=['GET'])
 def signup():
     if request.method == 'GET':
@@ -181,15 +190,6 @@ def signup():
                                country_codes=json.load(open("country_codes.json")), token=token)
 
 
-
-@app.route('/start_session', methods=['POST'])
-def start_session():
-    data = request.get_json()
-    session_id = gen_session()
-    mongo.db.sessions.find_one_and_update({'username': data.get('email')}, {'$set': {'session_id': session_id}}, upsert=True)
-    return session_id
-
-
 @app.route('/set_cookie', methods=['GET'])
 def set_cookie():
     email = request.args.get('email').lower()
@@ -199,7 +199,7 @@ def set_cookie():
     response = make_response(redirect(request.args.get('url')))
     response.set_cookie('email', email)
     session_id = gen_session()
-    mongo.db.sessions.find_one_and_update({'username': email}, {'$set': {'session_id': session_id}}, upsert=True)
+    mongo.db.sessions.insert_one({'username': email, 'session_id': session_id})
     if request.args.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
@@ -211,7 +211,7 @@ def set_cookie():
 def get_session():
     if not authenticated(request.cookies, request.headers.get('email')) or not mongo.db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
         return {'error': 'Forbidden'}, 403
-    return jsonify(mongo.db.sessions.find_one({'username': request.headers.get('email')}, projection={"_id": 0}))
+    return jsonify([i['session_id'] for i in mongo.db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})])
 
 
 @app.route('/register', methods=['POST'])
@@ -249,8 +249,11 @@ def register():
 @app.route('/links', methods=['GET'])
 def links():
     email = request.cookies.get('email')
+    print(email)
+    print(dict(request.cookies))
     if not authenticated(request.cookies, email):
         return redirect('/login?error=not_logged_in')
+    print('continuing')
     email = email.lower()
     user = mongo.db.login.find_one({"username": email})
     try:
@@ -279,8 +282,19 @@ def delete():
     data = request.get_json()
     if not authenticated(request.cookies, data.get('email').lower()):
         return {'error': 'Forbidden'}, 403
-    mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
-    # mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+    if data.get('permanent') == 'true':
+        mongo.db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
+    else:
+        mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+    return 'done', 200
+
+
+@app.route('/restore', methods=['POST'])
+def restore():
+    data = request.get_json()
+    if not authenticated(request.cookies, data.get('email').lower()):
+        return {'error': 'Forbidden'}, 403
+    mongo.db.links.insert_one(dict(mongo.db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
     return 'done', 200
 
 
@@ -309,7 +323,6 @@ def update():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
         if mongo.db.links.find_one({'id': int(data.get('id'))}).get('share_id'):
             insert['share_id'] = mongo.db.links.find_one({'id': int(data.get('id'))})['share_id']
-        shared_links = mongo.db.links.find({'share_id': int(data.get('id'))})
         for shared_link in mongo.db.links.find({'share_id': int(data.get('id'))}):
             update_link = {
                 'name': data.get('name'),
@@ -347,11 +360,10 @@ def disable():
 def db():
     if not authenticated(request.cookies, request.headers.get('email')):
         return {'error': 'Forbidden'}
-    links_list = mongo.db.links.find({'username': request.headers.get('email')})
-    """if request.headers.get('deleted') == 'true':
+    if request.headers.get('deleted') == 'true':
         links_list = mongo.db.deleted_links.find({'username': request.headers.get('email')})
     else:
-        links_list = mongo.db.links.find({'username': request.headers.get('email')})"""
+        links_list = mongo.db.links.find({'username': request.headers.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for index, i in enumerate(links_list):
@@ -428,10 +440,10 @@ def addlink():
             if encoder.decrypt(
                     dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
                 new_link = dict(doc)
+    if new_link is None:
+        return redirect('/links?error=link_not_found')
     user = mongo.db.login.find_one({"username": email})
     owner = mongo.db.login.find_one({"username": new_link['username']})
-    if new_link is None:
-        return render_template('invalid_link.html')
     new_link = {key: value for key, value in dict(new_link).items() if
                 key != '_id' and key != 'username' and key != 'share'}
     hour, minute = new_link['time'].split(":")
@@ -456,11 +468,6 @@ def addlink():
     return redirect('/links')
 
 
-@app.route('/invalid', methods=['GET'])
-def invalid():
-    return render_template('invalid_link.html')
-
-
 @app.route("/users", methods=['GET'])
 def users():
     print('\n'.join([str(doc) for doc in mongo.db.login.find()]))
@@ -470,7 +477,6 @@ def users():
 
 @app.route("/viewlinks", methods=['GET'])
 def viewlinks():
-    pp = pprint.PrettyPrinter(indent=4)
     pp.pprint([doc for doc in mongo.db.links.find()])
     print(len([_ for _ in mongo.db.links.find()]))
     return render_template('404.html')
@@ -557,11 +563,6 @@ def receive_vonage_message():
     return 'done', 200
 
 
-@app.route('/pricing')
-def pricing():
-    return render_template('pricing.html')
-
-
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
     if not authenticated(request.cookies, request.headers.get('email')):
@@ -643,11 +644,10 @@ def send_reset_email():
     </body>
 </html>'''.format(otp=otp, background='background: #091B30;'), subtype='html')"""
         content.set_content(f'''Hey there, LinkJoin knocking!
-To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
+To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in 15 minutes.
 
 Happy passwording,
-LinkJoin
-            ''')
+LinkJoin''')
         content['Subject'] = 'LinkJoin password reset'
         content['From'] = "noreply@linkjoin.xyz"
         content['To'] = email
@@ -698,11 +698,10 @@ def confirm_email():
     content = EmailMessage()
 
     content.set_content(f'''LinkJoin here!
-To confirm your email, go to https://linkjoin.xyz/signup?tk={token}. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in one hour.
+To confirm your email, go to https://linkjoin.xyz/signup?tk={token}. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in one hour.
 
 Yours truly,
-LinkJoin
-                    ''')
+LinkJoin''')
     content['Subject'] = 'LinkJoin: Confirm email address'
     content['From'] = "noreply@linkjoin.xyz"
     content['To'] = email
@@ -733,12 +732,7 @@ def reset_password():
         return 'Invalid token', 403
 
 
-@app.route('/forgot')
-def forgot():
-    return render_template('forgot-password.html')
-
-
-@app.route('/tutorial_changed')
+@app.route('/tutorial_changed', methods=['GET'])
 def tutorial_changed():
     if not authenticated(request.cookies, request.headers.get('email')):
         return {'error': 'Forbidden'}, 403
@@ -780,7 +774,7 @@ def send_message():
                     random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
         # Send the text message
         if int(data.get('id')) not in sent:
-            response = requests.post("https://rest.nexmo.com/sms/json", data=content)
+            requests.post("https://rest.nexmo.com/sms/json", data=content)
         sent[int(data.get('id'))] = 3
         json.dump(sent, open('last-message.json', 'w'), indent=4)
         return 'Success', 200
