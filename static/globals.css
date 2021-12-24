@@ -245,3 +245,39 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
 .nobar::-webkit-scrollbar-thumb {
     display: none;
 }
+
+.hover-arrow {
+    border: none;
+    background: #2B8FD8;
+    width: 250px;
+    height: 70px;
+    border-radius: 5px;
+    color: white;
+    margin-top: 20px;
+    font: 400 20px Montserrat, serif;
+    transition: 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    padding-left: 35px;
+}
+
+.hover-arrow img {
+    height: 33px;
+    width: 33px;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.hover-arrow:hover {
+    margin-left: 20px;
+    margin-right: 0 !important;
+    box-shadow: 5px 5px 10px black
+}
+
+.hover-arrow:hover img {
+    opacity: 1;
+    padding-left: 15px;
+}

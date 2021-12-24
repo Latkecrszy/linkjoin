@@ -678,7 +678,7 @@ def confirm_email():
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': token}
     if mongo.db.login.find_one({'username': email}) is not None:
-        return
+        return {"error": "email_in_use", "url": redirect_link}
     mongo.db.login.insert_one(account)
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:

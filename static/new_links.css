@@ -177,7 +177,6 @@
 
 #add_number_div {
     width: min(500px, calc(100vw - 30px));
-    height: min(300px, fit-content);
     padding: 10px 10px;
     background: #091B30;
     position: absolute;
@@ -196,20 +195,26 @@
     top: -10px
 }
 
-#number {display: inline; width: 60%; margin-bottom: 15px}
+#number {
+    display: inline;
+    width: 45%;
+    margin-bottom: 15px
+}
+
+#number::placeholder {
+    font-size: 16px;
+}
 
 #add_number {
-    font-size: 14px;
-    display: inline;
-    height: 50px;
-    width: 110px;
-    min-width: 100px
+    font-size: 16px;
+    display: inline-flex;
+    height: 60px;
+    width: 200px;
 }
 
 #dismiss_add_number {
-    position: relative;
-    top: 0;
-    right: 47%;
+    position: absolute;
+    z-index: 1;
     cursor: pointer
 }
 

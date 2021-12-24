@@ -161,22 +161,16 @@ input {color: white; font-family: Montserrat;}
     font: 400 18px Roboto;
 }
 
-#submit, #add_number, #change_number {
+#submit, #add_number {
     width: max(10vw, 150px);
     min-width: 150px;
     height: max(4vw, 65px);
-    background-color: #2B8FD8;
-    border-radius: 10px;
+    border-radius: 8px;
     text-align: center;
-    border: 0 solid;
+    border: none;
     font: 600 max(1.25vw, 20px) Montserrat;
     margin-left: 40px;
-    transition: 0.5s;
-}
-
-#submit:hover, #add_number:hover, #change_number:hover{
-    margin: 5px -5px 0 45px;
-    box-shadow: 5px 5px 10px black;
+    margin-right: 10px;
 }
 
 .flex img {

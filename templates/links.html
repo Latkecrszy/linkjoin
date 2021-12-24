@@ -246,7 +246,7 @@
                             <option value="60">60 minutes before</option>
                         </select>
                     </div>
-                    <button type="button" id="submit" onclick="register_link('register')">Create</button>
+                    <button type="button" class="hover-arrow" id="submit" onclick="register_link('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
                 </div>
             </form>
         </div>
@@ -287,7 +287,7 @@
                     If you don't want to add your number, click the arrow in the upper left.
                 </p>
                 <input class="number" id="number" type="text" placeholder="Phone number">
-                <button id="add_number" onclick="add_number('number')">Add Number</button>
+                <button id="add_number" class="hover-arrow" onclick="add_number('number')">Add Number <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
             </div>
         </div>
         <div id="popup_notes" class="popup">

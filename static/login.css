@@ -42,17 +42,12 @@
 #submit {
     height: 64px;
     width: 177px;
-    border-radius: 10px;
+    border-radius: 7px;
     background-color: #2B8FD8;
     font: 800 19px Montserrat;
     border: none;
     margin-bottom: 15px;
     transition: 0.5s
-}
-
-#submit:hover {
-    margin: 5px -5px 10px 5px;
-    box-shadow: 5px 5px 10px black
 }
 
 #main_page {display: flex}

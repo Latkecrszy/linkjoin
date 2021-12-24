@@ -8,7 +8,6 @@ window.addEventListener('offline', () => {connected = false; console.log('discon
 window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
 
 function blur(show) {
-    console.log(show)
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
     document.getElementById("blur").style.zIndex = show ? "3" : "-3"
 }
@@ -24,13 +23,11 @@ function getOffset(el) {
 async function db(username, id) {
     const deleted = id === 'deleted-links-body' ? 'true' : 'false'
     let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}}).then(response => response.json()) : global_links || []
-    if (id === 'deleted-links') {console.log(results)}
     if (results['error'] === 'Forbidden') {return location.reload()}
     return results
 }
 
 async function popUp(popup) {
-    console.log(confirmed)
     if (confirmed === 'false') {
         if (popup === 'popup') {
             return await sendNotif(`Before you make your first link, please check your inbox for ${global_username} to confirm your email address.`, '#ba1a1a')
@@ -41,8 +38,7 @@ async function popUp(popup) {
     document.getElementById(popup).style.display = "flex"
     const submit = document.getElementById("submit")
     blur(true)
-    submit.innerHTML = null
-    submit.innerText = "Create"
+    submit.innerHTML = `Create <img src="/static/images/right-angle.svg" alt="right arrow">`
     submit.addEventListener("click", () => register_link("register"))
     document.getElementById("name").value = null
     document.getElementById("link").value = null
@@ -95,7 +91,7 @@ function edit(link) {
     }
     else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
     document.getElementById("minute").value = link['time'].split(":")[1]
-    document.getElementById("submit").innerText = "Update"
+    document.getElementById("submit").innerHTML = `Update <img src="/static/images/right-angle.svg" alt="right arrow">`
     document.getElementById("submit").setAttribute('onClick', `register_link(${link['id']})`)
     document.getElementById("title").innerText = "Edit your meeting";
     ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"].forEach(i => document.getElementById(i).classList.remove("selected"))
