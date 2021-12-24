@@ -256,24 +256,24 @@
             If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
             If you think that there has been a mistake, please send us an email at linkjoin.xyz@gmail.com. If you wish, you may continue without enabling popups, but your links will not open automatically.
             <div>
-            <button class="ok" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups</button>
-            <button class="ok" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups</button></div>
+            <button class="ok hover-arrow" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+            <button class="ok hover-arrow" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button></div>
         </div>
         <div id="tutorial-1" class="popup-warning">
-            Hi there! Welcome to LinkJoin! Let's get you set up and ready to be on time.
-            <button class="ok" onclick="popupWarn(0)" style="margin-right: 20px">I'm ready!</button>
+            Welcome to LinkJoin! Let's get you set up and ready to be on time.
+            <button class="ok hover-arrow" onclick="popupWarn(0)" style="margin-right: 20px">I'm ready! <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
         </div>
         <div id="tutorial0" class="popup-warning">
             <p>You should see an icon on the right side of your search bar indicating that popups are blocked.
                 Click on the icon and select Always allow pop-ups redirects from https://linkjoin.xyz.</p>
-            <button class="ok" onclick="popupWarn(1)">Check my popups</button>
+            <button class="ok hover-arrow" onclick="popupWarn(1)">Check my popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
         </div>
         <div id="tutorial1" class="popup-warning">
             <p>
-                Now that popups are enabled, you can head on over to the tutorial at the bottom of the screen.
+                Now that popups are enabled, you can head over to the tutorial at the bottom of the screen.
                 Enjoy LinkJoin!
             </p>
-            <button class="ok" onclick="skipTutorial()">Thanks!</button>
+            <button class="ok hover-arrow" onclick="skipTutorial()">Thanks! <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
         </div>
         <div id="blur"></div>
         <div id="add_number_div">

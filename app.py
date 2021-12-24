@@ -671,14 +671,12 @@ def confirm_email():
     redirect_link = data.get('redirect') if data.get('redirect') else "/links"
     if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
         return {"error": "invalid_email", "url": redirect_link}
-    if mongo.db.login.find_one({'username': email}) is not None and mongo.db.login.find_one({'username': email}).get('confirmed') != "false":
+    if mongo.db.login.find_one({'username': email}) is not None:
         return {"error": "email_in_use", "url": redirect_link}
     refer_id = gen_id()
     token = gen_otp()
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': token}
-    if mongo.db.login.find_one({'username': email}) is not None:
-        return {"error": "email_in_use", "url": redirect_link}
     mongo.db.login.insert_one(account)
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:

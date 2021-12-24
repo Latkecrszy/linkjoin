@@ -366,6 +366,9 @@ input {color: white; font-family: Montserrat;}
 
 #tutorial0 {height: 300px;}
 
+.ok {
+    width: 200px;
+}
 
 #blur {
     width: 100%;
