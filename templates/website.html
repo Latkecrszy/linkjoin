@@ -13,6 +13,7 @@
 
           gtag('config', 'G-MR5B009GBF');
         </script>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -21,7 +22,6 @@
         <title>LinkJoin</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <!--<script data-ad-client="ca-pub-8945030271612534" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://linkjoin.xyz">
         <meta property="og:title" content="LinkJoin">
@@ -241,6 +241,38 @@
         </footer>
     </body>
     <script>
+        const token = "{{ token }}"
+        const loggedIn = "{{ logged_in }}"
+        window.addEventListener('load', () => {
+            if (loggedIn === 'False') {
+                google.accounts.id.initialize({
+                client_id: "656426026470-8tkb2jklkpvsovbdvmrjpqv4crsilt93.apps.googleusercontent.com",
+                callback: googleLogIn});
+                google.accounts.id.prompt();
+            }
+        })
+
+        async function googleLogIn(r) {
+            let data = await fetch('/login', {
+                headers: {'Content-Type': 'application/json'},
+                method: "POST",
+                body: JSON.stringify({redirect: "/links", keep: true,
+                    jwt: r.credential.toString(), token: token})
+            })
+            data = await data.json()
+            if (data['error'] === '') {
+                location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
+            }
+            else if (data['error'] === 'email_not_found') {
+                location.replace('/signup')
+            }
+            else {
+                console.log(data['error'])
+                //location.replace('/login')
+            }
+        }
+
+
         let FAQHeights = []
         let FAQExpandedHeights = []
         async function setUpFAQ() {

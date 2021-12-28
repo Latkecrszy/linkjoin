@@ -448,6 +448,7 @@ async function register_link(parameter) {
 async function logOut() {
     document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     await fetch(`/logout?email=${global_username}&session_id=${document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''}`);
+    document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     location.replace('/login')
 }
 

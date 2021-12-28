@@ -11,4 +11,12 @@ window.addEventListener('unload', async () => {console.log('unloading'); await f
     }
 )})
 
+function disableButton(e) {
+    e.classList.add('disabled')
+}
+
+function enableButton(id) {
+    document.getElementById(id).classList.remove('disabled')
+}
+
 // for (let document.getElementsByClassName('afterLoad').forEach(i => )

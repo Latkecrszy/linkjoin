@@ -5,17 +5,9 @@ from argon2 import PasswordHasher, exceptions
 from flask_cors import CORS
 from cryptography.fernet import Fernet
 from background import message
-from google.oauth2 import id_token
-from google.auth.transport import requests as reqs
 from mistune import Markdown
-from twilio.rest import Client
 from email.message import EmailMessage
-
-
-
-
-# from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-# from oauthlib.oauth2 import WebApplicationClient
+from google.auth import jwt
 
 ph = PasswordHasher()
 app = Flask(__name__)
@@ -23,13 +15,8 @@ dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
-CLIENT_ID = os.environ.get('CLIENT_ID', None)
-twilio_client = Client(os.environ.get('TWILIO_SID'), os.environ.get('TWILIO_TOKEN'))
 markdown = Markdown()
 pp = pprint.PrettyPrinter(indent=4)
-url = 'https://accounts.google.com/.well-known/openid-configuration'
-# login_manager = LoginManager()
-# login_manager.init_app(app)
 cors = CORS(app, resources={
     r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
     r'/tutorial_complete/*': {
@@ -112,7 +99,10 @@ def thread_start():
 
 @app.route('/', methods=['GET'])
 def main():
-    return render_template('website.html')
+    token = gen_session()
+    mongo.db.anonymous_token.insert_one({'token': token})
+    logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
+    return render_template('website.html', token=token, logged_in=logged_in)
 
 
 @app.route("/location", methods=['GET'])
@@ -130,39 +120,111 @@ def login():
                                token=token)
     else:
         data = request.get_json()
-        email = data.get('email').lower()
-        if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
-            return 'Invalid token', 403
-        mongo.db.anonymous_token.find_one_and_delete({'email': email, 'token': data.get('token')})
-        token = gen_session()
-        mongo.db.tokens.insert_one({'email': email, 'token': token})
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
-        if mongo.db.login.find_one({'username': email}) is None:
-            return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
-        elif mongo.db.login.find_one({'username': email}).get('confirmed') == "false":
-            return {'redirect': data['redirect'], "error": 'not_confirmed', 'token': token}
-        if data.get('password') is not None:
+        token = gen_session()
+        if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
+            return {'error': 'Invalid token', 'code': 403}, 403
+        mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+
+        if data.get('jwt'):
+            try:
+                email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
+                mongo.db.tokens.insert_one({'email': email, 'token': token})
+            except UnicodeDecodeError:
+                mongo.db.anonymous_token.insert_one({'token': token})
+                return {'redirect': data['redirect'], "error": 'google_login_failed', 'token': token}
+        else:
+            email = data.get('email')
+            mongo.db.tokens.insert_one({'email': email, 'token': token})
+            mongo.db.anonymous_token.insert_one({'token': token})
             try:
                 ph.verify(mongo.db.login.find_one({'username': email})['password'], data.get('password'))
             except exceptions.VerifyMismatchError:
                 return {"redirect": data['redirect'], "error": 'incorrect_password', 'token': token}
+            except TypeError:
+                return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
             except KeyError:
                 return {"url": redirect_link, "error": 'no_password', 'email': email, 'keep': data.get('keep'), 'token': token}
-        else:
-            try:
-                id_token.verify_oauth2_token(data.get('g_token'), reqs.Request(), CLIENT_ID)
-            except ValueError:
-                return {'redirect': data['redirect'], "error": 'google_login_failed', 'token': token}
+
+        if mongo.db.login.find_one({'username': email}) is None:
+            return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
+        elif mongo.db.login.find_one({'username': email}).get('confirmed') == "false":
+            return {'redirect': data['redirect'], "error": 'not_confirmed', 'token': token}
+        mongo.db.anonymous_token.find_one_and_delete({'token': token})
         analytics('logins')
         return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
 
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout')
 def logout():
-    if request.method == 'POST':
-        data = request.get_json()
-        mongo.db.sessions.find_one_and_delete({'session_id': data.get('session_id'), 'email': data.get('email')})
-        return {'msg': 'Success'}, 200
+    mongo.db.sessions.find_one_and_delete({'session_id': request.args.get('session_id'), 'email': request.args.get('email')})
+    return {'msg': 'Success'}, 200
+
+
+@app.route('/confirm_email', methods=['POST'])
+def confirm_email():
+    data = request.get_json()
+    redirect_link = data.get('redirect') if data.get('redirect') else "/links"
+    token = gen_session()
+    refer_id = gen_id()
+    account_token = gen_otp()
+    if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
+        return {'error': 'Invalid token', 'code': 403}, 403
+    mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+    """
+    Order of steps:
+    Google 1. Decode JWT and get email
+    
+    Email 1. Check if email is valid
+    Email 2. 
+    
+    """
+    if data.get('jwt'):
+        try:
+            email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
+            mongo.db.tokens.insert_one({'email': email, 'token': token})
+        except UnicodeDecodeError:
+            mongo.db.anonymous_token.insert_one({'token': token})
+            return {'redirect': data['redirect'], "error": 'google_signup_failed', 'token': token}
+    else:
+        email = data.get('email')
+        if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
+            mongo.db.anonymous_token.insert_one({'email': email, 'token': token})
+            return {"error": "invalid_email", "url": redirect_link, 'token': token}
+        mongo.db.tokens.insert_one({'email': email, 'token': token})
+
+    if mongo.db.login.find_one({'username': email}) is not None:
+        mongo.db.tokens.find_one_and_delete({'email': email, 'token': token})
+        mongo.db.anonymous_token.insert_one({'token': token})
+        return {"error": "email_in_use", "url": redirect_link, 'token': token}
+    account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
+               'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token}
+    if data.get("password") or data.get('password') == '':
+        if len(data.get('password')) < 5:
+            return {"error": "password_too_short", "url": redirect_link, 'token': token}
+        account['password'] = hasher.hash(data.get('password'))
+
+    if data.get('number'):
+        number = ''.join([i for i in data.get('number') if i in string.digits])
+        if len(number) < 11:
+            number = data.get('countrycode') + str(number)
+        account['number'] = int(number)
+    mongo.db.login.insert_one(account)
+    content = EmailMessage()
+
+    content.set_content(f'''LinkJoin here!
+To confirm your email, go to https://linkjoin.xyz/signup?tk={account_token}. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in one hour.
+
+Yours truly,
+LinkJoin''')
+    content['Subject'] = 'LinkJoin: Confirm email address'
+    content['From'] = "noreply@linkjoin.xyz"
+    content['To'] = email
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
+        server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
+        server.send_message(content)
+    return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
+
 
 
 @app.route('/signup', methods=['GET'])
@@ -591,7 +653,7 @@ def send_reset_email():
         data = request.get_json()
         email = data.get('email').lower()
         if not mongo.db.tokens.find_one({'email': email, 'token': data.get('token')}) and not mongo.db.anonymous_token.find_one({'token': data.get('token')}) or not mongo.db.login.find_one({'username': email}):
-            return 'Invalid token', 403
+            return {'error': 'Invalid token', 'code': 403}, 403
         mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
         otp = gen_otp()
         mongo.db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
@@ -661,55 +723,6 @@ LinkJoin''')
         return render_template('forgot-password-email.html', token=token)
 
 
-@app.route('/confirm_email', methods=['POST'])
-def confirm_email():
-    data = request.get_json()
-    email = data.get('email').lower()
-    if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
-        return 'Invalid token', 403
-    mongo.db.anonymous_token.find_one_and_delete({'email': email, 'token': data.get('token')})
-    redirect_link = data.get('redirect') if data.get('redirect') else "/links"
-    if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-        return {"error": "invalid_email", "url": redirect_link}
-    if mongo.db.login.find_one({'username': email}) is not None:
-        return {"error": "email_in_use", "url": redirect_link}
-    refer_id = gen_id()
-    token = gen_otp()
-    account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
-               'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': token}
-    mongo.db.login.insert_one(account)
-    if data.get("password") or data.get('password') == '':
-        if len(data.get('password')) < 5:
-            return {"error": "password_too_short", "url": redirect_link}
-        account['password'] = hasher.hash(data.get('password'))
-    elif data.get('password') is None:
-        try:
-            id_token.verify_oauth2_token(data.get('g_token'), reqs.Request(), CLIENT_ID)
-        except ValueError:
-            return {'redirect': data['redirect'], "error": 'google_signup_failed'}
-    if data.get('number'):
-        number = ''.join([i for i in data.get('number') if i in '1234567890'])
-        if len(number) < 11:
-            number = data.get('countrycode') + str(number)
-        account['number'] = int(number)
-    mongo.db.tokens.insert_one({'email': email, 'token': token})
-    content = EmailMessage()
-
-    content.set_content(f'''LinkJoin here!
-To confirm your email, go to https://linkjoin.xyz/signup?tk={token}. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in one hour.
-
-Yours truly,
-LinkJoin''')
-    content['Subject'] = 'LinkJoin: Confirm email address'
-    content['From'] = "noreply@linkjoin.xyz"
-    content['To'] = email
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
-        server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
-        server.send_message(content)
-    return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
-
-
-
 
 @app.route('/reset', methods=['POST', 'GET'])
 def reset_password():
@@ -727,7 +740,7 @@ def reset_password():
             mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
             mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'password': hasher.hash(data.get('password'))}})
             return 'Success', 200
-        return 'Invalid token', 403
+        return {'error': 'Invalid token', 'code': 403}, 403
 
 
 @app.route('/tutorial_changed', methods=['GET'])

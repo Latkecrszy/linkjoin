@@ -215,6 +215,8 @@
 #dismiss_add_number {
     position: absolute;
     z-index: 1;
+    left: 10px;
+    top: 7px;
     cursor: pointer
 }
 

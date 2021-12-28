@@ -33,3 +33,4 @@ google==3.0.0
 argparse~=1.4.0
 mistune~=0.8.4
 twilio~=6.63.2
+pyjwt~=2.3.0
