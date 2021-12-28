@@ -6,6 +6,19 @@ const notesInfo = {}
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
 window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
+document.addEventListener('click', (e) => {
+    if (!e.target.parentElement.classList.contains('demo')) {
+        document.getElementById('tutorial-menu').style.display = 'none'
+    }
+    else if (!e.target.classList.contains('menu_buttons')) {
+        closeTutorial()
+    }
+    if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
+        && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
+        || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
+        closeTutorial()
+    }
+})
 
 function blur(show) {
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
@@ -343,17 +356,6 @@ async function load_links(username, sort, id="insert") {
                     }
 
                 }
-                if (!e.target.parentElement.classList.contains('demo')) {
-                    document.getElementById('tutorial-menu').style.display = 'none'
-                }
-                else if (!e.target.classList.contains('menu_buttons')) {
-                    closeTutorial()
-                }
-                if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
-                    && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
-                    || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
-                    closeTutorial()
-                }
             })
         }
 
@@ -639,6 +641,7 @@ async function tutorialFinished() {
 
 async function sendNotif(text, color) {
     const notif = document.getElementById('notif')
+    if (notif.style.zIndex === "2") {return}
     notif.style.zIndex = "2"
     notif.style.borderLeftColor = color
     notif.innerText = text
