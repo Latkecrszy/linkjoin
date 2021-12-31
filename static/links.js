@@ -52,7 +52,7 @@ async function popUp(popup) {
     const submit = document.getElementById("submit")
     blur(true)
     submit.innerHTML = `Create <img src="/static/images/right-angle.svg" alt="right arrow">`
-    submit.addEventListener("click", () => register_link("register"))
+    submit.addEventListener("click", () => registerLink("register"))
     document.getElementById("name").value = null
     document.getElementById("link").value = null
     document.getElementById("hour").value = 1
@@ -85,7 +85,7 @@ function edit(link) {
         document.getElementById("hour").value = 12;
         document.getElementById("minute").value = "00";
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
-        return document.getElementById("submit").setAttribute('onClick', "register_link('tutorial')")
+        return document.getElementById("submit").setAttribute('onClick', "registerLink('tutorial')")
     }
     document.getElementById("name").value = link["name"]
     document.getElementById("link").value = link["link"]
@@ -105,7 +105,7 @@ function edit(link) {
     else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
     document.getElementById("minute").value = link['time'].split(":")[1]
     document.getElementById("submit").innerHTML = `Update <img src="/static/images/right-angle.svg" alt="right arrow">`
-    document.getElementById("submit").setAttribute('onClick', `register_link(${link['id']})`)
+    document.getElementById("submit").setAttribute('onClick', `registerLink(${link['id']})`)
     document.getElementById("title").innerText = "Edit your meeting";
     ["Sun", "Mon","Tue", "Wed", "Thu", "Fri", "Sat"].forEach(i => document.getElementById(i).classList.remove("selected"))
     link['days'].forEach(day => {if (document.getElementById(day)) {document.getElementById(day).classList.add("selected")}})
@@ -411,7 +411,7 @@ async function sort() {
 }
 
 
-async function register_link(parameter) {
+async function registerLink(parameter) {
     if (created) {return}
     if (parameter === 'tutorial') {location.reload()}
     created = true
@@ -440,6 +440,10 @@ async function register_link(parameter) {
         body: JSON.stringify(args)
     }
     const url = parameter === 'register' ? '/register' : '/update'
+    if (!document.getElementById("name").value || !document.getElementById("link").value || days.length === 0) {
+        created = false
+        enableButton('submit')
+    }
     if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
     if (!document.getElementById("link").value) {return document.getElementById("error").innerText = "Please provide a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please provide days for your meeting."}

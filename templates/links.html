@@ -2,7 +2,6 @@
 <html id="links_html" lang="en">
     <head>
         <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://arc.io/widget.min.js#n1acL2q5"></script>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script type="application/javascript">
           (function(b,o,n,g,s,r,c){if(b[s])return;b[s]={};b[s].scriptToken="XzE3MDA3NTg5Mzg";b[s].callsQueue=[];b[s].api=function(){b[s].callsQueue.push(arguments);};r=o.createElement(n);c=o.getElementsByTagName(n)[0];r.async=1;r.src=g;r.id=s+n;c.parentNode.insertBefore(r,c);})(window,document,"script","https://cdn.oribi.io/XzE3MDA3NTg5Mzg/oribi.js","ORIBI");
@@ -246,7 +245,7 @@
                             <option value="60">60 minutes before</option>
                         </select>
                     </div>
-                    <button type="button" class="hover-arrow" id="submit" onclick="register_link('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+                    <button type="button" class="hover-arrow" id="submit" onclick="disableButton(this); registerLink('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
                 </div>
             </form>
         </div>
@@ -254,7 +253,7 @@
         <div id="popups_not_enabled" class="popup-warning">
             Popups are still not enabled.
             If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
-            If you think that there has been a mistake, please send us an email at linkjoin.xyz@gmail.com. If you wish, you may continue without enabling popups, but your links will not open automatically.
+            If you think that there has been a mistake, please send us an email at seth@linkjoin.xyz. If you wish, you may continue without enabling popups, but your links will not open automatically.
             <div>
             <button class="ok hover-arrow" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
             <button class="ok hover-arrow" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button></div>
