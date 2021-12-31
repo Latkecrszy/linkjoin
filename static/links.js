@@ -78,7 +78,8 @@ function edit(link) {
     element.style.display = "flex"
     blur(true)
     if (link === 'tutorial') {
-        document.getElementById("submit").innerText = "Update"
+        document.getElementById("title").innerText = "Edit your meeting";
+        document.getElementById("submit").innerHTML = `Update <img src="/static/images/right-angle.svg" alt="right arrow">`
         document.getElementById("name").value = 'Tutorial Link'
         document.getElementById("link").value = 'https://linkjoin.xyz';
         document.getElementById("pm").selected = "selected";
@@ -302,7 +303,7 @@ async function load_links(username, sort, id="insert") {
                 <div class="menu" style="height: ${menuHeight}" id="menu${iterator}">
                     <div onclick="edit(${parameterLink})" title="Edit your link settings">Edit</div>
                     <hr class="menu_line"> 
-                    <div onclick="delete_(${parameterLink})" title="Permanently delete your link">Delete</div>
+                    <div onclick="delete_(${parameterLink})" title="Delete your link">Delete</div>
                     <hr class="menu_line">
                     <div onclick="share(${parameterLink})" title="Share your scheduled link with other people">Share</div>
                     <hr class="menu_line">
