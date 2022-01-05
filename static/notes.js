@@ -11,6 +11,20 @@ async function showNotes(changing) {
         await popUp('popup_notes')
         notesInfo['id'] = notesInfo['notes'][parseInt(notesInfo['index'])]['id']
         notesInfo['name'] = notesInfo['notes'][notesInfo['index']]['name']
+        if (notesInfo['index'] === 0) {
+            disableButton(document.getElementsByClassName('notes_button back')[0])
+        }
+        else {
+            enableButton('notes_button back')
+        }
+
+        if (notesInfo['index'] === notesInfo['notes'].length-1) {
+            disableButton(document.getElementsByClassName('notes_button next')[0])
+        }
+        else {
+            enableButton('notes_button next')
+        }
+
         document.getElementById('popup_notes').children[2].innerText = `Meeting notes for ${notesInfo['notes'][notesInfo['index']]['name']}`
         const html = await fetch('/markdown_to_html',
         {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({markdown: notesInfo['notes'][notesInfo['index']]['markdown']})}).then(r => r.text())

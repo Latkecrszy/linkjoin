@@ -565,11 +565,6 @@ def tutorial_complete():
     return 'done', 200
 
 
-@app.route("/arc-sw.js", methods=['GET'])
-def arc():
-    return send_file('arc-sw.js', mimetype='application/javascript', attachment_filename='arc-sw.js')
-
-
 @app.route("/ads.txt", methods=['GET'])
 def ads():
     return send_file('ads.txt', attachment_filename='ads.txt')

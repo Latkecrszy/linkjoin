@@ -205,7 +205,12 @@ async function load_links(username, sort, id="insert") {
     if (sessionIds === null || !sessionIds.includes(cookieSessionId)) {location.replace('/login?error=not_logged_in')}
     global_username = username
     global_sort = sort
-    document.getElementById(id).style.display = 'flex'
+    try {
+        document.getElementById(id).style.display = 'flex'
+    }
+    catch {
+        location.reload()
+    }
     if (id === 'deleted-links') {id = 'deleted-links-body'}
     const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}

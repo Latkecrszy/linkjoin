@@ -16,7 +16,12 @@ function disableButton(e) {
 }
 
 function enableButton(id) {
-    document.getElementById(id).classList.remove('disabled')
+    if (document.getElementById(id)) {
+        document.getElementById(id).classList.remove('disabled')
+    }
+    else {
+        document.getElementsByClassName(id)[0].classList.remove('disabled')
+    }
 }
 
 // for (let document.getElementsByClassName('afterLoad').forEach(i => )
