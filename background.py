@@ -103,14 +103,16 @@ def message():
             else:
                 mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
         for document in anonymous_token:
-            print('Changing tokens')
             if document.get('time'):
                 if document['time'] - 1 == 0:
+                    print('Changing tokens')
                     mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': document['token']})
                 else:
+                    print('Changing tokens')
                     mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
                                                               {'$set': {'time': document['time'] - 1}})
             else:
+                print('Changing tokens')
                 mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
                                                           {'$set': {'time': 59}})
         sent = json.load(open('last-message.json'))
