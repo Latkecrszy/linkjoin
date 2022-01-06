@@ -36,7 +36,9 @@ def get_time(hour: int, minute: int, days: list, before) -> tuple:
 
 
 def message():
+    print('Started')
     while True:
+        print('Running')
         start = time.perf_counter()
         # Define the users db, links db, and current time
         users = mongo.zoom_opener.login
@@ -54,6 +56,7 @@ def message():
             documents = links.find()
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
+        print(anonymous_token)
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
@@ -104,6 +107,7 @@ def message():
             else:
                 mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
         for document in anonymous_token:
+            print('Changing tokens')
             if document.get('time'):
                 if document['time'] - 1 == 0:
                     mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': document['token']})
@@ -121,6 +125,7 @@ def message():
                 sent.pop(id)
         json.dump(sent, open('last-message.json', 'w'), indent=4)
         if os.environ.get('IS_HEROKU') == 'true':
+            print('Checking days')
             analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'analytics'})
             if analytics_data['day'] != int(current_time.strftime('%d')):
                 analytics_data['daily_users'].append([])

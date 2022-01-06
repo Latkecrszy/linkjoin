@@ -17,6 +17,7 @@ VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 markdown = Markdown()
 pp = pprint.PrettyPrinter(indent=4)
+started = False
 cors = CORS(app, resources={
     r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
     r'/tutorial_complete/*': {
@@ -93,8 +94,11 @@ def authenticated(cookies, email):
 
 @app.before_first_request
 def thread_start():
-    message_thread = threading.Thread(target=message, daemon=True)
-    message_thread.start()
+    global started
+    if not started:
+        message_thread = threading.Thread(target=message, daemon=True)
+        message_thread.start()
+        started = True
 
 
 @app.route('/', methods=['GET'])
