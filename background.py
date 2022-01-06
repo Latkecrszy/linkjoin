@@ -24,7 +24,7 @@ def get_time(hour: int, minute: int, days: list, before) -> tuple:
                 if day < 0:
                     day = 6
                 days[index] = day
-    if hour >= 24:
+    elif hour >= 24:
         hour -= 24
         for index, day in enumerate(days):
             day = days_dict[day]
@@ -47,7 +47,7 @@ def message():
         # Create a dictionary with all the needed info about the time
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
-        if os.environ.get('IS_HEROKU') == 'false':
+        if os.environ.get('IS_HEROKU') == 'true':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
             anonymous_token = []
@@ -56,7 +56,6 @@ def message():
             documents = links.find()
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
-        print(anonymous_token)
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
@@ -70,9 +69,6 @@ def message():
                 user_info['days'] = new_time[2]
                 # Check to see if the day, hour, and minute match up (meaning it's time to open the link)
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
-                    # print(info['hour'], info['minute'])
-                    # print(user_info['hour'], user_info['minute'])
-                    # print(document['time'])
                     continue
                 # Check if the link is active or if it has yet to start
                 if document['active'] != "false":
@@ -124,7 +120,7 @@ def message():
             else:
                 sent.pop(id)
         json.dump(sent, open('last-message.json', 'w'), indent=4)
-        if os.environ.get('IS_HEROKU') == 'true':
+        if os.environ.get('IS_HEROKU') == 'false':
             print('Checking days')
             analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'analytics'})
             if analytics_data['day'] != int(current_time.strftime('%d')):
@@ -138,4 +134,5 @@ def message():
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         # Wait 60 seconds
+        print(abs(60-(time.perf_counter()-start)))
         time.sleep(abs(60-(time.perf_counter()-start)))
