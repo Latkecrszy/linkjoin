@@ -830,4 +830,5 @@ def invalidate_token():
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
+    print('Starting from app.py')
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)

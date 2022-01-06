@@ -47,7 +47,7 @@ def message():
         # Create a dictionary with all the needed info about the time
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
-        if os.environ.get('IS_HEROKU') == 'true':
+        if os.environ.get('IS_HEROKU') == 'false':
             documents = links.find({'username': 'setharaphael7@gmail.com'})
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
             anonymous_token = []
@@ -120,7 +120,7 @@ def message():
             else:
                 sent.pop(id)
         json.dump(sent, open('last-message.json', 'w'), indent=4)
-        if os.environ.get('IS_HEROKU') == 'false':
+        if os.environ.get('IS_HEROKU') == 'true':
             print('Checking days')
             analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'analytics'})
             if analytics_data['day'] != int(current_time.strftime('%d')):
