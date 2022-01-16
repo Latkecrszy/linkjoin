@@ -209,6 +209,9 @@ async function load_links(username, sort, id="insert") {
         document.getElementById(id).style.display = 'flex'
     }
     catch {
+        while (!connected) {
+            await sleep(5000)
+        }
         location.reload()
     }
     if (id === 'deleted-links') {id = 'deleted-links-body'}

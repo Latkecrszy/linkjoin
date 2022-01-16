@@ -4,7 +4,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-window.addEventListener('unload', async () => {console.log('unloading'); await fetch('/invalidate-token', {
+window.addEventListener('beforeunload', async () => {console.log('unloading'); await fetch('/invalidate-token', {
     method: 'POST',
     headers:  {'Content-Type': 'application/json'},
     body: JSON.stringify({'token': token})

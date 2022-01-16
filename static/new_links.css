@@ -27,7 +27,8 @@
 
 .link_event.disabled {
     opacity: 0.7;
-    z-index: 1;
+    pointer-events: auto;
+    cursor: default;
 }
 
 .days {
