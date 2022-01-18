@@ -409,6 +409,7 @@ def update():
 @app.route("/disable", methods=['POST'])
 def disable():
     data = request.get_json()
+    print(data)
     if not authenticated(request.cookies, data.get('email')):
         return {'error': 'Forbidden'}, 403
     email = request.cookies.get('email')

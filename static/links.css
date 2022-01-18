@@ -223,7 +223,7 @@ input {color: white; font-family: Montserrat;}
     flex-direction: column;
     align-items: center;
     margin: 0;
-    width: 100%;
+    width: 100vw;
 }
 
 #deleted-links {

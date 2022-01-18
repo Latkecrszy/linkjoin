@@ -1,0 +1,170 @@
+.link {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    width: 75%;
+    height: 100px;
+    box-sizing: border-box;
+    padding: 0 50px;
+    background: #142539;
+    border-radius: 3px;
+    color: white;
+    font-family: Montserrat, serif;
+    margin-bottom: 20px;
+    transition: 0.5s
+}
+
+.link.link-disabled {
+    opacity: 0.7;
+}
+
+.link.link-disabled .join-meeting .name {
+    color: #B7C0C7;
+    opacity: 0.8
+}
+
+.time {
+    font-size: 28px;
+}
+
+.link-expand {
+    display: none;
+    width: 35px;
+    margin-right: -30px;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.join-meeting {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    cursor: pointer;
+}
+
+.name {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #2B8FD8;
+    font-weight: bold;
+    text-align: center;
+}
+
+.description {
+    text-align: center;
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.2;
+}
+
+.days {
+  text-align: center;
+}
+
+.switch {
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    min-width: 30px;
+    height: 13px;
+    background: #6E767C;
+    border-radius: 18px;
+    margin: 0 10px;
+}
+
+.switch::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 100px;
+    background: #B7C0C7;
+    top: -3px;
+    left: 0;
+    transition: all 0.3s;
+    pointer-events: all;
+}
+
+.switch-checkbox:checked + .switch::after {
+    left: 10px
+}
+
+.switch-checkbox:checked + .switch {
+    background: #1A5E8F
+}
+
+.switch-checkbox:checked + .switch::after {
+    background: #2B8FD8
+}
+
+.switch-checkbox {
+    display: none
+}
+
+.dot-menu {
+  cursor: pointer;
+  height: 20px;
+  width: 8px;
+}
+
+.menu {
+    z-index: 2;
+    padding: 16px 20px;
+    font: 400 18px Montserrat;
+    display: none;
+    flex-direction: column;
+    background: #142539;
+    border-radius: 4px;
+    height: 190px;
+    width: 100px;
+    right: 8vw;
+    position: absolute;
+    box-shadow: -3px 3px 12px rgb(0 0 0 / 25%);
+}
+
+.menu div {
+    cursor: pointer;
+}
+
+.menu_line {
+    width: 90%;
+    opacity: 0.1;
+    border-radius: 10px;
+}
+
+
+@media (max-width: 730px) {
+    .link .switch, .link .switch-checkbox, .link .dot-menu, .link .days {
+        opacity: 0;
+        transition: 0.5s;
+        display: none;
+    }
+
+    .link {
+        height: 150px;
+        width: 100%;
+    }
+
+    .link-expand {
+        display: inline;
+    }
+
+    .link.expanded {
+        height: 300px;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+    }
+
+    .link.expanded .switch, .link.expanded .dot-menu, .link.expanded .days {
+        display: inline;
+        opacity: 1;
+    }
+
+    .link.expanded .link-expand {
+        transform: rotate(180deg)
+    }
+}

@@ -32,10 +32,9 @@
             load_links('{{ username }}', '{{ sort }}')
         </script>
         <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
-        {% if style == "old" %}
-            <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
-        {% endif %}
+        <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
         <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
+        <link href="{{ url_for('static', filename='link.css') }}" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
@@ -361,7 +360,7 @@
                 </p>
                 <div class="demo">
                     <div>
-                        <input class="checkbox" id="switch-demo" type="checkbox">
+                        <input class="switch-checkbox" id="switch-demo" type="checkbox">
                         <label class="switch" for="switch-demo"></label>
                     </div>
                 </div>
@@ -523,7 +522,7 @@
                     <h3>Show tutorial</h3>
                     <p>Show or hide the tutorial.</p>
                 </div>
-                <input onclick="showTutorial(this.checked)" class="checkbox" type="checkbox" id="settings-show-tutorial" {% if tutorial != 'complete' %} checked="checked" {% endif %}>
+                <input onclick="showTutorial(this.checked)" class="switch-checkbox" type="checkbox" id="settings-show-tutorial" {% if tutorial != 'complete' %} checked="checked" {% endif %}>
                 <label class="switch" for="settings-show-tutorial"></label>
             </div>
             <div class="settings-row">

@@ -20,6 +20,42 @@ document.addEventListener('click', (e) => {
     }
 })
 
+
+function createElement(tag, classList=[], id='', text='', other={}) {
+    const el = document.createElement(tag)
+    classList.forEach((i) => el.classList.add(i))
+    el.innerText = text
+    if (id !== '') {
+        el.id = id
+    }
+
+    for (const [key, value={}] of Object.entries(other)) {
+        if (key === 'events') {
+            for (const [name, event] of Object.entries(value)) {
+                el[name] = event
+            }
+        } else if (key === 'style') {
+            for (const [name, style] of Object.entries(value)) {
+                el.style[name] = style
+            }
+        } else if (key === 'attrs') {
+            for (const [name, attr] of Object.entries(value)) {
+                el.setAttribute(name, attr)
+            }
+        }
+    }
+
+    return el
+}
+
+function openMenu(el) {
+    console.log(el)
+    console.log(el.parentElement)
+    console.log(el.parentElement.children)
+    console.log(el.children[el.children.length-1])
+    el.children[el.children.length-1].style.display = 'flex';
+}
+
 function blur(show) {
     document.getElementById("blur").style.opacity = show ? "0.4" : "0"
     document.getElementById("blur").style.zIndex = show ? "3" : "-3"
@@ -146,6 +182,7 @@ function share(link) {
 }
 
 async function disable(link, username) {
+    console.log(link)
     await fetch('/disable', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -275,101 +312,70 @@ async function load_links(username, sort, id="insert") {
         const checked = []
         await refresh(id)
         for (const link of final) {
-            const time = link["time"]
-            const time_list = time.split(":")
-            let pm = "am"
-            if (parseInt(time_list[0]) === 12) {pm = "pm"}
-            else if (parseInt(time_list[0]) === 24) {time_list[0] = 12}
-            else if (parseInt(time_list[0]) > 12) {time_list[0] = parseInt(time_list[0]) - 12; pm = "pm"}
-            const linkTime = time_list.join(":") + " " + pm
-            let password = '';
-            let menuHeight = id === 'insert' ? '190px' : '145px'
-            if ("password" in link) {
-                password = `<hr class="menu_line"><div id="${link['id'].toString()}" onclick="copyPassword('${link['id']}', '${link['password']}')">Password</div>`
-                menuHeight = id === 'insert' ? "235px" : "190px"
-            }
-            let nameContainerOpacity = 1
-            let checkboxChecked = true
-            let switchHoverText = 'Disable automatic meeting opening'
-            if (link['active'] === "false") {
-                nameContainerOpacity = 0.7
-                checkboxChecked = false
-                switchHoverText = 'Enable automatic meeting opening'
-            }
-            let highlightDiv = highlight === link['id'].toString() ? '<div class="highlight"></div>' : ''
-            const parameterLink = JSON.stringify(link).replaceAll('"', "'")
+            let hour = link["time"].split(":")[0]
+            let meridian = "am"
+            if (parseInt(hour) === 12) {meridian = "pm"}
+            else if (parseInt(hour) === 24) {hour = 12}
+            else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
+            const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
             let link_event;
+
+            link_event = createElement('div', ['link'])
+            if (link['active'] === 'false') {
+                link_event.classList.add('link-disabled')
+            }
+            link_event.appendChild(createElement('p', ['time'], '', time))
+            const joinMeeting = createElement('div', ['join-meeting'], '', '',
+                {'events': {'onclick': () => {window.open(link['link'])}}})
+            joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
+            joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
+            link_event.appendChild(joinMeeting)
+            link_event.appendChild(createElement('p', ['days'], '', link['days'].join(", ")))
             if (id === "insert") {
-                link_event = `<div class="link_event ${link['active'] === 'false' ? 'disabled' : 'enabled'}" id="${iterator}">
-                ${highlightDiv}
-                <div class="time">${linkTime}</div>
-                <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
-                    <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
-                    <div class="join_now">Click to join the room now</div>
-                </div>
-                <div class="days">${link['days'].join(", ")}</div>
-                <div class="menu" style="height: ${menuHeight}" id="menu${iterator}">
-                    <div onclick="edit(${parameterLink})" title="Edit your link settings">Edit</div>
-                    <hr class="menu_line"> 
-                    <div onclick="delete_(${parameterLink})" title="Delete your link">Delete</div>
-                    <hr class="menu_line">
-                    <div onclick="share(${parameterLink})" title="Share your scheduled link with other people">Share</div>
-                    <hr class="menu_line">
-                    <div onclick="createNote('${link['name']}', '${link['id']}')" title="Take notes on your meeting">Notes</div>
-                    <hr class="menu_line">
-                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')" title="Copy your meeting link">Copy link</div>
-                    ${password}
-                </div>
-                <input class="checkbox" id="toggle${iterator}" type="checkbox">
-                <label class="switch" id="for${iterator}" for="toggle${iterator}" onclick="disable(${parameterLink}, '${username}')" title="${switchHoverText}"></label>
-                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('menu${iterator}').style.display = 'flex'" alt="Three dots">
-            </div>`
+                link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
+                    '', {'attrs': {'type': 'checkbox'}}))
+                link_event.appendChild(createElement('label', ['switch'], '', '',
+                    {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link, username)}}}))
             }
-            else {
-                link_event = `<div class="link_event" id="${iterator}">
-                <div class="time">${linkTime}</div>
-                <div style="cursor: pointer; opacity: ${nameContainerOpacity}" onclick="window.open('${link['link']}')">
-                    <div class="link_event_title" style="color: ${link['active'] === 'true' ? '#2B8FD8' : '#B7C0C7'}">${link['name']}</div>
-                    <div class="join_now">Click to join the room now</div>
-                </div>
-                <div class="days">${link['days'].join(", ")}</div>
-                <div class="menu deleted" id="deletedMenu${iterator}" style="height: ${menuHeight}">
-                    <div onclick="permDelete(${parameterLink})" title="Permanently delete your link">Delete</div>
-                    <hr class="menu_line">
-                    <div onclick="createNote('${link['name']}', '${link['id']}'); hide('deleted-links')" title="View your meeting notes">Notes</div>
-                    <hr class="menu_line">
-                    <div id="copylink${link['id']}" onclick="copyLink('${link['link']}', 'copylink${link['id']}')" title="Copy your meeting link">Copy link</div>
-                    <hr class="menu_line">
-                    <div onclick="restore('${link['id']}', '${link['username']}')" title="Restore your deleted link">Restore</div>
-                    ${password}
-                </div>
-                <img class="menu_buttons" src="static/images/ellipsis.svg" height="20" width="8" onclick="document.getElementById('deletedMenu${iterator}').style.display = 'flex'" alt="Three dots">
-            </div>`
+            link_event.appendChild(createElement('img', ['dot-menu'], '', '',
+                {'attrs': {'src': 'static/images/ellipsis.svg'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
+            link_event.appendChild(createElement('img', ['link-expand'], '', '', {'events':
+                    {'onclick': () => link_event.classList.toggle('expanded')}, 'attrs': {'src': 'static/images/angle-down.svg'}}))
+            const menu = createElement('div', ['menu'])
+            let buttons;
+            if (id === "insert") {
+                buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link),
+            'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
+            'Password': () => copyPassword(link['id'], link['password'])}
+            } else {
+                buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
+                    'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
+                    'Password': () => copyPassword(link['id'], link['password'])}
             }
-            checked.push(checkboxChecked)
-            insert.innerHTML += link_event
+            for (const [key, value] of Object.entries(buttons)) {
+                if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
+                else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
+                else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
+                menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+                key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
+            }
+            link_event.appendChild(menu)
+            checked.push(link['active'] === 'true')
+            insert.appendChild(link_event)
             iterator += 1
         }
         if (id === 'insert') {
-            document.addEventListener("click", (e) => {
-                for (let i = 0; i < iterator; i++) {
-                    let elementId;
-                    if (e.target.parentElement.id !== i.toString() && e.target.parentElement.parentElement.id !== 'deleted-links') {
-                        elementId = `menu${i}`
+            document.addEventListener('click', e => {
+                Array.from(document.getElementsByClassName('menu')).forEach(i => {
+                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) && !e.target.classList.contains('dot-menu')) {
+                        i.style.display = 'none'
                     }
-                    if (e.target.parentElement.id !== i.toString()  && document.getElementById('deleted-links').contains(e.target)) {
-                        elementId = `deletedMenu${i}`
-                    }
-                    if (document.getElementById(elementId)) {
-                        document.getElementById(elementId).style.display = "none"
-                    }
-
-                }
+                })
             })
         }
 
         try {
-            checked.forEach((Checked, index) => {if (Checked) {document.getElementById('toggle'+index).checked = 'checked'}})
+            checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
         }
         catch {}
     }
