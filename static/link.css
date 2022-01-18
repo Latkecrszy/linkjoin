@@ -31,7 +31,6 @@
 .link-expand {
     display: none;
     width: 35px;
-    margin-right: -30px;
     transition: 0.5s;
     cursor: pointer;
 }
