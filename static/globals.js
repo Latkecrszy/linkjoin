@@ -4,12 +4,12 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-window.addEventListener('beforeunload', async () => {console.log('unloading'); await fetch('/invalidate-token', {
-    method: 'POST',
-    headers:  {'Content-Type': 'application/json'},
-    body: JSON.stringify({'token': token})
-    }
-)})
+window.addEventListener('beforeunload', async () => {
+    if (!['login', 'signup'].includes(location.href.split('/')[location.href.split('/').length-1])) {
+        console.log('unloading');
+        await fetch('/invalidate-token', {method: 'POST', headers:  {'Content-Type': 'application/json'},
+        body: JSON.stringify({'token': token})})
+    }})
 
 function disableButton(e) {
     e.classList.add('disabled')

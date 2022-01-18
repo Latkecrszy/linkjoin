@@ -48,18 +48,18 @@ def message():
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
         if os.environ.get('IS_HEROKU') == 'false':
-            documents = links.find({'username': 'setharaphael7@gmail.com'})
+            documents = list(links.find({'username': 'setharaphael7@gmail.com'}))
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
             anonymous_token = []
-            # anonymous_token = mongo.zoom_opener.anonymous_token.find()
         else:
-            documents = links.find()
+            documents = list(links.find())
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
         for document in documents:
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
+                # fix day and time converting to UTC
                 user_info = {"days": document['days'],
                             "hour": int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
                              "minute": int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1])}
@@ -68,11 +68,18 @@ def message():
                 user_info['minute'] = new_time[1]
                 user_info['days'] = new_time[2]
                 # Check to see if the day, hour, and minute match up (meaning it's time to open the link)
+                # print(document['name'])
+                if document['name'] == 'heghwr':
+                    print(user_info['days'])
+                    print(info['day'])
+                    print((info['hour'], info['minute']))
+                    print((user_info['hour'], user_info['minute']))
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
                     continue
                 # Check if the link is active or if it has yet to start
                 if document['active'] != "false":
                     try:
+                        print(document['starts'])
                         if int(document['starts']) > 0:
                             links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
                             continue

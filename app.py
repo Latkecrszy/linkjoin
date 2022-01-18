@@ -99,6 +99,7 @@ def thread_start():
         message_thread = threading.Thread(target=message, daemon=True)
         message_thread.start()
         started = True
+        print('starting')
 
 
 @app.route('/', methods=['GET'])
@@ -260,6 +261,7 @@ def signup():
 def set_cookie():
     email = request.args.get('email').lower()
     if not mongo.db.tokens.find_one({'email': email, 'token': request.args.get('token')}):
+        print('redirecting')
         return redirect('/login')
     mongo.db.tokens.find_one_and_delete({'email': email, 'token': request.args.get('token')})
     response = make_response(redirect(request.args.get('url')))
@@ -829,7 +831,15 @@ def invalidate_token():
     return 'Success', 200
 
 
+def test():
+    for link in mongo.db.links.find():
+        print(encoder.decrypt(link['link']).decode())
+        if encoder.decrypt(link['link']).decode() == 'https://us06web.zoom.us/j/82430940226?pwd=bFQ5aUpEVjhrdis2VGM1c2k1eThqUT09':
+            print(link)
+
+
 app.register_error_handler(404, lambda e: render_template('404.html'))
 if __name__ == '__main__':
+    # test()
     print('Starting from app.py')
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
