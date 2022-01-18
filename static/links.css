@@ -330,6 +330,7 @@ input {color: white; font-family: Montserrat;}
 #page {
     display: flex;
     flex-direction: column;
+    margin-left: 15px;
 }
 
 #error {
