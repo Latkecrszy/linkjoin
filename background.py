@@ -59,17 +59,12 @@ def message():
             user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
-                # fix day and time converting to UTC
-                user_info = {"days": document['days'],
-                            "hour": int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
-                             "minute": int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1])}
-                new_time = get_time(user_info['hour'], user_info['minute'], document['days'], dict(document).get('text'))
-                user_info['hour'] = new_time[0]
-                user_info['minute'] = new_time[1]
-                user_info['days'] = new_time[2]
-                # Check to see if the day, hour, and minute match up (meaning it's time to open the link)
-                # print(document['name'])
-                if document['name'] == 'heghwr':
+                user_info = {}
+                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
+                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
+                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
+                    -1)
+                if document['name'] == 'test meeting':
                     print(user_info['days'])
                     print(info['day'])
                     print((info['hour'], info['minute']))
@@ -81,7 +76,9 @@ def message():
                     try:
                         print(document['starts'])
                         if int(document['starts']) > 0:
-                            links.find_one_and_update(dict(document), {"$set": {"starts": int(document['starts']) - 1}})
+                            for i in range(5):
+                                print('CHANGING')
+                            print(mongo.zoom_opener.links.find_one_and_update({'username': document['username'], 'name': document['name']}, {"$set": {"starts": int(document['starts']) - 1}}))
                             continue
                     except KeyError:
                         links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
@@ -95,7 +92,13 @@ def message():
                                                       {"$set": {"occurrences": int(document['occurrences']) + 1}})
                             continue
 
-                # Get the user's phone number
+                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
+                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
+                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
+                    dict(document).get('text'))
+                if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
+                    continue
+                print(user_info)
                 if dict(user).get('number') and document['text'] != "false":
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}

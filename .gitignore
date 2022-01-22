@@ -1,10 +1,8 @@
 .env
 .idea
-templates/redirect.html
 .DS_Store
 .vscode
 env
 encrypt.key
-background.js
 manifest.json
 __pycache__
