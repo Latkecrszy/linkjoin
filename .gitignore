@@ -4,5 +4,4 @@
 .vscode
 env
 encrypt.key
-manifest.json
 __pycache__

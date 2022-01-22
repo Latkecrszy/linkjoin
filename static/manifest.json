@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "name": "LinkJoin",
+  "short_name": "LinkJoin",
+  "start_url": "/links",
+  "display": "standalone",
+  "description": "An app for LinkJoin.",
+  "icons": [{
+    "src": "images/logo-rounded.png",
+    "sizes": "771x771",
+    "type": "image/png"
+  }],
+  "related_applications": []
+}
