@@ -25,7 +25,7 @@
 
 .sort {
     border-radius: 3px;
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     color: white;
     border: none;
     width: 85px;
@@ -37,7 +37,7 @@
     width: unset;
 }
 
-#links_html {background-color: #091B30; overflow-y: visible; overflow-x: hidden; margin-bottom: 30px; }
+#links_html {background-color: var(--darkblue); overflow-y: visible; overflow-x: hidden; margin-bottom: 30px; }
 
 #home {margin: 22px min(140px, 5vw) 0 0;}
 
@@ -45,7 +45,7 @@
 
 #popup, #popup_notes, .popup {
     display: none;
-    background-color: #091B30;
+    background-color: var(--darkblue);
     flex-direction: column;
     justify-content: flex-start;
     width: 33vw;
@@ -62,7 +62,7 @@
 }
 
 #name, #link, #password, #number, .number {
-    background-color: #091B30;
+    background-color: var(--darkblue);
     border: none;
     border-bottom: 2px solid white;
     margin: 5% 0 0 10px;
@@ -129,7 +129,7 @@ input {color: white; font-family: Montserrat;}
 #days button {
     border-radius: 100px;
     text-align: center;
-    background: #142539;
+    background: var(--blue);
     height: max(3vw, 50px);
     width: max(3vw, 50px);
     border: none;
@@ -137,7 +137,7 @@ input {color: white; font-family: Montserrat;}
 
 }
 
-#days button.selected {background: #2B8FD8;}
+#days button.selected {background: var(--lightblue);}
 
 #starts_container {margin: 20px 25px 0 50px; display: flex; justify-content: space-between}
 
@@ -188,7 +188,7 @@ input {color: white; font-family: Montserrat;}
     top: 35%;
     transform: translate(-50%, -50%);
     box-shadow: 4px 8px 18px black;
-    background: #091B30;
+    background: var(--darkblue);
     display: none;
     padding: 10px 15px;
     flex-direction: column;
@@ -213,7 +213,7 @@ input {color: white; font-family: Montserrat;}
      width: 50px;
      border: none;
      border-radius: 3px;
-     background-color: #2B8FD8;
+     background-color: var(--lightblue);
 }
 
 #button_yes {background-color: #A40606 !important;}
@@ -229,7 +229,7 @@ input {color: white; font-family: Montserrat;}
 #deleted-links {
     width: 80vw;
     height: calc(100vh - 150px);
-    background: #091B30;
+    background: var(--darkblue);
     box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5), -3px -3px 8px rgba(0, 0, 0, 0.3);
     display: none;
     position: fixed;
@@ -248,7 +248,7 @@ input {color: white; font-family: Montserrat;}
 }
 
 #deleted-links-header {
-    background: #142539;
+    background: var(--blue);
     height: 15%;
     width: 100%;
     box-sizing: border-box;
@@ -289,7 +289,7 @@ input {color: white; font-family: Montserrat;}
 #popup_share {
     width: 600px;
     height: 250px;
-    background-color: #091B30;
+    background-color: var(--darkblue);
     padding-top: 30px;
     position: absolute;
     top: 150px;
@@ -309,7 +309,7 @@ input {color: white; font-family: Montserrat;}
     overflow: visible;
     width: 350px;
     font: 500 18px Roboto;
-    background-color: #142539;
+    background-color: var(--blue);
     height: 50px;
     display: inline;
     padding-left: 5px;
@@ -317,7 +317,7 @@ input {color: white; font-family: Montserrat;}
 }
 
 #click_to_copy {
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     font: 500 14px Montserrat;
     width: 120px;
     height: 50px;
@@ -345,7 +345,7 @@ input {color: white; font-family: Montserrat;}
     display: none;
     height: 200px;
     border-radius: 10px;
-    background: #091B30;
+    background: var(--darkblue);
     position: absolute;
     color: white;
     font: 500 18px Montserrat;

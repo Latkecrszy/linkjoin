@@ -64,7 +64,7 @@ header img {margin: 0 auto 0 20px}
     border-radius: 84px;
     font: 600 20px Montserrat;
     height: 60px;
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     border: none;
     margin-top: 35px;
     width: 150px
@@ -82,7 +82,7 @@ header img {margin: 0 auto 0 20px}
     overflow: visible;
     width: 300px;
     font: 500 18px Roboto;
-    background-color: #142539;
+    background-color: var(--blue);
     height: 50px;
     padding-left: 5px;
     border: none;
@@ -90,7 +90,7 @@ header img {margin: 0 auto 0 20px}
 }
 
 #click_to_copy {
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     font: 500 14px Montserrat;
     width: 120px;
     height: 50px;
@@ -132,7 +132,7 @@ hr {
 #main_html {
     overflow-x: hidden;
     scroll-behavior: smooth;
-    background-color: #091B30;
+    background-color: var(--darkblue);
 }
 
 #main_body {

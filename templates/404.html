@@ -1,5 +1,7 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script>
@@ -20,7 +22,7 @@
         <meta name=”robots” content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
     </head>
-    <body style="background-color: #091B30; margin: 0; padding-right: 15px; overflow: hidden;">
+    <body style="background-color: var(--darkblue); margin: 0; padding-right: 15px; overflow: hidden;">
         <header>
             <img id="logo" src="{{ url_for('static', filename='images/logo-text.svg') }}" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
             <a href="/links" class="underline">Links</a>

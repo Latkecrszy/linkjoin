@@ -7,7 +7,7 @@
     height: 100px;
     box-sizing: border-box;
     padding: 0 50px;
-    background: #142539;
+    background: var(--blue);
     border-radius: 3px;
     color: white;
     font-family: Montserrat, serif;
@@ -47,7 +47,7 @@
 .name {
     margin: 5px 0;
     font-size: 16px;
-    color: #2B8FD8;
+    color: var(--lightblue);
     font-weight: bold;
     text-align: center;
 }
@@ -97,7 +97,7 @@
 }
 
 .switch-checkbox:checked + .switch::after {
-    background: #2B8FD8
+    background: var(--lightblue)
 }
 
 .switch-checkbox {
@@ -116,7 +116,7 @@
     font: 400 18px Montserrat;
     display: none;
     flex-direction: column;
-    background: #142539;
+    background: var(--blue);
     border-radius: 4px;
     height: 190px;
     width: 100px;

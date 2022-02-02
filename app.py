@@ -669,7 +669,7 @@ def send_reset_email():
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
     
-    <body style="background: #091B30; color: white; text-decoration: none;">
+    <body style="background: var(--darkblue); color: white; text-decoration: none;">
         <svg width="153" height="36" viewBox="0 0 153 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0)">
         <path d="M23.8331 2.97767C23.7975 2.97767 23.762 2.96904 23.7354 2.95178L23.8331 2.97767Z" fill="white"/>
@@ -706,7 +706,7 @@ def send_reset_email():
         Happy passwording,
         LinkJoin</p>
     </body>
-</html>'''.format(otp=otp, background='background: #091B30;'), subtype='html')"""
+</html>'''.format(otp=otp, background='background: var(--darkblue);'), subtype='html')"""
         content.set_content(f'''Hey there, LinkJoin knocking!
 To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in 15 minutes.
 

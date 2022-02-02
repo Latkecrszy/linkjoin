@@ -1,5 +1,5 @@
 :root {
-    --scrollbar: #091B30;
+    --scrollbar: var(--darkblue);
 }
 
 
@@ -25,7 +25,7 @@
     display: none;
     flex-direction: column;
     margin-left: auto;
-    background: #142539;
+    background: var(--blue);
     border-radius: 3px;
     padding: 5px;
     text-align: center;
@@ -58,7 +58,7 @@
 #add_number_div {
     width: min(500px, calc(100vw - 30px));
     padding: 10px 10px;
-    background: #091B30;
+    background: var(--darkblue);
     position: absolute;
     border: 5px solid white;
     border-radius: 10px;
@@ -108,7 +108,7 @@
     justify-content: center;
     border-radius: 3px;
     border: none;
-    background: #2B8FD8;
+    background: var(--lightblue);
     color: white;
     position: absolute;
     margin: 125px 0 0 30px;
@@ -126,7 +126,7 @@
     border-radius: 4px;
     height: 65%;
     width: 80%;
-    background: #142539;
+    background: var(--blue);
     margin-left: 10%;
     color: white;
     box-sizing: border-box;
@@ -163,7 +163,7 @@
 #notif {
     width: 350px;
     height: 100px;
-    background: #142539;
+    background: var(--blue);
     border-left: 3px solid #14db38;
     border-radius: 3px;
     position: absolute;
@@ -187,7 +187,7 @@
 .notes_button {
     height: 50px;
     width: 100px;
-    background: #2B8FD8;
+    background: var(--lightblue);
     border: none;
     font: 400 18px Roboto;
     transition: 0.5s;
@@ -204,14 +204,14 @@
 }
 
 .notes_button.back:hover {
-    background: #2B8FD8;
+    background: var(--lightblue);
 }
 
 #notes_search {
     position: absolute;
     top: 10px;
     right: 10px;
-    background: #142539;
+    background: var(--blue);
     color: white;
     border: none;
     border-radius: 3px;
@@ -243,7 +243,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     position: fixed;
     bottom: 20px;
     right: 10px;
-    background: #2B8FD8;
+    background: var(--lightblue);
     width: 60px;
     height: 60px;
     border-radius: 200px;
@@ -278,7 +278,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     bottom: 90px;
     right: 15px;
     width: min(350px, calc(100vw - 15px));
-    background: #142539;
+    background: var(--blue);
     box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5), -3px -3px 8px rgba(0, 0, 0, 0.3);
     border-radius: 5px;
     box-sizing: border-box;
@@ -319,7 +319,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     width: 50%;
     margin: 20px 0 20px 25%;
     border: none;
-    background: #2B8FD8;
+    background: var(--lightblue);
     border-radius: 3px;
     height: 40px;
     font-size: 16px;
@@ -367,7 +367,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 .reset-password {
     border: none;
-    background: #2B8FD8;
+    background: var(--lightblue);
     width: 50px;
     height: 25px;
     border-radius: 3px;
@@ -375,6 +375,38 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 #open-deleted-links {
     width: 80px;
+}
+
+.popup-time {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-bottom: 2px solid white;
+    font-family: Roboto, sans-serif;
+    background: none;
+    margin: 25px 0 0 5px;
+    font-size: 16px;
+    color: white;
+}
+
+.popup-time::placeholder {
+    font-size: 16px !important;
+    color: white !important;
+    opacity: 1 !important;
+}
+
+.popup-time:focus::placeholder {
+    opacity: 0 !important;
+}
+
+.popup-time.meridian {
+    width: 25px;
+    height: 24px;
+}
+
+.popup-time.colon {
+    margin: 27px -5px 0 0;
+    width: 5px;
 }
 
 

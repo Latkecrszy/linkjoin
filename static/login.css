@@ -43,7 +43,7 @@
     height: 64px;
     width: 177px;
     border-radius: 7px;
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     font: 800 19px Montserrat;
     border: none;
     margin-bottom: 15px;
@@ -126,7 +126,7 @@
 
 @media (max-width: 730px) {
     svg {display: none}
-    #login_html, #login_body {background: #091B30}
+    #login_html, #login_body {background: var(--darkblue)}
 }
 
 @media (max-width: 500px) {

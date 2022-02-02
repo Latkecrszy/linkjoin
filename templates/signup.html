@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html id="login_html" lang="en" class="nobar">
     <head>
+        <link rel="canonical">
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
         <script src="{{ url_for('static', filename='globals.js') }}"></script>
         <script type="application/javascript">
           (function(b,o,n,g,s,r,c){if(b[s])return;b[s]={};b[s].scriptToken="XzE3MDA3NTg5Mzg";b[s].callsQueue=[];b[s].api=function(){b[s].callsQueue.push(arguments);};r=o.createElement(n);c=o.getElementsByTagName(n)[0];r.async=1;r.src=g;r.id=s+n;c.parentNode.insertBefore(r,c);})(window,document,"script","https://cdn.oribi.io/XzE3MDA3NTg5Mzg/oribi.js","ORIBI");
@@ -55,7 +57,7 @@
                 <div class="error" id="google_signup_failed" style="display: none">Google signup failed, please refresh the page and try again.</div>
                 <div id="gsignin">Log In With Google</div>
                 <div style="width: 100%; height: 10px; border-bottom: 2px solid white; text-align: center; opacity: 0.4; margin-top: 20px;">
-                    <span style="font-size: 20px; background-color: #142539; padding: 0 4px;"> Or </span>
+                    <span style="font-size: 20px; background-color: var(--blue); padding: 0 4px;"> Or </span>
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <input id="password" name="password" placeholder="Password" type="password" required>

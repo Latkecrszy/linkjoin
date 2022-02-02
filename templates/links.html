@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html id="links_html" lang="en">
     <head>
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script type="application/javascript">
@@ -49,12 +50,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name=”robots” content="index, follow"/>
         <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
+        <script>
+            if ("{{ company }}" === 'aa4e') {
+                document.documentElement.style.setProperty('--lightblue', '#a6b6bf')
+                document.documentElement.style.setProperty('--darkblue', '#629ed9')
+                document.documentElement.style.setProperty('--blue', '#608cbc')
+            }
+        </script>
     </head>
     <img src="{{ url_for('static', filename='images/plus-mobile.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
     <body id="links_body" onload="pageSetup()">
         <div id="page">
             <header id="header_links" style="margin-bottom: 100px;">
                 <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
+                {% if company == 'aa4e' %}
+                    <p>for</p>
+                    <img src="{{ url_for('static', filename='images/accessalliancelogo.png') }}" width="100px" height="100px">
+                {% endif %}
                 <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
                 <div id="links_menu">
                     <a><div class="button header_button underline" onclick="openSettings()">
@@ -114,84 +126,10 @@
                 </div>
                 <div class="flex">
                     <img id="time_img" src="{{ url_for('static', filename='images/time.svg') }}" height="18px" width="18px" alt="clock">
-                    <select id="hour" class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; width: 25px;">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                        <option>6</option>
-                        <option>7</option>
-                        <option>8</option>
-                        <option>9</option>
-                        <option>10</option>
-                        <option>11</option>
-                        <option>12</option>
-                    </select>
-                    <p class="popup_select" style="margin: 23px 0 0 0 !important; height: 20px; width: 5px;">:</p>
-                    <select id="minute" class="popup_select" style="margin: 25px 0 0 0 !important; height: 20px; min-width: 25px;">
-                        <option>00</option>
-                        <option>01</option>
-                        <option>02</option>
-                        <option>03</option>
-                        <option>04</option>
-                        <option>05</option>
-                        <option>06</option>
-                        <option>07</option>
-                        <option>08</option>
-                        <option>09</option>
-                        <option>10</option>
-                        <option>11</option>
-                        <option>12</option>
-                        <option>13</option>
-                        <option>14</option>
-                        <option>15</option>
-                        <option>16</option>
-                        <option>17</option>
-                        <option>18</option>
-                        <option>19</option>
-                        <option>20</option>
-                        <option>21</option>
-                        <option>22</option>
-                        <option>23</option>
-                        <option>24</option>
-                        <option>25</option>
-                        <option>26</option>
-                        <option>27</option>
-                        <option>28</option>
-                        <option>29</option>
-                        <option>30</option>
-                        <option>31</option>
-                        <option>32</option>
-                        <option>33</option>
-                        <option>34</option>
-                        <option>35</option>
-                        <option>36</option>
-                        <option>37</option>
-                        <option>38</option>
-                        <option>39</option>
-                        <option>40</option>
-                        <option>41</option>
-                        <option>42</option>
-                        <option>43</option>
-                        <option>44</option>
-                        <option>45</option>
-                        <option>46</option>
-                        <option>47</option>
-                        <option>48</option>
-                        <option>49</option>
-                        <option>50</option>
-                        <option>51</option>
-                        <option>52</option>
-                        <option>53</option>
-                        <option>54</option>
-                        <option>55</option>
-                        <option>56</option>
-                        <option>57</option>
-                        <option>58</option>
-                        <option>59</option>
-                    </select>
-                    <select class="popup_select" style="margin: 25px 0 0 10px !important; height: 20px; min-width: 30px;" id="am">
+                    <input id="hour" class="popup-time">
+                    <p class="popup-time colon">:</p>
+                    <input id="minute" class="popup-time">
+                    <select class="popup-time meridian" id="am">
                         <option value="am">AM</option>
                         <option value="pm" id="pm">PM</option>
                     </select>
@@ -244,7 +182,7 @@
                             <option value="60">60 minutes before</option>
                         </select>
                     </div>
-                    <button type="button" class="hover-arrow" id="submit" onclick="disableButton(this); registerLink('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+                    <button type="button" class="hover-arrow" id="submit" onclick="registerLink('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
                 </div>
             </form>
         </div>

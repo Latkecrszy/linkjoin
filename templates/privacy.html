@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="nobar">
+<html lang="en" class="nobar" style="background: #091B30">
     <head>
+        <link rel="canonical">
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script>
@@ -45,10 +47,8 @@
             <h1>Privacy Policy</h1>
             <h2>What information does LinkJoin collect?</h2>
             <p>
-                LinkJoin takes user privacy and security very seriously.
-                That's why we keep all important data fully encrypted, and sell absolutely no information.
-                We collect only the necessary information for LinkJoin to function:
-                Email address, phone number, timezone, and meeting links, times, names, days, and sometimes passwords.
+                LinkJoin collects only the necessary information for LinkJoin to function:
+                Email address, phone number, timezone, and meeting information provided by the user.
                 LinkJoin collects email address to allow Google sign-ups and make the process easier for users, and phone numbers
                 are collected for text reminders. Your timezone is collected so that reminders can be texted at the
                 appropriate time, and so that meetings can open correctly. Your meeting information is collected
@@ -56,10 +56,8 @@
             </p>
             <h2>How is my information protected?</h2>
             <p>
-                Account passwords are protected by a one way encryption called argon2.
-                Your password is never stored, instead a match is generated which the program can check your password against.
-                Other data is encrypted from end to end with a secret key, making a third party gaining access to that information very unlikely.
-                Your information and privacy are safe with LinkJoin.
+                LinkJoin takes privacy and security very seriously. All sensitive information stored in LinkJoin is
+                fully encrypted and never shared. Your information and privacy are safe with LinkJoin.
             </p>
         </div>
     </body>

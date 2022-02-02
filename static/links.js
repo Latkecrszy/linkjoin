@@ -6,6 +6,7 @@ const notesInfo = {}
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
 window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
+
 document.addEventListener('click', (e) => {
     if (!e.target.parentElement.classList.contains('demo')) {
         document.getElementById('tutorial-menu').style.display = 'none'
@@ -49,10 +50,6 @@ function createElement(tag, classList=[], id='', text='', other={}) {
 }
 
 function openMenu(el) {
-    console.log(el)
-    console.log(el.parentElement)
-    console.log(el.parentElement.children)
-    console.log(el.children[el.children.length-1])
     el.children[el.children.length-1].style.display = 'flex';
 }
 
@@ -88,11 +85,13 @@ async function popUp(popup) {
     const submit = document.getElementById("submit")
     blur(true)
     submit.innerHTML = `Create <img src="/static/images/right-angle.svg" alt="right arrow">`
-    submit.addEventListener("click", () => registerLink("register"))
+    submit.setAttribute('onClick', "registerLink('register')")
     document.getElementById("name").value = null
     document.getElementById("link").value = null
-    document.getElementById("hour").value = 1
-    document.getElementById("minute").options.selectedIndex = 0
+    document.getElementById("hour").placeholder = 1
+    document.getElementById("hour").value = null
+    document.getElementById("minute").placeholder = '00'
+    document.getElementById("minute").value = null
     document.getElementById("password").value = null
     document.getElementById("title").innerText = "Schedule a new meeting"
     document.getElementById('week').selected = "selected"
@@ -119,8 +118,8 @@ function edit(link) {
         document.getElementById("name").value = 'Tutorial Link'
         document.getElementById("link").value = 'https://linkjoin.xyz';
         document.getElementById("pm").selected = "selected";
-        document.getElementById("hour").value = 12;
-        document.getElementById("minute").value = "00";
+        document.getElementById("hour").placeholder = 12;
+        document.getElementById("minute").placeholder = "00";
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
         return document.getElementById("submit").setAttribute('onClick', "registerLink('tutorial')")
     }
@@ -132,7 +131,7 @@ function edit(link) {
     else {document.getElementById("password").value = null}
     if (parseInt(link['time'].split(":")[0]) === 12) {
         document.getElementById("pm").selected = "selected"
-        document.getElementById("hour").value = 12
+        document.getElementById("hour").placeholder = 12
     }
     else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
     else if (parseInt(link['time'].split(":")[0]) > 12) {
@@ -182,7 +181,6 @@ function share(link) {
 }
 
 async function disable(link, username) {
-    console.log(link)
     await fetch('/disable', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -367,7 +365,8 @@ async function load_links(username, sort, id="insert") {
         if (id === 'insert') {
             document.addEventListener('click', e => {
                 Array.from(document.getElementsByClassName('menu')).forEach(i => {
-                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) && !e.target.classList.contains('dot-menu')) {
+                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) && !e.target.classList.contains('dot-menu')
+                        && !i.classList.contains('tutorial')) {
                         i.style.display = 'none'
                     }
                 })
@@ -427,11 +426,13 @@ async function sort() {
 
 
 async function registerLink(parameter) {
+    disableButton(document.getElementById('submit'))
     if (created) {return}
     if (parameter === 'tutorial') {location.reload()}
     created = true
-    let hour = parseInt(document.getElementById("hour").value)
-    const minute = document.getElementById("minute").value
+    let hour = parseInt(document.getElementById("hour").value || document.getElementById("hour").placeholder)
+    let minute = parseInt(document.getElementById("minute").value || document.getElementById("minute").placeholder)
+    if (minute.toString().length === 1) {minute = '0' + minute}
     if (document.getElementById("am").value === "pm") {if (hour !== 12) {hour += 12}}
     else {if (hour === 12) {hour += 12}}
     let days = []
@@ -636,6 +637,38 @@ function pageSetup() {
     document.getElementById('notes_div').addEventListener('click', unRenderNotes)
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
+    Array.from(document.getElementsByClassName('popup-time')).forEach((e, index, arr) =>
+    {e.addEventListener('keypress', i => {
+        if (index === 0) {
+            if (parseInt(i.key) > 1 || parseInt(e.value.length) === 1) {
+                e.value += i.key
+                arr[2].focus()
+                i.preventDefault()
+            }
+             if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && (parseInt(e.value) > 1 || parseInt(i.key) > 2))) {
+                i.preventDefault()
+             }
+             if (parseInt(e.value) > 12) {
+                 e.value = e.value.slice(0, -1)
+             }
+        }
+        else if (index === 2) {
+            if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && parseInt(e.value) > 5)) {
+                i.preventDefault()
+             }
+        }
+    })})
+    document.getElementsByClassName('popup-time')[0].addEventListener('blur', e => {
+        if (e.target.value.length === 1) {
+            e.target.style.width = '10px'
+        }
+    })
+    document.getElementsByClassName('popup-time')[0].addEventListener('focus', e => e.target.style.width = '20px')
+    document.getElementsByClassName('popup-time')[2].addEventListener('blur', e => {
+        if (e.target.value.length === 1) {
+            e.target.value = '0' + e.target.value
+        }
+    })
 }
 
 function openTutorial() {

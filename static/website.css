@@ -30,7 +30,7 @@ header img {margin: 0 auto 0 20px}
 
 footer {
     margin: 50px 20px 0 0;
-    background: #091B30;
+    background: var(--darkblue);
     min-height: 400px;
     width: 100vw;
     padding: 20px;
@@ -150,7 +150,7 @@ footer {
     border-radius: 10px;
     font: 600 20px Montserrat;
     height: 75px;
-    background-color: #2B8FD8;
+    background-color: var(--lightblue);
     border: none;
     margin-top: 35px;
     transition: 0.3s;
@@ -170,7 +170,7 @@ footer {
 
 #description {font: 400 20px Roboto; margin: 0; max-width: 450px; line-height: 30px}
 
-#learn_more {background-color: #142539;}
+#learn_more {background-color: var(--blue);}
 
 
 /*Right Content*/
@@ -225,7 +225,7 @@ footer {
     width: 100%;
     position: relative;
     font-size: 30px;
-    background: #091B30;
+    background: var(--darkblue);
     box-sizing: border-box;
     padding: 0 55px 0 15px;
     margin-bottom: 15px;
@@ -252,7 +252,7 @@ footer {
 }
 
 .faq-answer {
-    background: #142539;
+    background: var(--blue);
     font-size: 16px;
     margin-top: 20px;
     padding: 20px;
@@ -262,7 +262,7 @@ footer {
 }
 
 .faq-answer p {
-    color: #2B8FD8;
+    color: var(--lightblue);
     display: inline;
 }
 
@@ -356,7 +356,7 @@ footer {
 
 .info-box {
     display: table-cell;
-    background: #142539;
+    background: var(--blue);
     box-shadow: 5px 5px 14px rgba(0, 0, 0, 0.6);
     width: calc(30% - 30px);
     border-radius: 10px;
@@ -387,7 +387,7 @@ footer {
     bottom: 20px;
     width: 250px;
     height: 100px;
-    background: #142539;
+    background: var(--blue);
     box-shadow: 5px 5px 14px rgba(0, 0, 0, 0.6);
     padding: 10px;
     display: flex;
@@ -407,7 +407,7 @@ footer {
     min-height: 30px;
     border-radius: 4px;
     border: none;
-    background: #2B8FD8;
+    background: var(--lightblue);
 }
 
 
@@ -451,7 +451,7 @@ footer {
         display: none;
         flex-direction: column;
         z-index: 9;
-        background: #142539;
+        background: var(--blue);
         border-radius: 3px;
         margin-right: 30px;
         padding: 10px;
@@ -463,10 +463,10 @@ footer {
     }
     .row {flex-direction: column}
     svg {display: none}
-    #main_html {background: #091B30;}
-    footer {background: #142539}
+    #main_html {background: var(--darkblue);}
+    footer {background: var(--blue)}
     #right_content {display: none;}
-    #faq {background: #142539; box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
+    #faq {background: var(--blue); box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
 }
 
 @media (max-width: 600px) {

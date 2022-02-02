@@ -2,13 +2,16 @@
     --underline-1-width: 0%;
     --underline-2-width: 0%;
     --underline-3-width: 0%;
+    --lightblue: #2B8FD8;
+    --darkblue: #091B30;
+    --blue: #142539;
 }
 
 button:focus{outline: none}
 
 input:focus {outline: none}
 
-html {background-color: #142539}
+html {background-color: var(--blue)}
 
 button:hover {cursor: pointer}
 
@@ -78,7 +81,7 @@ svg {
     height: 1000%;
     width: 110vw;
     position: fixed;
-    fill:#091B30;
+    fill:var(--darkblue);
 }
 
 .blurred {opacity: 0.2}
@@ -92,7 +95,7 @@ svg {
     max-width: 960px;
     margin: 80vh 5vw 0 max(0px, calc(45% - 400px));
     border-radius: 10px;
-    background-color: #142539;
+    background-color: var(--blue);
     text-align: center;
     display: flex;
     padding-left: 40px;
@@ -157,7 +160,7 @@ div {font-family: Montserrat; color: white;}
 select {-webkit-appearance:none}
 
 #header_links {
-    background-color: #142539;
+    background-color: var(--blue);
     height: 80px;
     padding: 0 40px 20px 15px;
     display: flex;
@@ -196,7 +199,7 @@ input:invalid {box-shadow: none}
 }
 
 .login_button:hover {
-    background: #2B8FD8;
+    background: var(--lightblue);
 }
 
 .login_button img {
@@ -238,7 +241,7 @@ html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track {
 }
 
 html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
-    background: #2B8FD8;
+    background: var(--lightblue);
     border-radius: 5px;
 }
 
@@ -248,7 +251,7 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
 
 .hover-arrow {
     border: none;
-    background: #2B8FD8;
+    background: var(--lightblue);
     width: 250px;
     height: 70px;
     border-radius: 5px;
