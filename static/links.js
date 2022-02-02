@@ -336,9 +336,10 @@ async function load_links(username, sort, id="insert") {
                     {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link, username)}}}))
             }
             link_event.appendChild(createElement('img', ['dot-menu'], '', '',
-                {'attrs': {'src': 'static/images/ellipsis.svg'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
-            link_event.appendChild(createElement('img', ['link-expand'], '', '', {'events':
-                    {'onclick': () => link_event.classList.toggle('expanded')}, 'attrs': {'src': 'static/images/angle-down.svg'}}))
+                {'attrs': {'src': 'static/images/ellipsis.svg', 'alt': '3 dots'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
+            link_event.appendChild(createElement('img', ['link-expand'], '', '',
+                {'events': {'onclick': () => link_event.classList.toggle('expanded')},
+                    'attrs': {'src': 'static/images/angle-down.svg', 'alt': 'down arrow'}}))
             const menu = createElement('div', ['menu'])
             let buttons;
             if (id === "insert") {
