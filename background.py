@@ -11,7 +11,7 @@ mongo = MongoClient(os.environ.get('MONGO_URI', None))
 
 def get_time(hour: int, minute: int, days: list, before) -> tuple:
     days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before)+1
+    before = 0 if before == "false" or before is None else int(before) + 1
     minute -= before
     if minute < 0:
         minute += 60
@@ -56,20 +56,39 @@ def message():
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
         for document in documents:
-            user = users.find_one({"username": document['username']}) if users.find_one({"username": document['username']}) is not None else {}
+            user = users.find_one({"username": document['username']}) if users.find_one(
+                {"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
                 user_info = {}
                 user_info['hour'], user_info['minute'], user_info['days'] = get_time(
                     int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
                     int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
+                    dict(document).get('text'))
+                print(user_info)
+                if dict(user).get('number') and document['text'] != "false" and not (info['day'] not in user_info['days']
+                        or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute'])):
+                    data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
+                            'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
+                    response = requests.post("https://linkjoin.xyz/send_message", json=data,
+                                             headers={'Content-Type': 'application/json'})
+                    print(response)
+                    print(response.text)
+                else:
+                    print("no number or text off")
+
+                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
+                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
+                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
                     -1)
+
                 if document['name'] == 'test meeting':
                     print(user_info['days'])
                     print(info['day'])
                     print((info['hour'], info['minute']))
                     print((user_info['hour'], user_info['minute']))
-                if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
+                if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
+                user_info['hour'], user_info['minute']):
                     continue
                 # Check if the link is active or if it has yet to start
                 if document['active'] != "false":
@@ -78,12 +97,15 @@ def message():
                         if int(document['starts']) > 0:
                             for i in range(5):
                                 print('CHANGING')
-                            print(mongo.zoom_opener.links.find_one_and_update({'username': document['username'], 'name': document['name']}, {"$set": {"starts": int(document['starts']) - 1}}))
+                            print(mongo.zoom_opener.links.find_one_and_update(
+                                {'username': document['username'], 'name': document['name']},
+                                {"$set": {"starts": int(document['starts']) - 1}}))
                             continue
                     except KeyError:
                         links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
                     if document['repeat'][0].isdigit():
-                        accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1 for x in
+                        accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1
+                                  for x in
                                   range(len(user_info['days']))]
                         if int(document['occurrences']) == accept[-1]:
                             links.find_one_and_update(dict(document), {"$set": {"occurrences": 0}})
@@ -91,27 +113,12 @@ def message():
                             links.find_one_and_update(dict(document),
                                                       {"$set": {"occurrences": int(document['occurrences']) + 1}})
                             continue
-
-                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
-                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
-                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
-                    dict(document).get('text'))
-                if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']):
-                    continue
-                print(user_info)
-                if dict(user).get('number') and document['text'] != "false":
-                    data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
-                            'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
-                    response = requests.post("https://linkjoin.xyz/send_message", json=data, headers={'Content-Type': 'application/json'})
-                    print(response)
-                    print(response.text)
-                else:
-                    print("no number or text off")
         for document in otps:
-            if document['time']-1 == 0:
+            if document['time'] - 1 == 0:
                 mongo.zoom_opener.otp.find_one_and_delete({'pw': document['pw']})
             else:
-                mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']}, {'$set': {'time': document['time']-1}})
+                mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']},
+                                                          {'$set': {'time': document['time'] - 1}})
         for document in anonymous_token:
             if document.get('time'):
                 if document['time'] - 1 == 0:
@@ -120,15 +127,15 @@ def message():
                 else:
                     print('Changing tokens')
                     mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
-                                                              {'$set': {'time': document['time'] - 1}})
+                                                                          {'$set': {'time': document['time'] - 1}})
             else:
                 print('Changing tokens')
                 mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
-                                                          {'$set': {'time': 59}})
+                                                                      {'$set': {'time': 59}})
         sent = json.load(open('last-message.json'))
         for id, time_left in {i: j for i, j in sent.items()}.items():
             if time_left > 0:
-                sent[id] = time_left-1
+                sent[id] = time_left - 1
             else:
                 sent.pop(id)
         json.dump(sent, open('last-message.json', 'w'), indent=4)
@@ -146,7 +153,7 @@ def message():
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         # Wait 60 seconds
-        speed = abs(60-(time.perf_counter()-start))
+        speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
             print(f'Long time: {speed}')
-        time.sleep(abs(60-(time.perf_counter()-start)))
+        time.sleep(abs(60 - (time.perf_counter() - start)))
