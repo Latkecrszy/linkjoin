@@ -65,7 +65,6 @@ def message():
                     int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
                     int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
                     dict(document).get('text'))
-                print(user_info)
                 if dict(user).get('number') and document['text'] != "false" and not (info['day'] not in user_info['days']
                         or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute'])):
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
@@ -74,19 +73,12 @@ def message():
                                              headers={'Content-Type': 'application/json'})
                     print(response)
                     print(response.text)
-                else:
-                    print("no number or text off")
 
                 user_info['hour'], user_info['minute'], user_info['days'] = get_time(
                     int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
                     int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
                     -1)
 
-                if document['name'] == 'test meeting':
-                    print(user_info['days'])
-                    print(info['day'])
-                    print((info['hour'], info['minute']))
-                    print((user_info['hour'], user_info['minute']))
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
                 user_info['hour'], user_info['minute']):
                     continue
