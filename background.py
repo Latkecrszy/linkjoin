@@ -146,5 +146,7 @@ def message():
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         # Wait 60 seconds
-        print(abs(60-(time.perf_counter()-start)))
+        speed = abs(60-(time.perf_counter()-start))
+        if speed < 50:
+            print(f'Long time: {speed}')
         time.sleep(abs(60-(time.perf_counter()-start)))

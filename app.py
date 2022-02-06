@@ -1,6 +1,6 @@
 from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
 from flask_pymongo import PyMongo
-import json, os, dotenv, re, random, string, requests, pprint, threading, smtplib, ssl
+import json, os, dotenv, re, random, string, requests, pprint, threading, smtplib, ssl, time
 from argon2 import PasswordHasher, exceptions
 from flask_cors import CORS
 from cryptography.fernet import Fernet
@@ -10,6 +10,7 @@ from email.message import EmailMessage
 from google.auth import jwt
 
 ph = PasswordHasher()
+x = 0
 app = Flask(__name__)
 dotenv.load_dotenv()
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
@@ -100,6 +101,19 @@ def thread_start():
         message_thread.start()
         started = True
         print('starting')
+
+
+@app.before_request
+def before_request():
+    global x
+    x = time.perf_counter()
+
+
+@app.teardown_request
+def after_request(y):
+    global x
+    if time.perf_counter()-x > 5:
+        print(f'Long time: {time.perf_counter()-x}')
 
 
 @app.route('/', methods=['GET'])
@@ -317,11 +331,8 @@ def register():
 @app.route('/links', methods=['GET'])
 def links():
     email = request.cookies.get('email')
-    print(email)
-    print(dict(request.cookies))
     if not authenticated(request.cookies, email):
         return redirect('/login?error=not_logged_in')
-    print('continuing')
     email = email.lower()
     user = mongo.db.login.find_one({"username": email})
     try:
