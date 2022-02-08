@@ -344,7 +344,7 @@ async function load_links(username, sort, id="insert") {
             let buttons;
             if (id === "insert") {
                 buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link),
-            'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
+            'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
             'Password': () => copyPassword(link['id'], link['password'])}
             } else {
                 buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
