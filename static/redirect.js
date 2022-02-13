@@ -32,25 +32,6 @@ async function start(username, links, sort) {
             }
             window.open(link['link'])
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
-            if (link['repeat'] === 'never') {
-                if (link['days'].length > 1) {
-                    link['days'].splice(link['days'].indexOf(day), 1)
-                    await fetch('/changevar', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({email: username, id: link['id'], variable: 'days', days: link['days']})
-                    })
-                }
-                else {
-                    await fetch('/delete', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({id: link['id'], email: username})
-                    })
-                    if ((await db(global_username)).length === 0) {return location.reload()}
-                }
-                return await pause(username, user_links, sort, 46000, "load_links")
-            }
             await pause(username, user_links, sort, 46000)
         }
         if (JSON.stringify(user_links) !== JSON.stringify(links)) {

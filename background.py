@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import os, dotenv, requests, time, datetime, random, logging, json
+import os, dotenv, requests, time, datetime, random, logging, json, arrow
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()
@@ -7,32 +7,26 @@ dotenv.load_dotenv()
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 mongo = MongoClient(os.environ.get('MONGO_URI', None))
+days_dict = {"Sun": 1, "Mon": 2, "Tue": 3, "Wed": 4, "Thu": 5, "Fri": 6, "Sat": 7}
 
 
-def get_time(hour: int, minute: int, days: list, before) -> tuple:
-    days_dict = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
-    before = 0 if before == "false" or before is None else int(before) + 1
-    minute -= before
-    if minute < 0:
-        minute += 60
-        hour -= 1
-        if hour <= 0:
-            hour += 24
-            for index, day in enumerate(days):
-                day = days_dict[day]
-                day -= 1
-                if day < 0:
-                    day = 6
-                days[index] = day
-    elif hour >= 24:
-        hour -= 24
-        for index, day in enumerate(days):
-            day = days_dict[day]
-            day += 1
-            if day > 6:
-                day = 0
-            days[index] = {j: i for i, j in days_dict.items()}[day]
-    return hour, minute, days
+def convert_time(document, user, text):
+    hour = int(document["time"].split(":")[0])
+    minute = int(document["time"].split(":")[1])
+    if hour <= 9:
+        hour = f'0{hour}'
+    if minute <= 9:
+        minute = f'0{minute}'
+    user_info = {'days': []}
+    for day in document['days']:
+        print(days_dict[day])
+        print(day)
+        Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
+            minutes=(int(user["offset"].split(".")[1]) - int(text)), hours=int(user["offset"].split(".")[0]))
+        user_info['hour'] = int(Time.strftime('%-H'))
+        user_info['minute'] = int(Time.strftime('%-M'))
+        user_info['days'].append(Time.strftime('%a'))
+    return user_info
 
 
 def message():
@@ -60,13 +54,10 @@ def message():
                 {"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
-                user_info = {}
-                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
-                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
-                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
-                    dict(document).get('text'))
+                user_info = convert_time(document, user, document['text'])
                 if dict(user).get('number') and document['text'] != "false" and not (info['day'] not in user_info['days']
-                        or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute'])):
+                        or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']))\
+                        and document['starts'] == 0:
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
                     response = requests.post("https://linkjoin.xyz/send_message", json=data,
@@ -74,24 +65,36 @@ def message():
                     print(response)
                     print(response.text)
 
-                user_info['hour'], user_info['minute'], user_info['days'] = get_time(
-                    int(document['time'].split(":")[0]) + int(user['offset'].split(".")[0]),
-                    int(document['time'].split(":")[1]) + int(user['offset'].split(".")[1]), document['days'],
-                    -1)
-
+                user_info = convert_time(document, user, 0)
+                print(user_info)
+                print(info)
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
-                user_info['hour'], user_info['minute']):
+                    user_info['hour'], user_info['minute']):
+                    print('skipping')
                     continue
                 # Check if the link is active or if it has yet to start
+                if document['repeat'] == 'never' and int(document['starts']) == 0:
+                    if len(document['days']) == 1:
+                        links.find_one_and_update({'username': document['username'], 'id': document['id']},
+                                                {'$set': {'active': 'false', 'text': 'false'}})
+                    else:
+                        document['days'].remove(info['day'])
+                        links.find_one_and_update({'username': document['username'], 'id': document['id']},
+                                                  {'$set': {'days': document['days']}})
+                    continue
+                elif int(document['starts']) != 0:
+                    print('trapped')
+                    links.find_one_and_update({'username': document['username'], 'id': document['id']},
+                                              {'$set': {'starts': int(document['starts'])-1}})
+                    continue
+                print('got past')
                 if document['active'] != "false":
                     try:
                         print(document['starts'])
                         if int(document['starts']) > 0:
-                            for i in range(5):
-                                print('CHANGING')
-                            print(mongo.zoom_opener.links.find_one_and_update(
-                                {'username': document['username'], 'name': document['name']},
-                                {"$set": {"starts": int(document['starts']) - 1}}))
+                            links.find_one_and_update(
+                                {'username': document['username'], 'id': document['id']},
+                                {"$set": {"starts": int(document['starts']) - 1}})
                             continue
                     except KeyError:
                         links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
