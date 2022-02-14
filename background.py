@@ -137,7 +137,7 @@ def message():
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         for document, change in changes.items():
-            mongo.zoom_opener.links.find_one_and_update({'username': document[1], 'id': int(document[0])}, change)
+            mongo.zoom_opener.links.find_one_and_update({'username': document[1], 'id': int(document[0])}, {'$set': change})
         # Wait 60 seconds
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
