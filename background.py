@@ -105,36 +105,32 @@ def message():
         edit = {}
         for document in otps:
             if document['time'] - 1 == 0:
-                edit[document] = {'type': 'delete', 'change': {'pw': document['pw']}}
+                edit[document] = {'type': 'delete', 'content': {'pw': document['pw']}}
             else:
-                edit[document] = {'type': 'edit', 'change': {'$set': {'time': document['time'] - 1}}}
-        mongo.zoom_opener.otp.bulk_write([
-            pymongo.UpdateOne(document, change['change']) for document, change in edit.items() if change['type'] == 'edit'
-        ] or [pymongo.DeleteOne({})])
-        mongo.zoom_opener.otp.bulk_write([
-            pymongo.DeleteOne(document) for document, change in edit.items() if change['type'] == 'delete'
-        ] or [pymongo.DeleteOne({})])
+                edit[document] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
+
+        for document, change in edit.items():
+            if change['type'] == 'edit':
+                mongo.zoom_opener.otp.find_one_and_update(document, change['content'])
+            elif change['type'] == 'delete':
+                mongo.zoom_opener.otp.find_one_and_delete(document)
         edit = {}
         for document in anonymous_token:
             if document.get('time'):
                 if document['time'] - 1 == 0:
                     print('Changing tokens')
-                    edit[document] = {'type': 'delete', 'change': {'token': document['token']}}
+                    edit[document] = {'type': 'delete', 'content': {'token': document['token']}}
                 else:
                     print('Changing tokens')
-                    edit[document] = {'type': 'edit', 'change': {'$set': {'time': document['time'] - 1}}}
+                    edit[document] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
             else:
                 print('Changing tokens')
-                edit[document] = {'type': 'edit', 'change': {'$set': {'time': 59}}}
-
-        mongo.zoom_opener.anonymous_token.bulk_write([
-            pymongo.UpdateOne(document, change['change']) for document, change in edit.items() if
-            change['type'] == 'edit'
-        ] or [pymongo.DeleteOne({})])
-        mongo.zoom_opener.anonymous_token.bulk_write([
-            pymongo.DeleteOne(document) for document, change in edit.items() if change['type'] == 'delete'
-        ] or [pymongo.DeleteOne({})])
-
+                edit[document] = {'type': 'edit', 'content': {'$set': {'time': 59}}}
+        for document, change in edit.items():
+            if change['type'] == 'edit':
+                mongo.zoom_opener.anonymous_token.find_one_and_update(document, change['content'])
+            elif change['type'] == 'delete':
+                mongo.zoom_opener.anonymous_token.find_one_and_delete(document)
         sent = json.load(open('last-message.json'))
         for id, time_left in {i: j for i, j in sent.items()}.items():
             if time_left > 0:
