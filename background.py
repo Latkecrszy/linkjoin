@@ -32,8 +32,13 @@ def convert_time(document, user, text):
 
 
 def message():
+    changes = {}
     print('Started')
     while True:
+        for document, change in changes.items():
+            print(document)
+            print(change)
+            mongo.zoom_opener.links.find_one_and_update({'username': document[0], 'id': int(document[1])}, {'$set': change})
         changes = {}
         print('Running')
         start = time.perf_counter()
@@ -136,10 +141,6 @@ def message():
                 analytics_data['total_monthly_logins'].append(0)
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
-        for document, change in changes.items():
-            print(document)
-            print(change)
-            mongo.zoom_opener.links.find_one_and_update({'username': document[0], 'id': int(document[1])}, {'$set': change})
         # Wait 60 seconds
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
