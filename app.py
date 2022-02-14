@@ -93,16 +93,6 @@ def authenticated(cookies, email):
         return False
 
 
-@app.before_first_request
-def thread_start():
-    global started
-    if not started:
-        message_thread = threading.Thread(target=message, daemon=True)
-        message_thread.start()
-        started = True
-        print('starting')
-
-
 @app.before_request
 def before_request():
     global x
@@ -854,4 +844,8 @@ if __name__ == '__main__':
     # test()
     print('Starting from app.py')
     print('from App.py')
+    if not started:
+        started = True
+        message_thread = threading.Thread(target=message, daemon=True)
+        message_thread.start()
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
