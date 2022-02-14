@@ -93,6 +93,16 @@ def authenticated(cookies, email):
         return False
 
 
+@app.before_first_request
+def thread_start():
+    global started
+    if not started:
+        started = True
+        message_thread = threading.Thread(target=message, daemon=True)
+        message_thread.start()
+        print('starting')
+
+
 @app.before_request
 def before_request():
     global x
@@ -840,16 +850,8 @@ def test():
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
-if not started:
-    print('started thread')
-    started = True
-    message_thread = threading.Thread(target=message, daemon=True)
-    message_thread.start()
-else:
-    print('thread not started')
 if __name__ == '__main__':
     # test()
     print('Starting from app.py')
     print('from App.py')
-
-    app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
+    app.run(port=os.environ.get("port", 5002), debug=False)
