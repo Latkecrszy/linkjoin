@@ -105,32 +105,33 @@ def message():
         edit = {}
         for document in otps:
             if document['time'] - 1 == 0:
-                edit[document] = {'type': 'delete', 'content': {'pw': document['pw']}}
+                edit[document['pw']] = {'type': 'delete'}
             else:
-                edit[document] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
+                edit[document['pw']] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
 
-        for document, change in edit.items():
+        for otp, change in edit.items():
             if change['type'] == 'edit':
-                mongo.zoom_opener.otp.find_one_and_update(document, change['content'])
+                mongo.zoom_opener.otp.find_one_and_update({'pw': otp}, change['content'])
             elif change['type'] == 'delete':
-                mongo.zoom_opener.otp.find_one_and_delete(document)
+                mongo.zoom_opener.otp.find_one_and_delete({'pw': otp})
         edit = {}
         for document in anonymous_token:
             if document.get('time'):
                 if document['time'] - 1 == 0:
                     print('Changing tokens')
-                    edit[document] = {'type': 'delete', 'content': {'token': document['token']}}
+                    edit[document['token']] = {'type': 'delete'}
                 else:
                     print('Changing tokens')
-                    edit[document] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
+                    edit[document['token']] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
             else:
                 print('Changing tokens')
-                edit[document] = {'type': 'edit', 'content': {'$set': {'time': 59}}}
-        for document, change in edit.items():
+                edit[document['token']] = {'type': 'edit', 'content': {'$set': {'time': 59}}}
+        # Can't hash a dict!
+        for token, change in edit.items():
             if change['type'] == 'edit':
-                mongo.zoom_opener.anonymous_token.find_one_and_update(document, change['content'])
+                mongo.zoom_opener.anonymous_token.find_one_and_update({'token': token}, change['content'])
             elif change['type'] == 'delete':
-                mongo.zoom_opener.anonymous_token.find_one_and_delete(document)
+                mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': token})
         sent = json.load(open('last-message.json'))
         for id, time_left in {i: j for i, j in sent.items()}.items():
             if time_left > 0:
