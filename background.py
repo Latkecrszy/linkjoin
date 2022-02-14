@@ -21,6 +21,8 @@ def convert_time(document, user, text):
         minute = f'0{minute}'
     user_info = {'days': []}
     for day in document['days']:
+        if hour == '24':
+            hour = '00'
         Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
             minutes=(int(user["offset"].split(".")[1]) - int(text)), hours=int(user["offset"].split(".")[0]))
         user_info['hour'] = int(Time.strftime('%-H'))
