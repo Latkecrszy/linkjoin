@@ -85,7 +85,7 @@ def message():
                     if len(document['days']) == 1:
                         changes[(document['username'], document['id'])] = {'active': 'false', 'text': 'false'}
                     else:
-                        document['days'].remove(arrow.utcnow().shift(hours=int(user['offset'])).strftime('%a'))
+                        document['days'].remove(arrow.utcnow().shift(hours=int(float(user['offset']))).strftime('%a'))
                         changes[(document['username'], document['id'])] = {'days': document['days']}
                     continue
                 elif int(document['starts']) != 0:
