@@ -11,6 +11,8 @@ days_dict = {"Sun": 1, "Mon": 2, "Tue": 3, "Wed": 4, "Thu": 5, "Fri": 6, "Sat": 
 
 
 def convert_time(document, user, text):
+    if text == 'false':
+        text = 0
     hour = int(document["time"].split(":")[0])
     minute = int(document["time"].split(":")[1])
     if hour <= 9:
