@@ -845,7 +845,10 @@ if __name__ == '__main__':
     print('Starting from app.py')
     print('from App.py')
     if not started:
+        print('started thread')
         started = True
         message_thread = threading.Thread(target=message, daemon=True)
         message_thread.start()
+    else:
+        print('thread not started')
     app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
