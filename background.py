@@ -21,8 +21,6 @@ def convert_time(document, user, text):
         minute = f'0{minute}'
     user_info = {'days': []}
     for day in document['days']:
-        print(days_dict[day])
-        print(day)
         Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
             minutes=(int(user["offset"].split(".")[1]) - int(text)), hours=int(user["offset"].split(".")[0]))
         user_info['hour'] = int(Time.strftime('%-H'))
@@ -66,6 +64,7 @@ def message():
                 if dict(user).get('number') and document['text'] != "false" and not (info['day'] not in user_info['days']
                         or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']))\
                         and document['starts'] == 0:
+                    print('sending')
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
                     response = requests.post("https://linkjoin.xyz/send_message", json=data,
@@ -74,11 +73,8 @@ def message():
                     print(response.text)
 
                 user_info = convert_time(document, user, 0)
-                print(user_info)
-                print(info)
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
                     user_info['hour'], user_info['minute']) or document['active'] == 'false':
-                    print('skipping')
                     continue
                 # Check if the link is active or if it has yet to start
                 if document['repeat'] == 'never' and int(document['starts']) == 0:
@@ -89,10 +85,8 @@ def message():
                         changes[(document['username'], document['id'])] = {'days': document['days']}
                     continue
                 elif int(document['starts']) != 0:
-                    print('trapped')
                     changes[(document['username'], document['id'])] = {'starts': int(document['starts'])-1}
                     continue
-                print('got past')
                 if document['repeat'][0].isdigit():
                     accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1
                               for x in

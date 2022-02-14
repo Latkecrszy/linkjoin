@@ -364,7 +364,10 @@ def delete():
     if data.get('permanent') == 'true':
         mongo.db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     else:
-        mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+        try:
+            mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+        except TypeError:
+            pass
     return 'done', 200
 
 
