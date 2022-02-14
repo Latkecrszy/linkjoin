@@ -21,7 +21,7 @@ def convert_time(document, user, text):
         minute = f'0{minute}'
     user_info = {'days': []}
     for day in document['days']:
-        if hour == '24':
+        if int(hour) == 24:
             hour = '00'
         try:
             Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
