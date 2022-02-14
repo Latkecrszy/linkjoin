@@ -78,14 +78,14 @@ def message():
                 # Check if the link is active or if it has yet to start
                 if document['repeat'] == 'never' and int(document['starts']) == 0:
                     if len(document['days']) == 1:
-                        changes[dict(document)] = {'active': 'false', 'text': 'false'}
+                        changes[(document['id'], document['name'])] = {'active': 'false', 'text': 'false'}
                     else:
                         document['days'].remove(info['day'])
-                        changes[dict(document)] = {'days': document['days']}
+                        changes[(document['id'], document['name'])] = {'days': document['days']}
                     continue
                 elif int(document['starts']) != 0:
                     print('trapped')
-                    changes[dict(document)] = {'starts': int(document['starts'])-1}
+                    changes[(document['id'], document['name'])] = {'starts': int(document['starts'])-1}
                     continue
                 print('got past')
                 if document['repeat'][0].isdigit():
@@ -93,9 +93,9 @@ def message():
                               for x in
                               range(len(user_info['days']))]
                     if int(document['occurrences']) == accept[-1]:
-                        changes[dict(document)] = {'occurrences': 0}
+                        changes[(document['id'], document['name'])] = {'occurrences': 0}
                     else:
-                        changes[dict(document)] = {'occurrences': int(document['occurrences']) + 1}
+                        changes[(document['id'], document['name'])] = {'occurrences': int(document['occurrences']) + 1}
                         continue
         for document in otps:
             if document['time'] - 1 == 0:
@@ -137,7 +137,7 @@ def message():
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
         for document, change in changes.items():
-            mongo.zoom_opener.links.find_one_and_update({'username': document['username'], 'id': int(document['id'])}, change)
+            mongo.zoom_opener.links.find_one_and_update({'username': document[1], 'id': int(document[0])}, change)
         # Wait 60 seconds
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
