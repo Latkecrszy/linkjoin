@@ -34,6 +34,7 @@ def convert_time(document, user, text):
 def message():
     print('Started')
     while True:
+        changes = {}
         print('Running')
         start = time.perf_counter()
         # Define the users db, links db, and current time
@@ -71,45 +72,31 @@ def message():
                 print(user_info)
                 print(info)
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
-                    user_info['hour'], user_info['minute']):
+                    user_info['hour'], user_info['minute']) or document['active'] == 'false':
                     print('skipping')
                     continue
                 # Check if the link is active or if it has yet to start
                 if document['repeat'] == 'never' and int(document['starts']) == 0:
                     if len(document['days']) == 1:
-                        links.find_one_and_update({'username': document['username'], 'id': document['id']},
-                                                {'$set': {'active': 'false', 'text': 'false'}})
+                        changes[dict(document)] = {'active': 'false', 'text': 'false'}
                     else:
                         document['days'].remove(info['day'])
-                        links.find_one_and_update({'username': document['username'], 'id': document['id']},
-                                                  {'$set': {'days': document['days']}})
+                        changes[dict(document)] = {'days': document['days']}
                     continue
                 elif int(document['starts']) != 0:
                     print('trapped')
-                    links.find_one_and_update({'username': document['username'], 'id': document['id']},
-                                              {'$set': {'starts': int(document['starts'])-1}})
+                    changes[dict(document)] = {'starts': int(document['starts'])-1}
                     continue
                 print('got past')
-                if document['active'] != "false":
-                    try:
-                        print(document['starts'])
-                        if int(document['starts']) > 0:
-                            links.find_one_and_update(
-                                {'username': document['username'], 'id': document['id']},
-                                {"$set": {"starts": int(document['starts']) - 1}})
-                            continue
-                    except KeyError:
-                        links.find_one_and_update(dict(document), {"$set": {"starts": 0}})
-                    if document['repeat'][0].isdigit():
-                        accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1
-                                  for x in
-                                  range(len(user_info['days']))]
-                        if int(document['occurrences']) == accept[-1]:
-                            links.find_one_and_update(dict(document), {"$set": {"occurrences": 0}})
-                        else:
-                            links.find_one_and_update(dict(document),
-                                                      {"$set": {"occurrences": int(document['occurrences']) + 1}})
-                            continue
+                if document['repeat'][0].isdigit():
+                    accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1
+                              for x in
+                              range(len(user_info['days']))]
+                    if int(document['occurrences']) == accept[-1]:
+                        changes[dict(document)] = {'occurrences': 0}
+                    else:
+                        changes[dict(document)] = {'occurrences': int(document['occurrences']) + 1}
+                        continue
         for document in otps:
             if document['time'] - 1 == 0:
                 mongo.zoom_opener.otp.find_one_and_delete({'pw': document['pw']})
@@ -149,6 +136,8 @@ def message():
                 analytics_data['total_monthly_logins'].append(0)
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
+        for document, change in changes.items():
+            mongo.zoom_opener.links.find_one_and_update({'username': document['username'], 'id': int(document['id'])}, change)
         # Wait 60 seconds
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:

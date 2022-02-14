@@ -850,8 +850,8 @@ def test():
 
 
 app.register_error_handler(404, lambda e: render_template('404.html'))
+
 if __name__ == '__main__':
-    # test()
     print('Starting from app.py')
     print('from App.py')
-    app.run(port=os.environ.get("port", 5002), debug=False)
+    app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
