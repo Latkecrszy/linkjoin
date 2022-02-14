@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-import os, dotenv, requests, time, datetime, random, logging, json, arrow
+import os, dotenv, requests, time, datetime, random, logging, json, arrow, pymongo
 from argon2 import PasswordHasher
 
 ph = PasswordHasher()
@@ -102,25 +102,39 @@ def message():
                     else:
                         changes[(document['username'], document['id'])] = {'occurrences': int(document['occurrences']) + 1}
                         continue
+        edit = {}
         for document in otps:
             if document['time'] - 1 == 0:
-                mongo.zoom_opener.otp.find_one_and_delete({'pw': document['pw']})
+                edit[document] = {'type': 'delete', 'change': {'pw': document['pw']}}
             else:
-                mongo.zoom_opener.otp.find_one_and_update({'pw': document['pw']},
-                                                          {'$set': {'time': document['time'] - 1}})
+                edit[document] = {'type': 'edit', 'change': {'$set': {'time': document['time'] - 1}}}
+        mongo.zoom_opener.otp.bulk_write([
+            pymongo.UpdateOne(document, change['change']) for document, change in edit.items() if change['type'] == 'edit'
+        ] or [pymongo.DeleteOne({})])
+        mongo.zoom_opener.otp.bulk_write([
+            pymongo.DeleteOne(document) for document, change in edit.items() if change['type'] == 'delete'
+        ] or [pymongo.DeleteOne({})])
+        edit = {}
         for document in anonymous_token:
             if document.get('time'):
                 if document['time'] - 1 == 0:
                     print('Changing tokens')
-                    mongo.zoom_opener.anonymous_token.find_one_and_delete({'token': document['token']})
+                    edit[document] = {'type': 'delete', 'change': {'token': document['token']}}
                 else:
                     print('Changing tokens')
-                    mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
-                                                                          {'$set': {'time': document['time'] - 1}})
+                    edit[document] = {'type': 'edit', 'change': {'$set': {'time': document['time'] - 1}}}
             else:
                 print('Changing tokens')
-                mongo.zoom_opener.anonymous_token.find_one_and_update({'token': document['token']},
-                                                                      {'$set': {'time': 59}})
+                edit[document] = {'type': 'edit', 'change': {'$set': {'time': 59}}}
+
+        mongo.zoom_opener.anonymous_token.bulk_write([
+            pymongo.UpdateOne(document, change['change']) for document, change in edit.items() if
+            change['type'] == 'edit'
+        ] or [pymongo.DeleteOne({})])
+        mongo.zoom_opener.anonymous_token.bulk_write([
+            pymongo.DeleteOne(document) for document, change in edit.items() if change['type'] == 'delete'
+        ] or [pymongo.DeleteOne({})])
+
         sent = json.load(open('last-message.json'))
         for id, time_left in {i: j for i, j in sent.items()}.items():
             if time_left > 0:
@@ -145,4 +159,4 @@ def message():
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
             print(f'Long time: {speed}')
-        time.sleep(abs(60 - (time.perf_counter() - start)))
+        time.sleep(speed)
