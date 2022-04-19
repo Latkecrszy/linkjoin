@@ -2,9 +2,9 @@
 <html id="main_html" lang="en" class="noscroll">
     <head>
         <link rel="canonical">
-        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <link rel="manifest" href="../static/manifest.json">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="{{ url_for('static', filename='globals.js') }}"></script>
+        <script src="../static/globals.js"></script>
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script>
@@ -15,19 +15,19 @@
           gtag('config', 'G-MR5B009GBF');
         </script>
         <script src="https://accounts.google.com/gsi/client" async defer></script>
-        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/website.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
-        <title>LinkJoin</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <title>LinkJoin - Auto Join and Organize Virtual Meetings</title>
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://linkjoin.xyz">
         <meta property="og:title" content="LinkJoin">
         <meta property="og:description" content="LinkJoin helps you join meetings at exactly the right time, even when you forget.">
-        <meta property="og:image" content="{{ url_for('static', filename='images/logo-rounded.png') }}">
+        <meta property="og:image" content="../static/images/logo-rounded.png">
         <meta name="description" content="Auto join Zoom meetings and classes with ease. Never be late again, with LinkJoin.">
         <meta name="robots" content="index, follow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -40,10 +40,10 @@
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
         <header>
-            <img id="logo" src="{{ url_for('static', filename='images/logo-text.svg') }}" height="40" alt="LinkJoin Logo">
+            <img id="logo" src="../static/images/logo-text.svg" height="40" alt="LinkJoin Logo">
             <a href="/links" class="underline">My Links</a>
             <a href="/signup" class="underline">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -51,7 +51,7 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/signup" class="underline">Sign Up</a>
                     <a href="/links" class="underline">Links</a>
                 </div>
@@ -61,11 +61,11 @@
             <div id="left_content">
                 <h1 id="motto">Never Be Late Again.</h1>
                 <h4 id="description">LinkJoin helps you join meetings at exactly the right time, even when you forget.</h4>
-                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button></a>
-                <a onclick="document.getElementById('scrollTo').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="{{ url_for('static', filename='images/arrow-down.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Down arrow"></button></a>
+                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="../static/images/arrow-right.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button></a>
+                <a onclick="document.getElementById('scrollTo').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="../static/images/arrow-down.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
-                <img src="{{ url_for('static', filename='images/calendar_guy.svg') }}" id="calendar_guy" alt="Man surrounded by calendars">
+                <img src="../static/images/calendar_guy.svg" id="calendar_guy" alt="Man surrounded by calendars">
             </div>
         </div>
         <div id="scrollTo" style="height: 150px"></div>
@@ -86,75 +86,37 @@
                 automatically opens virtual classes and meetings, as well as organizing them in one central location.
                 Keep scrolling to see how LinkJoin can help you never be late again.
             </div>
-            <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="{{ url_for('static', filename='images/arrows-down.svg') }}">
+
+            <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
+
             <div id="info-boxes">
                 <div class="info-box">
-                    <img alt="pointer" src="{{ url_for('static', filename='images/mouse-pointer.svg') }}" class="info-image">
+                    <img alt="pointer" src="../static/images/mouse-pointer.svg" class="info-image">
                     <h2>Auto-join Meetings</h2>
                     <p>
-                        In virtual life, it's much too easy to get distracted on the computer and forget to join a
-                        meeting. After all, who wants to sit around for the extra 10 minutes before a meeting waiting to
-                        join the meeting? With LinkJoin, all your meetings will automatically open at the right time,
-                        so you'll never be late again.
+                        Meetings open automatically right on time, taking away that the anxiety of being late.
                     </p>
                 </div>
                 <div class="info-box">
-                    <img src="{{ url_for('static', filename='images/pen.svg') }}" alt="pen" class="info-image">
-                    <h2>Take Notes</h2>
-                    <p>
-                        Taking notes during a meeting is always a struggle - where do you take them? Where are the notes
-                        from the previous meeting? How do you keep track of which notes go to which meeting? Luckily,
-                        LinkJoin is here to help. You can take notes on each individual meeting right in LinkJoin, so
-                        keeping track of them is a breeze.
-                    </p>
-                </div>
-                <div class="info-box">
-                    <img src="{{ url_for('static', filename='images/paper-plane.svg') }}" alt="plane" class="info-image">
+                    <img src="../static/images/paper-plane.svg" alt="plane" class="info-image">
                     <h2>Share Links</h2>
                     <p>
-                        Without LinkJoin, sending a meeting link guarantees only one thing: your guests will have the
-                        link. But what it doesn't guarantee is that they'll remember to join the meeting. That's why
-                        LinkJoin offers built-in, pre-scheduled link sharing, so you can offer your guests the courtesy
-                        of never being late again.
+                        Share scheduled meetings to ensure that all participants get there on time.
                     </p>
                 </div>
                 <div class="info-box">
-                    <img src="{{ url_for('static', filename='images/mobile-phone.svg') }}" alt="phone" class="info-image">
+                    <img src="../static/images/mobile-phone.svg" alt="phone" class="info-image">
                     <h2>Receive Reminders</h2>
                     <p>
-                        Getting distracted at the computer is certainly a problem, but another concern to keep in mind
-                        is getting distracted <b>away</b> from the computer. But one thing that you almost always have,
-                        regardless of what you're doing, is your phone. That's why LinkJoin sends text reminders to get
-                        you to your computer at the right time.
-                    </p>
-                </div>
-                <div class="info-box">
-                    <img src="{{ url_for('static', filename='images/list.svg') }}" alt="list" class="info-image">
-                    <h2>Sort Links</h2>
-                    <p>
-                        One of the primary benefits of LinkJoin is the ability to store all of your meeting links in one
-                        central location, but you can actually expand on that further. To make links as easy as possible
-                        to find, you can choose to have them sorted in 3 different ways - by day (Monday-Sunday), time
-                        (12am-11pm), or both at once!
-                    </p>
-                </div>
-                <div class="info-box">
-                    <img src="{{ url_for('static', filename='images/whiteboard.svg') }}" alt="whiteboard" class="info-image">
-                    <h2>Useful For All</h2>
-                    <p>
-                        Too many great products and services are locked to just one kind of person. LinkJoin is useful
-                        for everyone. Because it isn't locked to any one meeting software, it works for everyone all of
-                        the time. Regardless of whether you're a student, professional, or anything else, LinkJoin will
-                        take any meetings you can throw at it.
+                        Get a text reminder before your meeting, so you get back to your computer in plenty of time.
                     </p>
                 </div>
             </div>
         </div>
-        <img alt="down arrows" class="down" onclick="document.getElementById('info').scrollIntoView()" src="{{ url_for('static', filename='images/arrows-down.svg') }}">
+        <img alt="down arrows" class="down" onclick="document.getElementById('info').scrollIntoView()" src="../static/images/arrows-down.svg">
         <div id="info">
             <div id="faq-intro">
                 <h1>More questions?</h1>
-                <p>Here are some of the most asked ones:</p>
             </div>
             <div id="faq">
                 <div class="faq-question" onclick="openFAQ(this)">
@@ -163,8 +125,7 @@
                     <div class="faq-answer">
                         It depends. If your computer is off or asleep, then your meeting will not open. But if your
                         computer is turned on when the meeting is scheduled to open, then it will start on its own. To
-                        help with this, LinkJoin can send you text reminders between 5 and 60 minutes before your meeting,
-                        so that you're always at the computer at the right time.
+                        help with this, LinkJoin can send you text reminders between 5 and 60 minutes before your meeting.
                     </div>
                 </div>
                 <div class="faq-question" onclick="openFAQ(this)">
@@ -174,7 +135,7 @@
                         The most common reason for meetings not opening is popups being disabled. To enable popups in
                         your browser, see the faq questions below. If popups are enabled and your meeting is still not
                         opening, check that the switch on your link is flipped to blue. If your meetings still won't open
-                        automatically, please contact support at seth@linkjoin.xyz.
+                        automatically, please contact support at <p>seth@linkjoin.xyz</p>.
                     </div>
                 </div>
                 <div class="faq-question" onclick="openFAQ(this)">
@@ -211,14 +172,14 @@
                     <p>Does LinkJoin work on mobile?</p>
                     <div class="faq-answer">
                         Due to restrictions on mobile devices, links will <p>not</p> automatically open on mobile.
-                        However, your links are still fully accessible, and just need to be clicked to open the meeting.
+                        However, your links are still fully accessible, and can be opened by clicking on the link.
                     </div>
                 </div>
             </div>
         </div>
         <footer>
             <div class="footer-logo">
-                <img src="{{ url_for('static', filename='images/logo-text.svg') }}" alt="LinkJoin Logo">
+                <img src="../static/images/logo-text.svg" alt="LinkJoin Logo">
                 <p>Never be late again</p>
             </div>
             <div class="column-container">
@@ -239,7 +200,7 @@
             </div>
             <div class="copyright">
                 <hr>
-                <p>© Copyright 2021 LinkJoin. All rights reserved.</p>
+                <p>© Copyright 2022 LinkJoin. All rights reserved.</p>
             </div>
         </footer>
     </body>
@@ -296,7 +257,7 @@
         }
         window.addEventListener('resize', () => {
             $.ajax({
-                url:'http://127.0.0.1:5002/',
+                url:'https://linkjoin.xyz',
                 type:'GET',
                 success: async function(data) {
                     let content = $('<div>').append(data).find('#faq');
@@ -309,7 +270,7 @@
             document.getElementById('curve').style.filter = `blur(${window.scrollY*0.075}px)`
             document.getElementById('what').style.opacity = `${(window.scrollY-250)/500}`
             document.getElementById('info-boxes').style.opacity = `${(window.scrollY-800)/500}`
-            document.getElementById('info').style.opacity = `${(window.scrollY-1850)/500}`
+            document.getElementById('info').style.opacity = `${(window.scrollY-1600)/500}`
         })
 
         async function openFAQ(e) {
@@ -331,16 +292,6 @@
             }
         }
 
-        function hideCookiesPopup() {
-            document.getElementById('popup-cookies').style.opacity = '0'
-            document.getElementById('popup-cookies').style.pointerEvents = 'none'
-            const now = new Date();
-            const time = now.getTime();
-            const expireTime = time + 1000*36000;
-            now.setTime(expireTime);
-            document.cookie = `cookies=accepted; expires=${now.toUTCString()}`
-        }
-
         function resize() {
             if (window.innerWidth < 450) {
                 document.getElementById("get_started").innerText = "Get started"
@@ -348,7 +299,7 @@
                 document.getElementById("learn_more").style.width = "250px"
             }
             else {
-                document.getElementById("get_started").innerHTML = `Get started now! <img src="{{ url_for('static', filename='images/arrow-right.svg') }}" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow">`
+                document.getElementById("get_started").innerHTML = `Get started now! <img src="../static/images/arrow-right.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow">`
                 document.getElementById("get_started").style.width = "270px"
                 document.getElementById("learn_more").style.width = "270px"
             }
