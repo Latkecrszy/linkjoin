@@ -44,7 +44,7 @@
     transform: rotate(45deg) translate(-8px, -8px);
 }
 
-#plus {
+.plus {
     display: none;
     position: fixed;
     bottom: 20px;
@@ -52,10 +52,12 @@
     z-index: 2;
     cursor: pointer;
     box-shadow: -3px 3px 12px rgba(255, 255, 255, 0.25);
-    border-radius: 100px
+    border-radius: 100px;
+    height: 70px;
+    width: 70px;
 }
 
-#add_number_div {
+#add-number-div {
     width: min(500px, calc(100vw - 30px));
     padding: 10px 10px;
     background: var(--darkblue);
@@ -70,7 +72,7 @@
     display: none;
 }
 
-#add_number_div .content {
+#add-number-div .content {
     position: relative;
     top: -10px
 }
@@ -83,6 +85,8 @@
 
 #number::placeholder {
     font-size: 16px;
+    color: white;
+    opacity: 0.2
 }
 
 #add_number {
@@ -116,8 +120,9 @@
 }
 
 .notes::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 16px
+    font-size: 16px;
+    color: white;
+    opacity: 0.2
 }
 
 .notes {
@@ -137,7 +142,7 @@
     cursor: text;
 }
 
-#popup_notes {padding-bottom: 30px; box-sizing: border-box}
+#popup-notes {padding-bottom: 30px; box-sizing: border-box}
 
 #notes_textarea {
     border: 2px solid white;
@@ -158,7 +163,7 @@
     z-index: 2;
 }
 
-#popup_notes h2 {text-align: center; margin-top: 50px;}
+#popup-notes h2 {text-align: center; margin-top: 50px;}
 
 #notif {
     width: 350px;
@@ -266,6 +271,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 #open-tutorial.open {
     transform: rotate(270deg);
+    box-shadow: none;
 }
 
 #open-tutorial.open:hover {
@@ -313,7 +319,14 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 .show-notes.tutorial, .menu.tutorial {margin: 0; position: static;}
 
-.plus_button.tutorial {margin: 0; padding: 0;}
+.plus_button.tutorial {
+    position: static;
+    height: 80px;
+    width: 80px;
+    transform: unset;
+    padding: unset;
+    left: unset;
+}
 
 #tutorial-finished {
     width: 50%;
@@ -359,10 +372,12 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 .settings-change-number {
-    height: 30px;
-    width: 30px;
-    margin: 28px 0 0 5px;
+    height: 55px;
+    width: 55px;
+    margin: 25px 0 0 5px;
     cursor: pointer;
+    z-index: unset;
+    position: static;
 }
 
 .reset-password {
@@ -400,13 +415,57 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 .popup-time.meridian {
+    margin-top: 27px;
     width: 25px;
-    height: 24px;
+    height: 20px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.popup-time.meridian:hover {
+    color: var(--lightblue);
 }
 
 .popup-time.colon {
     margin: 27px -5px 0 0;
     width: 5px;
+}
+
+#company-container {
+    width: 370px;
+    justify-content: space-evenly;
+    display: flex
+}
+
+#company-container p {
+    margin: 40px 5px 0 0;
+    font-size: 20px;
+    opacity: 0.7;
+}
+
+#company-container .company-logo {
+    width: 65px;
+    height: 65px;
+    margin-top: 18px;
+}
+
+.company-logo.amazon {
+    width: 175px !important;
+    height: 40px !important;
+    margin: 37px 0 0 10px !important;
+}
+
+#company-container.amazon {
+    margin-left: 30px;
+}
+
+#company-container.amazon p {
+    margin: 40px 5px 0 5px;
+
+}
+
+#company-container a {
+    margin: 22px 0 0 0;
 }
 
 
@@ -451,17 +510,17 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
         display: inline-block;
         z-index: 9;
     }
-    #header_links a {display: none;}
+    #header-links a {display: none;}
     .plus_button {display: flex}
     #home {display: inline-block !important}
 
 }
 
 @media (max-width: 730px) {
-    #plus {display: flex !important}
+    .plus {display: flex !important}
     .plus_button {display: none}
     #popup {width: 100vw; max-width: 520px}
-    #popup_share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
+    #popup-share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
     #open-tutorial {
@@ -476,7 +535,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 @media (max-width: 500px) {
-    #popup, #popup_notes, #popup_share {
+    #popup, #popup-notes, #popup-share {
         left: 0 !important;
         top: 0 !important;
         transform: none

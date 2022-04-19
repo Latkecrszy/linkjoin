@@ -1,6 +1,6 @@
-#header_links {display: flex; width: 100%; background: none;}
+#header-links {display: flex; width: 100%; background: none;}
 
-#header_links div {margin-top: 30px;}
+#header-links div {margin-top: 30px;}
 
 #back {margin: 30px auto 30px 30px;}
 

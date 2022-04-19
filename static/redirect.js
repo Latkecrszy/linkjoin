@@ -23,14 +23,20 @@ async function start(username, links, sort) {
         user_links = await db(username)
         global_links = user_links
         for (let link of user_links) {
+
             let days = link['days']
-            if (link['active'] === "false" || link['time'] !== time || !(days.includes(day))) {
-                continue
-            }
-            if (parseInt(link['starts']) > 0) {
+            if (link['active'] === "false" || link['time'] !== time || !(days.includes(day)) || (link['activated'] === 'false' &&
+                new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
             }
             window.open(link['link'])
+            if (link['activated'] === 'false') {
+                await fetch('/changevar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id: link['id'], email: link['username'], variable: 'activated', activated: 'true'})
+                })
+            }
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
             await pause(username, user_links, sort, 46000)
         }

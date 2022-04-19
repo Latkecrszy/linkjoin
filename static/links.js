@@ -3,20 +3,24 @@ let tutorial_active = false;
 let created = false;
 let connected = true;
 const notesInfo = {}
+let defaultPopup;
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
-window.addEventListener('online', async () => {console.log('reconnected'); location.reload()})
+window.addEventListener('online', async () => {
+    console.log('reconnected');
+    await refresh()
+    await load_links(global_username, global_sort)})
 
-document.addEventListener('click', (e) => {
-    if (!e.target.parentElement.classList.contains('demo')) {
+document.addEventListener('click', e => {
+    if (e.target.parentElement && !e.target.parentElement.classList.contains('demo')) {
         document.getElementById('tutorial-menu').style.display = 'none'
     }
     else if (!e.target.classList.contains('menu_buttons')) {
         closeTutorial()
     }
-    if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target)
-        && e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial'
-        || e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
+    if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target) &&
+        e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial' ||
+        e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
         closeTutorial()
     }
 })
@@ -49,6 +53,21 @@ function createElement(tag, classList=[], id='', text='', other={}) {
     return el
 }
 
+function addZeroes(e) {
+    if (e.includes('/')) {
+        return e.split('/').map(i => {
+            if (i.toString().length === 1) {
+                return `0${i}`
+            }
+            return i
+        }).join('/')
+    }
+    else {
+        return `0${e}`
+    }
+
+}
+
 function openMenu(el) {
     el.children[el.children.length-1].style.display = 'flex';
 }
@@ -68,7 +87,9 @@ function getOffset(el) {
 
 async function db(username, id) {
     const deleted = id === 'deleted-links-body' ? 'true' : 'false'
-    let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}}).then(response => response.json()) : global_links || []
+    let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}})
+        .then(response => response.json())
+        .catch(() => location.reload()) : global_links || []
     if (results['error'] === 'Forbidden') {return location.reload()}
     return results
 }
@@ -106,6 +127,11 @@ async function popUp(popup) {
 function hide(popup, showBlur=false) {
     document.getElementById(popup).style.display = "none"
     blur(showBlur)
+    if (popup === 'popup') {
+        enableButton('submit')
+        document.getElementById(popup).innerHTML = defaultPopup
+        Array.from(document.getElementsByClassName('popup-time')).forEach(timeListener)
+    }
 }
 
 function edit(link) {
@@ -126,19 +152,26 @@ function edit(link) {
     document.getElementById("name").value = link["name"]
     document.getElementById("link").value = link["link"]
     document.getElementById("text_select").value = link["text"].toString()
-    document.getElementById("starts_select").value = (parseInt(link["starts"])%5).toString()
+    if (link['date']) {
+        changeDateSelect()
+        let date = new Date(link['date']).toLocaleDateString()
+        document.getElementById("date-select").value = addZeroes(date)
+    }
+
     if ("password" in link) {document.getElementById("password").value = link["password"]}
     else {document.getElementById("password").value = null}
     if (parseInt(link['time'].split(":")[0]) === 12) {
-        document.getElementById("pm").selected = "selected"
-        document.getElementById("hour").placeholder = 12
+        document.getElementById("am").innerText = 'AM'
+        document.getElementById("hour").value = 12
     }
     else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
     else if (parseInt(link['time'].split(":")[0]) > 12) {
         document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
-        document.getElementById("pm").selected = "selected"
+        document.getElementById("am").innerText = 'PM'
     }
-    else {document.getElementById("hour").value = parseInt(link['time'].split(":")[0])}
+    else {
+        document.getElementById("hour").value = parseInt(link['time'].split(":")[0])
+    }
     document.getElementById("minute").value = link['time'].split(":")[1]
     document.getElementById("submit").innerHTML = `Update <img src="/static/images/right-angle.svg" alt="right arrow">`
     document.getElementById("submit").setAttribute('onClick', `registerLink(${link['id']})`)
@@ -152,14 +185,14 @@ function edit(link) {
 
 async function delete_(link) {
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-    document.getElementById("popup_delete").style.display = "flex"
+    document.getElementById("popup-delete").style.display = "flex"
     if (link === 'tutorial') {
-        document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>Tutorial</b>?'
+        document.getElementById("popup-delete").children[0].innerHTML = 'Are you sure you want to delete <b>Tutorial</b>?'
         return document.getElementById("delete_button").addEventListener('click', () => {location.reload()})
     }
-    document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
+    document.getElementById("popup-delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
     document.getElementById("delete_button").addEventListener('click', async () => {
-        hide('popup_delete')
+        hide('popup-delete')
         await fetch('/delete', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -173,8 +206,8 @@ async function delete_(link) {
 }
 
 function share(link) {
-    document.getElementById("popup_share").style.zIndex = "11"
-    document.getElementById("popup_share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup_share").style.display]
+    document.getElementById("popup-share").style.zIndex = "11"
+    document.getElementById("popup-share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup-share").style.display]
     document.getElementById("share_link").value = link === 'tutorial' ? 'https://linkjoin.xyz/addlink?id=tutorial' : link['share']
     blur(true)
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
@@ -212,10 +245,10 @@ function copyLink(link, id) {
 function permDelete(link) {
     hide('deleted-links', true)
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
-    document.getElementById("popup_delete").style.display = "flex"
-    document.getElementById("popup_delete").children[0].innerHTML = 'Are you sure you want to permanently delete <b>'+link['name']+'</b>? This action cannot be undone.'
+    document.getElementById("popup-delete").style.display = "flex"
+    document.getElementById("popup-delete").children[0].innerHTML = 'Are you sure you want to permanently delete <b>'+link['name']+'</b>? This action cannot be undone.'
     document.getElementById("delete_button").addEventListener('click', async () => {
-        hide('popup_delete')
+        hide('popup-delete')
         await fetch('/delete', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -235,38 +268,48 @@ async function restore(id, email) {
 }
 
 async function load_links(username, sort, id="insert") {
-    const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-    const sessionIds = await fetch('/get_session', {headers: {'email': username, 'token': token}}).then(id => id.json())
-    if (sessionIds === null || !sessionIds.includes(cookieSessionId)) {location.replace('/login?error=not_logged_in')}
-    global_username = username
-    global_sort = sort
-    try {
-        document.getElementById(id).style.display = 'flex'
+    let links
+    if (account === 'false') {
+        links = JSON.parse(localStorage.getItem('links'))
     }
-    catch {
-        while (!connected) {
-            await sleep(5000)
+    else {
+        const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
+        const sessionIds = await fetch('/get_session', {headers: {'email': username, 'token': token}})
+            .then(id => id.status === 200 ? id.json() : location.reload())
+            .catch(() => location.reload())
+        if (!sessionIds.includes(cookieSessionId)) {location.replace('/login?error=not_logged_in')}
+        global_username = username
+        global_sort = sort
+        try {
+            document.getElementById(id).style.display = 'flex'
         }
-        location.reload()
+        catch {
+            while (!connected) {
+                await sleep(5000)
+            }
+            await refresh()
+            await load_links(username, global_sort)
+        }
+        links = await db(username, id)
     }
-    if (id === 'deleted-links') {id = 'deleted-links-body'}
+
+    id = id === 'deleted-links' ? 'deleted-links-body' : id
     const insert = document.getElementById(id)
     for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
-    const links = await db(username, id)
     global_links = links
     if (id !== 'insert') {
         blur(true)
     }
     if (links.toString() === '' && id === 'insert') {
         await refresh(id)
-        document.getElementById("header_links").style.margin = "0 0 0 0"
+        document.getElementById("header-links").style.margin = "0 0 0 0"
         document.getElementById("disappear").classList.remove("gone")
     }
     else if (links.toString() === '' && id !== 'insert') {
         insert.classList.add('empty')
-        return insert.innerHTML = `<h2>After you delete a link, it will show up here.</h2>
-                            <img src="/static/images/trash.svg" alt="trash can">
-                            `
+        insert.innerHTML = `<h2>After you delete a link, it will show up here.</h2>
+                            <img src="/static/images/trash.svg" alt="trash can">`
+        return
     }
     else {
         let final = []
@@ -366,8 +409,8 @@ async function load_links(username, sort, id="insert") {
         if (id === 'insert') {
             document.addEventListener('click', e => {
                 Array.from(document.getElementsByClassName('menu')).forEach(i => {
-                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) && !e.target.classList.contains('dot-menu')
-                        && !i.classList.contains('tutorial')) {
+                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) &&
+                        !e.target.classList.contains('dot-menu') && !i.classList.contains('tutorial')) {
                         i.style.display = 'none'
                     }
                 })
@@ -390,23 +433,24 @@ async function load_links(username, sort, id="insert") {
     let tutorial_completed = await fetch('/tutorial_complete', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({'email': username})})
+        body: JSON.stringify({email: username})})
     tutorial_completed = await tutorial_completed.json()
     if (tutorial_completed['tutorial'] !== "done") {await popupWarn(tutorial_completed['tutorial'])}
     await check_day(username)
     await checkTutorial()
     clearInterval(open)
+    defaultPopup = document.getElementById('popup').innerHTML
     if (error === 'link_not_found') {
         history.pushState('data', 'LinkJoin', '/links')
         await sendNotif('The link you are trying to add could not be found. Please contact the owner of this link for more information.', '#ba1a1a')
     }
-    start(username, links, sort)
     if (document.getElementsByClassName('highlight').length > 0) {
         document.getElementsByClassName('highlight')[0].scrollIntoView(true)
         await sleep(3000)
         document.getElementsByClassName('highlight')[0].style.background = 'none'
     }
-
+    created = false
+    await start(username, links, sort)
 }
 
 async function check_day(username) {
@@ -434,19 +478,28 @@ async function registerLink(parameter) {
     let hour = parseInt(document.getElementById("hour").value || document.getElementById("hour").placeholder)
     let minute = parseInt(document.getElementById("minute").value || document.getElementById("minute").placeholder)
     if (minute.toString().length === 1) {minute = '0' + minute}
-    if (document.getElementById("am").value === "pm") {if (hour !== 12) {hour += 12}}
+    if (document.getElementById("am").innerText === "PM" && hour !== 12) {hour += 12}
     else {if (hour === 12) {hour += 12}}
-    let days = []
-    for (let child of document.getElementById("days").children) {
-        if (child.classList.contains("selected")) {
-            days.push(child.value)
+    let days = Array.from(document.getElementById("days").children).map(i => {
+        if (i.classList.contains('selected')) {
+            return i.value
         }
+    }).filter(i => i !== undefined)
+    let date = ''
+    if (!document.getElementById("date-select").classList.contains('gone')) {
+        date = document.getElementById('date-select').value
+        let hour = new Date().getHours().toString().length === 1 ? `0${new Date().getHours().toString()}` : new Date().getHours().toString()
+        let minute = new Date().getMinutes().toString().length === 1 ? `0${new Date().getMinutes().toString()}` : new Date().getMinutes().toString()
+        date = new Date(
+            `${date.split('/')[2]}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}`)
+            .toISOString()
     }
     const args = {
             name: document.getElementById("name").value,
             link: document.getElementById("link").value, time: `${hour}:${minute}`,
             repeats: document.getElementById("select").value, days: days,
-            starts: parseInt(document.getElementById("starts_select").value)*days.length,
+            date: date,
+            activated: date === '',
             text: document.getElementById("text_select").value,
             id: parameter, email: global_username
         }
@@ -464,9 +517,20 @@ async function registerLink(parameter) {
     if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
     if (!document.getElementById("link").value) {return document.getElementById("error").innerText = "Please provide a link for your meeting"}
     if (days.length === 0) {return document.getElementById("error").innerText = "Please provide days for your meeting."}
-    await fetch(url, payload)
-    await skipTutorial()
+    if (account === 'false') {
+        global_links.push(args)
+        localStorage.setItem('links', JSON.stringify(global_links))
+    }
+    else {
+        await fetch(url, payload)
+    }
+    hide('popup')
+    await refresh()
+    await load_links(global_username, global_sort)
 }
+
+
+
 
 async function logOut() {
     document.cookie = "email=; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
@@ -502,7 +566,7 @@ async function popupWarn(item, skip) {
     }
     if (item === 0) {
         browser()
-        document.getElementById("check_popup").style.display = "flex"
+        document.getElementById("check-popup").style.display = "flex"
         document.getElementById(`tutorial-1`).style.display = "none"
         await sleep(5000)
         let newWindow = window.open()
@@ -513,7 +577,7 @@ async function popupWarn(item, skip) {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({'email': global_username, 'step': 1})
             })
-            document.getElementById("check_popup").style.display = "none"
+            document.getElementById("check-popup").style.display = "none"
             return newWindow.close()
         }
         await fetch(`/tutorial`, {
@@ -522,27 +586,27 @@ async function popupWarn(item, skip) {
             body: JSON.stringify({'email': global_username, 'step': 0})
         })
         document.getElementById(`tutorial0`).style.display = "flex"
-        return document.getElementById("check_popup").style.display = "none"
+        return document.getElementById("check-popup").style.display = "none"
     }
     else if (item === 1) {
         if (skip) {
-            document.getElementById("popups_not_enabled").style.display = "none"
+            document.getElementById("popups-not-enabled").style.display = "none"
             document.getElementById("tutorial1").style.display = "flex"
-            return document.getElementById("check_popup").style.display = "none"
+            return document.getElementById("check-popup").style.display = "none"
         }
         browser()
-        document.getElementById("check_popup").style.display = "flex"
+        document.getElementById("check-popup").style.display = "flex"
         document.getElementById(`tutorial0`).style.display = "none"
         document.getElementById(`tutorial-1`).style.display = "none"
-        document.getElementById(`popups_not_enabled`).style.display = "none"
+        document.getElementById(`popups-not-enabled`).style.display = "none"
         await sleep(5000)
-        document.getElementById("check_popup").style.display = "none"
+        document.getElementById("check-popup").style.display = "none"
         let newWindow = window.open()
         if (newWindow) {newWindow.close()}
-        else {return document.getElementById("popups_not_enabled").style.display = "flex"}
+        else {return document.getElementById("popups-not-enabled").style.display = "flex"}
         document.getElementById("tutorial1").style.display = "flex"
     }
-    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("add-number-div").style.display = "none"
     try {document.getElementById(`tutorial${item}`).style.display = "flex"}
     catch {}
     try {document.getElementById(`tutorial${parseInt(item)-1}`).style.display = "none"}
@@ -552,11 +616,14 @@ async function popupWarn(item, skip) {
 
 async function refresh(id="insert") {
     let insert = document.getElementById(id)
-    while (insert.firstChild) {insert.removeChild(insert.firstChild)}
+    if (insert) {
+        while (insert.firstChild) {insert.removeChild(insert.firstChild)}
+    }
+
 }
 
 async function addNumberShow() {
-    const content = document.getElementById('add_number_div').children[1]
+    const content = document.getElementById('add-number-div').children[1]
     if (number === "None") {
         content.children[0].innerText = 'Add phone number'
         content.children[1].innerText = "We noticed that you haven't added a phone number to your account. This means that you won't receive text reminders for your links. To add a number, type it in below. If you don't want to add your number, click the arrow in the upper left."
@@ -567,7 +634,7 @@ async function addNumberShow() {
         content.children[1].innerText = "To change the phone number for your text reminders, type it in below and click 'Change Number'."
         content.children[3].innerText = 'Change Number'
     }
-    document.getElementById('add_number_div').style.display = 'flex'
+    document.getElementById('add-number-div').style.display = 'flex'
     blur(true)
 }
 
@@ -581,10 +648,10 @@ async function add_number(id) {
                 'countrycode': countryCode['code'],
                 'number': number})}
     )
-    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("add-number-div").style.display = "none"
     blur(false)
     if (id === 'number') {
-        hide('add_number_div')
+        hide('add-number-div')
     }
     else {
         hide('settings')
@@ -600,27 +667,43 @@ async function no_add_number() {
                 'countrycode': '',
                 'number': number})}
     )
-    document.getElementById("add_number_div").style.display = "none"
+    document.getElementById("add-number-div").style.display = "none"
     blur(false)
 }
 
 async function checkTutorial() {
-    const tutorial_completed = await fetch('/tutorial_complete',
+    let tutorial_completed
+    if (account === 'false') {
+        tutorial_completed = {'tutorial': localStorage.getItem('tutorial_completed')}
+    }
+    else {
+        tutorial_completed = await fetch('/tutorial_complete',
         {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({email: global_username})})
         .then(response => response.json())
+    }
+
     if (tutorial_completed['tutorial'] === "done" && number === "None" && window.innerWidth >= 1000) {
-        document.getElementById("add_number_div").style.display = "block"
+        document.getElementById("add-number-div").style.display = "block"
         blur(true)
     }
 }
 
-async function skipTutorial() {
+async function skipTutorial(register) {
+    if (document.getElementById('insert').children.length === 0) {
+        location.reload()
+    }
     await fetch(`/tutorial`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({'email': global_username, 'step': 'done'})
     })
-    location.reload()
+    if (document.getElementById('tutorial1').style.display !== 'none') {
+        location.reload()
+    }
+    if (register) {hide('popup')}
+    await refresh()
+    await load_links(global_username, global_sort)
+
 }
 
 document.addEventListener("click", (e) => {
@@ -632,44 +715,22 @@ document.addEventListener("click", (e) => {
 
 })
 
-document.addEventListener("click", event => {if(event.target.matches("#days button")) event.target.classList.toggle("selected")})
+document.addEventListener("click", event => {
+    let date = new Date(addZeroes(document.getElementById('date-select').value.replaceAll('/', '-')))
+    const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
+    if (event.target.matches("#days button") && (document.getElementById('date-select').classList.contains('gone') ||
+        event.target.value !== day)) {
+        event.target.classList.toggle("selected")
+    }
+    // Fix by finding day of date inputted and not allowing it to be deselected.
+})
 
 function pageSetup() {
     document.getElementById('notes_div').addEventListener('click', unRenderNotes)
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
-    Array.from(document.getElementsByClassName('popup-time')).forEach((e, index, arr) =>
-    {e.addEventListener('keypress', i => {
-        if (index === 0) {
-            if (parseInt(i.key) > 1 || parseInt(e.value.length) === 1) {
-                e.value += i.key
-                arr[2].focus()
-                i.preventDefault()
-            }
-             if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && (parseInt(e.value) > 1 || parseInt(i.key) > 2))) {
-                i.preventDefault()
-             }
-             if (parseInt(e.value) > 12) {
-                 e.value = e.value.slice(0, -1)
-             }
-        }
-        else if (index === 2) {
-            if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && parseInt(e.value) > 5)) {
-                i.preventDefault()
-             }
-        }
-    })})
-    document.getElementsByClassName('popup-time')[0].addEventListener('blur', e => {
-        if (e.target.value.length === 1) {
-            e.target.style.width = '10px'
-        }
-    })
-    document.getElementsByClassName('popup-time')[0].addEventListener('focus', e => e.target.style.width = '20px')
-    document.getElementsByClassName('popup-time')[2].addEventListener('blur', e => {
-        if (e.target.value.length === 1) {
-            e.target.value = '0' + e.target.value
-        }
-    })
+    Array.from(document.getElementsByClassName('popup-time')).forEach(timeListener)
+
 }
 
 function openTutorial() {
@@ -762,5 +823,122 @@ function dropDown(el) {
     dropdownMenu.style.left = getOffset(el).left.toString()
     dropdownMenu.style.top = getOffset(el).top.toString()
     dropdownMenu.append(...el.children)
+}
 
+
+function changeDateSelect() {
+    document.getElementById('starts_select').classList.toggle('gone')
+    document.getElementById('date-select').classList.toggle('gone')
+    document.getElementById('date-select').focus()
+    document.getElementById('starts-back-arrow').classList.toggle('gone')
+    document.getElementById('starts_select').children[0].selected = 'selected'
+}
+
+function checkDate(el) {
+    if (el.value.split('/')[el.value.split('/').length-1].length === 4) {
+        let hour = new Date().getHours().toString()
+        if (hour.length === 1) {hour = `0${hour}`}
+        let minute = new Date().getMinutes().toString()
+        if (minute.length === 1) {minute = `0${minute}`}
+        let date = new Date(
+            `${el.value.split('/')[2]}-${el.value.split('/')[0]}-${el.value.split('/')[1]}T${hour}:${minute}`)
+        let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
+        document.getElementById(day).classList.add('selected')
+
+    }
+}
+
+async function formatDate(el) {
+    const monthLengths = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+    el.addEventListener('keypress', e => {
+        if (!(e.code.includes('Digit') || e.key === '/')) {
+            e.preventDefault()
+            return
+        }
+        let input = (el.value + e.key).split('/')
+        if (input[input.length - 1] === '') {
+            input.pop()
+        }
+        // Month:
+        if (input.length === 1) {
+            input = input[0]
+            if (input.length === 1 && parseInt(input) > 1) {
+                el.value = `0${input}/`
+                e.preventDefault()
+            } else if (input.length === 2 && parseInt(input) <= 12) {
+                el.value += `${e.key}/`
+                e.preventDefault()
+            }
+
+            if (input.length > 2) {
+                e.preventDefault()
+            } else if (parseInt(input) > 12) {
+                e.preventDefault()
+            }
+        }
+
+
+        else if (input.length === 2) {
+            let month = input[0]
+            input = input[1]
+            if (input.length === 1 && parseInt(input) > 3) {
+                el.value = `${month}/0${input}/`
+                e.preventDefault()
+            } else if (input.length === 2 && parseInt(input) <= monthLengths[parseInt(month)]) {
+                el.value += `${e.key}/`
+                e.preventDefault()
+            }
+
+            if (input.length > 2) {
+                e.preventDefault()
+            } else if (parseInt(input) > monthLengths[parseInt(month)]) {
+                e.preventDefault()
+            }
+        }
+
+        else if (input.length === 3) {
+            if (parseInt(input[input.length-1]) === 22) {
+                el.value = `${el.value.substring(0, el.value.length-2)}/202`
+            }
+        }
+        if ((el.value+e.key)[(el.value+e.key).length-1] === (el.value+e.key)[(el.value+e.key).length-2] &&
+            (el.value+e.key)[(el.value+e.key).length-1] === '/') {
+            el.value = el.value.substring(0, el.value.length-1)
+        }
+    })
+}
+
+
+function timeListener(e, index, arr) {
+    e.addEventListener('keypress', i => {
+        if (index === 0) {
+            if (parseInt(i.key) > 1 || parseInt(e.value.length) === 1) {
+                e.value += i.key
+                arr[2].focus()
+                i.preventDefault()
+            }
+             if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && (parseInt(e.value) > 1 || parseInt(i.key) > 2))) {
+                i.preventDefault()
+             }
+             if (parseInt(e.value) > 12) {
+                 e.value = e.value.slice(0, -1)
+             }
+        }
+        else if (index === 2) {
+            if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && parseInt(e.value) > 5)) {
+                i.preventDefault()
+             }
+        }
+    })
+    document.getElementsByClassName('popup-time')[0].addEventListener('blur', e => {
+        if (e.target.value.length === 1) {
+            e.target.style.width = '10px'
+        }
+    })
+    document.getElementsByClassName('popup-time')[0].addEventListener('focus', e => e.target.style.width = '20px')
+    document.getElementsByClassName('popup-time')[2].addEventListener('blur', e => {
+        if (e.target.value.length === 1) {
+            e.target.value = '0' + e.target.value
+        }
+    })
 }

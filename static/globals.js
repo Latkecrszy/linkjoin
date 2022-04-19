@@ -10,21 +10,22 @@ function sleep(ms) {
 
 window.addEventListener('beforeunload', async () => {
     if (!['login', 'signup'].includes(location.href.split('/')[location.href.split('/').length-1])) {
-        console.log('unloading');
         await fetch('/invalidate-token', {method: 'POST', headers:  {'Content-Type': 'application/json'},
         body: JSON.stringify({'token': token})})
     }})
 
-function disableButton(e) {
-    e.classList.add('disabled')
+function disableButton(e, loader=true) {
+    e.classList.add(loader ? 'disabled' : 'disabled-no-loader')
 }
 
 function enableButton(id) {
     if (document.getElementById(id)) {
         document.getElementById(id).classList.remove('disabled')
+        document.getElementById(id).classList.remove('disabled-no-loader')
     }
     else {
         document.getElementsByClassName(id)[0].classList.remove('disabled')
+        document.getElementsByClassName(id)[0].classList.remove('disabled-no-loader')
     }
 }
 

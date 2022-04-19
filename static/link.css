@@ -12,7 +12,8 @@
     color: white;
     font-family: Montserrat, serif;
     margin-bottom: 20px;
-    transition: 0.5s
+    transition: 0.5s;
+    box-shadow: 3px 1px 5px rgba(0, 0, 0, 0.1)
 }
 
 .link.link-disabled {
@@ -86,6 +87,7 @@
     left: 0;
     transition: all 0.3s;
     pointer-events: all;
+    box-shadow: -1px 1px 1px rgb(0, 0, 0, 0.1);
 }
 
 .switch-checkbox:checked + .switch::after {
@@ -93,7 +95,7 @@
 }
 
 .switch-checkbox:checked + .switch {
-    background: #1A5E8F
+    background: var(--switch)
 }
 
 .switch-checkbox:checked + .switch::after {
@@ -112,14 +114,14 @@
 
 .menu {
     z-index: 2;
-    padding: 16px 20px;
+    padding: 16px 10px;
     font: 400 18px Montserrat;
     display: none;
     flex-direction: column;
     background: var(--blue);
     border-radius: 4px;
     height: 190px;
-    width: 100px;
+    width: 120px;
     right: 8vw;
     position: absolute;
     box-shadow: -3px 3px 12px rgb(0 0 0 / 25%);
@@ -127,12 +129,23 @@
 
 .menu div {
     cursor: pointer;
+    padding: 4px 10px;
+    margin: -4px 0;
+    border-radius: 2px
+}
+
+.menu div:hover {
+    background: #1c2f45;
 }
 
 .menu_line {
     width: 90%;
     opacity: 0.1;
     border-radius: 10px;
+}
+
+.menu_buttons {
+    cursor: pointer;
 }
 
 

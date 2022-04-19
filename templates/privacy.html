@@ -2,7 +2,7 @@
 <html lang="en" class="nobar" style="background: #091B30">
     <head>
         <link rel="canonical">
-        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <link rel="manifest" href="../static/manifest.json">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script>
@@ -12,26 +12,26 @@
 
           gtag('config', 'G-MR5B009GBF');
         </script>
-        <script src="{{ url_for('static', filename='globals.js') }}"></script>
+        <script src="../static/globals.js"></script>
         <meta name=”robots” content="noindex, nofollow">
-        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='website.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='privacy.css') }}" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/website.css" rel="stylesheet"/>
+        <link href="../static/privacy.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
         <title>LinkJoin</title>
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="theme-color" content="#091B30">
     </head>
     <body>
         <header>
-            <img id="logo" src="{{ url_for('static', filename='images/logo-text.svg') }}" height="40" alt="LinkJoin Logo" onclick="window.open('/')" style="cursor: pointer">
+            <img id="logo" src="../static/images/logo-text.svg" height="40" alt="LinkJoin Logo" onclick="window.open('/')" style="cursor: pointer">
             <a href="/links" class="underline">My Links</a>
             <a href="/signup" class="underline">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
             <div id="dropdown">
                 <div id="hamburger">
                     <div id="line1"></div>
@@ -39,7 +39,7 @@
                     <div id="line3"></div>
                 </div>
                 <div id="hamburger_dropdown">
-                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
                     <a href="/login" class="underline">Log In</a>
                     <a href="/links" class="underline">Links</a>
                 </div>

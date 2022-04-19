@@ -3,8 +3,9 @@
     --underline-2-width: 0%;
     --underline-3-width: 0%;
     --lightblue: #2B8FD8;
-    --darkblue: #091B30;
     --blue: #142539;
+    --darkblue: #091B30;
+    --switch: #1A5E8F
 }
 
 button:focus{outline: none}
@@ -159,7 +160,7 @@ div {font-family: Montserrat; color: white;}
 
 select {-webkit-appearance:none}
 
-#header_links {
+#header-links {
     background-color: var(--blue);
     height: 80px;
     padding: 0 40px 20px 15px;
@@ -228,7 +229,7 @@ input:invalid {box-shadow: none}
   transform-origin: bottom left;
 }
 
-html::-webkit-scrollbar, .notes::-webkit-scrollbar {
+html::-webkit-scrollbar, .notes::-webkit-scrollbar, #popup::-webkit-scrollbar, #settings::-webkit-scrollbar {
     width: 8px;
 }
 
@@ -236,14 +237,17 @@ html::-webkit-scrollbar, .notes::-webkit-scrollbar {
     width: 0;
 }
 
-html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track, #popup::-webkit-scrollbar-track, #settings::-webkit-scrollbar {
     border-radius: 12px;
 }
 
-html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, #popup::-webkit-scrollbar-thumb, #settings::-webkit-scrollbar-thumb {
     background: var(--lightblue);
     border-radius: 5px;
 }
+
+::-webkit-scrollbar-corner {background-color: transparent;}
+
 
 .nobar::-webkit-scrollbar-thumb {
     display: none;
@@ -284,8 +288,28 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb {
     padding-left: 15px;
 }
 
-.disabled {
+.disabled, .disabled-no-loader {
     opacity: 0.7;
     cursor: not-allowed;
     pointer-events: none;
+    position: relative;
+}
+
+.disabled {
+    font-size: 0 !important
+}
+
+.disabled::after {
+    content: "";
+    display: block;
+    background-image: url('/static/images/loading2.gif');
+    left: 0;
+    right: 0;
+    position: absolute;
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    margin: 3px 0;
+    pointer-events: none;
+    height: inherit;
 }

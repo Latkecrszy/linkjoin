@@ -1,43 +1,35 @@
-from flask import Flask, make_response, jsonify, request, render_template, redirect, send_file
-from flask_pymongo import PyMongo
-import json, os, dotenv, re, random, string, requests, pprint, threading, smtplib, ssl, time
+import json, os, dotenv, re, random, string, requests, pprint, smtplib, ssl
+from mistune import html
 from argon2 import PasswordHasher, exceptions
-from flask_cors import CORS
 from cryptography.fernet import Fernet
 from background import message
-from mistune import Markdown
 from email.message import EmailMessage
 from google.auth import jwt
+from pymongo import MongoClient
+from starlette.applications import Starlette
+from starlette.templating import Jinja2Templates
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response, FileResponse, PlainTextResponse, RedirectResponse
+from starlette.routing import Route, Mount
+from starlette.staticfiles import StaticFiles
+from starlette.background import BackgroundTask
 
 ph = PasswordHasher()
-x = 0
-app = Flask(__name__)
+timing = 0
 dotenv.load_dotenv()
-app.config['MONGO_URI'] = os.environ.get('MONGO_URI', None)
+db = MongoClient(os.environ.get('MONGO_URI', None)).zoom_opener
+templates = Jinja2Templates(directory='templates')
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
-markdown = Markdown()
 pp = pprint.PrettyPrinter(indent=4)
 started = False
-cors = CORS(app, resources={
-    r'/db/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-    r'/tutorial_complete/*': {
-        'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-    r'/tutorial/*': {
-        'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-    r'/*': {'origins': ['https://linkjoin.xyz', 'http://127.0.0.1:5002', 'https://linkjoin-beta.herokuapp.com']},
-    r'/set_cookie/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
-    r'/get_session/*': {'origins': ['https://linkjoin.xyz', 'https://linkjoin-beta.herokuapp.com']},
-    r'/location/*': {
-        'origins': ['https://linkjoin-beta.herokuapp.com', 'https://linkjoin.xyz', 'http://127.0.0.1:5002']}})
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
-mongo = PyMongo(app)
 hasher = PasswordHasher()
 
 
 def analytics(_type, **kwargs):
     try:
-        analytics_info = dict(mongo.db.analytics.find_one({'id': 'analytics'}))
+        analytics_info = dict(db.analytics.find_one({'id': 'analytics'}))
         if _type == 'links_made':
             analytics_info['links_made'] += 1
         elif _type == 'logins':
@@ -51,145 +43,139 @@ def analytics(_type, **kwargs):
                 analytics_info['daily_users'][-1].append(kwargs['email'])
         elif _type == 'links_opened':
             analytics_info['links_opened'] += 1
-        mongo.db.analytics.find_one_and_replace({'id': 'analytics'}, analytics_info)
+        db.analytics.find_one_and_replace({'id': 'analytics'}, analytics_info)
     except Exception as e:
         print(e)
 
 
-@app.route('/analytics', methods=['GET', 'POST'])
-def analytics_endpoint():
+async def analytics_endpoint(request: Request) -> Response:
     if request.method == 'POST':
-        data = request.get_json()
+        data = await request.json()
         if data.get('field') == 'links_opened':
             analytics('links_opened')
-        return 'Success', 200
+        response = Response('Success')
+        return response
 
 
 def gen_id():
     id = ''.join(random.choices(string.ascii_letters, k=16))
-    while id in [dict(document)['refer'] for document in mongo.db.login.find() if 'refer' in document]:
+    while id in [dict(document)['refer'] for document in db.login.find() if 'refer' in document]:
         id = ''.join(random.choices(string.ascii_letters, k=16))
     return id
 
 
 def gen_session():
     session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
-    while session in [_session['session_id'] for _session in mongo.db.sessions.find()]:
+    while session in [_session['session_id'] for _session in db.sessions.find()]:
         session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
     return session
 
 
 def gen_otp():
     otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
-    while otp in [_otp['pw'] for _otp in mongo.db.otp.find()]:
+    while otp in [_otp['pw'] for _otp in db.otp.find()]:
         otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
     return otp
 
 
 def authenticated(cookies, email):
     try:
-        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in mongo.db.sessions.find({'username': email})]
+        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in db.sessions.find({'username': email})]
     except TypeError:
         return False
 
 
-@app.before_first_request
-def thread_start():
+async def not_found(request: Request, exc) -> Response:
+    response = templates.TemplateResponse('404.html', {'request': request}, status_code=exc.status_code)
+    return response
+
+
+async def main(request: Request) -> Response:
     global started
+    token = gen_session()
+    db.anonymous_token.insert_one({'token': token})
+    logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
     if not started:
         started = True
-        message_thread = threading.Thread(target=message, daemon=True)
-        message_thread.start()
-        print('starting')
+        task = BackgroundTask(message)
+        return templates.TemplateResponse('website.html', {'token': token, 'logged_in': logged_in, 'request': request}, background=task)
+    else:
+        return templates.TemplateResponse('website.html', {'token': token, 'logged_in': logged_in, 'request': request})
 
 
-@app.before_request
-def before_request():
-    global x
-    x = time.perf_counter()
+async def location(request: Request) -> Response:
+    return JSONResponse({'country': request.headers.get('Cf-Ipcountry')})
 
 
-@app.teardown_request
-def after_request(y):
-    global x
-    if time.perf_counter()-x > 5:
-        print(f'Long time: {time.perf_counter()-x}')
-
-
-@app.route('/', methods=['GET'])
-def main():
-    token = gen_session()
-    mongo.db.anonymous_token.insert_one({'token': token})
-    logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
-    return render_template('website.html', token=token, logged_in=logged_in)
-
-
-@app.route("/location", methods=['GET'])
-def location():
-    return jsonify({'country': request.headers.get('Cf-Ipcountry')})
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+async def login(request: Request) -> Response:
     if request.method == 'GET':
         token = gen_session()
-        mongo.db.anonymous_token.insert_one({'token': token})
-        return render_template('login.html', error=request.args.get('error'),
-                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
-                               token=token)
+        db.anonymous_token.insert_one({'token': token})
+        return templates.TemplateResponse('login.html', {
+            'error': request.query_params.get('error'), 'token': token, 'request': request,
+            'redirect': request.query_params.get('redirect') if request.query_params.get('redirect') else '/links'})
     else:
-        data = request.get_json()
+        data = await request.json()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
         token = gen_session()
-        if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
-            return {'error': 'Invalid token', 'code': 403}, 403
-        mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+        if not db.anonymous_token.find_one({'token': data.get('token')}):
+            response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
+            return response
+        db.anonymous_token.find_one_and_delete({'token': data.get('token')})
 
         if data.get('jwt'):
             try:
                 email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
-                mongo.db.tokens.insert_one({'email': email, 'token': token})
+                db.tokens.insert_one({'email': email, 'token': token})
             except UnicodeDecodeError:
-                mongo.db.anonymous_token.insert_one({'token': token})
-                return {'redirect': data['redirect'], "error": 'google_login_failed', 'token': token}
+                db.anonymous_token.insert_one({'token': token})
+                response = JSONResponse({'redirect': data['redirect'], "error": 'google_login_failed', 'token': token})
+                return response
         else:
             email = data.get('email')
-            mongo.db.tokens.insert_one({'email': email, 'token': token})
-            mongo.db.anonymous_token.insert_one({'token': token})
+            db.tokens.insert_one({'email': email, 'token': token})
+            db.anonymous_token.insert_one({'token': token})
             try:
-                ph.verify(mongo.db.login.find_one({'username': email})['password'], data.get('password'))
+                ph.verify(db.login.find_one({'username': email})['password'], data.get('password'))
             except exceptions.VerifyMismatchError:
-                return {"redirect": data['redirect'], "error": 'incorrect_password', 'token': token}
+                response = JSONResponse({"redirect": data['redirect'], "error": 'incorrect_password', 'token': token})
+                return response
             except TypeError:
-                return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
+                response = JSONResponse({'redirect': data['redirect'], "error": 'email_not_found', 'token': token})
+                return response
             except KeyError:
-                return {"url": redirect_link, "error": 'no_password', 'email': email, 'keep': data.get('keep'), 'token': token}
+                response = JSONResponse({"url": redirect_link, "error": 'no_password', 'email': email,
+                                         'keep': data.get('keep'), 'token': token})
+                return response
 
-        if mongo.db.login.find_one({'username': email}) is None:
-            return {'redirect': data['redirect'], "error": 'email_not_found', 'token': token}
-        elif mongo.db.login.find_one({'username': email}).get('confirmed') == "false":
-            return {'redirect': data['redirect'], "error": 'not_confirmed', 'token': token}
-        mongo.db.anonymous_token.find_one_and_delete({'token': token})
+        if db.login.find_one({'username': email}) is None:
+            response = JSONResponse({'redirect': data['redirect'], "error": 'email_not_found', 'token': token})
+            return response
+        elif db.login.find_one({'username': email}).get('confirmed') == "false":
+            response = JSONResponse({'redirect': data['redirect'], "error": 'not_confirmed', 'token': token})
+            return response
+        db.anonymous_token.find_one_and_delete({'token': token})
         analytics('logins')
-        return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
+        response = JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
+        return response
 
 
-@app.route('/logout')
-def logout():
-    mongo.db.sessions.find_one_and_delete({'session_id': request.args.get('session_id'), 'email': request.args.get('email')})
-    return {'msg': 'Success'}, 200
+async def logout(request: Request) -> Response:
+    db.sessions.find_one_and_delete({'session_id': request.query_params.get('session_id'), 'email': request.query_params.get('email')})
+    response = JSONResponse({'msg': 'Success'})
+    return response
 
 
-@app.route('/confirm_email', methods=['POST'])
-def confirm_email():
-    data = request.get_json()
+async def confirm_email(request: Request) -> Response:
+    data = await request.json()
     redirect_link = data.get('redirect') if data.get('redirect') else "/links"
     token = gen_session()
     refer_id = gen_id()
     account_token = gen_otp()
-    if not mongo.db.anonymous_token.find_one({'token': data.get('token')}):
-        return {'error': 'Invalid token', 'code': 403}, 403
-    mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+    if not db.anonymous_token.find_one({'token': data.get('token')}):
+        response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
+        return response
+    db.anonymous_token.find_one_and_delete({'token': data.get('token')})
     """
     Order of steps:
     Google 1. Decode JWT and get email
@@ -201,26 +187,30 @@ def confirm_email():
     if data.get('jwt'):
         try:
             email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
-            mongo.db.tokens.insert_one({'email': email, 'token': token})
+            db.tokens.insert_one({'email': email, 'token': token})
         except UnicodeDecodeError:
-            mongo.db.anonymous_token.insert_one({'token': token})
-            return {'redirect': data['redirect'], "error": 'google_signup_failed', 'token': token}
+            db.anonymous_token.insert_one({'token': token})
+            response = JSONResponse({'redirect': data['redirect'], "error": 'google_signup_failed', 'token': token})
+            return response
     else:
         email = data.get('email')
         if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-            mongo.db.anonymous_token.insert_one({'email': email, 'token': token})
-            return {"error": "invalid_email", "url": redirect_link, 'token': token}
-        mongo.db.tokens.insert_one({'email': email, 'token': token})
+            db.anonymous_token.insert_one({'email': email, 'token': token})
+            response = JSONResponse({"error": "invalid_email", "url": redirect_link, 'token': token})
+            return response
+        db.tokens.insert_one({'email': email, 'token': token})
 
-    if mongo.db.login.find_one({'username': email}) is not None:
-        mongo.db.tokens.find_one_and_delete({'email': email, 'token': token})
-        mongo.db.anonymous_token.insert_one({'token': token})
-        return {"error": "email_in_use", "url": redirect_link, 'token': token}
+    if db.login.find_one({'username': email}) is not None:
+        db.tokens.find_one_and_delete({'email': email, 'token': token})
+        db.anonymous_token.insert_one({'token': token})
+        response = JSONResponse({"error": "email_in_use", "url": redirect_link, 'token': token})
+        return response
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token}
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:
-            return {"error": "password_too_short", "url": redirect_link, 'token': token}
+            response = JSONResponse({"error": "password_too_short", "url": redirect_link, 'token': token})
+            return response
         account['password'] = hasher.hash(data.get('password'))
 
     if data.get('number'):
@@ -228,7 +218,7 @@ def confirm_email():
         if len(number) < 11:
             number = data.get('countrycode') + str(number)
         account['number'] = int(number)
-    mongo.db.login.insert_one(account)
+    db.login.insert_one(account)
     content = EmailMessage()
 
     content.set_content(f'''LinkJoin here!
@@ -242,66 +232,69 @@ LinkJoin''')
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
         server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
         server.send_message(content)
-    return {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token}
+    response = JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
+    return response
 
 
 
-@app.route('/signup', methods=['GET'])
-def signup():
+async def signup(request: Request) -> Response:
     if request.method == 'GET':
-        if mongo.db.login.find_one({'token': request.args.get('tk')}) and request.args.get('tk') is not None:
-            email = mongo.db.login.find_one({"token": request.args.get("tk")})["username"]
-            accounts = mongo.db.login.find({'username': email})
+        if db.login.find_one({'token': request.query_params.get('tk')}) and request.query_params.get('tk') is not None:
+            email = db.login.find_one({"token": request.query_params.get("tk")})["username"]
+            accounts = db.login.find({'username': email})
             account = None
             for i in accounts:
                 if account is None:
                     account = i
                 else:
-                    mongo.db.find_one_and_delete({'token': i['token']})
-            mongo.db.login.find_one_and_update({'token': account['token']}, {'$set': {'confirmed': 'true'}})
+                    db.find_one_and_delete({'token': i['token']})
+            db.login.find_one_and_update({'token': account['token']}, {'$set': {'confirmed': 'true'}})
             token = gen_session()
-            mongo.db.tokens.insert_one({'email': email, 'token': token})
+            db.tokens.insert_one({'email': email, 'token': token})
             analytics('signups')
-            return redirect('/links')
+            response = RedirectResponse('/links')
+            return response
         token = gen_session()
-        mongo.db.anonymous_token.insert_one({'token': token})
-        return render_template('signup.html', error=request.args.get('error'),
-                               redirect=request.args.get('redirect') if request.args.get('redirect') else '/links',
-                               refer=request.args.get('refer') if request.args.get('refer') else 'none',
-                               country_codes=json.load(open("country_codes.json")), token=token)
+        db.anonymous_token.insert_one({'token': token})
+        return templates.TemplateResponse('signup.html', {
+            'error': request.query_params.get('error'), 'token': token,
+            'redirect': request.query_params.get('redirect') if request.query_params.get('redirect') else '/links',
+            'refer': request.query_params.get('refer') if request.query_params.get('refer') else 'none',
+            'country_codes': json.load(open("country_codes.json")), 'request': request})
 
 
-@app.route('/set_cookie', methods=['GET'])
-def set_cookie():
-    email = request.args.get('email').lower()
-    if not mongo.db.tokens.find_one({'email': email, 'token': request.args.get('token')}):
+async def set_cookie(request: Request):
+    email = request.query_params.get('email').lower()
+    if not db.tokens.find_one({'email': email, 'token': request.query_params.get('token')}):
         print('redirecting')
-        return redirect('/login')
-    mongo.db.tokens.find_one_and_delete({'email': email, 'token': request.args.get('token')})
-    response = make_response(redirect(request.args.get('url')))
+        return RedirectResponse('/login')
+    db.tokens.find_one_and_delete({'email': email, 'token': request.query_params.get('token')})
+    response = RedirectResponse(request.query_params.get('url'))
     response.set_cookie('email', email)
     session_id = gen_session()
-    mongo.db.sessions.insert_one({'username': email, 'session_id': session_id})
-    if request.args.get('keep') == 'true':
+    db.sessions.insert_one({'username': email, 'session_id': session_id})
+    if request.query_params.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
         response.set_cookie('session_id', session_id, max_age=259200)
+
     return response
 
 
-@app.route('/get_session', methods=['GET'])
-def get_session():
-    if not authenticated(request.cookies, request.headers.get('email')) or not mongo.db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
-        return {'error': 'Forbidden'}, 403
-    return jsonify([i['session_id'] for i in mongo.db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})])
+async def get_session(request: Request) -> Response:
+    if not authenticated(request.cookies, request.headers.get('email')) or not db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
+        response = JSONResponse({'error': 'Forbidden', 'code': 403}, 403)
+        return response
+    response = JSONResponse([i['session_id'] for i in db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})])
+    return response
 
 
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.get_json()
+async def register(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
-        return {'error': 'Forbidden'}, 403
-    ids = [dict(document)['share'] for document in mongo.db.links.find() if 'share' in document]
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    ids = [dict(document)['share'] for document in db.links.find() if 'share' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
@@ -311,142 +304,149 @@ def register():
         else:
             link = data.get('link')
         email = request.cookies.get('email')
-        insert = {'username': email, 'id': int(dict(mongo.db.id.find_one({'_id': 'id'}))['id']),
+        insert = {'username': email, 'id': int(dict(db.id.find_one({'_id': 'id'}))['id']),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': 'true',
                   'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
                   'repeat': data.get('repeats'), 'days': data.get('days'), 'text': data.get('text'),
-                  'starts': int(data.get('starts')) if data.get('starts') else 0}
+                  'date': data.get('date'), 'activated': str(data.get('activated')).lower()}
         if data.get('password'):
             insert['password'] = encoder.encrypt(data.get('password').encode())
         if data.get('repeats')[0].isdigit():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-        mongo.db.links.insert_one(insert)
-        mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+        db.links.insert_one(insert)
+        db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
         analytics('links_made')
-        return 'done', 200
-    return {'error': 'Forbidden'}, 403
+        response = PlainTextResponse('done')
+        return response
+    response = JSONResponse({'error': 'Forbidden'}, 403)
+    return response
 
 
-@app.route('/links', methods=['GET'])
-def links():
+async def links(request: Request) -> Response:
     email = request.cookies.get('email')
     if not authenticated(request.cookies, email):
-        return redirect('/login?error=not_logged_in')
+        response = RedirectResponse('/login?error=not_logged_in')
+        return response
     email = email.lower()
-    user = mongo.db.login.find_one({"username": email})
+    user = db.login.find_one({"username": email})
     try:
         number = dict(user).get('number')
     except TypeError:
-        return redirect('/links')
+        response = RedirectResponse('/links')
+        return response
     premium = user['premium']
-    early_open = mongo.db.login.find_one({'username': email}).get('open_early')
+    early_open = db.login.find_one({'username': email}).get('open_early')
     links_list = [
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
-        for link in mongo.db.links.find({'username': email})]
+        for link in db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
     sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
-    mongo.db.tokens.insert_one({'email': email, 'token': token})
+    db.tokens.insert_one({'email': email, 'token': token})
     analytics('users', email=email)
-    return render_template('links.html', username=email, link_names=link_names, sort=sort_pref,
-                           premium=premium, style="old", number=number,
-                           country_codes=json.load(open("country_codes.json")), error=request.args.get('error'),
-                           highlight=request.args.get('id'), tutorial=dict(user).get('tutorialWidget'),
-                           open_early=str(early_open), token=token, confirmed=user.get('confirmed'))
+    return templates.TemplateResponse('links.html', {
+        'username': email, 'link_names': link_names, 'sort': sort_pref, 'premium': premium, 'style': 'old',
+        'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
+        'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
+        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request})
 
 
-@app.route('/delete', methods=['POST'])
-def delete():
-    data = request.get_json()
+async def delete(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     if data.get('permanent') == 'true':
-        mongo.db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
+        db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     else:
         try:
-            mongo.db.deleted_links.insert_one(dict(mongo.db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+            db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
         except TypeError:
             pass
-    return 'done', 200
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route('/restore', methods=['POST'])
-def restore():
-    data = request.get_json()
+async def restore(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
-    mongo.db.links.insert_one(dict(mongo.db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
-    return 'done', 200
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    db.links.insert_one(dict(db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route('/update', methods=['POST'])
-def update():
-    data = request.get_json()
+async def update(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     if request.cookies.get('email'):
         if 'https' not in data.get('link'):
             link = f"https://{data.get('link')}"
         else:
             link = data.get('link')
         email = request.cookies.get('email')
-        active = mongo.db.links.find_one({'id': int(data.get('id'))})['active']
+        active = db.links.find_one({'id': int(data.get('id'))})['active']
         insert = {'username': email, 'id': int(data.get('id')),
                   'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
                   'name': data.get('name'), 'active': active,
-                  'share': mongo.db.links.find_one({'id': int(data.get('id'))})['share'],
+                  'share': db.links.find_one({'id': int(data.get('id'))})['share'],
                   'repeat': data.get('repeats'), 'days': data.get('days'),
                   'text': data.get('text'),
-                  'starts': int(data.get('starts')) if data.get('starts') else 0}
+                  'date': data.get('date'), 'activated': str(data.get('activated')).lower()}
         if data.get('password'):
             insert['password'] = encoder.encrypt(data.get('password').encode())
         if data.get('repeats')[0].isdigit():
             insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-        if mongo.db.links.find_one({'id': int(data.get('id'))}).get('share_id'):
-            insert['share_id'] = mongo.db.links.find_one({'id': int(data.get('id'))})['share_id']
-        for shared_link in mongo.db.links.find({'share_id': int(data.get('id'))}):
+        if db.links.find_one({'id': int(data.get('id'))}).get('share_id'):
+            insert['share_id'] = db.links.find_one({'id': int(data.get('id'))})['share_id']
+        for shared_link in db.links.find({'share_id': int(data.get('id'))}):
             update_link = {
                 'name': data.get('name'),
                 'time': data.get('time'),
                 'days': data.get('days'),
                 'link': encoder.encrypt(link.encode()),
                 'repeat': data.get('repeats'),
-                'starts': int(data.get('starts')) if data.get('starts') else 0
+                'date': data.get('date')
             }
             if data.get('password'):
                 update_link['password'] = encoder.encrypt(data.get('password').encode())
-            mongo.db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
-        mongo.db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
-        return 'done', 200
-    return {'error': 'Forbidden'}, 403
+            db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
+        db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+        response = PlainTextResponse('done')
+        return response
+    response = JSONResponse({'error': 'Forbidden'}, 403)
+    return response
 
 
-@app.route("/disable", methods=['POST'])
-def disable():
-    data = request.get_json()
-    print(data)
+async def disable(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     email = request.cookies.get('email')
-    link = mongo.db.links.find_one({"username": email, 'id': int(data.get("id"))})
+    link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     if link['active'] == "true":
-        mongo.db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+        db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'false'}})
     else:
-        mongo.db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+        db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'true'}})
-    return 'done', 200
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route('/db', methods=['GET'])
-def db():
+async def database(request: Request) -> Response:
     if not authenticated(request.cookies, request.headers.get('email')):
-        return {'error': 'Forbidden'}
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     if request.headers.get('deleted') == 'true':
-        links_list = mongo.db.deleted_links.find({'username': request.headers.get('email')})
+        links_list = db.deleted_links.find({'username': request.headers.get('email')})
     else:
-        links_list = mongo.db.links.find({'username': request.headers.get('email')})
+        links_list = db.links.find({'username': request.headers.get('email')})
     links_list = [{i: j for i, j in link.items() if i != '_id'} for
                   link in links_list]
     for index, i in enumerate(links_list):
@@ -456,28 +456,28 @@ def db():
         links_list[index]['link'] = str(encoder.decrypt(i['link']).decode())
         if 'share' in i.keys():
             links_list[index]['share'] = str(encoder.decrypt(i['share']).decode())
-    return make_response(jsonify(list(links_list)))
-
-
-@app.route('/sort', methods=['GET'])
-def sort():
-    response = make_response(redirect('/links'))
-    response.set_cookie('sort', json.dumps({'sort': request.args.get('sort')}))
+    response = JSONResponse(list(links_list))
     return response
 
 
-@app.route('/changevar', methods=['POST'])
-def change_var():
-    data = request.get_json()
+async def sort(request: Request) -> Response:
+    response = RedirectResponse('/links')
+    response.set_cookie('sort', request.query_params.get('sort'))
+    return response
+
+
+async def change_var(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
-    mongo.db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
-                                 {'$set': {
-                                     data.get('variable'): data.get(data.get('variable'))}})
-    return redirect('/links')
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
+                                 {'$set': {data.get('variable'): data.get(data.get('variable'))}})
+    response = PlainTextResponse('done')
+    return response
 
 
-def convert_time(hour, minute, link):
+async def convert_time(hour, minute, link):
     days_to_nums = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
     nums_to_days = {0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'}
     if minute > 59:
@@ -509,170 +509,160 @@ def convert_time(hour, minute, link):
     return f"{hour}:{minute}"
 
 
-@app.route('/addlink', methods=['GET'])
-def addlink():
+async def addlink(request: Request) -> Response:
     try:
         email = request.cookies.get('email')
     except TypeError:
         email = ''
     if not authenticated(request.cookies, email):
-        return redirect(f'/login?redirect=https://linkjoin.xyz/addlink?id={request.args.get("id")}')
+        response = RedirectResponse(f'/login?redirect=https://linkjoin.xyz/addlink?id={request.query_params.get("id")}')
+        return response
     new_link = None
-    for doc in mongo.db.links.find():
+    for doc in db.links.find():
         if 'share' in dict(doc):
             if encoder.decrypt(
-                    dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.args.get("id")}':
+                    dict(doc)['share']).decode() == f'https://linkjoin.xyz/addlink?id={request.query_params.get("id")}':
                 new_link = dict(doc)
     if new_link is None:
-        return redirect('/links?error=link_not_found')
-    user = mongo.db.login.find_one({"username": email})
-    owner = mongo.db.login.find_one({"username": new_link['username']})
+        response = RedirectResponse('/links?error=link_not_found')
+        return response
+    user = db.login.find_one({"username": email})
+    owner = db.login.find_one({"username": new_link['username']})
     new_link = {key: value for key, value in dict(new_link).items() if
                 key != '_id' and key != 'username' and key != 'share'}
     hour, minute = new_link['time'].split(":")
-    # offset: 4
-    # owner offset: 7
     offset_hour, offset_minute = user['offset'].split(".")
     offset_minute = (int(offset_minute) / (10 * len(str(offset_minute)))) * 60
     hour = int(int(hour) - int(offset_hour)) + int(owner['offset'].split(".")[0])
     minute = int(
         int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1]) / (10 * len(str(offset_minute))) * 60)
-    new_link['time'] = convert_time(hour, minute, new_link)
+    new_link['time'] = await convert_time(hour, minute, new_link)
     new_link['username'] = email
     new_link['share_id'] = new_link['id']
-    new_link['id'] = int(dict(mongo.db.id.find_one({'_id': 'id'}))['id'])
-    ids = [encoder.decrypt(dict(document)['share']).decode() for document in mongo.db.links.find() if 'share' in document]
+    new_link['id'] = int(dict(db.id.find_one({'_id': 'id'}))['id'])
+    ids = [encoder.decrypt(dict(document)['share']).decode() for document in db.links.find() if 'share' in document]
     id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
-    mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-    mongo.db.links.insert_one(new_link)
-    return redirect('/links')
+    db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    print(new_link)
+    db.links.insert_one(new_link)
+    response = RedirectResponse('/links')
+    return response
 
 
-@app.route("/users", methods=['GET'])
-def users():
-    print('\n'.join([str(doc) for doc in mongo.db.login.find()]))
-    print(len([_ for _ in mongo.db.login.find()]))
-    return render_template('404.html')
-
-
-@app.route("/viewlinks", methods=['GET'])
-def viewlinks():
-    pp.pprint([doc for doc in mongo.db.links.find()])
-    print(len([_ for _ in mongo.db.links.find()]))
-    return render_template('404.html')
-
-
-@app.route("/tutorial", methods=['POST'])
-def tutorial():
-    data = request.get_json()
+async def tutorial(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
-    mongo.db.login.find_one_and_update({"username": data.get('email').lower()},
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    db.login.find_one_and_update({"username": data.get('email').lower()},
                                  {"$set": {"tutorial": data.get("step")}})
-    return 'done'
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route("/tutorial_complete", methods=['POST'])
-def tutorial_complete():
-    data = request.get_json()
+async def tutorial_complete(request: Request) -> Response:
+    data = await request.json()
+    print(data)
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
-    user = mongo.db.login.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    user = db.login.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
     if user:
-        return jsonify(dict(user))
-    return 'done', 200
+        response = JSONResponse(dict(user))
+        return response
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route("/ads.txt", methods=['GET'])
-def ads():
-    return send_file('ads.txt', attachment_filename='ads.txt')
+async def ads(request: Request):
+    response = FileResponse('ads.txt')
+    return response
 
 
-@app.route('/privacy', methods=['GET'])
-def privacy():
-    return render_template("privacy.html")
+async def privacy(request: Request) -> Response:
+    return templates.TemplateResponse('privacy.html', {'request': request})
 
 
-@app.route("/unsubscribe", methods=['POST'])
-def unsubscribe():
-    mongo.db.links.find_one_and_update({"id": int(request.args.get("id"))}, {"$set": {"text": "false"}})
-    return 'done', 200
+async def unsubscribe(request: Request) -> Response:
+    db.links.find_one_and_update({"id": int(request.query_params.get("id"))}, {"$set": {"text": "false"}})
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route("/setoffset", methods=['POST'])
-def setoffset():
-    data = request.get_json()
+async def setoffset(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
-    mongo.db.login.find_one_and_update({"username": data.get("email").lower()},
-                                       {"$set": {"offset": data.get("offset")}})
-    return 'done', 200
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    db.login.find_one_and_update({"username": data.get("email").lower()},
+                                {"$set": {"offset": data.get("offset")}})
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route("/add_number", methods=['POST'])
-def add_number():
-    data = request.get_json()
+async def add_number(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     number = ''.join([i for i in data.get('number') if i in '1234567890'])
     if len(number) < 11:
         number = data.get('countrycode') + str(number)
     if number.isdigit():
         number = int(number)
-    mongo.db.login.find_one_and_update({"username": data.get("email")}, {"$set": {"number": number}})
-    return 'done', 200
+    db.login.find_one_and_update({"username": data.get("email")}, {"$set": {"number": number}})
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route("/receive_vonage_message", methods=["GET", "POST"])
-def receive_vonage_message():
-    text = request.args.get("text")
-    user = mongo.db.login.find_one({'number': int(request.args.get('msisdn'))})
-    print(user)
-    print(request.args.get('msisdn'))
+async def receive_vonage_message(request: Request) -> Response:
+    text = request.query_params.get("text")
+    user = db.login.find_one({'number': int(request.query_params.get('msisdn'))})
     if text.isdigit() and user:
-        mongo.db.links.find_one_and_update({"id": int(text), 'username': user['username']}, {"$set": {"text": "false"}})
+        db.links.find_one_and_update({"id": int(text), 'username': user['username']}, {"$set": {"text": "false"}})
         data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                "from": "18336535326", "to": str(request.args.get("msisdn")),
+                "from": "18336535326", "to": str(request.query_params.get("msisdn")),
                 "text": "Ok, we won't remind you about this link again"}
         requests.post("https://rest.nexmo.com/sms/json", data=data)
-    return 'done', 200
+    response = PlainTextResponse('done')
+    return response
 
 
-@app.route('/notes', methods=['GET', 'POST'])
-def notes():
+async def notes(request: Request) -> Response:
     if not authenticated(request.cookies, request.headers.get('email')):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     if request.method == 'GET':
-        return jsonify(list(mongo.db.login.find_one({'username': request.headers.get('email')})['notes'].values())), 200
+        response = JSONResponse(list(db.login.find_one({'username': request.headers.get('email')})['notes'].values()))
+        return response
     elif request.method == 'POST':
-        data = request.get_json()
-        user_notes = mongo.db.login.find_one({'username': request.headers.get('email')})['notes']
+        data = await request.json()
+        user_notes = db.login.find_one({'username': request.headers.get('email')})['notes']
         user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'), 'markdown': data.get('markdown'), 'date': data.get('date')}
-        mongo.db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
-        return jsonify(user_notes), 200
-    else:
-        return 'Unknown method'
+        db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
+        response = JSONResponse(user_notes)
+        return response
 
 
-@app.route('/markdown_to_html', methods=['POST'])
-def markdown_to_html():
-    data = request.get_json()
-    return markdown(data.get('markdown'))
+async def markdown_to_html(request: Request) -> Response:
+    data = await request.json()
+    response = PlainTextResponse(html(data.get('markdown')))
+    return response
 
 
-@app.route('/reset-password', methods=['GET', 'POST'])
-def send_reset_email():
+async def send_reset_email(request: Request) -> Response:
     if request.method == 'POST':
-        data = request.get_json()
+        data = await request.json()
         email = data.get('email').lower()
-        if not mongo.db.tokens.find_one({'email': email, 'token': data.get('token')}) and not mongo.db.anonymous_token.find_one({'token': data.get('token')}) or not mongo.db.login.find_one({'username': email}):
-            return {'error': 'Invalid token', 'code': 403}, 403
-        mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+        if not db.tokens.find_one({'email': email, 'token': data.get('token')}) and not db.anonymous_token.find_one({'token': data.get('token')}) or not db.login.find_one({'username': email}):
+            response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
+            return response
+        db.anonymous_token.find_one_and_delete({'token': data.get('token')})
         otp = gen_otp()
-        mongo.db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
+        db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
         content = EmailMessage()
         """content.set_content('''
 <html>
@@ -706,11 +696,11 @@ def send_reset_email():
         <path d="M35.0791 18C35.0791 27.6472 27.2263 35.5 17.5791 35.5C7.93189 35.5 0.0791016 27.6472 0.0791016 18C0.0791016 8.35279 7.93189 0.5 17.5791 0.5C19.8532 0.5 22.0651 0.935279 24.1616 1.78807C24.1705 1.78807 24.1794 1.79695 24.1794 1.79695C24.2771 1.84137 24.3659 1.91244 24.4281 2.00127L24.4814 2.08122C24.4992 2.10787 24.508 2.1434 24.5169 2.17005C24.5347 2.23223 24.5525 2.29442 24.5525 2.36548C24.5525 2.71193 24.2682 2.98731 23.9306 2.98731C23.8951 2.98731 23.8596 2.98731 23.8329 2.97843C23.7974 2.96954 23.7618 2.96066 23.7352 2.95178C23.7085 2.94289 23.6908 2.93401 23.6641 2.92513C21.7276 2.1434 19.6844 1.74365 17.5791 1.74365C8.6159 1.74365 1.32276 9.0368 1.32276 18C1.32276 26.9632 8.6159 34.2563 17.5791 34.2563C26.5423 34.2563 33.8354 26.9632 33.8354 18C33.8354 15.948 33.4535 13.9492 32.7073 12.0571C32.7073 12.0482 32.6984 12.0393 32.6984 12.0305C32.6806 11.9772 32.6717 11.9239 32.6717 11.8617C32.6717 11.5152 32.9471 11.2398 33.2936 11.2398C33.338 11.2398 33.3824 11.2398 33.4268 11.2487C33.6222 11.2931 33.7821 11.4264 33.8621 11.6041C33.871 11.6218 33.8799 11.6396 33.8799 11.6574C33.8799 11.6662 33.8887 11.6662 33.8887 11.6751C34.6794 13.6916 35.0791 15.8147 35.0791 18Z" fill="white"/>
         </g>
         <path d="M49.5991 10.2H51.9991V24.912H61.0951V27H49.5991V10.2ZM63.7531 14.28H66.0571V27H63.7531V14.28ZM64.9051 11.832C64.4571 11.832 64.0811 11.688 63.7771 11.4C63.4891 11.112 63.3451 10.76 63.3451 10.344C63.3451 9.928 63.4891 9.576 63.7771 9.288C64.0811 8.984 64.4571 8.832 64.9051 8.832C65.3531 8.832 65.7211 8.976 66.0091 9.264C66.3131 9.536 66.4651 9.88 66.4651 10.296C66.4651 10.728 66.3131 11.096 66.0091 11.4C65.7211 11.688 65.3531 11.832 64.9051 11.832ZM77.4882 14.16C79.1042 14.16 80.3842 14.632 81.3282 15.576C82.2882 16.504 82.7682 17.872 82.7682 19.68V27H80.4642V19.944C80.4642 18.712 80.1682 17.784 79.5762 17.16C78.9842 16.536 78.1362 16.224 77.0322 16.224C75.7842 16.224 74.8002 16.592 74.0802 17.328C73.3602 18.048 73.0002 19.088 73.0002 20.448V27H70.6962V14.28H72.9042V16.2C73.3682 15.544 73.9922 15.04 74.7762 14.688C75.5762 14.336 76.4802 14.16 77.4882 14.16ZM92.2162 21.072L89.5762 23.52V27H87.2722V9.192H89.5762V20.616L96.5122 14.28H99.2962L93.9442 19.536L99.8242 27H96.9922L92.2162 21.072ZM104.797 27.192C103.789 27.192 102.853 26.984 101.989 26.568C101.125 26.136 100.429 25.536 99.9012 24.768L101.293 23.136C102.221 24.464 103.389 25.128 104.797 25.128C105.741 25.128 106.453 24.84 106.933 24.264C107.429 23.688 107.677 22.84 107.677 21.72V12.288H101.605V10.2H110.053V21.6C110.053 23.456 109.605 24.856 108.709 25.8C107.829 26.728 106.525 27.192 104.797 27.192ZM120.294 27.144C119.03 27.144 117.894 26.864 116.886 26.304C115.878 25.744 115.086 24.976 114.51 24C113.95 23.008 113.67 21.888 113.67 20.64C113.67 19.392 113.95 18.28 114.51 17.304C115.086 16.312 115.878 15.544 116.886 15C117.894 14.44 119.03 14.16 120.294 14.16C121.558 14.16 122.686 14.44 123.678 15C124.686 15.544 125.47 16.312 126.03 17.304C126.606 18.28 126.894 19.392 126.894 20.64C126.894 21.888 126.606 23.008 126.03 24C125.47 24.976 124.686 25.744 123.678 26.304C122.686 26.864 121.558 27.144 120.294 27.144ZM120.294 25.128C121.11 25.128 121.838 24.944 122.478 24.576C123.134 24.192 123.646 23.664 124.014 22.992C124.382 22.304 124.566 21.52 124.566 20.64C124.566 19.76 124.382 18.984 124.014 18.312C123.646 17.624 123.134 17.096 122.478 16.728C121.838 16.36 121.11 16.176 120.294 16.176C119.478 16.176 118.742 16.36 118.086 16.728C117.446 17.096 116.934 17.624 116.55 18.312C116.182 18.984 115.998 19.76 115.998 20.64C115.998 21.52 116.182 22.304 116.55 22.992C116.934 23.664 117.446 24.192 118.086 24.576C118.742 24.944 119.478 25.128 120.294 25.128ZM130.32 14.28H132.624V27H130.32V14.28ZM131.472 11.832C131.024 11.832 130.648 11.688 130.344 11.4C130.056 11.112 129.912 10.76 129.912 10.344C129.912 9.928 130.056 9.576 130.344 9.288C130.648 8.984 131.024 8.832 131.472 8.832C131.92 8.832 132.288 8.976 132.576 9.264C132.88 9.536 133.032 9.88 133.032 10.296C133.032 10.728 132.88 11.096 132.576 11.4C132.288 11.688 131.92 11.832 131.472 11.832ZM144.055 14.16C145.671 14.16 146.951 14.632 147.895 15.576C148.855 16.504 149.335 17.872 149.335 19.68V27H147.031V19.944C147.031 18.712 146.735 17.784 146.143 17.16C145.551 16.536 144.703 16.224 143.599 16.224C142.351 16.224 141.367 16.592 140.647 17.328C139.927 18.048 139.567 19.088 139.567 20.448V27H137.263V14.28H139.471V16.2C139.935 15.544 140.559 15.04 141.343 14.688C142.143 14.336 143.047 14.16 144.055 14.16Z" fill="white"/>
-        <defs>
+        <async defs>
         <clipPath id="clip0">
         <rect width="35" height="35" fill="white" transform="translate(0.0791016 0.5)"/>
         </clipPath>
-        </defs>
+        </async defs>
         </svg>
 
         <h1>Password Reset</h1>
@@ -732,68 +722,72 @@ LinkJoin''')
         with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
             server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
             server.send_message(content)
-            return 'Success', 200
+            response = PlainTextResponse('Success')
+            return response
     else:
         token = gen_session()
-        mongo.db.anonymous_token.insert_one({'token': token})
-        return render_template('forgot-password-email.html', token=token)
+        db.anonymous_token.insert_one({'token': token})
+        return templates.TemplateResponse('forgot-password-email.html', {'token': token, 'request': request})
 
 
 
-@app.route('/reset', methods=['POST', 'GET'])
-def reset_password():
+async def reset_password(request: Request) -> Response:
     if request.method == 'GET':
-        pws = [user['pw'] for user in mongo.db.otp.find()]
-        if request.args.get('pw') in pws:
-            email = mongo.db.otp.find_one({'pw': pws[pws.index(request.args.get('pw'))]})['email']
+        pws = [user['pw'] for user in db.otp.find()]
+        if request.query_params.get('pw') in pws:
+            email = db.otp.find_one({'pw': pws[pws.index(request.query_params.get('pw'))]})['email']
             token = gen_session()
-            mongo.db.tokens.insert_one({'email': email, 'token': token})
-            return render_template('forgot-password.html', token=token, email=email)
-        return redirect('/login')
+            db.tokens.insert_one({'email': email, 'token': token})
+            return templates.TemplateResponse('forgot-password.html', {'token': token, 'email': email, 'request': request})
+        response = RedirectResponse('/login')
+        return response
     else:
-        data = request.get_json()
-        if mongo.db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
-            mongo.db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
-            mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'password': hasher.hash(data.get('password'))}})
-            return 'Success', 200
-        return {'error': 'Invalid token', 'code': 403}, 403
+        data = await request.json()
+        if db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
+            db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
+            db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'password': hasher.hash(data.get('password'))}})
+            response = PlainTextResponse('Success')
+            return response
+        response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
+        return response
 
 
-@app.route('/tutorial_changed', methods=['GET'])
-def tutorial_changed():
+async def tutorial_changed(request: Request) -> Response:
     if not authenticated(request.cookies, request.headers.get('email')):
-        return {'error': 'Forbidden'}, 403
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
     if request.headers.get('finished') == 'true':
-        mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
+        db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
     else:
-        mongo.db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'incomplete'}})
-    return 'Success', 200
+        db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'incomplete'}})
+    response = PlainTextResponse('Success')
+    return response
 
 
-@app.route('/open_early', methods=['POST'])
-def open_early():
-    data = request.get_json()
+async def open_early(request: Request) -> Response:
+    data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
-        return {'error': 'Forbidden'}, 403
-    mongo.db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'open_early': data.get('open')}})
-    return 'Success', 200
+        response = JSONResponse({'error': 'Forbidden'}, 403)
+        return response
+    db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'open_early': data.get('open')}})
+    response = PlainTextResponse('Success')
+    return response
 
 
-@app.route('/send_message', methods=['POST'])
-def send_message():
+async def send_message(request: Request) -> Response:
     print("sending...")
     sent = json.load(open('last-message.json'))
-    data = request.get_json()
+    data = await request.json()
     if int(data.get('id')) not in sent and os.environ.get('TEXT_KEY') == data.get('key'):
         if data.get('active') == "false":
             messages = [
-                'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}.',
+                'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link, or log into your LinkJoin account and manually change your settings.',
+                'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}, or log into your LinkJoin account and manually change your settings.',
             ]
         else:
             messages = [
-                'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}.',
+                'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link, or log into your LinkJoin account and manually change your settings.',
+                'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}, or log into your LinkJoin account and manually change your settings.',
             ]
         print("Sending...")
         content = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
@@ -804,57 +798,160 @@ def send_message():
             requests.post("https://rest.nexmo.com/sms/json", data=content)
         sent[int(data.get('id'))] = 3
         json.dump(sent, open('last-message.json', 'w'), indent=4)
-        return 'Success', 200
-    return 'failed', 200
+        response = PlainTextResponse('Success')
+        return response
+    response = PlainTextResponse('failed')
+    return response
 
 
-@app.route('/add_accounts', methods=['POST'])
-def add_accounts():
-    data = request.get_json()
+async def add_accounts(request: Request) -> Response | None:
+    data = await request.json()
     if data.get('token') != os.environ.get('ADD_ACCOUNTS_TOKEN'):
         return
     preexisting = []
     accounts = data.get('accounts')
     _links = data.get('links')
     for account in accounts:
-        if not mongo.db.login.find_one({'username': account['email']}):
-            mongo.db.login.insert_one(account)
+        if not db.login.find_one({'username': account['email']}):
+            db.login.insert_one(account)
         else:
             preexisting.append(account)
 
     for link in _links:
         # Provided with: link, days (in a list), email, name, time
-        link = {'username': link['email'], 'id': int(dict(mongo.db.id.find_one({'_id': 'id'}))['id']),
+        link = {'username': link['email'], 'id': int(dict(db.id.find_one({'_id': 'id'}))['id']),
                 'time': link['time'], 'link': encoder.encrypt(link['link'].encode()), 'active': 'true',
                 'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={link["id"]}'.encode()),
-                'repeat': 'week', 'days': link['days'], 'text': 'none', 'starts': 0}
-        mongo.db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-        mongo.db.links.insert_one(link)
+                'repeat': 'week', 'days': link['days'], 'text': 'none'}
+        db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+        db.links.insert_one(link)
 
 
-@app.route('/robots.txt')
-def robots():
-    return send_file('robots.txt')
+async def robots(request: Request):
+    response = FileResponse('robots.txt')
+    return response
 
 
-@app.route('/invalidate-token', methods=['POST'])
-def invalidate_token():
-    data = request.get_json()
-    mongo.db.tokens.find_one_and_delete({'token': data.get('token')})
-    mongo.db.anonymous_token.find_one_and_delete({'token': data.get('token')})
-    return 'Success', 200
+async def invalidate_token(request: Request) -> PlainTextResponse:
+    data = await request.json()
+    db.tokens.find_one_and_delete({'token': data.get('token')})
+    db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+    response = PlainTextResponse('Success')
+    return response
 
 
-def test():
-    for link in mongo.db.links.find():
-        print(encoder.decrypt(link['link']).decode())
-        if encoder.decrypt(link['link']).decode() == 'https://us06web.zoom.us/j/82430940226?pwd=bFQ5aUpEVjhrdis2VGM1c2k1eThqUT09':
-            print(link)
+async def favicon(request: Request) -> FileResponse:
+    return FileResponse('static/images/logo.svg')
 
 
-app.register_error_handler(404, lambda e: render_template('404.html'))
+async def loading(request: Request) -> FileResponse:
+    return FileResponse('static/images/loading2.gif')
 
-if __name__ == '__main__':
-    print('Starting from app.py')
-    print('from App.py')
-    app.run(port=os.environ.get("port", 5002), threaded=True, debug=False)
+
+async def validatetoken(request: Request) -> JSONResponse:
+    data = await request.json()
+    tokens = [dict(value)['token'] for value in db.anonymous_token.find()]
+    if data.get('token') in tokens:
+        return JSONResponse({'status': 'valid'})
+    else:
+        return JSONResponse({'status': 'invalid'})
+
+
+
+routes = [
+    Route('/analytics', endpoint=analytics_endpoint, methods=['GET', 'POST']), Route('/', endpoint=main, methods=['GET']),
+    Route('/location', endpoint=location, methods=['GET']), Route('/login', endpoint=login, methods=['GET', 'POST']),
+    Route('/logout', endpoint=logout, methods=['GET']), Route('/confirm_email', endpoint=confirm_email, methods=['POST']),
+    Route('/signup', endpoint=signup, methods=['GET']), Route('/set_cookie', endpoint=set_cookie, methods=['GET']),
+    Route('/get_session', endpoint=get_session, methods=['GET']), Route('/register', endpoint=register, methods=['POST']),
+    Route('/links', endpoint=links, methods=['GET']), Route('/delete', endpoint=delete, methods=['POST']),
+    Route('/restore', endpoint=restore, methods=['POST']), Route('/update', endpoint=update, methods=['POST']),
+    Route('/disable', endpoint=disable, methods=['POST']), Route('/db', endpoint=database, methods=['GET']),
+    Route('/sort', endpoint=sort, methods=['GET']), Route('/changevar', endpoint=change_var, methods=['POST']),
+    Route('/addlink', endpoint=addlink, methods=['GET']), Route('/tutorial', endpoint=tutorial, methods=['POST']),
+    Route('/tutorial_complete', endpoint=tutorial_complete, methods=['POST']),
+    Route('/ads.txt', endpoint=ads, methods=['GET']), Route('/privacy', endpoint=privacy, methods=['GET']),
+    Route('/unsubscribe', endpoint=unsubscribe, methods=['POST']), Route('/setoffset', endpoint=setoffset, methods=['POST']),
+    Route('/add_number', endpoint=add_number, methods=['POST']), Route('/notes', endpoint=notes, methods=['GET', 'POST']),
+    Route('/receive_vonage_message', endpoint=receive_vonage_message, methods=['GET', 'POST']),
+    Route('/markdown_to_html', endpoint=markdown_to_html, methods=['POST']),
+    Route('/reset', endpoint=reset_password, methods=['GET', 'POST']),
+    Route('/reset-password', endpoint=send_reset_email, methods=['POST', 'GET']),
+    Route('/tutorial_changed', endpoint=tutorial_changed, methods=['GET']),
+    Route('/open_early', endpoint=open_early, methods=['POST']), Route('/robots.txt', endpoint=robots, methods=['GET']),
+    Route('/send_message', endpoint=send_message, methods=['POST']), Route('/favicon.ico', endpoint=favicon, methods=['GET']),
+    Route('/add_accounts', endpoint=add_accounts, methods=['POST']),
+    Route('/invalidate-token', endpoint=invalidate_token, methods=['POST']),
+    Route('/images/loading2.gif', endpoint=loading, methods=['GET']),
+    Route('/validatetoken', endpoint=validatetoken, methods=['POST']),
+    Mount('/static', StaticFiles(directory='static'), name='globals.js'),
+    Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
+    Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),
+    Mount('/static', StaticFiles(directory='static'), name='notes.js'),
+    Mount('/static', StaticFiles(directory='static'), name='links.js'),
+    Mount('/static', StaticFiles(directory='static'), name='login.css'),
+    Mount('/static', StaticFiles(directory='static'), name='website.css'),
+    Mount('/static', StaticFiles(directory='static'), name='link.css'),
+    Mount('/static', StaticFiles(directory='static'), name='pricing.css'),
+    Mount('/static', StaticFiles(directory='static'), name='links.css'),
+    Mount('/static', StaticFiles(directory='static'), name='premium.css'),
+    Mount('/static', StaticFiles(directory='static'), name='premium.js'),
+    Mount('/static', StaticFiles(directory='static'), name='forgot-password.css'),
+    Mount('/static', StaticFiles(directory='static'), name='new_links.css'),
+    Mount('/static', StaticFiles(directory='static'), name='manifest.json'),
+    Mount('/static', StaticFiles(directory='static'), name='serviceworker.js'),
+    Mount('/static', StaticFiles(directory='static'), name='privacy.css'),
+    Mount('/static', StaticFiles(directory='static'), name='globals.css'),
+    Mount('/static', StaticFiles(directory='static'), name='aa4e.css'),
+    Mount('/static/images', StaticFiles(directory='static'), name='check-square.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='arrow-down.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='list.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='paper-plane-2.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='from.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='arrows-down.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='linkjoin-homepage.png'),
+    Mount('/static/images', StaticFiles(directory='static'), name='whiteboard.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='github.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='calendar_guy.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='website.png'),
+    Mount('/static/images', StaticFiles(directory='static'), name='angle-down.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='links_loader.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='lock.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='pen.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='link.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='arrow-right.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='envelope.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='time.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='right-angle.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='404.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='plus-mobile.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='meeting.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='plus.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='why_linkjoin.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='text.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='curve.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='paper-plane.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='linkjoin-links-page.png'),
+    Mount('/static/images', StaticFiles(directory='static'), name='link_footer.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='logo-text.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='trash.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='links_page.png'),
+    Mount('/static/images', StaticFiles(directory='static'), name='check-box.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='mobile-phone.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='phone.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='logo-rounded.png'),
+    Mount('/static/images', StaticFiles(directory='static'), name='discord.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='arrow-left.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='ellipsis.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='logo.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='mouse-pointer.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='heart.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='loading2.gif'),
+    Mount('/static/images', StaticFiles(directory='static'), name='undo.svg')
+]
+
+handlers = {
+    404: not_found
+}
+
+app = Starlette(routes=routes, debug=True, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])

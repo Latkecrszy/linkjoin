@@ -2,8 +2,8 @@
 <html id="login_html" lang="en" class="nobar">
     <head>
         <link rel="canonical">
-        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-        <script src="{{ url_for('static', filename='globals.js') }}"></script>
+        <link rel="manifest" href="../static/manifest.json">
+        <script src="../static/globals.js"></script>
         <script type="application/javascript">
           (function(b,o,n,g,s,r,c){if(b[s])return;b[s]={};b[s].scriptToken="XzE3MDA3NTg5Mzg";b[s].callsQueue=[];b[s].api=function(){b[s].callsQueue.push(arguments);};r=o.createElement(n);c=o.getElementsByTagName(n)[0];r.async=1;r.src=g;r.id=s+n;c.parentNode.insertBefore(r,c);})(window,document,"script","https://cdn.oribi.io/XzE3MDA3NTg5Mzg/oribi.js","ORIBI");
         </script>
@@ -17,15 +17,15 @@
           gtag('config', 'G-MR5B009GBF');
         </script>
         <script>setInterval(function() {Array.prototype.forEach.call(document.getElementsByTagName("span"), x => {if (x.id.toString().includes("connected") || x.id.toString().includes("not_signed")) {x.innerText = "Log In With Google"}})}, 1)</script>
-        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='login.css') }}" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/login.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <script src="https://accounts.google.com/gsi/client"></script>
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
         <title>LinkJoin | Sign Up</title>
         <meta name="description" content="Sign up to get started with LinkJoin, and never be late again.">
         <meta name=”robots” content="index, follow">
@@ -38,14 +38,14 @@
         <svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet">
             <path d="m 235,0 c 65,200 -85,100 115,600 L 0.75595238,600.1131 0,0 Z"></path>
         </svg>
-        <header id="header_links">
-            <a href="/" id="back"><img src="{{ url_for('static', filename='images/arrow-left.svg') }}" height="25px" width="25px" alt="Left arrow"></a>
+        <header id="header-links">
+            <a href="/" id="back"><img src="../static/images/arrow-left.svg" height="25px" width="25px" alt="Left arrow"></a>
             <div style="padding-left: 40px">Already have an account?</div>
-            <a href="/login?redirect={{ redirect }}" class="login_button">Log In <img src="{{ url_for('static', filename='images/right-angle.svg') }}" height="12px" width="8px" alt="Right arrow"></a>
+            <a href="/login?redirect={{ redirect }}" class="login_button">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right arrow"></a>
         </header>
         <div id="main_page">
             <div id="left_content">
-                <img src="{{ url_for('static', filename='images/logo.svg') }}" id="logo" alt="LinkJoin logo">
+                <img src="../static/images/logo.svg" id="logo" alt="LinkJoin logo">
                 <div id="signup_title">LinkJoin</div>
                 <div id="signup_text">Never be late again</div>
             </div>
@@ -65,7 +65,7 @@
                 <input id="password" name="password" placeholder="Password" type="password" required>
                 <input id="phone" name="phone" placeholder="Phone Number (Optional)" type="text"><br>
                 <div id="keep_div"><input type="checkbox" name="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
-                <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+                <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
     </body>
@@ -77,6 +77,18 @@
                 document.getElementById("submit").click()
             }
         });
+
+        document.addEventListener('visibilitychange', async () => {
+            const tokenStatus = await fetch(`/validatetoken`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({'token': token})
+            }).then(response => response.json())
+            console.log(tokenStatus)
+            if (tokenStatus['status'] !== 'valid') {
+                location.reload()
+            }
+        })
 
         window.addEventListener('load', () => {
             google.accounts.id.initialize({

@@ -8,11 +8,15 @@
 }
 
 .plus_button {
-    margin-top: 20px;
     padding: 30px;
     cursor: pointer;
     border-radius: 100px;
     z-index: 2;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 10%);
+    height: 100px;
+    width: 100px;
 }
 
 
@@ -43,19 +47,20 @@
 
 .header_button {margin-top: 17px;}
 
-#popup, #popup_notes, .popup {
+#popup, #popup-notes, .popup {
     display: none;
     background-color: var(--darkblue);
     flex-direction: column;
     justify-content: flex-start;
     width: 33vw;
     min-width: 510px;
-    height: 34vw;
-    min-height: 550px;
+    max-height: 85%;
+    height: 550px;
+    overflow: scroll;
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    top: 10%;
+    transform: translate(-50%, 0);
     border-radius: 10px;
     box-shadow: 6px 6px 16px black;
     z-index: 5;
@@ -74,8 +79,11 @@
 
 #name {margin-top: 3% !important}
 
-#name::placeholder, #link::placeholder, #password::placeholder,
-#hour::placeholder, #minute::placeholder, #number::placeholder, .number::placeholder {font-size: max(1vw, 14px); opacity: 0.42;}
+#name::placeholder, #link::placeholder, #password::placeholder, #hour::placeholder, #minute::placeholder, #number::placeholder,
+.number::placeholder {
+    font-size: max(1vw, 14px);
+    color: white;
+    opacity: 0.2}
 
 #title {
     font-size: max(1.3vw, 22px);
@@ -99,7 +107,7 @@ input {color: white; font-family: Montserrat;}
 
 #repeats_container {margin: 15px 0 0 60px}
 
-.popup_select {
+.popup-select {
     background: none;
     border: none;
     border-bottom: 2px solid white;
@@ -177,7 +185,7 @@ input {color: white; font-family: Montserrat;}
     margin: 5% 0 0 60px;
 }
 
-.popup_delete {
+.popup-delete {
     height: 200px;
     width: 500px;
     max-width: 99vw;
@@ -200,7 +208,7 @@ input {color: white; font-family: Montserrat;}
     --right: -350px;
 }
 
-.popup_delete div {font-size: 26px; margin-top: 20px;}
+.popup-delete div {font-size: 26px; margin-top: 20px;}
 
 #delete_buttons_container {
     display: flex;
@@ -286,7 +294,7 @@ input {color: white; font-family: Montserrat;}
     width: calc(94% - 100px);
 }
 
-#popup_share {
+#popup-share {
     width: 600px;
     height: 250px;
     background-color: var(--darkblue);
@@ -298,7 +306,7 @@ input {color: white; font-family: Montserrat;}
     flex-direction: column;
 }
 
-#popup_share p {
+#popup-share p {
     font-size: 20px;
     color: white;
     margin: 30px 0 70px 40px;
@@ -358,11 +366,11 @@ input {color: white; font-family: Montserrat;}
     box-shadow: 6px 16px 18px black;
 }
 
-#tutorial-1, #check_popup, #tutorial0, #popups_not_enabled, #tutorial1 {
+#tutorial-1, #check-popup, #tutorial0, #popups-not-enabled, #tutorial1 {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
 }
 
-#popups_not_enabled {height: 325px; width: 400px}
+#popups-not-enabled {height: 325px; width: 400px}
 
 #tutorial0 {height: 300px;}
 
@@ -400,4 +408,25 @@ option {color: black}
 }
 
 .underline:after {left: -8px}
+
+.date {
+    width: 102px;
+    margin-right: 15px;
+    font: 400 16px Montserrat;
+}
+
+.date::placeholder {
+    font: 400 14px Montserrat;
+    color: white;
+    opacity: 0.2
+}
+
+#starts-back-arrow {
+    height: 15px;
+    margin-right: 25px;
+    width: 15px;
+    margin-top: 4px;
+    display: inline;
+    cursor: pointer;
+}
 

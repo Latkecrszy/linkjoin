@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html id="links_html" lang="en">
     <head>
-        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <link rel="manifest" href="../static/manifest.json">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
         <script type="application/javascript">
@@ -22,30 +22,28 @@
             const open_early = "{{ open_early }}" === "None" ? 0 : parseInt("{{ open_early }}")
             const confirmed = "{{ confirmed }}"
             const error = "{{ error }}"
+            const account = '{{ account }}'
             let offset = (date.getTimezoneOffset()/60).toString()
             if (!offset.includes(".")) {offset = `${offset}.0`}
             fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({offset: offset, email: '{{username}}'})})
             const countryCodes = {{ country_codes|tojson|safe }}
         </script>
-        <script src="{{ url_for('static', filename='links.js') }}"></script>
-        <script>
-            load_links('{{ username }}', '{{ sort }}')
-        </script>
-        <link href="{{ url_for('static', filename='links.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='new_links.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='globals.css') }}" rel="stylesheet"/>
-        <link href="{{ url_for('static', filename='link.css') }}" rel="stylesheet"/>
+        <script src="../static/links.js"></script>
+        <link href="../static/links.css" rel="stylesheet"/>
+        <link href="../static/new_links.css" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/link.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/logo.svg') }}" class="logo">
-        <script src="{{ url_for('static', filename='redirect.js') }}"></script>
-        <script src="{{ url_for('static', filename='globals.js') }}"></script>
-        <script src="{{ url_for('static', filename='notes.js') }}"></script>
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
+        <script src="../static/redirect.js"></script>
+        <script src="../static/globals.js"></script>
+        <script src="../static/notes.js"></script>
         <title>LinkJoin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta name=”robots” content="index, follow"/>
@@ -53,28 +51,85 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="theme-color" content="#091B30">
         <script>
-            if ("{{ company }}" === 'aa4e') {
-                document.documentElement.style.setProperty('--lightblue', '#a6b6bf')
-                document.documentElement.style.setProperty('--darkblue', '#629ed9')
-                document.documentElement.style.setProperty('--blue', '#608cbc')
+            if ("{{ company }}" === 'google') {
+                document.documentElement.style.setProperty('--lightblue', '#4285f4')
+                document.documentElement.style.setProperty('--darkblue', '#202124')
+                document.documentElement.style.setProperty('--blue', '#303134')
+                document.documentElement.style.setProperty('--switch', '#4285f4cc')
+            }
+            else if ("{{ company }}" === 'aa4e') {
+                document.documentElement.style.setProperty('--lightblue', '#9acefe')
+                document.documentElement.style.setProperty('--darkblue', '#124381')
+                document.documentElement.style.setProperty('--blue', '#3c679c')
+                document.documentElement.style.setProperty('--switch', '#9acefecc')
+            }
+            else if ("{{ company }}" === 'amazon') {
+                document.documentElement.style.setProperty('--lightblue', '#ff9900')
+                document.documentElement.style.setProperty('--darkblue', '#131921')
+                document.documentElement.style.setProperty('--blue', '#222f3e')
+                document.documentElement.style.setProperty('--switch', '#ff9900cc')
+            }
+            else if ("{{ company }}" === 'discord') {
+                document.documentElement.style.setProperty('--lightblue', '#5865F2')
+                document.documentElement.style.setProperty('--darkblue', '#2f3136')
+                document.documentElement.style.setProperty('--blue', '#37393f')
+                document.documentElement.style.setProperty('--switch', '#5865F2cc')
+            }
+            else if ("{{ company }}" === 'inspirit') {
+                document.documentElement.style.setProperty('--lightblue', '#4835e7')
+                document.documentElement.style.setProperty('--darkblue', '#131414')
+                document.documentElement.style.setProperty('--blue', '#37383e')
+                document.documentElement.style.setProperty('--switch', '#4835e7cc')
+
             }
         </script>
     </head>
-    <img src="{{ url_for('static', filename='images/plus-mobile.svg') }}" height="80px" width="80px" onclick='popUp("popup", {{ link_names|tojson|safe }})' id="plus" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
-    <body id="links_body" onload="pageSetup()">
+    <svg onclick='popUp("popup")' id="plus" class="plus" viewBox="0 0 279 279" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M278.614 139.325C278.614 216.258 216.248 278.625 139.314 278.625C62.3809 278.625 0.0141602 216.258 0.0141602 139.325C0.0141602 62.3917 62.3809 0.0249634 139.314 0.0249634C216.248 0.0249634 278.614 62.3917 278.614 139.325Z" fill="var(--lightblue)"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M139.313 71.7727C142.992 71.7727 145.974 74.7551 145.974 78.434V200.214C145.974 203.892 142.992 206.875 139.313 206.875C135.634 206.875 132.651 203.892 132.651 200.214V78.434C132.651 74.7551 135.634 71.7727 139.313 71.7727Z" fill="white"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M71.7627 139.323C71.7627 135.644 74.7451 132.662 78.424 132.662H200.204C203.882 132.662 206.865 135.644 206.865 139.323C206.865 143.002 203.882 145.984 200.204 145.984H78.424C74.7451 145.984 71.7627 143.002 71.7627 139.323Z" fill="white"/>
+    </svg>
+    <body id="links_body" onload="pageSetup(); load_links('{{ username }}', '{{ sort }}')">
         <div id="page">
-            <header id="header_links" style="margin-bottom: 100px;">
-                <a href="/" id="home" target="_blank"><img src="{{ url_for('static', filename='images/logo-text.svg') }}" id="home_img" width="225px" height="50px" alt="home page"></a>
+            <header id="header-links" style="margin-bottom: 100px;">
                 {% if company == 'aa4e' %}
-                    <p>for</p>
-                    <img src="{{ url_for('static', filename='images/accessalliancelogo.png') }}" width="100px" height="100px">
+                    <div id="company-container">
+                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
+                        <p>for</p>
+                        <img class="company-logo" src="../static/images/logos/accessalliancelogo.png" width="80px" height="80px">
+                    </div>
+                {% elif company == 'google' %}
+                    <div id="company-container">
+                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
+                        <p>for</p>
+                        <img class="company-logo" src="../static/images/logos/google.svg" width="80px" height="80px">
+                    </div>
+                {% elif company == 'amazon' %}
+                    <div id="company-container" class="amazon">
+                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
+                        <p>for</p>
+                        <img class="company-logo amazon" src="../static/images/logos/amazon.png" width="80px" height="80px">
+                    </div>
+                {% elif company == 'discord' %}
+                    <div id="company-container">
+                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
+                        <p>for</p>
+                        <img class="company-logo" src="../static/images/logos/discord-logo.svg" width="80px" height="80px">
+                    </div>
+                {% else %}
+                    <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
                 {% endif %}
-                <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' class="plus_button" alt="Click to schedule a link" {% if confirmed == "false" %}style="cursor: not-allowed"{% endif %}>
+                <svg class="plus_button" viewBox="0 0 107 106" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    onclick='popUp("popup")'>
+                    <circle cx="53.3142" cy="53.0381" r="47.3235" fill="var(--lightblue)" stroke="var(--darkblue)" stroke-width="11"/>
+                    <path d="M53.3138 34.7562V71.3192" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M35.0327 53.0375H71.5958" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
                 <div id="links_menu">
                     <a><div class="button header_button underline" onclick="openSettings()">
                         Settings
                     </div></a>
-                    <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                 </div>
                 <div id="dropdown">
@@ -87,64 +142,66 @@
                         <a><div class="button header_button underline" onclick="openSettings()">
                             Settings
                         </div></a>
-                        <a href="/login"><div class="button header_button underline">Switch Account</div></a>
                         <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                     </div>
                 </div>
             </header>
             <button class="show-notes" onclick="showNotes()">Meeting Notes</button>
-                <div class="gone" id="disappear">
-                    <img src="{{ url_for('static', filename='images/links_loader.svg') }}" height="430" width="450" alt="Man with clock">
-                    <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
-                </div>
-                <div id="insert"></div>
+            <div class="gone" id="disappear">
+                <img loading="lazy" src="../static/images/links_loader.svg" height="430" width="450" alt="Man with clock">
+                <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
+            </div>
+            <div id="insert"></div>
         </div>
-        <div class="popup_delete" id="popup_delete">
+
+        <!--Delete link-->
+        <div class="popup-delete" id="popup-delete">
             <div>Are you sure you want to delete</div>
             <div id="delete_buttons_container">
-                <a><button id="button_no" onclick="hide('popup_delete')">No</button></a>
+                <a><button id="button_no" onclick="hide('popup-delete')">No</button></a>
                 <a id="delete_button"><button id="button_yes">Yes</button></a>
             </div>
         </div>
 
-        <div id="popup_share" style="display: none">
-            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" height="25px" width="25px" style="margin: -10px 0 -10px 20px; cursor: pointer" onclick="hide('popup_share')" alt="back to links page">
+        <!--Copy share link-->
+        <div id="popup-share" style="display: none">
+            <img loading="lazy" src="../static/images/arrow-left.svg" height="25px" width="25px" style="margin: -10px 0 -10px 20px; cursor: pointer" onclick="hide('popup-share')" alt="back to links page">
             <p>Share this url with others to add your link to their list!</p>
             <div><input id="share_link">
             <button id="click_to_copy">Click to Copy</button></div>
         </div>
+
+        <!--Create a link-->
         <div id="popup" class="popup">
-            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" class="back_arrow" onclick="hide('popup')" alt="back to links page">
+            <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
             <div id="error"></div>
             <form id="create" autocomplete="off">
                 <div class="flex">
-                    <img id="name_img" src="{{ url_for('static', filename='images/text.svg') }}" height="15px" width="20px" alt="text symbol">
+                    <img id="name_img" src="../static/images/text.svg" height="15px" width="20px" alt="text symbol">
                     <input type="text" placeholder="Meeting Title" id="name" required>
                 </div>
                 <div class="flex">
-                    <img id="link_img" src="{{ url_for('static', filename='images/link.svg') }}" height="13px" width="18px;" alt="link symbol" style="margin-top: 33px">
+                    <img id="link_img" src="../static/images/link.svg" height="13px" width="18px;" alt="link symbol" style="margin-top: 33px">
                     <input type="text" placeholder="Meeting Link" id="link" required>
                 </div>
                 <div class="flex">
-                    <img id="time_img" src="{{ url_for('static', filename='images/time.svg') }}" height="18px" width="18px" alt="clock">
+                    <img id="time_img" src="../static/images/time.svg" height="18px" width="18px" alt="clock">
                     <input id="hour" class="popup-time">
                     <p class="popup-time colon">:</p>
                     <input id="minute" class="popup-time">
-                    <select class="popup-time meridian" id="am">
-                        <option value="am">AM</option>
-                        <option value="pm" id="pm">PM</option>
-                    </select>
+                    <p onclick="this.innerText = this.innerText === 'AM' ? 'PM' : 'AM'" class="popup-time meridian" id="am">AM
+                    </p>
                 </div>
                 <div class="flex">
-                    <img id="password_img" src="{{ url_for('static', filename='images/lock.svg') }}" height="18px" width="15px" alt="lock symbol">
+                    <img id="password_img" src="../static/images/lock.svg" height="18px" width="15px" alt="lock symbol">
                     <input type="text" placeholder="Optional: Meeting Password" id="password">
                 </div>
                 <hr style="opacity: 0.2; margin-top: 30px;" width="77%">
                 <div class="flex_right" id="repeats_container">
-                    <div id="repeats_text">Repeats</div>
-                    <select id="select" class="popup_select">
-                        <option value="never" id="never">Never</option>
+                    <div id="repeats_text">Occurs</div>
+                    <select id="select" class="popup-select">
+                        <option value="never" id="never">Once</option>
                         <option value="week" id="week" selected>every week</option>
                         <option value="2 weeks" id="2 weeks">every 2 weeks</option>
                         <option value="3 weeks" id="3 weeks">every 3 weeks</option>
@@ -152,14 +209,14 @@
                     </select>
                     <div class="vertical_line"></div>
                     <div id="starts">Starts
-                        <select class="popup_select" id="starts_select">
+                        <select class="popup-select" id="starts_select" onchange="changeDateSelect()">
                             <option value="0" id="0">This week</option>
-                            <option value="1" id="1">in 1 week</option>
-                            <option value="2" id="2">in 2 weeks</option>
-                            <option value="3" id="3">in 3 weeks</option>
-                            <option value="4" id="4">in 4 weeks</option>
+                            <option value="1" id="1">Custom...</option>
                         </select>
+                        <input onkeyup="checkDate(this)" onkeydown="formatDate(this)" type="text" id="date-select" class="popup-select date gone" placeholder="MM/DD/YYYY">
+
                     </div>
+                    <img src="../static/images/undo.svg" id="starts-back-arrow" alt="back arrow" class="gone" onclick="changeDateSelect()">
                 </div>
                 <div id="days">
                     <button value="Sun" id="Sun" type="button">Su</button>
@@ -173,7 +230,7 @@
                 <div id="starts_container">
                     <div id="text_container">
                         <div>Text me</div>
-                        <select class="popup_select" id="text_select">
+                        <select class="popup-select" id="text_select">
                             <option value="false">Never</option>
                             <option value="5" selected>5 minutes before</option>
                             <option value="10">10 minutes before</option>
@@ -184,38 +241,38 @@
                             <option value="60">60 minutes before</option>
                         </select>
                     </div>
-                    <button type="button" class="hover-arrow" id="submit" onclick="registerLink('register')">Create <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+                    <button type="button" class="hover-arrow" id="submit" onclick="registerLink('register')">Create <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
                 </div>
             </form>
         </div>
-        <div id="check_popup" class="popup-warning">Checking popup permissions, please wait 5 seconds. Then, you can close the white window that appears.</div>
-        <div id="popups_not_enabled" class="popup-warning">
+        <div id="check-popup" class="popup-warning">Checking popup permissions, please wait 5 seconds. Then, you can close the white window that appears.</div>
+        <div id="popups-not-enabled" class="popup-warning">
             Popups are still not enabled.
             If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
             If you think that there has been a mistake, please send us an email at seth@linkjoin.xyz. If you wish, you may continue without enabling popups, but your links will not open automatically.
             <div>
-            <button class="ok hover-arrow" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
-            <button class="ok hover-arrow" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button></div>
+            <button class="ok hover-arrow" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+            <button class="ok hover-arrow" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button></div>
         </div>
         <div id="tutorial-1" class="popup-warning">
             Welcome to LinkJoin! Let's get you set up and ready to be on time.
-            <button class="ok hover-arrow" onclick="popupWarn(0)" style="margin-right: 20px">I'm ready! <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+            <button class="ok hover-arrow" onclick="popupWarn(0)" style="margin-right: 20px">I'm ready! <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
         </div>
         <div id="tutorial0" class="popup-warning">
             <p>You should see an icon on the right side of your search bar indicating that popups are blocked.
                 Click on the icon and select Always allow pop-ups redirects from https://linkjoin.xyz.</p>
-            <button class="ok hover-arrow" onclick="popupWarn(1)">Check my popups <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+            <button class="ok hover-arrow" onclick="popupWarn(1)">Check my popups <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
         </div>
         <div id="tutorial1" class="popup-warning">
             <p>
                 Now that popups are enabled, you can head over to the tutorial at the bottom of the screen.
                 Enjoy LinkJoin!
             </p>
-            <button class="ok hover-arrow" onclick="skipTutorial()">Thanks! <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+            <button class="ok hover-arrow" onclick="skipTutorial()">Thanks! <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
         </div>
         <div id="blur"></div>
-        <div id="add_number_div">
-            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" height="25px" width="25px" id="dismiss_add_number" onclick="no_add_number()" alt="back to links page">
+        <div id="add-number-div">
+            <img loading="lazy" src="../static/images/arrow-left.svg" height="25px" width="25px" id="dismiss_add_number" onclick="no_add_number()" alt="back to links page">
             <div class="content">
                 <h2>One More Thing!</h2>
                 <p>
@@ -225,11 +282,11 @@
                     If you don't want to add your number, click the arrow in the upper left.
                 </p>
                 <input class="number" id="number" type="text" placeholder="Phone number">
-                <button id="add_number" class="hover-arrow" onclick="add_number('number')">Add Number <img src="{{ url_for('static', filename='images/right-angle.svg') }}" alt="right arrow"></button>
+                <button id="add_number" class="hover-arrow" onclick="add_number('number')">Add Number <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
-        <div id="popup_notes" class="popup">
-            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" class="back_arrow" onclick="hide('popup_notes')" alt="back to links page">
+        <div id="popup-notes" class="popup">
+            <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup-notes')" alt="back to links page">
             <input type="text" onchange="searchNotes(this.value.toLowerCase())" id="notes_search" placeholder="Search for notes">
             <h2>Meeting notes for </h2>
             <textarea id="notes_textarea" class="notes" placeholder="What happened at your meeting? What do you want to keep track of? ..."></textarea>
@@ -287,7 +344,11 @@
                     To schedule a link, all you need to do is click the plus button and fill in the info.
                 </p>
                 <div class="demo">
-                    <img src="{{ url_for('static', filename='images/plus.svg') }}" height="100px" width="100px" onclick='popUp("popup", {{ link_names|tojson|safe }})' style="display: flex !important" class="plus_button tutorial" alt="Click to schedule a link">
+                    <svg onclick='openTutorial(); popUp("popup")' class="plus_button tutorial" viewBox="0 0 279 279" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M278.614 139.325C278.614 216.258 216.248 278.625 139.314 278.625C62.3809 278.625 0.0141602 216.258 0.0141602 139.325C0.0141602 62.3917 62.3809 0.0249634 139.314 0.0249634C216.248 0.0249634 278.614 62.3917 278.614 139.325Z" fill="var(--lightblue)"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M139.313 71.7727C142.992 71.7727 145.974 74.7551 145.974 78.434V200.214C145.974 203.892 142.992 206.875 139.313 206.875C135.634 206.875 132.651 203.892 132.651 200.214V78.434C132.651 74.7551 135.634 71.7727 139.313 71.7727Z" fill="white"/>
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M71.7627 139.323C71.7627 135.644 74.7451 132.662 78.424 132.662H200.204C203.882 132.662 206.865 135.644 206.865 139.323C206.865 143.002 203.882 145.984 200.204 145.984H78.424C74.7451 145.984 71.7627 143.002 71.7627 139.323Z" fill="white"/>
+                    </svg>
                 </div>
             </div>
             <div class="tutorial-step">
@@ -455,7 +516,7 @@
 
         <!--Settings-->
         <div id="settings" class="popup">
-            <img src="{{ url_for('static', filename='images/arrow-left.svg') }}" class="back_arrow" onclick="hide('settings')" alt="back to links page">
+            <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('settings')" alt="back to links page">
             <h1>LinkJoin Settings</h1>
             <div class="settings-row">
                 <div class="settings-name">
@@ -483,7 +544,7 @@
                     <p>Change the phone number reminders are texted to.</p>
                 </div>
                 <input class="number" type="text" placeholder="Phone number" id="settings-phone-number">
-                <img src="{{ url_for('static', filename='images/check-box.svg') }}" onclick="add_number('settings-phone-number')" id="settings-change-number" class="settings-change-number">
+                <svg onclick="add_number('settings-phone-number')" id="settings-change-number" class="settings-change-number" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="fa-secondary" fill="var(--lightblue)" d="M384 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V96C448 60.65 419.3 32 384 32zM339.8 211.8l-128 128C206.3 345.3 199.2 348 192 348s-14.34-2.719-19.81-8.188l-64-64c-10.91-10.94-10.91-28.69 0-39.63c10.94-10.94 28.69-10.94 39.63 0L192 280.4l108.2-108.2c10.94-10.94 28.69-10.94 39.63 0C350.7 183.1 350.7 200.9 339.8 211.8z"></path><path class="fa-primary" fill="white" d="M339.8 211.8l-128 128C206.3 345.3 199.2 348 192 348s-14.34-2.719-19.81-8.188l-64-64c-10.91-10.94-10.91-28.69 0-39.63c10.94-10.94 28.69-10.94 39.63 0L192 280.4l108.2-108.2c10.94-10.94 28.69-10.94 39.63 0C350.7 183.1 350.7 200.9 339.8 211.8z"></path></svg>
             </div>
             <div class="settings-row">
                 <div class="settings-name">
@@ -517,7 +578,7 @@
         </div>
         <div id="deleted-links">
             <div id="deleted-links-header">
-                <img src="/static/images/arrow-left.svg" class="back_arrow deleted-links" onclick="hide('deleted-links'); blur(false)" alt="back to links page">
+                <img loading="lazy" src="/static/images/arrow-left.svg" class="back_arrow deleted-links" onclick="hide('deleted-links'); blur(false)" alt="back to links page">
                 <h1>Deleted Links</h1>
             </div>
             <div id="deleted-links-body">

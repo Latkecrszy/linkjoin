@@ -13,6 +13,8 @@ days_dict = {"Sun": 1, "Mon": 2, "Tue": 3, "Wed": 4, "Thu": 5, "Fri": 6, "Sat": 
 def convert_time(document, user, text):
     if text == 'false':
         text = 0
+    else:
+        text = int(text)
     hour = int(document["time"].split(":")[0])
     minute = int(document["time"].split(":")[1])
     if hour <= 9:
@@ -23,12 +25,8 @@ def convert_time(document, user, text):
     for day in document['days']:
         if int(hour) == 24:
             hour = '00'
-        try:
-            Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
-                minutes=(int(user["offset"].split(".")[1]) - int(text)), hours=int(user["offset"].split(".")[0]))
-        except:
-            print(hour)
-            print(minute)
+        Time = arrow.get(f'2021-08-{days_dict[day]} {hour}:{minute}', 'YYYY-MM-D HH:mm').shift(
+            minutes=(int(user["offset"].split(".")[1]) - int(text)), hours=int(user["offset"].split(".")[0]))
         user_info['hour'] = int(Time.strftime('%-H'))
         user_info['minute'] = int(Time.strftime('%-M'))
         user_info['days'].append(Time.strftime('%a'))
@@ -42,7 +40,8 @@ def message():
         for document, change in changes.items():
             print(document)
             print(change)
-            mongo.zoom_opener.links.find_one_and_update({'username': document[0], 'id': int(document[1])}, {'$set': change})
+            mongo.zoom_opener.links.find_one_and_update({'username': document[0], 'id': int(document[1])},
+                                                        {'$set': change})
         changes = {}
         print('Running')
         start = time.perf_counter()
@@ -53,23 +52,25 @@ def message():
         # Create a dictionary with all the needed info about the time
         info = {"day": current_time.strftime("%a"), "hour": current_time.hour, "minute": current_time.minute}
         # Loop through the links
+
         if os.environ.get('IS_HEROKU') == 'false':
-            documents = list(links.find({'username': 'setharaphael7@gmail.com'}))
+            links_search = {'username': 'setharaphael7@gmail.com'}
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
             anonymous_token = []
         else:
-            documents = list(links.find())
+            links_search = {}
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = mongo.zoom_opener.anonymous_token.find()
-        for document in documents:
+        for document in links.find(links_search):
             user = users.find_one({"username": document['username']}) if users.find_one(
                 {"username": document['username']}) is not None else {}
             # Create a dictionary with all the needed info about the link time
             if 'offset' in user:
                 user_info = convert_time(document, user, document['text'])
-                if dict(user).get('number') and document['text'] != "false" and not (info['day'] not in user_info['days']
-                        or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute']))\
-                        and document['starts'] == 0:
+                if dict(user).get('number') and document['text'] != "false" and not (
+                        info['day'] not in user_info['days']
+                        or (info['hour'], info['minute']) != (user_info['hour'], user_info['minute'])) \
+                        and not document.get('starts'):
                     print('sending')
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],
                             'name': document['name'], 'text': document['text'], 'key': os.environ.get('TEXT_KEY')}
@@ -80,18 +81,18 @@ def message():
 
                 user_info = convert_time(document, user, 0)
                 if info['day'] not in user_info['days'] or (info['hour'], info['minute']) != (
-                    user_info['hour'], user_info['minute']) or document['active'] == 'false':
+                        user_info['hour'], user_info['minute']) or document['active'] == 'false':
                     continue
                 # Check if the link is active or if it has yet to start
-                if document['repeat'] == 'never' and int(document['starts']) == 0:
+                if document['repeat'] == 'never' and document['activated'] == 'true':
                     if len(document['days']) == 1:
                         changes[(document['username'], document['id'])] = {'active': 'false', 'text': 'false'}
                     else:
                         document['days'].remove(arrow.utcnow().shift(hours=-int(float(user['offset']))).strftime('%a'))
                         changes[(document['username'], document['id'])] = {'days': document['days']}
                     continue
-                elif int(document['starts']) != 0:
-                    changes[(document['username'], document['id'])] = {'starts': int(document['starts'])-1}
+                elif 'starts' in document and int(document['starts']) != 0:
+                    changes[(document['username'], document['id'])] = {'starts': int(document['starts']) - 1}
                     continue
                 if document['repeat'][0].isdigit():
                     accept = [int(document['repeat'][0]) * len(user_info['days']) + x - len(user_info['days']) + 1
@@ -100,7 +101,8 @@ def message():
                     if int(document['occurrences']) == accept[-1]:
                         changes[(document['username'], document['id'])] = {'occurrences': 0}
                     else:
-                        changes[(document['username'], document['id'])] = {'occurrences': int(document['occurrences']) + 1}
+                        changes[(document['username'], document['id'])] = {
+                            'occurrences': int(document['occurrences']) + 1}
                         continue
         edit = {}
         for document in otps:
@@ -156,4 +158,5 @@ def message():
         speed = abs(60 - (time.perf_counter() - start))
         if speed < 50:
             print(f'Long time: {speed}')
+        print(speed)
         time.sleep(speed)
