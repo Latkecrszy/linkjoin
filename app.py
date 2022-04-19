@@ -13,6 +13,7 @@ from starlette.responses import JSONResponse, Response, FileResponse, PlainTextR
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
+import uvicorn
 
 ph = PasswordHasher()
 timing = 0
@@ -955,3 +956,6 @@ handlers = {
 }
 
 app = Starlette(routes=routes, debug=True, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=8000)
