@@ -956,6 +956,3 @@ handlers = {
 }
 
 app = Starlette(routes=routes, debug=True, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])
-
-if __name__ == '__main__':
-    uvicorn.run(app, port=8000)
