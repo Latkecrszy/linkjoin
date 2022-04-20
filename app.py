@@ -342,7 +342,8 @@ async def links(request: Request) -> Response:
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
         for link in db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
-    sort_pref = json.loads(request.cookies.get('sort'))['sort'] if request.cookies.get('sort') and json.loads(request.cookies.get('sort'))['sort'] in ['time', 'day', 'datetime'] else 'no'
+    print(request.cookies)
+    sort_pref = request.cookies.get('sort') if request.cookies.get('sort') and request.cookies.get('sort') in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
     db.tokens.insert_one({'email': email, 'token': token})
     analytics('users', email=email)
@@ -350,7 +351,8 @@ async def links(request: Request) -> Response:
         'username': email, 'link_names': link_names, 'sort': sort_pref, 'premium': premium, 'style': 'old',
         'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
         'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
-        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request})
+        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request,
+        'company': request.query_params.get('company')})
 
 
 async def delete(request: Request) -> Response:
