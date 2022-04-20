@@ -337,17 +337,18 @@ footer {
     pointer-events: none;
 }
 
-.description.mobile {
-    display: none;
-    padding: 15px;
-    text-align: center;
-    width: 96%;
-    margin: 40px 2% 0 2%;
+@media (max-width: 600px) {
+    .description {
+        padding: 15px;
+        text-align: center;
+        width: 96%;
+        margin: 40px 2% 0 2%;
+    }
 }
 
 #info-boxes {
     width: 96%;
-    margin: 100px 0 0 2%;
+    margin: 200px 0 0 2%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly
@@ -477,17 +478,12 @@ iframe {
     #faq {background: var(--blue); box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
 }
 
-@media (max-width: 600px) {
-    .description.desktop {display: none;}
-    .description.mobile {display: block;}
-}
-
 @media (max-width: 815px) {
     .info-box {width: 80%;}
 }
 
 @media (max-width: 400px) {
-    .description.mobile {
+    .description {
         font-size: 18px;
         line-height: 24px;
     }

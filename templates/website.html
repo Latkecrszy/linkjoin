@@ -73,18 +73,10 @@
             <h1 class="what-is-linkjoin">What is LinkJoin?</h1>
             <div class="description desktop">
                 <div class="background"></div>
-                COVID-19 catapulted millions of students into virtual learning, and many of them are there to stay.
-                Unlike in the organized environment of physical school, virtual learning leaves students prone to
-                distractions, creating unnecessary tardies and dropping grades. To solve these problems, LinkJoin
-                automatically opens virtual classes and meetings, as well as organizing them in one central location.
-                Keep scrolling to see how LinkJoin can help you never be late again.
-            </div>
-            <div class="description mobile">
-                COVID-19 catapulted millions of students into virtual learning, and many of them are there to stay.
-                Unlike in the organized environment of physical school, virtual learning leaves students prone to
-                distractions, creating unnecessary tardies and dropping grades. To solve these problems, LinkJoin
-                automatically opens virtual classes and meetings, as well as organizing them in one central location.
-                Keep scrolling to see how LinkJoin can help you never be late again.
+                COVID-19 catapulted millions of students into virtual learning and introduced us all to the future of
+                work, school, and productivity: virtual meetings. But unlike the organized environment of the real world,
+                virtual meetings leave people vulnerable to real-world distractions and tardiness. LinkJoin organizes and
+                automatically opens virtual meetings to ensure that you are never late again.
             </div>
 
             <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
@@ -266,12 +258,14 @@
             });
         })
         setUpFAQ()
+
         document.addEventListener('scroll', () => {
             document.getElementById('curve').style.filter = `blur(${window.scrollY*0.075}px)`
             document.getElementById('what').style.opacity = `${(window.scrollY-250)/500}`
-            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-800)/500}`
-            document.getElementById('info').style.opacity = `${(window.scrollY-1600)/500}`
+            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-1200)/500}`
+            document.getElementById('info').style.opacity = `${(window.scrollY-1700)/500}`
         })
+
 
         async function openFAQ(e) {
             e.children[0].classList.toggle('flipped')
