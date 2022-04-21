@@ -74,9 +74,9 @@
             <div class="description desktop">
                 <div class="background"></div>
                 COVID-19 catapulted millions of students into virtual learning and introduced us all to the future of
-                work, school, and productivity: virtual meetings. But unlike the organized environment of the real world,
-                virtual meetings leave people vulnerable to real-world distractions and tardiness. LinkJoin organizes and
-                automatically opens virtual meetings to ensure that you are never late again.
+                work, school, and productivity: virtual meetings. While virtual meetings have huge advantages over their
+                physical counterparts, one thing that all meetings lack is a system for ensuring that everyone can arrive
+                right on time. LinkJoin organizes and automatically opens virtual meetings to ensure that you're never late again.
             </div>
 
             <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
@@ -262,7 +262,7 @@
         document.addEventListener('scroll', () => {
             document.getElementById('curve').style.filter = `blur(${window.scrollY*0.075}px)`
             document.getElementById('what').style.opacity = `${(window.scrollY-250)/500}`
-            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-1200)/500}`
+            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-1000)/500}`
             document.getElementById('info').style.opacity = `${(window.scrollY-1700)/500}`
         })
 

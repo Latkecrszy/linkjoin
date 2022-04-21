@@ -13,7 +13,7 @@ from starlette.responses import JSONResponse, Response, FileResponse, PlainTextR
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
-import uvicorn
+from twilio.rest import Client
 
 ph = PasswordHasher()
 timing = 0
@@ -22,6 +22,8 @@ db = MongoClient(os.environ.get('MONGO_URI', None)).zoom_opener
 templates = Jinja2Templates(directory='templates')
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
+TWILIO_SID = os.environ.get('TWILIO_SID', None)
+TWILIO_TOKEN = os.environ.get('TWILIO_TOKEN', None)
 pp = pprint.PrettyPrinter(indent=4)
 started = False
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
@@ -351,8 +353,7 @@ async def links(request: Request) -> Response:
         'username': email, 'link_names': link_names, 'sort': sort_pref, 'premium': premium, 'style': 'old',
         'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
         'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
-        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request,
-        'company': request.query_params.get('company')})
+        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request})
 
 
 async def delete(request: Request) -> Response:
