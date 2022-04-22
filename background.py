@@ -60,7 +60,7 @@ def message():
         else:
             links_search = {}
             otps = mongo.zoom_opener.otp.find()
-            anonymous_token = mongo.zoom_opener.anonymous_token.find()
+            anonymous_token = list(mongo.zoom_opener.anonymous_token.find())
         for document in links.find(links_search):
             user = users.find_one({"username": document['username']}) if users.find_one(
                 {"username": document['username']}) is not None else {}
