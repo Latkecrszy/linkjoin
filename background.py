@@ -58,7 +58,7 @@ def message():
             otps = mongo.zoom_opener.otp.find({'email': 'setharaphael7@gmail.com'})
             anonymous_token = []
         else:
-            links_search = {}
+            links_search = {'active': 'true', 'activated': 'true'}
             otps = mongo.zoom_opener.otp.find()
             anonymous_token = list(mongo.zoom_opener.anonymous_token.find())
         for document in links.find(links_search):
@@ -117,17 +117,18 @@ def message():
             elif change['type'] == 'delete':
                 mongo.zoom_opener.otp.find_one_and_delete({'pw': otp})
         edit = {}
+        changed = 0
         for document in anonymous_token:
             if document.get('time'):
                 if document['time'] - 1 == 0:
-                    print('Changing tokens')
                     edit[document['token']] = {'type': 'delete'}
                 else:
-                    print('Changing tokens')
                     edit[document['token']] = {'type': 'edit', 'content': {'$set': {'time': document['time'] - 1}}}
+                changed += 1
             else:
-                print('Changing tokens')
+                changed += 1
                 edit[document['token']] = {'type': 'edit', 'content': {'$set': {'time': 59}}}
+        print(changed)
         # Can't hash a dict!
         for token, change in edit.items():
             if change['type'] == 'edit':

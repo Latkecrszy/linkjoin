@@ -86,7 +86,9 @@ function getOffset(el) {
 }
 
 async function db(username, id) {
-    const deleted = id === 'deleted-links-body' ? 'true' : 'false'
+    const deleted = id === 'deleted-links-body' || id === 'deleted-links' ? 'true' : 'false'
+    console.log(deleted)
+    console.log(id)
     let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}})
         .then(response => response.json())
         .catch(() => location.reload()) : global_links || []
@@ -468,6 +470,9 @@ async function check_day(username) {
 async function sort() {
     location.replace("/sort?sort="+document.getElementsByClassName("sort")[0].value.toString())
 }
+
+
+
 
 
 async function registerLink(parameter) {

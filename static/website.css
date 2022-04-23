@@ -261,7 +261,7 @@ footer {
 }
 
 .faq-answer p {
-    color: var(--lightblue);
+    /color: var(--lightblue);
     display: inline;
 }
 
