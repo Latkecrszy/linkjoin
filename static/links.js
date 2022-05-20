@@ -529,6 +529,11 @@ async function registerLink(parameter) {
     else {
         await fetch(url, payload)
     }
+
+    if (global_links.length === 0) {
+        location.reload()
+    }
+
     hide('popup')
     await refresh()
     await load_links(global_username, global_sort)
