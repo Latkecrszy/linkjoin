@@ -51,7 +51,6 @@
             </div>
             <div id="right_content">
                 <div id="welcome">Create an Account</div>
-                <div class="error" id="email_in_use" style="display: none">Email in use.</div>
                 <div class="error" id="invalid_email" style="display: none">Invalid email.</div>
                 <div class="error" id="password_too_short" style="display: none">Password must be at least 5 characters.</div>
                 <div class="error" id="signup_failed" style="display: none">Signup failed, please refresh the page and try again.</div>
@@ -64,7 +63,8 @@
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <input id="password" name="password" placeholder="Password" type="password" required>
                 <input id="phone" name="phone" placeholder="Phone Number (Optional)" type="text"><br>
-                <div id="keep_div"><input type="checkbox" name="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
+                <div class="keep_div" id="keep_div"><input type="checkbox" name="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
+                <div class="keep_div"><input type="checkbox" class="keep" name="keep"><p class="keep_text">Sign me up for emails and updates</p></div>
                 <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
@@ -105,7 +105,8 @@
         if (!offset.includes(".")) {offset = `${offset}.0`}
         const countryCodes = {{ country_codes|tojson|safe }}
         async function signUp() {
-            let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
+            // let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
+            let country = {'country': "US"}
             const data = await fetch('/confirm_email', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
@@ -137,7 +138,7 @@
     }
 
     async function processData(data) {
-        ['email_in_use', 'invalid_email', 'other_error', 'password_too_short'].forEach((i) => document.getElementById(i).style.display = "none")
+        ['invalid_email', 'other_error', 'password_too_short'].forEach((i) => document.getElementById(i).style.display = "none")
         document.getElementById('email').style.border = "none"
         document.getElementById('password').style.border = "none"
         data = await data.json()
@@ -147,10 +148,15 @@
         } else {
             enableButton('submit')
             enableButton('gsignin')
-            document.getElementById(data['error']).style.display = "block"
+            try {
+                document.getElementById(data['error']).style.display = "block"
+            } catch {}
             if (data['error'] === 'password_too_short') {
                 document.getElementById("password").style.border = "2px solid red"
-            } else {
+            } else if (data['error'] === 'email_in_use') {
+                location.replace(`/login?email=${data['email']}`)
+            }
+            else {
                 document.getElementById("email").style.border = "2px solid red"
             }
 

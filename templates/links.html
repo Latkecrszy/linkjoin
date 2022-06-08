@@ -18,15 +18,10 @@
             let date = new Date()
             let number = "{{ number }}"
             const token = "{{ token }}"
-            const highlight = "{{ highlight }}"
             const open_early = "{{ open_early }}" === "None" ? 0 : parseInt("{{ open_early }}")
             const confirmed = "{{ confirmed }}"
             const error = "{{ error }}"
             const account = '{{ account }}'
-            let offset = (date.getTimezoneOffset()/60).toString()
-            if (!offset.includes(".")) {offset = `${offset}.0`}
-            fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({offset: offset, email: '{{username}}'})})
             const countryCodes = {{ country_codes|tojson|safe }}
         </script>
         <script src="../static/links.js"></script>
@@ -133,16 +128,17 @@
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                 </div>
                 <div id="dropdown">
-                    <div id="hamburger">
+                    <div id="hamburger" class="gone">
                         <div id="line1"></div>
                         <div id="line2"></div>
                         <div id="line3"></div>
                     </div>
                     <div id="hamburger_dropdown">
-                        <a><div class="button header_button underline" onclick="openSettings()">
+                        <a><div onclick="openSettings()">
                             Settings
                         </div></a>
-                        <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
+                        <hr class="menu_line">
+                        <a><div onclick="logOut()">Log Out</div></a>
                     </div>
                 </div>
             </header>
@@ -164,7 +160,7 @@
         </div>
 
         <!--Copy share link-->
-        <div id="popup-share" style="display: none">
+        <div id="popup-share" class="invisible popup">
             <img loading="lazy" src="../static/images/arrow-left.svg" height="25px" width="25px" style="margin: -10px 0 -10px 20px; cursor: pointer" onclick="hide('popup-share')" alt="back to links page">
             <p>Share this url with others to add your link to their list!</p>
             <div><input id="share_link">
@@ -172,7 +168,7 @@
         </div>
 
         <!--Create a link-->
-        <div id="popup" class="popup">
+        <div id="popup" class="popup invisible">
             <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
             <div id="error"></div>
@@ -210,8 +206,8 @@
                     <div class="vertical_line"></div>
                     <div id="starts">Starts
                         <select class="popup-select" id="starts_select" onchange="changeDateSelect()">
-                            <option value="0" id="0">This week</option>
-                            <option value="1" id="1">Custom...</option>
+                            <option value="0" id="0">this week</option>
+                            <option value="1" id="1">custom...</option>
                         </select>
                         <input onkeyup="checkDate(this)" onkeydown="formatDate(this)" type="text" id="date-select" class="popup-select date gone" placeholder="MM/DD/YYYY">
 
@@ -248,8 +244,8 @@
         <div id="check-popup" class="popup-warning">Checking popup permissions, please wait 5 seconds. Then, you can close the white window that appears.</div>
         <div id="popups-not-enabled" class="popup-warning">
             Popups are still not enabled.
-            If you do not see a notification telling you that a popup was blocked, enter your browser settings and enable popups manually.
-            If you think that there has been a mistake, please send us an email at seth@linkjoin.xyz. If you wish, you may continue without enabling popups, but your links will not open automatically.
+            Please navigate to your browser settings and enable popups manually.
+            You may also continue without enabling popups, but your links will not open automatically.
             <div>
             <button class="ok hover-arrow" style="height: 70px; margin-right: 20px" onclick="popupWarn(1)">Check my popups <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             <button class="ok hover-arrow" style="height: 70px" onclick="popupWarn(1, true)">Continue without popups <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button></div>
@@ -285,7 +281,7 @@
                 <button id="add_number" class="hover-arrow" onclick="add_number('number')">Add Number <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
-        <div id="popup-notes" class="popup">
+        <div id="popup-notes" class="popup invisible nobar">
             <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup-notes')" alt="back to links page">
             <input type="text" onchange="searchNotes(this.value.toLowerCase())" id="notes_search" placeholder="Search for notes">
             <h2>Meeting notes for </h2>
@@ -301,7 +297,7 @@
 
         <!--Tutorial-->
         {% if tutorial != 'complete' %}
-            <div id="open-tutorial" onclick="openTutorial()">❮</div>
+            <div id="open-tutorial" onclick="openTutorial()"><img src="../static/images/angle-up.svg" alt="down arrow"></div>
         {% endif %}
         <div id="tutorial">
             <!--Scroll to these steps with document.getElementById('tutorial').children[x].scrollIntoView()-->
@@ -515,7 +511,7 @@
 
 
         <!--Settings-->
-        <div id="settings" class="popup">
+        <div id="settings" class="popup invisible">
             <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('settings')" alt="back to links page">
             <h1>LinkJoin Settings</h1>
             <div class="settings-row">

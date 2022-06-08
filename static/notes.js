@@ -33,6 +33,7 @@ async function showNotes(changing) {
     else {
         await sendNotif('You do not have any meeting notes. Try creating some from the dot menus of your links!', '#ba1a1a')
     }
+    document.getElementById('popup-notes').classList.add('active')
 }
 
 async function renderNotes() {

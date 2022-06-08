@@ -6,9 +6,18 @@
 /*Hamburger Menu*/
 #hamburger {cursor: pointer; margin: 25px 30px 0 auto;}
 
-#hamburger_dropdown.expand {display: flex; margin-left: auto}
+#hamburger_dropdown.expand {display: flex}
 
-#hamburger_dropdown.expand a {display: block; margin-right: 20px}
+#hamburger_dropdown.expand a {
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+#hamburger_dropdown.expand a:hover {
+    background: #1c2f45;
+}
 
 #dropdown {display: none; flex-direction: column}
 
@@ -17,18 +26,19 @@
   height: 5px;
   background-color: white;
   margin: 6px 0;
-  transition: 0.4s;
+  transition: 0.4s ease-in-out;
   border-radius: 5px;
 }
 
 #hamburger_dropdown {
     display: none;
-    flex-direction: column;
-    margin-left: auto;
-    background: var(--blue);
-    border-radius: 3px;
-    padding: 5px;
+    width: 84px;
+    height: 120px;
     text-align: center;
+    flex-direction: column;
+    background: var(--blue);
+    border-radius: 4px;
+    padding: 8px;
     box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.25)
 }
 
@@ -215,7 +225,7 @@
 #notes_search {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 5px;
     background: var(--blue);
     color: white;
     border: none;
@@ -223,7 +233,7 @@
     height: 30px;
     width: 150px;
     box-sizing: border-box;
-    padding: 2px 4px;
+    padding: 2px 8px 2px 5px;
 }
 
 #notes_search::placeholder {
@@ -255,22 +265,25 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     display: flex;
     justify-content: center;
     align-items: center;
-    transform: rotate(90deg);
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.6);
-    font-size: 30px;
+    align-content: center;
     cursor: pointer;
     box-sizing: border-box;
-    padding-bottom: 2px;
     transition: 0.5s;
     z-index: 2
 }
 
+#open-tutorial img {
+    position: relative;
+    height: 40px;
+    pointer-events: none;
+}
+
 #open-tutorial:hover {
-    animation: bob 1s ease-in-out infinite alternate;
+    animation: bob 0.75s ease-in-out infinite alternate;
 }
 
 #open-tutorial.open {
-    transform: rotate(270deg);
+    transform: rotate(180deg);
     box-shadow: none;
 }
 
@@ -470,8 +483,13 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 
 @keyframes bob {
-    from {padding-right: 0;}
-    to {padding-right: 15px;}
+    from {
+        padding-bottom: 0
+    }
+
+    to {
+        padding-bottom: 10px
+    }
 }
 
 @media (max-width: 400px) {
@@ -506,10 +524,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     #hamburger a {
         display: block;
     }
-    #hamburger_dropdown {
-        display: inline-block;
-        z-index: 9;
-    }
     #header-links a {display: none;}
     .plus_button {display: flex}
     #home {display: inline-block !important}
@@ -519,8 +533,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 @media (max-width: 730px) {
     .plus {display: flex !important}
     .plus_button {display: none}
-    #popup {width: 100vw; max-width: 520px}
-    #popup-share {width: min(600px, 100vw); left: max(0px, calc(90% - 520px)); height: 275px}
     #click_to_copy {display: inline-block; margin-left: 40%;}
     #share_link {margin-left: 20%}
     #open-tutorial {

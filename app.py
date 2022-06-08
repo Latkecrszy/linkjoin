@@ -83,8 +83,7 @@ def gen_otp():
 
 def authenticated(cookies, email):
     try:
-        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in
-                                                                               db.sessions.find({'username': email})]
+        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in db.sessions.find({'username': email})]
     except TypeError:
         return False
 
@@ -102,8 +101,7 @@ async def main(request: Request) -> Response:
     if not started:
         started = True
         task = BackgroundTask(message)
-        return templates.TemplateResponse('website.html', {'token': token, 'logged_in': logged_in, 'request': request},
-                                          background=task)
+        return templates.TemplateResponse('website.html', {'token': token, 'logged_in': logged_in, 'request': request}, background=task)
     else:
         return templates.TemplateResponse('website.html', {'token': token, 'logged_in': logged_in, 'request': request})
 
@@ -117,7 +115,7 @@ async def login(request: Request) -> Response:
         token = gen_session()
         db.anonymous_token.insert_one({'token': token})
         return templates.TemplateResponse('login.html', {
-            'error': request.query_params.get('error'), 'token': token, 'request': request,
+            'error': request.query_params.get('error'), 'email': request.query_params.get('email'), 'token': token, 'request': request,
             'redirect': request.query_params.get('redirect') if request.query_params.get('redirect') else '/links'})
     else:
         data = await request.json()
@@ -161,14 +159,12 @@ async def login(request: Request) -> Response:
             return response
         db.anonymous_token.find_one_and_delete({'token': token})
         analytics('logins')
-        response = JSONResponse(
-            {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
+        response = JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
         return response
 
 
 async def logout(request: Request) -> Response:
-    db.sessions.find_one_and_delete(
-        {'session_id': request.query_params.get('session_id'), 'email': request.query_params.get('email')})
+    db.sessions.find_one_and_delete({'session_id': request.query_params.get('session_id'), 'email': request.query_params.get('email')})
     response = JSONResponse({'msg': 'Success'})
     return response
 
@@ -186,10 +182,10 @@ async def confirm_email(request: Request) -> Response:
     """
     Order of steps:
     Google 1. Decode JWT and get email
-
+    
     Email 1. Check if email is valid
     Email 2. 
-
+    
     """
     if data.get('jwt'):
         try:
@@ -210,7 +206,7 @@ async def confirm_email(request: Request) -> Response:
     if db.login.find_one({'username': email}) is not None:
         db.tokens.find_one_and_delete({'email': email, 'token': token})
         db.anonymous_token.insert_one({'token': token})
-        response = JSONResponse({"error": "email_in_use", "url": redirect_link, 'token': token})
+        response = JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
         return response
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token}
@@ -230,6 +226,7 @@ async def confirm_email(request: Request) -> Response:
 
     content.set_content(f'''LinkJoin here!
 To confirm your email, go to https://linkjoin.xyz/signup?tk={account_token}. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in one hour.
+
 Yours truly,
 LinkJoin''')
     content['Subject'] = 'LinkJoin: Confirm email address'
@@ -238,9 +235,9 @@ LinkJoin''')
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
         server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
         server.send_message(content)
-    response = JSONResponse(
-        {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
+    response = JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
     return response
+
 
 
 async def signup(request: Request) -> Response:
@@ -288,25 +285,18 @@ async def set_cookie(request: Request):
 
 
 async def get_session(request: Request) -> Response:
-    if not authenticated(request.cookies, request.headers.get('email')) or not db.tokens.find_one(
-            {'email': request.headers.get('email'), 'token': request.headers.get('token')}):
+    if not authenticated(request.cookies, request.headers.get('email')) or not db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
         response = JSONResponse({'error': 'Forbidden', 'code': 403}, 403)
         return response
-    response = JSONResponse(
-        [i['session_id'] for i in db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})])
+    response = JSONResponse([i['session_id'] for i in db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})])
     return response
 
 
 async def verify_session(request: Request) -> Response:
     if not authenticated(request.cookies, request.headers.get('email')):
-        print(request.cookies)
-        print(request.headers.get('email'))
         response = JSONResponse({'error': 'Forbidden', 'code': 403}, 403)
         return response
-
-    response = request.headers.get('session_id') in [i['session_id'] for i in
-                                                     db.sessions.find({'username': request.headers.get('email')},
-                                                                      projection={"_id": 0})]
+    response = request.headers.get('session_id') in [i['session_id'] for i in db.sessions.find({'username': request.headers.get('email')}, projection={"_id": 0})]
     if response:
         token = gen_session()
         db.tokens.insert_one({'email': request.headers.get('email'), 'token': token})
@@ -369,9 +359,7 @@ async def links(request: Request) -> Response:
         for link in db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
     print(request.cookies)
-    sort_pref = request.cookies.get('sort') if request.cookies.get('sort') and request.cookies.get('sort') in ['time',
-                                                                                                               'day',
-                                                                                                               'datetime'] else 'no'
+    sort_pref = request.cookies.get('sort') if request.cookies.get('sort') and request.cookies.get('sort') in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
     db.tokens.insert_one({'email': email, 'token': token})
     analytics('users', email=email)
@@ -391,8 +379,7 @@ async def delete(request: Request) -> Response:
         db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     else:
         try:
-            db.deleted_links.insert_one(
-                dict(db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+            db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
         except TypeError:
             pass
     response = PlainTextResponse('done')
@@ -404,8 +391,7 @@ async def restore(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email').lower()):
         response = JSONResponse({'error': 'Forbidden'}, 403)
         return response
-    db.links.insert_one(
-        dict(db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+    db.links.insert_one(dict(db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
     response = PlainTextResponse('done')
     return response
 
@@ -446,8 +432,7 @@ async def update(request: Request) -> Response:
             }
             if data.get('password'):
                 update_link['password'] = encoder.encrypt(data.get('password').encode())
-            db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']},
-                                         {'$set': update_link})
+            db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
         db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
         response = PlainTextResponse('done')
         return response
@@ -510,7 +495,7 @@ async def change_var(request: Request) -> Response:
     return response
 
 
-async def convert_time(hour, minute, link):
+def convert_time(hour, minute, link):
     days_to_nums = {"Sun": 0, "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6}
     nums_to_days = {0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat'}
     if minute > 59:
@@ -539,7 +524,7 @@ async def convert_time(hour, minute, link):
         link['days'] = new_days
     if len(str(minute)) == 1:
         minute = "0" + str(minute)
-    return f"{hour}:{minute}"
+    return f"{hour}:{minute}", link['days']
 
 
 async def addlink(request: Request) -> Response:
@@ -563,13 +548,6 @@ async def addlink(request: Request) -> Response:
     owner = db.login.find_one({"username": new_link['username']})
     new_link = {key: value for key, value in dict(new_link).items() if
                 key != '_id' and key != 'username' and key != 'share'}
-    hour, minute = new_link['time'].split(":")
-    offset_hour, offset_minute = user['offset'].split(".")
-    offset_minute = (int(offset_minute) / (10 * len(str(offset_minute)))) * 60
-    hour = int(int(hour) - int(offset_hour)) + int(owner['offset'].split(".")[0])
-    minute = int(
-        int(minute) + int(offset_minute) - int(owner['offset'].split(".")[1]) / (10 * len(str(offset_minute))) * 60)
-    new_link['time'] = await convert_time(hour, minute, new_link)
     new_link['username'] = email
     new_link['share_id'] = new_link['id']
     new_link['id'] = int(dict(db.id.find_one({'_id': 'id'}))['id'])
@@ -579,7 +557,6 @@ async def addlink(request: Request) -> Response:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
     db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-    print(new_link)
     db.links.insert_one(new_link)
     response = RedirectResponse('/links')
     return response
@@ -610,7 +587,7 @@ async def tutorial_complete(request: Request) -> Response:
     return response
 
 
-async def ads(request: Request):
+async def ads(request: Request) -> FileResponse:
     response = FileResponse('ads.txt')
     return response
 
@@ -631,7 +608,7 @@ async def setoffset(request: Request) -> Response:
         response = JSONResponse({'error': 'Forbidden'}, 403)
         return response
     db.login.find_one_and_update({"username": data.get("email").lower()},
-                                 {"$set": {"offset": data.get("offset")}})
+                                {"$set": {"offset": data.get("offset")}})
     response = PlainTextResponse('done')
     return response
 
@@ -674,8 +651,7 @@ async def notes(request: Request) -> Response:
     elif request.method == 'POST':
         data = await request.json()
         user_notes = db.login.find_one({'username': request.headers.get('email')})['notes']
-        user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'),
-                                           'markdown': data.get('markdown'), 'date': data.get('date')}
+        user_notes[str(data.get('id'))] = {'id': data.get('id'), 'name': data.get('name'), 'markdown': data.get('markdown'), 'date': data.get('date')}
         db.login.find_one_and_update({'username': request.headers.get('email')}, {'$set': {'notes': user_notes}})
         response = JSONResponse(user_notes)
         return response
@@ -691,8 +667,7 @@ async def send_reset_email(request: Request) -> Response:
     if request.method == 'POST':
         data = await request.json()
         email = data.get('email').lower()
-        if not db.tokens.find_one({'email': email, 'token': data.get('token')}) and not db.anonymous_token.find_one(
-                {'token': data.get('token')}) or not db.login.find_one({'username': email}):
+        if not db.tokens.find_one({'email': email, 'token': data.get('token')}) and not db.anonymous_token.find_one({'token': data.get('token')}) or not db.login.find_one({'username': email}):
             response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
             return response
         db.anonymous_token.find_one_and_delete({'token': data.get('token')})
@@ -707,7 +682,7 @@ async def send_reset_email(request: Request) -> Response:
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     </head>
-
+    
     <body style="background: var(--darkblue); color: white; text-decoration: none;">
         <svg width="153" height="36" viewBox="0 0 153 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g clip-path="url(#clip0)">
@@ -737,15 +712,18 @@ async def send_reset_email(request: Request) -> Response:
         </clipPath>
         </async defs>
         </svg>
+
         <h1>Password Reset</h1>
         <p>Hey there, LinkJoin knocking!
         To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. If asked to supply it, please reply to this email with more information. This link will expire in 15 minutes.
+
         Happy passwording,
         LinkJoin</p>
     </body>
 </html>'''.format(otp=otp, background='background: var(--darkblue);'), subtype='html')"""
         content.set_content(f'''Hey there, LinkJoin knocking!
 To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in 15 minutes.
+
 Happy passwording,
 LinkJoin''')
         content['Subject'] = 'LinkJoin password reset'
@@ -762,6 +740,7 @@ LinkJoin''')
         return templates.TemplateResponse('forgot-password-email.html', {'token': token, 'request': request})
 
 
+
 async def reset_password(request: Request) -> Response:
     if request.method == 'GET':
         pws = [user['pw'] for user in db.otp.find()]
@@ -769,16 +748,14 @@ async def reset_password(request: Request) -> Response:
             email = db.otp.find_one({'pw': pws[pws.index(request.query_params.get('pw'))]})['email']
             token = gen_session()
             db.tokens.insert_one({'email': email, 'token': token})
-            return templates.TemplateResponse('forgot-password.html',
-                                              {'token': token, 'email': email, 'request': request})
+            return templates.TemplateResponse('forgot-password.html', {'token': token, 'email': email, 'request': request})
         response = RedirectResponse('/login')
         return response
     else:
         data = await request.json()
         if db.tokens.find_one({'email': data.get('email'), 'token': data.get('token')}):
             db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
-            db.login.find_one_and_update({'username': data.get('email')},
-                                         {'$set': {'password': hasher.hash(data.get('password'))}})
+            db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'password': hasher.hash(data.get('password'))}})
             response = PlainTextResponse('Success')
             return response
         response = JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
@@ -790,11 +767,9 @@ async def tutorial_changed(request: Request) -> Response:
         response = JSONResponse({'error': 'Forbidden'}, 403)
         return response
     if request.headers.get('finished') == 'true':
-        db.login.find_one_and_update({'username': request.headers.get('email').lower()},
-                                     {'$set': {'tutorialWidget': 'complete'}})
+        db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'complete'}})
     else:
-        db.login.find_one_and_update({'username': request.headers.get('email').lower()},
-                                     {'$set': {'tutorialWidget': 'incomplete'}})
+        db.login.find_one_and_update({'username': request.headers.get('email').lower()}, {'$set': {'tutorialWidget': 'incomplete'}})
     response = PlainTextResponse('Success')
     return response
 
@@ -809,7 +784,7 @@ async def open_early(request: Request) -> Response:
     return response
 
 
-async def send_message(request: Request) -> Response:
+async def send_message(request: Request) -> PlainTextResponse:
     print("sending...")
     sent = json.load(open('last-message.json'))
     data = await request.json()
@@ -826,8 +801,8 @@ async def send_message(request: Request) -> Response:
             ]
         print("Sending...")
         content = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                   "from": "18336535326", "to": data.get('number'), "text":
-                       random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
+                "from": "18336535326", "to": data.get('number'), "text":
+                    random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
         # Send the text message
         if int(data.get('id')) not in sent:
             requests.post("https://rest.nexmo.com/sms/json", data=content)
@@ -862,7 +837,7 @@ async def add_accounts(request: Request) -> Response | None:
         db.links.insert_one(link)
 
 
-async def robots(request: Request):
+async def robots(request: Request) -> FileResponse:
     response = FileResponse('robots.txt')
     return response
 
@@ -892,15 +867,41 @@ async def validatetoken(request: Request) -> JSONResponse:
         return JSONResponse({'status': 'invalid'})
 
 
+def convert():
+    for link in db.links.find({'username': 'seth@linkjoin.xyz'}):
+        if dict(link).get('converted') == 'true':
+            continue
+        print(link['time'])
+        user = db.login.find_one({'username': link['username']})
+        hour = int(link['time'].split(':')[0]) - int(float(user['offset']))
+        if int(float(user['offset'])) < float(user['offset']):
+            minute = int(link['time'].split(':')[1]) - (float(user['offset']) - int(float(user['offset'])))
+        else:
+            minute = int(link['time'].split(':')[1])
+        link['time'] = convert_time(hour, minute, link)[0]
+        db.links.find_one_and_update({'id': link['id'], 'username': link['username']}, {'$set': {'time': link['time'], 'converted': 'true'}})
+        print(link['time'])
+        print(link)
+
+
+async def get_open_early(request: Request) -> JSONResponse:
+    if not db.sessions.find_one({'username': request.headers.get('email'), 'session_id': request.headers.get('session_id')}):
+        return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
+    return JSONResponse({'before': int(db.login.find_one({'username': request.headers.get('email')})['open_early'])})
+
+
+
+
+
+
+
+
 routes = [
-    Route('/analytics', endpoint=analytics_endpoint, methods=['GET', 'POST']),
-    Route('/', endpoint=main, methods=['GET']),
+    Route('/analytics', endpoint=analytics_endpoint, methods=['GET', 'POST']), Route('/', endpoint=main, methods=['GET']),
     Route('/location', endpoint=location, methods=['GET']), Route('/login', endpoint=login, methods=['GET', 'POST']),
-    Route('/logout', endpoint=logout, methods=['GET']),
-    Route('/confirm_email', endpoint=confirm_email, methods=['POST']),
+    Route('/logout', endpoint=logout, methods=['GET']), Route('/confirm_email', endpoint=confirm_email, methods=['POST']),
     Route('/signup', endpoint=signup, methods=['GET']), Route('/set_cookie', endpoint=set_cookie, methods=['GET']),
-    Route('/get_session', endpoint=get_session, methods=['GET']),
-    Route('/register', endpoint=register, methods=['POST']),
+    Route('/get_session', endpoint=get_session, methods=['GET']), Route('/register', endpoint=register, methods=['POST']),
     Route('/links', endpoint=links, methods=['GET']), Route('/delete', endpoint=delete, methods=['POST']),
     Route('/restore', endpoint=restore, methods=['POST']), Route('/update', endpoint=update, methods=['POST']),
     Route('/disable', endpoint=disable, methods=['POST']), Route('/db', endpoint=database, methods=['GET']),
@@ -908,23 +909,21 @@ routes = [
     Route('/addlink', endpoint=addlink, methods=['GET']), Route('/tutorial', endpoint=tutorial, methods=['POST']),
     Route('/tutorial_complete', endpoint=tutorial_complete, methods=['POST']),
     Route('/ads.txt', endpoint=ads, methods=['GET']), Route('/privacy', endpoint=privacy, methods=['GET']),
-    Route('/unsubscribe', endpoint=unsubscribe, methods=['POST']),
-    Route('/setoffset', endpoint=setoffset, methods=['POST']),
-    Route('/add_number', endpoint=add_number, methods=['POST']),
-    Route('/notes', endpoint=notes, methods=['GET', 'POST']),
+    Route('/unsubscribe', endpoint=unsubscribe, methods=['POST']), Route('/setoffset', endpoint=setoffset, methods=['POST']),
+    Route('/add_number', endpoint=add_number, methods=['POST']), Route('/notes', endpoint=notes, methods=['GET', 'POST']),
     Route('/receive_vonage_message', endpoint=receive_vonage_message, methods=['GET', 'POST']),
     Route('/markdown_to_html', endpoint=markdown_to_html, methods=['POST']),
     Route('/reset', endpoint=reset_password, methods=['GET', 'POST']),
     Route('/reset-password', endpoint=send_reset_email, methods=['POST', 'GET']),
     Route('/tutorial_changed', endpoint=tutorial_changed, methods=['GET']),
     Route('/open_early', endpoint=open_early, methods=['POST']), Route('/robots.txt', endpoint=robots, methods=['GET']),
-    Route('/send_message', endpoint=send_message, methods=['POST']),
-    Route('/favicon.ico', endpoint=favicon, methods=['GET']),
+    Route('/send_message', endpoint=send_message, methods=['POST']), Route('/favicon.ico', endpoint=favicon, methods=['GET']),
     Route('/add_accounts', endpoint=add_accounts, methods=['POST']),
     Route('/invalidate-token', endpoint=invalidate_token, methods=['POST']),
     Route('/images/loading2.gif', endpoint=loading, methods=['GET']),
     Route('/validatetoken', endpoint=validatetoken, methods=['POST']),
     Route('/verify_session', endpoint=verify_session, methods=['GET']),
+    Route('/get_open_early', endpoint=get_open_early, methods=['GET']),
     Mount('/static', StaticFiles(directory='static'), name='globals.js'),
     Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
     Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),
@@ -995,4 +994,4 @@ handlers = {
     404: not_found
 }
 
-app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])
+app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Ready!'), lambda: convert()])

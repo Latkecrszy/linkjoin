@@ -5,26 +5,12 @@ let connected = true;
 const notesInfo = {}
 let defaultPopup;
 
+
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
 window.addEventListener('online', async () => {
     console.log('reconnected');
     await refresh()
     await load_links(global_username, global_sort)})
-
-document.addEventListener('click', e => {
-    if (e.target.parentElement && !e.target.parentElement.classList.contains('demo')) {
-        document.getElementById('tutorial-menu').style.display = 'none'
-    }
-    else if (!e.target.classList.contains('menu_buttons')) {
-        closeTutorial()
-    }
-    if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target) &&
-        e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial' ||
-        e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
-        closeTutorial()
-    }
-})
-
 
 function createElement(tag, classList=[], id='', text='', other={}) {
     const el = document.createElement(tag)
@@ -87,12 +73,19 @@ function getOffset(el) {
 
 async function db(username, id) {
     const deleted = id === 'deleted-links-body' || id === 'deleted-links' ? 'true' : 'false'
-    console.log(deleted)
-    console.log(id)
     let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}})
         .then(response => response.json())
         .catch(() => location.reload()) : global_links || []
     if (results['error'] === 'Forbidden') {return location.reload()}
+    results.forEach((e, i) => {
+        let newInfo = toUTC(e['days'], parseInt(e['time'].split(':')[0]), parseInt(e['time'].split(':')[1]), true)
+        if (newInfo['minute'] < 10) {
+            newInfo['minute'] = `0${newInfo['minute']}`
+        }
+        e['days'] = newInfo['days']
+        e['time'] = `${newInfo['hour']}:${newInfo['minute']}`
+        results[i] = e
+    })
     return results
 }
 
@@ -103,8 +96,11 @@ async function popUp(popup) {
         }
         return await sendNotif(`Check your inbox for ${global_username} to confirm your email address.`, '#ba1a1a')
     }
-    hide('popup')
-    document.getElementById(popup).style.display = "flex"
+    if (defaultPopup) {
+        hide('popup')
+    }
+    document.getElementById(popup).classList.add('active')
+    document.getElementById(popup).classList.remove('invisible')
     const submit = document.getElementById("submit")
     blur(true)
     submit.innerHTML = `Create <img src="/static/images/right-angle.svg" alt="right arrow">`
@@ -127,7 +123,8 @@ async function popUp(popup) {
 }
 
 function hide(popup, showBlur=false) {
-    document.getElementById(popup).style.display = "none"
+    console.log('ran')
+    document.getElementById(popup).classList.add('invisible')
     blur(showBlur)
     if (popup === 'popup') {
         enableButton('submit')
@@ -137,17 +134,17 @@ function hide(popup, showBlur=false) {
 }
 
 function edit(link) {
-    const element = document.getElementById("popup")
-    element.style.display = "flex"
+    document.getElementById('popup').classList.add('active')
+    document.getElementById('popup').classList.remove('invisible')
     blur(true)
     if (link === 'tutorial') {
         document.getElementById("title").innerText = "Edit your meeting";
         document.getElementById("submit").innerHTML = `Update <img src="/static/images/right-angle.svg" alt="right arrow">`
         document.getElementById("name").value = 'Tutorial Link'
         document.getElementById("link").value = 'https://linkjoin.xyz';
-        document.getElementById("pm").selected = "selected";
-        document.getElementById("hour").placeholder = 12;
-        document.getElementById("minute").placeholder = "00";
+        document.getElementById("am").selected = "selected";
+        document.getElementById("hour").value = 1;
+        document.getElementById("minute").value = "00";
         ['Mon', 'Tue'].forEach(day => document.getElementById(day).classList.add("selected"))
         return document.getElementById("submit").setAttribute('onClick', "registerLink('tutorial')")
     }
@@ -186,14 +183,19 @@ function edit(link) {
 }
 
 async function delete_(link) {
+    const deleteButton = document.getElementById("delete_button")
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
     document.getElementById("popup-delete").style.display = "flex"
+    document.getElementById("popup-delete").classList.remove('invisible')
+    document.getElementById("popup-delete").classList.add('active')
     if (link === 'tutorial') {
         document.getElementById("popup-delete").children[0].innerHTML = 'Are you sure you want to delete <b>Tutorial</b>?'
-        return document.getElementById("delete_button").addEventListener('click', () => {location.reload()})
+        return deleteButton.addEventListener('click', () => {location.reload()})
     }
     document.getElementById("popup-delete").children[0].innerHTML = 'Are you sure you want to delete <b>'+link['name']+'</b>?'
-    document.getElementById("delete_button").addEventListener('click', async () => {
+    const newButton = deleteButton.cloneNode(true)
+    deleteButton.parentNode.replaceChild(newButton, deleteButton)
+    newButton.addEventListener('click', async () => {
         hide('popup-delete')
         await fetch('/delete', {
             method: 'POST',
@@ -209,6 +211,8 @@ async function delete_(link) {
 
 function share(link) {
     document.getElementById("popup-share").style.zIndex = "11"
+    document.getElementById("popup-share").classList.remove('invisible')
+    document.getElementById("popup-share").classList.add('active')
     document.getElementById("popup-share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup-share").style.display]
     document.getElementById("share_link").value = link === 'tutorial' ? 'https://linkjoin.xyz/addlink?id=tutorial' : link['share']
     blur(true)
@@ -221,7 +225,6 @@ async function disable(link, username) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: link['username'], id: link['id']})
     })
-    await refresh()
     await load_links(username, global_sort)
 }
 
@@ -271,6 +274,7 @@ async function restore(id, email) {
 
 async function load_links(username, sort, id="insert") {
     let links
+    const new_links = []
     if (account === 'false') {
         links = JSON.parse(localStorage.getItem('links'))
     }
@@ -297,7 +301,6 @@ async function load_links(username, sort, id="insert") {
 
     id = id === 'deleted-links' ? 'deleted-links-body' : id
     const insert = document.getElementById(id)
-    for (let i=0; i<3; i++) {insert.innerHTML += '<div class="placeholder"></div>'}
     global_links = links
     if (id !== 'insert') {
         blur(true)
@@ -353,7 +356,6 @@ async function load_links(username, sort, id="insert") {
         else {final = links}
         let iterator = 0;
         const checked = []
-        await refresh(id)
         for (const link of final) {
             let hour = link["time"].split(":")[0]
             let meridian = "am"
@@ -405,7 +407,7 @@ async function load_links(username, sort, id="insert") {
             }
             link_event.appendChild(menu)
             checked.push(link['active'] === 'true')
-            insert.appendChild(link_event)
+            new_links.push(link_event)
             iterator += 1
         }
         if (id === 'insert') {
@@ -417,6 +419,11 @@ async function load_links(username, sort, id="insert") {
                     }
                 })
             })
+        }
+        let len = insert.children.length
+        new_links.forEach(i => insert.prepend(i))
+        for (let x = 0; x < len; x++) {
+            insert.removeChild(insert.children[insert.children.length-1])
         }
 
         try {
@@ -472,7 +479,30 @@ async function sort() {
 }
 
 
-
+function toUTC(days, hour, minute, opp=false) {
+    const referenceDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    if (opp) {
+        hour = parseInt(hour) - parseInt(new Date().getTimezoneOffset())/60
+    } else {
+         hour = parseInt(hour) + parseInt(new Date().getTimezoneOffset())/60
+    }
+    if (Math.round(hour) !== hour) {
+        minute = Math.abs(Math.round(hour) - hour)*60 + parseInt(minute)
+    }
+    if (minute >= 60) {
+        minute -= 60
+        hour += 1
+    }
+    if (hour >= 24) {
+        hour -= 24
+        days = days.map(day => referenceDays[(referenceDays.indexOf(day)+1) % 7])
+    }
+    if (hour < 0) {
+        hour += 24
+        days = days.map(day => referenceDays[(referenceDays.indexOf(day)+6) % 7])
+    }
+    return {hour: hour, minute: minute, days: days}
+}
 
 
 async function registerLink(parameter) {
@@ -499,6 +529,9 @@ async function registerLink(parameter) {
             `${date.split('/')[2]}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}`)
             .toISOString()
     }
+    days = toUTC(days, hour, minute)['days']
+    hour = toUTC(days, hour, minute)['hour']
+    minute = toUTC(days, hour, minute)['minute']
     const args = {
             name: document.getElementById("name").value,
             link: document.getElementById("link").value, time: `${hour}:${minute}`,
@@ -529,11 +562,9 @@ async function registerLink(parameter) {
     else {
         await fetch(url, payload)
     }
-
     if (global_links.length === 0) {
         location.reload()
     }
-
     hide('popup')
     await refresh()
     await load_links(global_username, global_sort)
@@ -716,14 +747,7 @@ async function skipTutorial(register) {
 
 }
 
-document.addEventListener("click", (e) => {
-    if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
-        !document.getElementById("hamburger").contains(e.target)) {
-        document.getElementById("hamburger_dropdown").classList.remove("expand")
-        document.getElementById("hamburger").classList.remove("expand")
-    }
 
-})
 
 document.addEventListener("click", event => {
     let date = new Date(addZeroes(document.getElementById('date-select').value.replaceAll('/', '-')))
@@ -740,6 +764,32 @@ function pageSetup() {
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
     Array.from(document.getElementsByClassName('popup-time')).forEach(timeListener)
+    document.getElementById('hamburger').classList.remove('gone')
+    document.addEventListener("click", (e) => {
+        if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
+            !document.getElementById("hamburger").contains(e.target)) {
+            document.getElementById("hamburger").classList.remove("expand")
+            document.getElementById("hamburger_dropdown").classList.remove("expand")
+        }
+
+        if (e.target.parentElement && !e.target.parentElement.classList.contains('demo') &&
+            document.getElementById('tutorial-menu').style.display !== 'none') {
+            document.getElementById('tutorial-menu').style.display = 'none'
+        }
+        else if (!e.target.classList.contains('menu_buttons') && e.target.id !== 'open-tutorial' && (e.target.parentElement && e.target.parentElement.id !== 'open-tutorial')) {
+            closeTutorial()
+        }
+        if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target) &&
+            e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial' ||
+            e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
+            closeTutorial()
+        }
+
+    })
+
+    document.getElementById('blur').addEventListener('click', () => {
+        closePopup()
+    })
 
 }
 
@@ -794,6 +844,8 @@ async function showTutorial(checked) {
 
 function openSettings() {
     document.getElementById('settings').style.display = 'flex'
+    document.getElementById('settings').classList.remove('invisible')
+    document.getElementById('settings').classList.add('active')
     blur(true)
 }
 
@@ -951,4 +1003,11 @@ function timeListener(e, index, arr) {
             e.target.value = '0' + e.target.value
         }
     })
+}
+
+function closePopup() {
+    document.getElementsByClassName('active')[0].classList.add('invisible')
+    document.getElementsByClassName('active')[0].classList.remove('active')
+    blur(false)
+
 }

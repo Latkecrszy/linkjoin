@@ -73,6 +73,7 @@
     </body>
     <script>
         let token = "{{ token }}"
+        document.getElementById('email').value = "{{ email }}" === "None" ? "" : "{{ email }}"
         try {document.getElementById('{{ error }}').style.display = "block"} catch {}
 
         document.addEventListener('visibilitychange', async () => {

@@ -98,13 +98,26 @@
     margin: -12px 0 15px 3px;
 }
 
-#reset:hover {color: red; opacity: 0.8;}
+#reset:hover {
+    color: red;
+    opacity: 0.8;
+}
 
-#keep_div {display: flex; width: 170px; justify-content: space-between}
+#keep_div, .keep_div {
+    display: flex
+}
 
-#keep_text {font: 500 15px Montserrat; margin-top: 0}
+#keep_text, .keep_text {
+    font: 500 15px Montserrat;
+    margin-top: 0;
+    margin-left: 5px;
+}
 
-@-moz-document url-prefix() { #keep_text {margin-top: 14px} }
+@-moz-document url-prefix() {
+    #keep_text {
+        margin-top: 14px
+    }
+}
 
 #country_codes {
     background: none;
