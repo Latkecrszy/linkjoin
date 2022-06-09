@@ -59,7 +59,8 @@ function openMenu(el) {
 }
 
 function blur(show) {
-    document.getElementById("blur").style.opacity = show ? "0.4" : "0"
+    document.getElementById("blur").style.opacity = show ? "1" : "0"
+    document.getElementById("blur").style.background = show ? "rgba(0, 0, 0, 0.4)" : "0"
     document.getElementById("blur").style.zIndex = show ? "3" : "-3"
 }
 
