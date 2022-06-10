@@ -868,12 +868,12 @@ async def validatetoken(request: Request) -> JSONResponse:
 
 
 def convert():
-    for link in db.links.find({'username': 'seth@linkjoin.xyz'}):
+    for link in db.links.find({'username': 'linkjoin.xyz@gmail.com'}):
         if dict(link).get('converted') == 'true':
             continue
         print(link['time'])
         user = db.login.find_one({'username': link['username']})
-        hour = int(link['time'].split(':')[0]) - int(float(user['offset']))
+        hour = int(link['time'].split(':')[0]) + int(float(user['offset']))
         if int(float(user['offset'])) < float(user['offset']):
             minute = int(link['time'].split(':')[1]) - (float(user['offset']) - int(float(user['offset'])))
         else:

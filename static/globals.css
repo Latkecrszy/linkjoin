@@ -237,11 +237,13 @@ html::-webkit-scrollbar, .notes::-webkit-scrollbar, .popup::-webkit-scrollbar, #
     width: 0;
 }
 
-html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track, .popup::-webkit-scrollbar-track, #tutorial::-webkit-scrollbar-track {
+html::-webkit-scrollbar-track, .notes::-webkit-scrollbar-track, .popup::-webkit-scrollbar-track, #tutorial::-webkit-scrollbar-track,
+#deleted-links::-webkit-scrollbar-track {
     border-radius: 12px;
 }
 
-html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-scrollbar-thumb, #tutorial::-webkit-scrollbar-thumb {
+html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-scrollbar-thumb, #tutorial::-webkit-scrollbar-thumb,
+#deleted-links::-webkit-scrollbar-thumb {
     background: var(--lightblue);
     border-radius: 5px;
 }
