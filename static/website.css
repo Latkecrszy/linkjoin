@@ -157,8 +157,12 @@ footer {
 }
 
 .get_started:hover {
-    margin: 40px 0 0 5px;
-    box-shadow: 5px 5px 10px black
+    margin: 35px 0 0 10px;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)
+}
+
+#learn_more:hover {
+    margin: 45px 0 0 0;
 }
 
 .get_started:focus {
@@ -239,15 +243,14 @@ footer {
 
 .faq-down {
     position: absolute;
-    top: -15px;
+    height: 40px;
+    top: 25px;
     right: 30px;
-    font-size: 40px;
-    transform: rotate(270deg);
     transition: 0.3s
 }
 
 .faq-down.flipped {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
 }
 
 .faq-answer {

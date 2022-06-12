@@ -9,8 +9,8 @@ let defaultPopup;
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
 window.addEventListener('online', async () => {
     console.log('reconnected');
-    await refresh()
-    await load_links(global_username, global_sort)})
+    location.reload()
+})
 
 function createElement(tag, classList=[], id='', text='', other={}) {
     const el = document.createElement(tag)
@@ -124,7 +124,6 @@ async function popUp(popup) {
 }
 
 function hide(popup, showBlur=false) {
-    console.log('ran')
     document.getElementById(popup).classList.add('invisible')
     document.getElementById(popup).classList.remove('active')
     blur(showBlur)
@@ -275,6 +274,9 @@ async function restore(id, email) {
 }
 
 async function load_links(username, sort, id="insert") {
+    if (!connected) {
+        return
+    }
     let links
     const new_links = []
     if (account === 'false') {
@@ -354,12 +356,10 @@ async function load_links(username, sort, id="insert") {
             for (const day_name in other_link_list) {
                 for (let time_info of other_link_list[day_name]) {final.push(link_dict[day_name][time_info])}
             }
-            console.log(final)
         }
         else {final = links}
         let iterator = 0;
         const checked = []
-        console.log(final)
         final.reverse()
         for (const link of final) {
             let hour = link["time"].split(":")[0]
