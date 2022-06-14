@@ -1,4 +1,4 @@
-import json, os, dotenv, re, random, string, requests, pprint, smtplib, ssl
+import json, os, dotenv, re, random, string, requests, smtplib, ssl
 from mistune import html
 from argon2 import PasswordHasher, exceptions
 from cryptography.fernet import Fernet
@@ -13,7 +13,7 @@ from starlette.responses import JSONResponse, Response, FileResponse, PlainTextR
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.background import BackgroundTask
-from twilio.rest import Client
+
 
 ph = PasswordHasher()
 timing = 0
@@ -24,7 +24,6 @@ VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 TWILIO_SID = os.environ.get('TWILIO_SID', None)
 TWILIO_TOKEN = os.environ.get('TWILIO_TOKEN', None)
-pp = pprint.PrettyPrinter(indent=4)
 started = False
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 hasher = PasswordHasher()
@@ -269,7 +268,6 @@ async def signup(request: Request) -> Response:
 async def set_cookie(request: Request):
     email = request.query_params.get('email').lower()
     if not db.tokens.find_one({'email': email, 'token': request.query_params.get('token')}):
-        print('redirecting')
         return RedirectResponse('/login')
     db.tokens.find_one_and_delete({'email': email, 'token': request.query_params.get('token')})
     response = RedirectResponse(request.query_params.get('url'))
@@ -358,7 +356,6 @@ async def links(request: Request) -> Response:
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
         for link in db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
-    print(request.cookies)
     sort_pref = request.cookies.get('sort') if request.cookies.get('sort') and request.cookies.get('sort') in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
     db.tokens.insert_one({'email': email, 'token': token})
@@ -575,7 +572,6 @@ async def tutorial(request: Request) -> Response:
 
 async def tutorial_complete(request: Request) -> Response:
     data = await request.json()
-    print(data)
     if not authenticated(request.cookies, data.get('email').lower()):
         response = JSONResponse({'error': 'Forbidden'}, 403)
         return response
@@ -867,30 +863,10 @@ async def validatetoken(request: Request) -> JSONResponse:
         return JSONResponse({'status': 'invalid'})
 
 
-def convert():
-    for link in db.links.find({'username': 'linkjoin.xyz@gmail.com'}):
-        if dict(link).get('converted') == 'true':
-            continue
-        print(link['time'])
-        user = db.login.find_one({'username': link['username']})
-        hour = int(link['time'].split(':')[0]) + int(float(user['offset']))
-        if int(float(user['offset'])) < float(user['offset']):
-            minute = int(link['time'].split(':')[1]) - (float(user['offset']) - int(float(user['offset'])))
-        else:
-            minute = int(link['time'].split(':')[1])
-        link['time'] = convert_time(hour, minute, link)[0]
-        db.links.find_one_and_update({'id': link['id'], 'username': link['username']}, {'$set': {'time': link['time'], 'converted': 'true'}})
-        print(link['time'])
-        print(link)
-
-
 async def get_open_early(request: Request) -> JSONResponse:
     if not db.sessions.find_one({'username': request.headers.get('email'), 'session_id': request.headers.get('session_id')}):
         return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
     return JSONResponse({'before': int(db.login.find_one({'username': request.headers.get('email')})['open_early'])})
-
-
-
 
 
 
@@ -994,4 +970,4 @@ handlers = {
     404: not_found
 }
 
-app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Ready!'), lambda: convert()])
+app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])

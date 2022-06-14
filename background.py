@@ -14,8 +14,6 @@ def message():
     print('Started')
     while True:
         for document, change in changes.items():
-            print(document)
-            print(change)
             mongo.zoom_opener.links.find_one_and_update({'username': document[0], 'id': int(document[1])},
                                                         {'$set': change})
         changes = {}
@@ -48,8 +46,6 @@ def message():
             for document in links.find(text_search):
                 user = users.find_one({"username": document['username']}) if users.find_one(
                     {"username": document['username']}) is not None else {}
-                print(time.strftime('%a'))
-                print(document['days'])
                 if dict(user).get('number') and document['text'] != "false" and time.strftime('%a') in document['days'] and not document.get('starts'):
                     print('sending')
                     data = {'id': document['id'], 'number': user['number'], 'active': document['active'],

@@ -161,10 +161,10 @@ function edit(link) {
     if ("password" in link) {document.getElementById("password").value = link["password"]}
     else {document.getElementById("password").value = null}
     if (parseInt(link['time'].split(":")[0]) === 12) {
-        document.getElementById("am").innerText = 'AM'
+        document.getElementById("am").innerText = 'PM'
         document.getElementById("hour").value = 12
     }
-    else if (parseInt(link['time'].split(":")[0]) === 24) {document.getElementById("hour").value = 12}
+    else if (parseInt(link['time'].split(":")[0]) === 0) {document.getElementById("hour").value = 12}
     else if (parseInt(link['time'].split(":")[0]) > 12) {
         document.getElementById("hour").value = parseInt(link['time'].split(":")[0])-12
         document.getElementById("am").innerText = 'PM'
@@ -365,7 +365,7 @@ async function load_links(username, sort, id="insert") {
             let hour = link["time"].split(":")[0]
             let meridian = "am"
             if (parseInt(hour) === 12) {meridian = "pm"}
-            else if (parseInt(hour) === 24) {hour = 12}
+            else if (parseInt(hour) === 0) {hour = 12}
             else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
             const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
             let link_event;
@@ -519,7 +519,7 @@ async function registerLink(parameter) {
     let minute = parseInt(document.getElementById("minute").value || document.getElementById("minute").placeholder)
     if (minute.toString().length === 1) {minute = '0' + minute}
     if (document.getElementById("am").innerText === "PM" && hour !== 12) {hour += 12}
-    else {if (hour === 12) {hour += 12}}
+    else if (hour === 12 && document.getElementById("am").innerText === "AM") {hour += 12}
     let days = Array.from(document.getElementById("days").children).map(i => {
         if (i.classList.contains('selected')) {
             return i.value
@@ -534,9 +534,10 @@ async function registerLink(parameter) {
             `${date.split('/')[2]}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}`)
             .toISOString()
     }
-    days = toUTC(days, hour, minute)['days']
-    hour = toUTC(days, hour, minute)['hour']
-    minute = toUTC(days, hour, minute)['minute']
+    let UTCInfo = toUTC(days, hour, minute)
+    days = UTCInfo['days']
+    hour = UTCInfo['hour']
+    minute = UTCInfo['minute']
     const args = {
             name: document.getElementById("name").value,
             link: document.getElementById("link").value, time: `${hour}:${minute}`,
