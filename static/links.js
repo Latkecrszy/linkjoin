@@ -380,7 +380,11 @@ async function load_links(username, sort, id="insert") {
             joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
             joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
             link_event.appendChild(joinMeeting)
-            link_event.appendChild(createElement('p', ['days'], '', link['days'].join(", ")))
+            let linkDaysValue = link['days'].join(", ")
+            if ('date' in link && link['date'] !== '') {
+                linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
+            }
+            link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
             if (id === "insert") {
                 link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
                     '', {'attrs': {'type': 'checkbox'}}))
@@ -572,6 +576,7 @@ async function registerLink(parameter) {
         location.reload()
     }
     hide('popup')
+    clearInterval(openInterval)
     await refresh()
     await load_links(global_username, global_sort)
 }
@@ -1013,8 +1018,11 @@ function timeListener(e, index, arr) {
 }
 
 function closePopup() {
-    document.getElementsByClassName('active')[0].classList.add('invisible')
-    document.getElementsByClassName('active')[0].classList.remove('active')
-    blur(false)
+    if (document.getElementsByClassName('active').length > 0) {
+        document.getElementsByClassName('active')[0].classList.add('invisible')
+        document.getElementsByClassName('active')[0].classList.remove('active')
+        blur(false)
+    }
+
 
 }

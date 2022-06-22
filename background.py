@@ -57,18 +57,6 @@ def message():
 
 
         for document in links.find(links_search):
-            if time.strftime('%a') not in document['days']:
-                continue
-            if document['repeat'] == 'never' and document['activated'] == 'true':
-                if len(document['days']) == 1:
-                    changes[(document['username'], document['id'])] = {'active': 'false', 'text': 'false'}
-                else:
-                    document['days'].remove(time.strftime('%a'))
-                    changes[(document['username'], document['id'])] = {'days': document['days']}
-                continue
-            elif 'starts' in document and int(document['starts']) != 0:
-                changes[(document['username'], document['id'])] = {'starts': int(document['starts']) - 1}
-                continue
             if document['repeat'][0].isdigit():
                 accept = [int(document['repeat'][0]) * len(document['days']) + x - len(document['days']) + 1
                           for x in

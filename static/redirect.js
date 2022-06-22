@@ -1,4 +1,4 @@
-let open, user_links
+let openInterval, user_links, paused
 
 function minutes(time, before) {
     let minute = parseInt(time.split(":")[1])-before
@@ -14,7 +14,12 @@ function minutes(time, before) {
 }
 
 async function start(username, links, sort) {
-    open = setInterval(async () => {
+    if (paused) {
+        return
+    }
+    console.log('starting function')
+    openInterval = setInterval(async () => {
+        console.log('starting interval')
         const newDate = new Date((Date.now() + 60000*open_early))
         const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[newDate.getDay()]
         let minute = newDate.getMinutes()
@@ -23,18 +28,25 @@ async function start(username, links, sort) {
         user_links = await db(username)
         global_links = user_links
         for (let link of user_links) {
-
             let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day)) || (link['activated'] === 'false' &&
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
             }
             window.open(link['link'])
+            console.log('opened')
             if (link['activated'] === 'false') {
                 await fetch('/changevar', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({id: link['id'], email: link['username'], variable: 'activated', activated: 'true'})
+                })
+            }
+            if (link['repeat'] === 'never') {
+                await fetch('/disable', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id: link['id'], email: link['username']})
                 })
             }
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
@@ -48,8 +60,12 @@ async function start(username, links, sort) {
 
 
 async function pause(username, links, sort, wait, action) {
-    clearInterval(open)
+    console.log('pausing')
+    paused = true
+    clearInterval(openInterval)
     await sleep(wait)
     if (action === "load_links") {return load_links(username, sort)}
+    paused = false
     start(username, links, sort)
+    console.log('starting')
 }

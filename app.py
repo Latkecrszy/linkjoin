@@ -866,7 +866,10 @@ async def validatetoken(request: Request) -> JSONResponse:
 async def get_open_early(request: Request) -> JSONResponse:
     if not db.sessions.find_one({'username': request.headers.get('email'), 'session_id': request.headers.get('session_id')}):
         return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
-    return JSONResponse({'before': int(db.login.find_one({'username': request.headers.get('email')})['open_early'])})
+    if 'open_early' in dict(db.login.find_one({'username': request.headers.get('email')})):
+        return JSONResponse({'before': int(db.login.find_one({'username': request.headers.get('email')})['open_early'])})
+    else:
+        return JSONResponse({'before': 0})
 
 
 
