@@ -907,6 +907,8 @@ async def get_open_early(request: Request) -> JSONResponse:
         return JSONResponse({'before': 0})
 
 
+async def get_blocked_ips(request: Request) -> JSONResponse:
+    return JSONResponse({'blocked_ips': json.load(open('ips.json'))})
 
 
 
@@ -938,6 +940,7 @@ routes = [
     Route('/validatetoken', endpoint=validatetoken, methods=['POST']),
     Route('/verify_session', endpoint=verify_session, methods=['GET']),
     Route('/get_open_early', endpoint=get_open_early, methods=['GET']),
+    Route('/get_blocked_ips', endpoint=get_blocked_ips, methods=['GET']),
     Mount('/static', StaticFiles(directory='static'), name='globals.js'),
     Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
     Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),
