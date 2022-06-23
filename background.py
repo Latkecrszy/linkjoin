@@ -123,7 +123,7 @@ def message():
             for section in ips:
                 print(ips)
                 print(section)
-                for ip in section:
+                for ip in ips[section]:
                     print(ip)
                     if ips[section][ip] > 0:
                         ips[section][ip] -= 1
