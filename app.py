@@ -283,12 +283,7 @@ async def set_cookie(request: Request):
 
 
 async def get_session(request: Request) -> Response:
-    # check ip address from cloudflare
-    # use cloudflare ip address to check for spam
-    # if spam, return 403
-    # if not spam, return 200
-
-    ip = request.headers.get('CF-Connecting-IP')
+    """ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
     if ip in ips['get_session'] and ip != 'null':
         ips['get_session'][ip] += 1
@@ -296,7 +291,7 @@ async def get_session(request: Request) -> Response:
             return Response(status_code=403)
     else:
         ips['get_session'][ip] = 1
-    json.dump(ips, open('ips.json', 'w'))
+    json.dump(ips, open('ips.json', 'w'))"""
 
 
     if not authenticated(request.cookies, request.headers.get('email')) or not db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
@@ -471,7 +466,7 @@ async def disable(request: Request) -> Response:
 
 
 async def database(request: Request) -> Response:
-    ip = request.headers.get('CF-Connecting-IP')
+    """ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
     if ip in ips['db'] and ip != 'null':
         ips['db'][ip] += 1
@@ -479,7 +474,7 @@ async def database(request: Request) -> Response:
             return Response(status_code=403)
     else:
         ips['db'][ip] = 1
-    json.dump(ips, open('ips.json', 'w'))
+    json.dump(ips, open('ips.json', 'w'))"""
 
     if not authenticated(request.cookies, request.headers.get('email')):
         response = JSONResponse({'error': 'Forbidden'}, 403)
@@ -865,7 +860,7 @@ async def robots(request: Request) -> FileResponse:
 
 
 async def invalidate_token(request: Request) -> Response:
-    ip = request.headers.get('CF-Connecting-IP')
+    """ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
     if ip in ips['invalidate_token'] and ip != 'null':
         ips['invalidate_token'][ip] += 1
@@ -873,7 +868,7 @@ async def invalidate_token(request: Request) -> Response:
             return Response(status_code=403)
     else:
         ips['invalidate_token'][ip] = 1
-    json.dump(ips, open('ips.json', 'w'))
+    json.dump(ips, open('ips.json', 'w'))"""
     data = await request.json()
     db.tokens.find_one_and_delete({'token': data.get('token')})
     db.anonymous_token.find_one_and_delete({'token': data.get('token')})
