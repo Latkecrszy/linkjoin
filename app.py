@@ -973,4 +973,4 @@ handlers = {
     404: not_found
 }
 
-app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Ready!')])
+app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Started.')])
