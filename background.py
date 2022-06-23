@@ -119,8 +119,12 @@ def message():
         # Subtract 1 from each ip in ips.json
         if os.environ.get('IS_HEROKU') == 'true':
             ips = json.load(open('ips.json'))
+            print(ips)
             for section in ips:
+                print(ips)
+                print(section)
                 for ip in section:
+                    print(ip)
                     if ips[section][ip] > 0:
                         ips[section][ip] -= 1
             json.dump(ips, open('ips.json', 'w'))
