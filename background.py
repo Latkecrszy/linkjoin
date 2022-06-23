@@ -126,7 +126,7 @@ def message():
                 for ip in ips[section]:
                     print(ip)
                     if ips[section][ip] > 0:
-                        ips[section][ip] -= 1
+                        ips[section][ip] = 0
             json.dump(ips, open('ips.json', 'w'))
 
         # Wait 60 seconds
