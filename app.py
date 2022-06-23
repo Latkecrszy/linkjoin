@@ -283,6 +283,22 @@ async def set_cookie(request: Request):
 
 
 async def get_session(request: Request) -> Response:
+    # check ip address from cloudflare
+    # use cloudflare ip address to check for spam
+    # if spam, return 403
+    # if not spam, return 200
+
+    ip = request.headers.get('CF-Connecting-IP')
+    ips = json.load(open('ips.json', 'r'))
+    if ip in ips:
+        ips[ip] += 1
+        if ips[ip] > 10:
+            return Response(status_code=403)
+    else:
+        ips[ip] = 1
+    json.dump(ips, open('ips.json', 'w'))
+
+
     if not authenticated(request.cookies, request.headers.get('email')) or not db.tokens.find_one({'email': request.headers.get('email'), 'token': request.headers.get('token')}):
         response = JSONResponse({'error': 'Forbidden', 'code': 403}, 403)
         return response
@@ -455,6 +471,16 @@ async def disable(request: Request) -> Response:
 
 
 async def database(request: Request) -> Response:
+    ip = request.headers.get('CF-Connecting-IP')
+    ips = json.load(open('ips.json', 'r'))
+    if ip in ips:
+        ips[ip] += 1
+        if ips[ip] > 10:
+            return Response(status_code=403)
+    else:
+        ips[ip] = 1
+    json.dump(ips, open('ips.json', 'w'))
+
     if not authenticated(request.cookies, request.headers.get('email')):
         response = JSONResponse({'error': 'Forbidden'}, 403)
         return response
@@ -838,7 +864,16 @@ async def robots(request: Request) -> FileResponse:
     return response
 
 
-async def invalidate_token(request: Request) -> PlainTextResponse:
+async def invalidate_token(request: Request) -> Response:
+    ip = request.headers.get('CF-Connecting-IP')
+    ips = json.load(open('ips.json', 'r'))
+    if ip in ips:
+        ips[ip] += 1
+        if ips[ip] > 10:
+            return Response(status_code=403)
+    else:
+        ips[ip] = 1
+    json.dump(ips, open('ips.json', 'w'))
     data = await request.json()
     db.tokens.find_one_and_delete({'token': data.get('token')})
     db.anonymous_token.find_one_and_delete({'token': data.get('token')})

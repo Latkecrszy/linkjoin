@@ -116,6 +116,14 @@ def message():
                 analytics_data['total_monthly_logins'].append(0)
                 analytics_data['total_monthly_signups'].append(0)
                 mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
+        # Subtract 1 from each ip in ips.json
+        if os.environ.get('IS_HEROKU') == 'true':
+            ips = json.load(open('ips.json'))
+            for ip in ips:
+                if ips[ip] > 0:
+                    ips[ip] -= 1
+            json.dump(ips, open('ips.json', 'w'))
+
         # Wait 60 seconds
         speed = abs(60 - (t.perf_counter() - start))
         if speed < 50:
