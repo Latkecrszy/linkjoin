@@ -290,12 +290,12 @@ async def get_session(request: Request) -> Response:
 
     ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
-    if ip in ips:
-        ips[ip] += 1
-        if ips[ip] > 10:
+    if ip in ips['get_session'] and ip != 'null':
+        ips['get_session'][ip] += 1
+        if ips['get_session'][ip] > 10:
             return Response(status_code=403)
     else:
-        ips[ip] = 1
+        ips['get_session'][ip] = 1
     json.dump(ips, open('ips.json', 'w'))
 
 
@@ -473,12 +473,12 @@ async def disable(request: Request) -> Response:
 async def database(request: Request) -> Response:
     ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
-    if ip in ips:
-        ips[ip] += 1
-        if ips[ip] > 10:
+    if ip in ips['db'] and ip != 'null':
+        ips['db'][ip] += 1
+        if ips['db'][ip] > 10:
             return Response(status_code=403)
     else:
-        ips[ip] = 1
+        ips['db'][ip] = 1
     json.dump(ips, open('ips.json', 'w'))
 
     if not authenticated(request.cookies, request.headers.get('email')):
@@ -867,12 +867,12 @@ async def robots(request: Request) -> FileResponse:
 async def invalidate_token(request: Request) -> Response:
     ip = request.headers.get('CF-Connecting-IP')
     ips = json.load(open('ips.json', 'r'))
-    if ip in ips:
-        ips[ip] += 1
-        if ips[ip] > 10:
+    if ip in ips['invalidate_token'] and ip != 'null':
+        ips['invalidate_token'][ip] += 1
+        if ips['invalidate_token'][ip] > 10:
             return Response(status_code=403)
     else:
-        ips[ip] = 1
+        ips['invalidate_token'][ip] = 1
     json.dump(ips, open('ips.json', 'w'))
     data = await request.json()
     db.tokens.find_one_and_delete({'token': data.get('token')})
