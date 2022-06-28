@@ -27,20 +27,28 @@ class WebSocketManager:
 
     async def update(self, data: dict | list | str, email: str) -> None:
         print('received')
+        print(len(self.connections))
         if email in self.connections:
             websockets_to_remove = []
             for websocket in [i for i in self.connections[email]]:
                 try:
                     if isinstance(data, dict) or isinstance(data, list):
+                        print('sending json data')
                         await websocket.send_json(data)
+                        print('sent json data')
                     else:
+                        print('sending text data')
                         await websocket.send_text(data)
+                        print('sent json data')
                     continue
                 except (RuntimeError, ConnectionClosedError):
                     websockets_to_remove.append(websocket)
+                    print('removing websocket')
                     continue
+            print(len(websockets_to_remove))
             for websocket in websockets_to_remove:
                 self.connections[email].remove(websocket)
+                print('removed websocket')
                 if len(self.connections[email]) == 0:
                     self.connections.pop(email)
         print('completed')
