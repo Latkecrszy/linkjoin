@@ -1,6 +1,5 @@
 let global_username, global_sort, tutorial_complete, global_links
 let tutorial_active = false;
-let created = false;
 let connected = true;
 const notesInfo = {}
 let defaultPopup;
@@ -379,16 +378,13 @@ async function createLinks(username, links, id="insert") {
 }
 
 async function load_links(username, sort, id="insert") {
-    console.log('loading links')
     if (!connected) {
         return
     }
     global_username = username
     webSocket = new WebSocket(`wss://linkjoin-beta.herokuapp.com/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
-        console.log('working')
         webSocket.send(JSON.stringify({'email': username}))
-        console.log('worked')
     }
     webSocket.onmessage = async (e) => {
         let links = JSON.parse(e.data)
@@ -405,7 +401,6 @@ async function load_links(username, sort, id="insert") {
         }
         await createLinks(username, links['links'], id)
         global_links = links
-        console.log(global_links)
     }
     webSocket.onclose = () => {
         location.reload()
@@ -425,7 +420,6 @@ async function load_links(username, sort, id="insert") {
     while (global_links === undefined) {
         await sleep(500)
     }
-    console.log(global_links)
     if (id === "insert") {
         links = global_links['links']
     }
@@ -479,7 +473,6 @@ async function load_links(username, sort, id="insert") {
         await sleep(3000)
         document.getElementsByClassName('highlight')[0].style.background = 'none'
     }
-    created = false
     await start(username, links, sort)
 }
 
@@ -527,9 +520,7 @@ function toUTC(days, hour, minute, opp=false) {
 
 async function registerLink(parameter) {
     disableButton(document.getElementById('submit'))
-    if (created) {return}
     if (parameter === 'tutorial') {location.reload()}
-    created = true
     let hour = parseInt(document.getElementById("hour").value || document.getElementById("hour").placeholder)
     let minute = parseInt(document.getElementById("minute").value || document.getElementById("minute").placeholder)
     if (minute.toString().length === 1) {minute = '0' + minute}
@@ -570,7 +561,6 @@ async function registerLink(parameter) {
     }
     const url = parameter === 'register' ? '/register' : '/update'
     if (!document.getElementById("name").value || !document.getElementById("link").value || days.length === 0) {
-        created = false
         enableButton('submit')
     }
     if (!document.getElementById("name").value) {return document.getElementById("error").innerText = "Please provide a name for your meeting"}
@@ -585,8 +575,6 @@ async function registerLink(parameter) {
     }
     hide('popup')
     clearInterval(openInterval)
-    console.log(global_links['links'].length)
-    console.log(global_links['links'])
     if (global_links['links'].length === 1) {
         await refresh()
         location.reload()

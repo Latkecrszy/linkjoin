@@ -17,7 +17,6 @@ async function start(username, links, sort) {
     if (paused) {
         return
     }
-    console.log('starting function')
     openInterval = setInterval(async () => {
         const newDate = new Date((Date.now() + 60000*open_early))
         const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[newDate.getDay()]
@@ -31,7 +30,6 @@ async function start(username, links, sort) {
                 continue
             }
             window.open(link['link'])
-            console.log('opened')
             if (link['activated'] === 'false') {
                 await fetch('/changevar', {
                     method: 'POST',
@@ -54,12 +52,10 @@ async function start(username, links, sort) {
 
 
 async function pause(username, links, sort, wait, action) {
-    console.log('pausing')
     paused = true
     clearInterval(openInterval)
     await sleep(wait)
     if (action === "load_links") {return load_links(username, sort)}
     paused = false
     start(username, links, sort)
-    console.log('starting')
 }
