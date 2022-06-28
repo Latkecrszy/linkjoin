@@ -4,7 +4,6 @@ from starlette.staticfiles import StaticFiles
 from endpoints import *
 from link_endpoints import *
 from templates import *
-from utilities import *
 from websocket import *
 
 
