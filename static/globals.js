@@ -13,6 +13,9 @@ window.addEventListener('beforeunload', async () => {
         await fetch('/invalidate-token', {method: 'POST', headers:  {'Content-Type': 'application/json'},
         body: JSON.stringify({'token': token})})
     }})
+    if (typeof webSocket !== 'undefined') {
+        webSocket.close()
+    }
 
 function disableButton(e, loader=true) {
     e.classList.add(loader ? 'disabled' : 'disabled-no-loader')

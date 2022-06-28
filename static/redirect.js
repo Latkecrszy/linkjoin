@@ -19,15 +19,12 @@ async function start(username, links, sort) {
     }
     console.log('starting function')
     openInterval = setInterval(async () => {
-        console.log('starting interval')
         const newDate = new Date((Date.now() + 60000*open_early))
         const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[newDate.getDay()]
         let minute = newDate.getMinutes()
         if (minute.toString().length === 1) {minute = `0${minute}`}
         const time = `${newDate.getHours()}:${minute}`
-        user_links = await db(username)
-        global_links = user_links
-        for (let link of user_links) {
+        for (let link of global_links['links']) {
             let days = link['days']
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day)) || (link['activated'] === 'false' &&
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
@@ -51,9 +48,6 @@ async function start(username, links, sort) {
             }
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
             await pause(username, user_links, sort, 46000)
-        }
-        if (JSON.stringify(user_links) !== JSON.stringify(links)) {
-            await load_links(username, sort);
         }
     }, 15000)
 }

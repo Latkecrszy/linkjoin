@@ -105,31 +105,16 @@ def message():
                 sent.pop(id)
         if os.environ.get('IS_HEROKU') == 'true':
             print('Checking days')
-            analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'analytics'})
-            if analytics_data['day'] != int(time.strftime('%d')):
-                analytics_data['daily_users'].append([])
-                analytics_data['day'] = int(time.strftime('%d'))
-                mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
-            if analytics_data['month'] != int(time.strftime('%m')):
-                analytics_data['month'] = int(time.strftime('%m'))
-                analytics_data['monthly_users'].append([])
-                analytics_data['total_monthly_logins'].append(0)
-                analytics_data['total_monthly_signups'].append(0)
-                mongo.zoom_opener.analytics.find_one_and_replace({'id': 'analytics'}, analytics_data)
-        # Subtract 1 from each ip in ips.json
-        if os.environ.get('IS_HEROKU') == 'true':
-            ips = json.load(open('ips.json'))
-            print(ips)
-            for section in ips:
-                print(ips)
-                print(section)
-                for ip in ips[section]:
-                    print(ip)
-                    if ips[section][ip] > 0:
-                        ips[section][ip] = 0
-            json.dump(ips, open('ips.json', 'w'))
+            analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'new_analytics'})
+            if int(mongo.zoom_opener.new_analytics.find_one({'id': 'day'})['value']) != int(time.strftime('%d')):
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'day'}, {'$set': {'value': int(time.strftime('%d'))}})
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'daily_users'}, {'$push': {'value': []}})
+            if int(mongo.zoom_opener.new_analytics.find_one({'id': 'month'})['value']) != int(time.strftime('%m')):
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'month'}, {'$set': {'value': int(time.strftime('%m'))}})
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'monthly_users'}, {'$push': {'value': []}})
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'total_monthly_logins'}, {'$push': {'value': 0}})
+                mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'total_monthly_signups'}, {'$push': {'value': 0}})
 
-        # Wait 60 seconds
         speed = abs(60 - (t.perf_counter() - start))
         if speed < 50:
             print(f'Long time: {speed}')

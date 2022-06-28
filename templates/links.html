@@ -84,7 +84,7 @@
     <path fill-rule="evenodd" clip-rule="evenodd" d="M139.313 71.7727C142.992 71.7727 145.974 74.7551 145.974 78.434V200.214C145.974 203.892 142.992 206.875 139.313 206.875C135.634 206.875 132.651 203.892 132.651 200.214V78.434C132.651 74.7551 135.634 71.7727 139.313 71.7727Z" fill="white"/>
     <path fill-rule="evenodd" clip-rule="evenodd" d="M71.7627 139.323C71.7627 135.644 74.7451 132.662 78.424 132.662H200.204C203.882 132.662 206.865 135.644 206.865 139.323C206.865 143.002 203.882 145.984 200.204 145.984H78.424C74.7451 145.984 71.7627 143.002 71.7627 139.323Z" fill="white"/>
     </svg>
-    <body id="links_body" onload="pageSetup(); load_links('{{ username }}', '{{ sort }}')">
+    <body id="links_body" onload="pageSetup('{{ username }}'); load_links('{{ username }}', '{{ sort }}')">
         <div id="page">
             <header id="header-links" style="margin-bottom: 100px;">
                 {% if company == 'aa4e' %}

@@ -4,6 +4,7 @@ let created = false;
 let connected = true;
 const notesInfo = {}
 let defaultPopup;
+let webSocket;
 
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
@@ -72,23 +73,6 @@ function getOffset(el) {
     }
 }
 
-async function db(username, id) {
-    const deleted = id === 'deleted-links-body' || id === 'deleted-links' ? 'true' : 'false'
-    let results = connected ? await fetch('/db', {headers: {email: username, deleted: deleted}})
-        .then(response => response.json())
-        .catch(() => location.reload()) : global_links || []
-    if (results['error'] === 'Forbidden') {return location.reload()}
-    results.forEach((e, i) => {
-        let newInfo = toUTC(e['days'], parseInt(e['time'].split(':')[0]), parseInt(e['time'].split(':')[1]), true)
-        if (newInfo['minute'] < 10) {
-            newInfo['minute'] = `0${newInfo['minute']}`
-        }
-        e['days'] = newInfo['days']
-        e['time'] = `${newInfo['hour']}:${newInfo['minute']}`
-        results[i] = e
-    })
-    return results
-}
 
 async function popUp(popup) {
     if (confirmed === 'false') {
@@ -203,9 +187,7 @@ async function delete_(link) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({id: link['id'], email: link['username']})
         })
-        if ((await db(global_username)).length === 0) {return location.reload()}
-        await refresh()
-        await load_links(link['username'], global_sort)
+        if ((global_links['links']).length === 0) {return location.reload()}
     })
     blur(true)
 }
@@ -220,13 +202,12 @@ function share(link) {
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 }
 
-async function disable(link, username) {
+async function disable(link) {
     await fetch('/disable', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: link['username'], id: link['id']})
     })
-    await load_links(username, global_sort)
 }
 
 function copyPassword(id, password) {
@@ -273,39 +254,187 @@ async function restore(id, email) {
     location.reload()
 }
 
+
+async function createLinks(username, links, id="insert") {
+    let final = []
+    const new_links = []
+    if (global_sort === "day") {
+            const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+            for (const link_info of links) {link_list[link_info['days'][0]].push(link_info)}
+            for (const day in link_list) {for (let key of link_list[day]) {final.push(key)}}
+        }
+    else if (global_sort === "time") {
+        const times = []
+        let added_time = 0.0000001
+        const add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
+        const time_links_list = {}
+        for (const link_info of links) {
+            times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time)
+            time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time] = link_info
+            added_time += 0.0000001
+        }
+        for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
+        const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
+        for (const link_info of final) {link_list[link_info['days'][0]].push(link_info)}
+    }
+    else if (global_sort === "datetime") {
+        let added_time = 0.0000001
+        const link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": {}, "Sun": {}, "dates": {}}
+        const other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
+        for (const link_info of links) {
+            link_dict[link_info['days'][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+added_time] = link_info
+            other_link_list[link_info['days'][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+added_time)
+            added_time += 0.0000001
+        }
+        for (const day_name in other_link_list) {
+            other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
+        }
+        for (const day_name in other_link_list) {
+            for (let time_info of other_link_list[day_name]) {final.push(link_dict[day_name][time_info])}
+        }
+    }
+    else {final = links}
+    let iterator = 0;
+    const checked = []
+    final.reverse()
+    for (const link of final) {
+        let hour = link["time"].split(":")[0]
+        let meridian = "am"
+        if (parseInt(hour) === 12) {meridian = "pm"}
+        else if (parseInt(hour) === 0) {hour = 12}
+        else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
+        const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
+        let link_event;
+
+        link_event = createElement('div', ['link'])
+        if (link['active'] === 'false') {
+            link_event.classList.add('link-disabled')
+        }
+        link_event.appendChild(createElement('p', ['time'], '', time))
+        const joinMeeting = createElement('div', ['join-meeting'], '', '',
+            {'events': {'onclick': () => {window.open(link['link'])}}})
+        joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
+        joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
+        link_event.appendChild(joinMeeting)
+        let linkDaysValue = link['days'].join(", ")
+        if ('date' in link && link['date'] !== '') {
+            linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
+        }
+        link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
+        if (id === "insert") {
+            link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
+                '', {'attrs': {'type': 'checkbox'}}))
+            link_event.appendChild(createElement('label', ['switch'], '', '',
+                {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link)}}}))
+        }
+        link_event.appendChild(createElement('img', ['dot-menu'], '', '',
+            {'attrs': {'src': 'static/images/ellipsis.svg', 'alt': '3 dots'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
+        link_event.appendChild(createElement('img', ['link-expand'], '', '',
+            {'events': {'onclick': () => link_event.classList.toggle('expanded')},
+                'attrs': {'src': 'static/images/angle-down.svg', 'alt': 'down arrow'}}))
+        const menu = createElement('div', ['menu'])
+        let buttons;
+        if (id === "insert") {
+            buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link),
+        'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
+        'Password': () => copyPassword(link['id'], link['password'])}
+        } else {
+            buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
+                'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
+                'Password': () => copyPassword(link['id'], link['password'])}
+        }
+        for (const [key, value] of Object.entries(buttons)) {
+            if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
+            else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
+            else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
+            menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+            key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
+        }
+        link_event.appendChild(menu)
+        checked.push(link['active'] === 'true')
+        new_links.push(link_event)
+        iterator += 1
+    }
+    if (id === 'insert') {
+        document.addEventListener('click', e => {
+            Array.from(document.getElementsByClassName('menu')).forEach(i => {
+                if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) &&
+                    !e.target.classList.contains('dot-menu') && !i.classList.contains('tutorial')) {
+                    i.style.display = 'none'
+                }
+            })
+        })
+    }
+    const insert = document.getElementById(id)
+    let len = insert.children.length
+    new_links.forEach(i => insert.prepend(i))
+    for (let x = 0; x < len; x++) {
+        insert.removeChild(insert.children[insert.children.length-1])
+    }
+
+    try {
+        checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
+    }
+    catch {}
+}
+
 async function load_links(username, sort, id="insert") {
+    console.log('loading links')
     if (!connected) {
         return
     }
+    global_username = username
+    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket.onopen = () => {
+        console.log('working')
+        webSocket.send(JSON.stringify({'email': username}))
+        console.log('worked')
+    }
+    webSocket.onmessage = async (e) => {
+        let links = JSON.parse(e.data)
+        for (const linkCategory of Object.values(links)) {
+            linkCategory.forEach(link => {
+                let newInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]),
+                    parseInt(link['time'].split(':')[1]), true)
+                if (newInfo['minute'] < 10) {
+                    newInfo['minute'] = `0${newInfo['minute']}`
+                }
+                link['days'] = newInfo['days']
+                link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
+            })
+        }
+        await createLinks(username, links['links'], id)
+        global_links = links
+        console.log(global_links)
+    }
+    webSocket.onclose = () => {
+        location.reload()
+    }
     let links
-    const new_links = []
-    if (account === 'false') {
-        links = JSON.parse(localStorage.getItem('links'))
+    global_sort = sort
+    try {
+        document.getElementById(id).style.display = 'flex'
+    }
+    catch {
+        while (!connected) {
+            await sleep(5000)
+        }
+        await refresh()
+        await load_links(username, global_sort)
+    }
+    while (global_links === undefined) {
+        await sleep(500)
+    }
+    console.log(global_links)
+    if (id === "insert") {
+        links = global_links['links']
     }
     else {
-        const cookieSessionId = document.cookie.match('(^|;)\\s*session_id\\s*=\\s*([^;]+)')?.pop() || ''
-        const sessionIds = await fetch('/get_session', {headers: {'email': username, 'token': token}})
-            .then(id => id.status === 200 ? id.json() : location.reload())
-            .catch(() => location.reload())
-        if (!sessionIds.includes(cookieSessionId)) {location.replace('/login?error=not_logged_in')}
-        global_username = username
-        global_sort = sort
-        try {
-            document.getElementById(id).style.display = 'flex'
-        }
-        catch {
-            while (!connected) {
-                await sleep(5000)
-            }
-            await refresh()
-            await load_links(username, global_sort)
-        }
-        links = await db(username, id)
+        links = global_links['deleted-links']
     }
 
     id = id === 'deleted-links' ? 'deleted-links-body' : id
     const insert = document.getElementById(id)
-    global_links = links
     if (id !== 'insert') {
         blur(true)
     }
@@ -321,124 +450,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     else {
-        let final = []
-        if (sort === "day") {
-            const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
-            for (const link_info of links) {link_list[link_info['days'][0]].push(link_info)}
-            for (const day in link_list) {for (let key of link_list[day]) {final.push(key)}}
-        }
-        else if (sort === "time") {
-            const times = []
-            let added_time = 0.0000001
-            const add = {"Sun": 0.001, "Mon": 0.002, "Tue": 0.003, "Wed": 0.004, "Thu": 0.005, "Fri": 0.006, "Sat": 0.007}
-            const time_links_list = {}
-            for (const link_info of links) {
-                times.push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time)
-                time_links_list[parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+add[link_info['days'][0]]+added_time] = link_info
-                added_time += 0.0000001
-            }
-            for (const link_time of times.sort((a, b) => a - b)) {final.push(time_links_list[link_time])}
-            const link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": []}
-            for (const link_info of final) {link_list[link_info['days'][0]].push(link_info)}
-        }
-        else if (sort === "datetime") {
-            let added_time = 0.0000001
-            const link_dict = {"Mon": {}, "Tue": {}, "Wed": {}, "Thu": {}, "Fri": {}, "Sat": [], "Sun": {}, "dates": {}}
-            const other_link_list = {"Mon": [], "Tue": [], "Wed": [], "Thu": [], "Fri": [], "Sat": [], "Sun": [], "dates": []}
-            for (const link_info of links) {
-                link_dict[link_info['days'][0]][parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+added_time] = link_info
-                other_link_list[link_info['days'][0]].push(parseFloat(`${link_info['time'].split(":")[0]}.${link_info['time'].split(":")[1]}`)+added_time)
-                added_time += 0.0000001
-            }
-            for (const day_name in other_link_list) {
-                other_link_list[day_name] = other_link_list[day_name].sort((a, b) => a - b)
-            }
-            for (const day_name in other_link_list) {
-                for (let time_info of other_link_list[day_name]) {final.push(link_dict[day_name][time_info])}
-            }
-        }
-        else {final = links}
-        let iterator = 0;
-        const checked = []
-        final.reverse()
-        for (const link of final) {
-            let hour = link["time"].split(":")[0]
-            let meridian = "am"
-            if (parseInt(hour) === 12) {meridian = "pm"}
-            else if (parseInt(hour) === 0) {hour = 12}
-            else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
-            const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
-            let link_event;
-
-            link_event = createElement('div', ['link'])
-            if (link['active'] === 'false') {
-                link_event.classList.add('link-disabled')
-            }
-            link_event.appendChild(createElement('p', ['time'], '', time))
-            const joinMeeting = createElement('div', ['join-meeting'], '', '',
-                {'events': {'onclick': () => {window.open(link['link'])}}})
-            joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
-            joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
-            link_event.appendChild(joinMeeting)
-            let linkDaysValue = link['days'].join(", ")
-            if ('date' in link && link['date'] !== '') {
-                linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
-            }
-            link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
-            if (id === "insert") {
-                link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
-                    '', {'attrs': {'type': 'checkbox'}}))
-                link_event.appendChild(createElement('label', ['switch'], '', '',
-                    {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link, username)}}}))
-            }
-            link_event.appendChild(createElement('img', ['dot-menu'], '', '',
-                {'attrs': {'src': 'static/images/ellipsis.svg', 'alt': '3 dots'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
-            link_event.appendChild(createElement('img', ['link-expand'], '', '',
-                {'events': {'onclick': () => link_event.classList.toggle('expanded')},
-                    'attrs': {'src': 'static/images/angle-down.svg', 'alt': 'down arrow'}}))
-            const menu = createElement('div', ['menu'])
-            let buttons;
-            if (id === "insert") {
-                buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link),
-            'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
-            'Password': () => copyPassword(link['id'], link['password'])}
-            } else {
-                buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
-                    'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
-                    'Password': () => copyPassword(link['id'], link['password'])}
-            }
-            for (const [key, value] of Object.entries(buttons)) {
-                if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
-                else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
-                else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
-                menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
-                key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
-            }
-            link_event.appendChild(menu)
-            checked.push(link['active'] === 'true')
-            new_links.push(link_event)
-            iterator += 1
-        }
-        if (id === 'insert') {
-            document.addEventListener('click', e => {
-                Array.from(document.getElementsByClassName('menu')).forEach(i => {
-                    if (!['Copied!', 'Password', 'Copy link'].includes(e.target.innerText) &&
-                        !e.target.classList.contains('dot-menu') && !i.classList.contains('tutorial')) {
-                        i.style.display = 'none'
-                    }
-                })
-            })
-        }
-        let len = insert.children.length
-        new_links.forEach(i => insert.prepend(i))
-        for (let x = 0; x < len; x++) {
-            insert.removeChild(insert.children[insert.children.length-1])
-        }
-
-        try {
-            checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
-        }
-        catch {}
+        await createLinks(username, links, id)
     }
     const clickToCopy = document.getElementById("click_to_copy")
     clickToCopy.addEventListener('click', async () => {
@@ -456,7 +468,7 @@ async function load_links(username, sort, id="insert") {
     if (tutorial_completed['tutorial'] !== "done") {await popupWarn(tutorial_completed['tutorial'])}
     await check_day(username)
     await checkTutorial()
-    clearInterval(open)
+    clearInterval(openInterval)
     defaultPopup = document.getElementById('popup').innerHTML
     if (error === 'link_not_found') {
         history.pushState('data', 'LinkJoin', '/links')
@@ -473,10 +485,9 @@ async function load_links(username, sort, id="insert") {
 
 async function check_day(username) {
     let date = new Date()
-    const links = await db(username)
     let day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[date.getDay()]
     let children = document.getElementById("days").children
-    if (links.length <= 3) {
+    if (global_links['links'].length <= 3) {
         for (let child of children) {
             if (child.value === day) {child.classList.add("selected")}
         }
@@ -572,13 +583,14 @@ async function registerLink(parameter) {
     else {
         await fetch(url, payload)
     }
-    if (global_links.length === 0) {
-        location.reload()
-    }
     hide('popup')
     clearInterval(openInterval)
-    await refresh()
-    await load_links(global_username, global_sort)
+    console.log(global_links['links'].length)
+    console.log(global_links['links'])
+    if (global_links['links'].length === 1) {
+        await refresh()
+        location.reload()
+    }
 }
 
 
@@ -770,7 +782,7 @@ document.addEventListener("click", event => {
     // Fix by finding day of date inputted and not allowing it to be deselected.
 })
 
-function pageSetup() {
+function pageSetup(username) {
     document.getElementById('notes_div').addEventListener('click', unRenderNotes)
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
