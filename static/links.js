@@ -387,6 +387,7 @@ async function load_links(username, sort, id="insert") {
         webSocket.send(JSON.stringify({'email': username}))
     }
     webSocket.onmessage = async (e) => {
+        console.log('received')
         let links = JSON.parse(e.data)
         for (const linkCategory of Object.values(links)) {
             linkCategory.forEach(link => {
