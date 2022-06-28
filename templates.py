@@ -6,7 +6,7 @@ from background import message
 from argon2 import exceptions
 from google.auth import jwt
 from email.message import EmailMessage
-import json, time, smtplib, ssl, os
+import json, smtplib, ssl, os
 from utilities import gen_session, analytics, authenticated, gen_otp
 from constants import db, hasher
 
@@ -103,7 +103,6 @@ async def signup(request: Request) -> Response:
 
 
 async def links(request: Request) -> Response:
-    x = time.perf_counter()
     email = request.cookies.get('email')
     if not authenticated(request.cookies, email):
         return RedirectResponse('/login?error=not_logged_in')

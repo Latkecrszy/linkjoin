@@ -384,7 +384,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`ws://linkjoin-beta.herokuapp.com/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         console.log('working')
         webSocket.send(JSON.stringify({'email': username}))
