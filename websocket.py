@@ -26,6 +26,8 @@ class WebSocketManager:
                 self.connections.pop(email)
 
     async def update(self, data: dict | list | str, email: str) -> None:
+        print(data)
+        print(email)
         if email in self.connections:
             websockets_to_remove = []
             for websocket in [i for i in self.connections[email]]:
