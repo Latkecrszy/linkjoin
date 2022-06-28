@@ -403,7 +403,7 @@ async function load_links(username, sort, id="insert") {
         global_links = links
     }
     webSocket.onclose = () => {
-        location.reload()
+        connected = false
     }
     let links
     global_sort = sort
