@@ -26,6 +26,7 @@ class WebSocketManager:
                 self.connections.pop(email)
 
     async def update(self, data: dict | list | str, email: str) -> None:
+        print('received')
         if email in self.connections:
             websockets_to_remove = []
             for websocket in [i for i in self.connections[email]]:
@@ -42,6 +43,7 @@ class WebSocketManager:
                 self.connections[email].remove(websocket)
                 if len(self.connections[email]) == 0:
                     self.connections.pop(email)
+        print('completed')
 
 
 manager = WebSocketManager()

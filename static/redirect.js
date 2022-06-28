@@ -51,11 +51,10 @@ async function start(username, links, sort) {
 }
 
 
-async function pause(username, links, sort, wait, action) {
+async function pause(username, links, sort, wait) {
     paused = true
     clearInterval(openInterval)
     await sleep(wait)
-    if (action === "load_links") {return load_links(username, sort)}
     paused = false
     start(username, links, sort)
 }

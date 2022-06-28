@@ -105,7 +105,6 @@ def message():
                 sent.pop(id)
         if os.environ.get('IS_HEROKU') == 'true':
             print('Checking days')
-            analytics_data = mongo.zoom_opener.analytics.find_one({'id': 'new_analytics'})
             if int(mongo.zoom_opener.new_analytics.find_one({'id': 'day'})['value']) != int(time.strftime('%d')):
                 mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'day'}, {'$set': {'value': int(time.strftime('%d'))}})
                 mongo.zoom_opener.new_analytics.find_one_and_update({'id': 'daily_users'}, {'$push': {'value': []}})
