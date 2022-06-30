@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse
 from utilities import authenticated, analytics, configure_data
-import random, string
+import random, string, asyncio
 from constants import db, encoder
 from websocket import manager
 
@@ -97,6 +97,7 @@ async def update(request: Request) -> Response:
             update_link['password'] = encoder.encrypt(data.get('password').encode())
         db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
     db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+    await asyncio.sleep(1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -114,6 +115,7 @@ async def disable(request: Request) -> Response:
     else:
         db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': 'true'}})
+    await asyncio.sleep(1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
