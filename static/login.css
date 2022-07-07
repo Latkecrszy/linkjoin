@@ -113,6 +113,10 @@
     margin-left: 5px;
 }
 
+.keep {
+    margin-top: -10px;
+}
+
 @-moz-document url-prefix() {
     #keep_text {
         margin-top: 14px
