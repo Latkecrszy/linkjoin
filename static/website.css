@@ -224,6 +224,18 @@ footer {
     border-radius: 5px;
 }
 
+.faq-open .faq-answer {
+    display: block;
+}
+
+.faq-open {
+    height: fit-content !important;
+}
+
+.faq-open .faq-down {
+    transform: rotate(180deg);
+}
+
 .faq-question {
     width: 100%;
     position: relative;
@@ -239,7 +251,6 @@ footer {
     transition: 0.3s;
 }
 
-.faq-question.expanding, .faq-question.shrinking {}
 
 .faq-down {
     position: absolute;
@@ -249,17 +260,13 @@ footer {
     transition: 0.3s
 }
 
-.faq-down.flipped {
-    transform: rotate(180deg);
-}
-
 .faq-answer {
     background: var(--blue);
     font-size: 16px;
-    margin-top: 20px;
+    margin: 20px 0 15px 0;
     padding: 20px;
-    border-radius: 2px;
     display: none;
+    border-radius: 2px;
     width: 100%;
 }
 

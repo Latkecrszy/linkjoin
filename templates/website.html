@@ -111,7 +111,7 @@
                 <h1>More questions?</h1>
             </div>
             <div id="faq">
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Will my meeting open if I'm not at my computer?</p>
                     <div class="faq-answer">
@@ -120,7 +120,7 @@
                         help with this, LinkJoin can send you text reminders between 5 and 60 minutes before your meeting.
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Will my camera/mic turn on automatically?</p>
                     <div class="faq-answer">
@@ -130,7 +130,7 @@
                         a meeting at embarrassing moments.
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Why are my meetings not opening?</p>
                     <div class="faq-answer">
@@ -140,7 +140,7 @@
                         automatically, please contact support at <p>seth@linkjoin.xyz</p>.
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>How do I enable pop-ups in Google Chrome?</p>
                     <div class="faq-answer">
@@ -150,7 +150,7 @@
                         <p>Sites can send pop-ups and use redirects</p>, and you're all good to go!
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>How do I enable popups in FireFox?</p>
                     <div class="faq-answer">
@@ -159,7 +159,7 @@
                         Uncheck the box labeled <p>Block pop-up windows</p>, and you're all set!
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>How do I enable popups in Safari?</p>
                     <div class="faq-answer">
@@ -169,7 +169,7 @@
                         <p>Allow</p>. Then, you're all set!
                     </div>
                 </div>
-                <div class="faq-question" onclick="openFAQ(this)">
+                <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Does LinkJoin work on mobile?</p>
                     <div class="faq-answer">
@@ -234,40 +234,10 @@
             }
             else {
                 console.log(data['error'])
-                //location.replace('/login')
+                location.replace('/login')
             }
         }
 
-
-        let FAQHeights = []
-        let FAQExpandedHeights = []
-        async function setUpFAQ() {
-            await sleep(100)
-            for (let i = 0; i < document.getElementById('faq').children.length; i++) {
-                const e = document.getElementById('faq').children[i]
-                FAQHeights.push(e.clientHeight)
-                e.style.height = 'unset'
-                e.children[2].style.display = 'block';
-                await sleep(100)
-                FAQExpandedHeights.push(e.clientHeight+15)
-                console.log(e.clientHeight)
-                e.children[2].style.display = 'none'
-                e.style.height = `${FAQHeights[i]}px`
-            }
-            console.log(FAQHeights)
-            console.log(FAQExpandedHeights)
-        }
-        window.addEventListener('resize', () => {
-            $.ajax({
-                url:'https://linkjoin.xyz',
-                type:'GET',
-                success: async function(data) {
-                    let content = $('<div>').append(data).find('#faq');
-                    $('#faq').html(content.html());
-                }
-            });
-        })
-        setUpFAQ()
 
         document.addEventListener('scroll', () => {
             document.getElementById('curve').style.filter = `blur(${window.scrollY*0.075}px)`
@@ -276,47 +246,6 @@
             document.getElementById('info').style.opacity = `${(window.scrollY-1700)/500}`
         })
 
-
-        async function openFAQ(e) {
-            e.children[0].classList.toggle('flipped')
-            if (e.classList.contains('expanding')) {
-                e.classList.remove('expanding')
-                e.classList.add('shrinking')
-                e.style.height = `${FAQHeights[Array.prototype.indexOf.call(document.getElementById('faq').children, e)]}px`
-                console.log(FAQHeights)
-                await sleep(250)
-                e.children[2].style.display = 'none'
-            }
-            else {
-                e.style.height = `${FAQExpandedHeights[Array.prototype.indexOf.call(document.getElementById('faq').children, e)]}px`
-                e.children[2].style.display = 'block'
-                console.log(FAQHeights)
-                e.classList.add('expanding')
-                e.classList.remove('shrinking')
-            }
-        }
-
-        function resize() {
-            if (window.innerWidth < 450) {
-                document.getElementById("get_started").innerText = "Get started"
-                document.getElementById("get_started").style.width = "250px"
-                document.getElementById("learn_more").style.width = "250px"
-            }
-            else {
-                document.getElementById("get_started").innerHTML = `Get started now! <img src="../static/images/arrow-right.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow">`
-                document.getElementById("get_started").style.width = "270px"
-                document.getElementById("learn_more").style.width = "270px"
-            }
-        }
-        resize()
-        window.addEventListener('resize', resize)
-        function expand(index) {
-            let answers = document.getElementsByClassName("answer")
-            let questions = document.getElementsByClassName("question")
-            answers[parseInt(index)].classList.toggle("gone")
-            questions[parseInt(index)].getElementsByTagName("div")[0].classList.toggle("gone")
-            questions[parseInt(index)].getElementsByTagName("div")[1].classList.toggle("gone")
-        }
         if (document.cookie.includes('cookies=accepted')) {
             document.getElementById('popup-cookies').style.display = 'none'
         }
