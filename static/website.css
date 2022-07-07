@@ -152,6 +152,7 @@ footer {
     height: 75px;
     background-color: var(--lightblue);
     border: none;
+    width: 275px;
     margin-top: 35px;
     transition: 0.3s;
 }
