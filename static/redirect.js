@@ -29,7 +29,10 @@ async function start(username, links, sort) {
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
             }
+            window.open(`/link?id=${link['id']}`)
+            await sleep(3000)
             window.open(link['link'])
+
             if (link['activated'] === 'false') {
                 await fetch('/changevar', {
                     method: 'POST',
@@ -45,16 +48,18 @@ async function start(username, links, sort) {
                 })
             }
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
-            await pause(username, user_links, sort, 46000)
+            await pause(username, user_links, sort, 43000)
         }
     }, 15000)
 }
 
 
 async function pause(username, links, sort, wait) {
+    console.log('testing')
     paused = true
     clearInterval(openInterval)
     await sleep(wait)
+    console.log('sleeping')
     paused = false
     start(username, links, sort)
 }

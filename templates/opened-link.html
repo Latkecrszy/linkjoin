@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="manifest" href="../static/manifest.json">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-MR5B009GBF')
+        </script>
+        <link href="../static/website.css" rel="stylesheet"/>
+        <link href="../static/opened-link.css" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <script src="../static/globals.js"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <title>{{ link['name'] }}</title>
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
+        <meta name=”robots” content="noindex, nofollow">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    </head>
+
+    <body>
+        <header>
+            <img id="logo" src="../static/images/logo-text.svg" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <a href="/links" class="underline">Links</a>
+            <a href="/login" class="underline">Log In</a>
+            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+            <div id="dropdown">
+                <div id="hamburger">
+                    <div id="line1"></div>
+                    <div id="line2"></div>
+                    <div id="line3"></div>
+                </div>
+                <div id="hamburger_dropdown">
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login" class="underline">Log In</a>
+                    <a href="/links" class="underline">Links</a>
+                </div>
+            </div>
+        </header>
+        <div id="content">
+            {{ link['name'] }}
+        </div>
+    </body>
+</html>

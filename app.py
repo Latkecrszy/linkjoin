@@ -36,6 +36,7 @@ routes = [
     Route('/validatetoken', endpoint=validatetoken, methods=['POST']),
     Route('/verify_session', endpoint=verify_session, methods=['GET']),
     Route('/get_open_early', endpoint=get_open_early, methods=['GET']),
+    Route('/link', endpoint=link, methods=['GET']),
     Mount('/static', StaticFiles(directory='static'), name='globals.js'),
     Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
     Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),

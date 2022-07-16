@@ -184,3 +184,11 @@ async def privacy(request: Request) -> Response:
 
 async def not_found(request: Request, exc) -> Response:
     return templates.TemplateResponse('404.html', {'request': request}, status_code=exc.status_code)
+
+
+async def link(request: Request) -> Response:
+    requested_link = db.links.find_one({'id': int(request.query_params.get('id'))})
+    if not authenticated(request.cookies, requested_link['username']):
+        return RedirectResponse('/login?error=not_logged_in')
+
+    return templates.TemplateResponse('opened-link.html', {'request': request, 'link': dict(requested_link)})
