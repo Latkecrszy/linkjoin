@@ -112,6 +112,9 @@ async def disable(request: Request) -> Response:
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     r = db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                      {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
+    print(r)
+    print(dict(r))
+    print(type(r))
     while not r['acknowledged']:
         await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
