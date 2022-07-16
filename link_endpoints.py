@@ -96,8 +96,9 @@ async def update(request: Request) -> Response:
         if data.get('password'):
             update_link['password'] = encoder.encrypt(data.get('password').encode())
         db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
-    db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
-    await asyncio.sleep(1)
+    r = db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+    while not r.acknowledged:
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -109,13 +110,10 @@ async def disable(request: Request) -> Response:
         return JSONResponse({'error': 'Forbidden'}, 403)
     email = data.get('email')
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
-    if link['active'] == "true":
-        db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
-                                     {'$set': {'active': 'false'}})
-    else:
-        db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
-                                     {'$set': {'active': 'true'}})
-    await asyncio.sleep(1)
+    r = db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+                                     {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
+    while not r.acknowledged:
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
