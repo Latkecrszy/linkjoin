@@ -255,6 +255,9 @@ async function restore(id, email) {
 
 
 async function createLinks(username, links, id="insert") {
+    if (id !== 'insert') {
+        console.log('running')
+    }
     let final = []
     const new_links = []
     if (global_sort === "day") {
@@ -296,6 +299,7 @@ async function createLinks(username, links, id="insert") {
     let iterator = 0;
     const checked = []
     final.reverse()
+    console.log(final)
     for (const link of final) {
         let hour = link["time"].split(":")[0]
         let meridian = "am"
@@ -306,7 +310,7 @@ async function createLinks(username, links, id="insert") {
         let link_event;
 
         link_event = createElement('div', ['link'])
-        if (link['active'] === 'false') {
+        if (link['active'] === 'false' && id === 'insert') {
             link_event.classList.add('link-disabled')
         }
         link_event.appendChild(createElement('p', ['time'], '', time))
@@ -370,14 +374,15 @@ async function createLinks(username, links, id="insert") {
     for (let x = 0; x < len; x++) {
         insert.removeChild(insert.children[insert.children.length-1])
     }
-
     try {
         checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
     }
     catch {}
+    console.log('reached end')
 }
 
 async function load_links(username, sort, id="insert") {
+    console.log('running load links')
     if (!connected) {
         return
     }
@@ -400,7 +405,7 @@ async function load_links(username, sort, id="insert") {
                 link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
             })
         }
-        await createLinks(username, links['links'], id)
+        await createLinks(username, links['links'], 'insert')
         global_links = links
     }
     webSocket.onclose = () => {
@@ -427,7 +432,7 @@ async function load_links(username, sort, id="insert") {
     else {
         links = global_links['deleted-links']
     }
-
+    console.log(links)
     id = id === 'deleted-links' ? 'deleted-links-body' : id
     const insert = document.getElementById(id)
     if (id !== 'insert') {
@@ -445,6 +450,8 @@ async function load_links(username, sort, id="insert") {
         return
     }
     else {
+        console.log(links)
+        console.log('boutta run creatlinks')
         await createLinks(username, links, id)
     }
     const clickToCopy = document.getElementById("click_to_copy")
@@ -575,7 +582,6 @@ async function registerLink(parameter) {
         await fetch(url, payload)
     }
     hide('popup')
-    clearInterval(openInterval)
     if (global_links['links'].length === 1) {
         await refresh()
         location.reload()

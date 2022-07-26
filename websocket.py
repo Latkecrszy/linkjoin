@@ -1,8 +1,9 @@
 from starlette.websockets import WebSocket, WebSocketDisconnect
 from starlette.responses import JSONResponse, Response
-from websockets.exceptions import ConnectionClosedError
+from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 import urllib.parse
 from utilities import authenticated, configure_data, verify_session_utility
+from constants import motor
 
 
 class WebSocketManager:
@@ -41,7 +42,7 @@ class WebSocketManager:
                         await websocket.send_text(data)
                         print('sent json data')
                     continue
-                except (RuntimeError, ConnectionClosedError):
+                except (RuntimeError, ConnectionClosedError, ConnectionClosedOK):
                     websockets_to_remove.append(websocket)
                     print('removing websocket')
                     continue
@@ -54,10 +55,17 @@ class WebSocketManager:
         print('completed')
 
 
+
 manager = WebSocketManager()
 
 
-async def database_ws(websocket: WebSocket) -> Response | None:
+async def watch() -> None:
+    async with motor.links.watch(full_document='updateLookup') as change_stream:
+        d = await change_stream.next()
+        await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
+
+
+async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     email = urllib.parse.unquote(websocket.query_params.get('email'))
     if websocket.query_params.get('session_id'):
         session_id = urllib.parse.unquote(websocket.query_params.get('session_id'))
@@ -67,9 +75,9 @@ async def database_ws(websocket: WebSocket) -> Response | None:
         return JSONResponse({'error': 'Forbidden'}, 403)
 
     await manager.connect(websocket, email)
+    await manager.update((configure_data(email)), email)
     try:
         while True:
-            await websocket.receive_text()
-            await manager.update((configure_data(email)), email)
+            await watch()
     except (ConnectionClosedError, WebSocketDisconnect):
         manager.disconnect(websocket, email)
