@@ -65,5 +65,5 @@ def configure_data(email: str) -> dict[str, list[dict]]:
 
 
 def verify_session_utility(session_id: str, email: str) -> dict[str, str]:
-    response = db.sessions.find_one({'username': email, 'session_id': session_id}, projection={"_id": 0})
+    response = bool(db.sessions.find_one({'username': email, 'session_id': session_id}, projection={"_id": 0}))
     return {'verified': str(response).lower()}
