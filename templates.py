@@ -22,12 +22,10 @@ async def main(request: Request) -> Response:
     if not started:
         started = True
         task = BackgroundTask(message)
-        print('loading again')
         return templates.TemplateResponse('website.html',
                                           {'token': 'token', 'logged_in': logged_in, 'request': request},
                                           background=task)
     else:
-        print('loading again again')
         return templates.TemplateResponse('website.html',
                                           {'token': 'token', 'logged_in': logged_in, 'request': request})
 

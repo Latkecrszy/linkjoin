@@ -103,8 +103,6 @@ routes = [
     Mount('/static/images', StaticFiles(directory='static'), name='undo.svg')
 ]
 
-handlers = {
-    404: not_found
-}
 
-app = Starlette(routes=routes, debug=False, exception_handlers=handlers, on_startup=[lambda: print('Started.')])
+
+app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[lambda: print('Started.')])

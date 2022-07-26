@@ -90,7 +90,7 @@ LinkJoin''')
     return JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
 
 
-async def set_cookie(request: Request):
+async def set_cookie(request: Request) -> Response:
     email = request.query_params.get('email').lower()
     if not db.tokens.find_one({'email': email, 'token': request.query_params.get('token')}):
         return RedirectResponse('/login')

@@ -2,7 +2,7 @@ import random, string
 from constants import db, encoder
 
 
-def analytics(_type, **kwargs):
+def analytics(_type: str, **kwargs) -> None:
     if _type == 'links_made':
         db.new_analytics.find_one_and_update({'id': 'links_made'}, {'$inc': {'value': 1}})
     elif _type == 'logins':
@@ -22,35 +22,35 @@ def analytics(_type, **kwargs):
         db.new_analytics.find_one_and_update({'id': 'links_opened'}, {'$inc': {'value': 1}})
 
 
-def gen_id():
+def gen_id() -> str:
     id = ''.join(random.choices(string.ascii_letters, k=16))
     while db.login.find_one({'refer': id}) is not None:
         id = ''.join(random.choices(string.ascii_letters, k=16))
     return id
 
 
-def gen_session():
+def gen_session() -> str:
     session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
     while db.sessions.find_one({'session_id': session}) is not None:
         session = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10))], k=30))
     return session
 
 
-def gen_otp():
+def gen_otp() -> str:
     otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
     while db.otp.find_one({'pw': otp}) is not None:
         otp = ''.join(random.choices([*string.ascii_letters, *(str(i) for i in range(10)), '!', '@', '$'], k=20))
     return otp
 
 
-def authenticated(cookies, email):
+def authenticated(cookies: dict, email: str) -> bool:
     try:
         return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in db.sessions.find({'username': email})]
     except TypeError:
         return False
 
 
-def configure_data(email) -> dict[str, list[dict]]:
+def configure_data(email: str) -> dict[str, list[dict]]:
     links_list = {'links': list(db.links.find({'username': email})), 'deleted-links': list(db.deleted_links.find({'username': email}))}
     links_list = {key: [{i: j for i, j in link.items() if i != '_id'} for link in links] for key, links in links_list.items()}
     for name in links_list:
@@ -64,13 +64,6 @@ def configure_data(email) -> dict[str, list[dict]]:
     return links_list
 
 
-def verify_session_utility(session_id, email):
-    response = session_id in [i['session_id'] for i in
-        db.sessions.find({'username': email}, projection={"_id": 0})]
-    if response:
-        token = gen_session()
-        db.tokens.insert_one({'email': email, 'token': token})
-        response = {'verified': str(response).lower(), 'token': token}
-    else:
-        response = {'verified': str(response).lower()}
-    return response
+def verify_session_utility(session_id: str, email: str) -> dict[str, str]:
+    response = db.sessions.find_one({'username': email, 'session_id': session_id}, projection={"_id": 0})
+    return {'verified': str(response).lower()}
