@@ -65,12 +65,9 @@ async def watch() -> None:
     async with motor.links.watch(full_document='updateLookup') as change_stream:
         d = await change_stream.next()
         if 'fullDocument' not in d:
-            print('fulldocument part ' + str(manager.watching))
-            manager.watching = False
             return
         print('calling update')
         await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
-    manager.watching = False
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
@@ -85,10 +82,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email)
     try:
-        print(manager.watching)
-        if not manager.watching:
-            manager.watching = True
-            while True:
-                await watch()
+        while True:
+            await watch()
     except (ConnectionClosedError, WebSocketDisconnect):
         manager.disconnect(websocket, email)
