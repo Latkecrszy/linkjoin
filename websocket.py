@@ -9,6 +9,7 @@ from constants import motor
 class WebSocketManager:
     def __init__(self):
         self.connections: dict[str, list[WebSocket]] = {}
+        self.watching = False
 
     async def connect(self, websocket: WebSocket, email: str) -> None:
         await websocket.accept()
@@ -81,7 +82,9 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email)
     try:
-        while True:
-            await watch()
+        if not manager.watching:
+            manager.watching = True
+            while True:
+                await watch()
     except (ConnectionClosedError, WebSocketDisconnect):
         manager.disconnect(websocket, email)
