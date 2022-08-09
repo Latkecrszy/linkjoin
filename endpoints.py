@@ -4,7 +4,7 @@ import requests, smtplib, json, re, string, ssl, os, random
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
-from utilities import gen_session, gen_id, gen_otp, analytics, authenticated, verify_session_utility
+from utilities import gen_session, gen_id, gen_otp, analytics, authenticated, verify_session_utility, configure_data
 from constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder
 
 
@@ -311,3 +311,11 @@ async def get_open_early(request: Request) -> JSONResponse:
             {'before': int(db.login.find_one({'username': request.headers.get('email')})['open_early'])})
     else:
         return JSONResponse({'before': 0})
+
+
+async def database(request: Request) -> JSONResponse:
+    if not db.sessions.find_one(
+            {'username': request.headers.get('email'), 'session_id': request.headers.get('session_id')}):
+        return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
+
+    return JSONResponse({'data': configure_data(request.headers.get('email'))})

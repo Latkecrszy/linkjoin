@@ -62,6 +62,8 @@ manager = WebSocketManager()
 async def watch() -> None:
     async with motor.links.watch(full_document='updateLookup') as change_stream:
         d = await change_stream.next()
+        if 'fullDocument' not in d:
+            return
         await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
 
 

@@ -1,9 +1,7 @@
-let global_username, global_sort, tutorial_complete, global_links
+let global_username, global_sort, tutorial_complete, global_links, webSocket, defaultPopup
 let tutorial_active = false;
 let connected = true;
 const notesInfo = {}
-let defaultPopup;
-let webSocket;
 
 
 window.addEventListener('offline', () => {connected = false; console.log('disconnected')})
@@ -255,9 +253,6 @@ async function restore(id, email) {
 
 
 async function createLinks(username, links, id="insert") {
-    if (id !== 'insert') {
-        console.log('running')
-    }
     let final = []
     const new_links = []
     if (global_sort === "day") {
@@ -299,7 +294,6 @@ async function createLinks(username, links, id="insert") {
     let iterator = 0;
     const checked = []
     final.reverse()
-    console.log(final)
     for (const link of final) {
         let hour = link["time"].split(":")[0]
         let meridian = "am"
@@ -378,21 +372,18 @@ async function createLinks(username, links, id="insert") {
         checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
     }
     catch {}
-    console.log('reached end')
 }
 
 async function load_links(username, sort, id="insert") {
-    console.log('running load links')
     if (!connected) {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
     webSocket.onmessage = async (e) => {
-        console.log('received')
         let links = JSON.parse(e.data)
         for (const linkCategory of Object.values(links)) {
             linkCategory.forEach(link => {
@@ -404,6 +395,11 @@ async function load_links(username, sort, id="insert") {
                 link['days'] = newInfo['days']
                 link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
             })
+        }
+        if (((global_links !== undefined && global_links['links'].length === 0) && links['links'].length === 1) ||
+            (global_links !== undefined && global_links['links'].length === 1 && links['links'].length === 0)) {
+            location.reload()
+            return
         }
         await createLinks(username, links['links'], 'insert')
         global_links = links
@@ -432,7 +428,6 @@ async function load_links(username, sort, id="insert") {
     else {
         links = global_links['deleted-links']
     }
-    console.log(links)
     id = id === 'deleted-links' ? 'deleted-links-body' : id
     const insert = document.getElementById(id)
     if (id !== 'insert') {
@@ -450,8 +445,6 @@ async function load_links(username, sort, id="insert") {
         return
     }
     else {
-        console.log(links)
-        console.log('boutta run creatlinks')
         await createLinks(username, links, id)
     }
     const clickToCopy = document.getElementById("click_to_copy")
@@ -583,7 +576,6 @@ async function registerLink(parameter) {
     }
     hide('popup')
     if (global_links['links'].length === 1) {
-        await refresh()
         location.reload()
     }
 }
