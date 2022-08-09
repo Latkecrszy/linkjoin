@@ -68,6 +68,7 @@ async def watch() -> None:
             return
         print('calling update')
         await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
+    manager.watching = False
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
