@@ -115,7 +115,9 @@ async def disable(request: Request) -> Response:
         print('waiting')
         await asyncio.sleep(0.1)
     print('done')
+    print(data.get('email'))
     await manager.update(configure_data(data.get('email')), data.get('email'))
+    print('updated from disable')
     return PlainTextResponse('done')
 
 
