@@ -417,6 +417,7 @@ async function load_links(username, sort, id="insert") {
             await sleep(5000)
         }
         await refresh()
+        webSocket.close()
         await load_links(username, global_sort)
     }
     while (global_links === undefined) {
@@ -753,6 +754,7 @@ async function skipTutorial(register) {
     }
     if (register) {hide('popup')}
     await refresh()
+    webSocket.close()
     await load_links(global_username, global_sort)
 
 }
