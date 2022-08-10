@@ -60,9 +60,9 @@ class WebSocketManager:
 manager = WebSocketManager()
 
 
-async def watch() -> None:
+async def watch(websocket, email) -> None:
     print('watch started')
-    while True:
+    while websocket in manager.connections[email]:
         print('in da new loop')
         async with motor.links.watch(full_document='updateLookup') as change_stream:
             d = await change_stream.next()
@@ -86,6 +86,6 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     print('doing things here')
     try:
         print('not failed')
-        await watch()
+        await watch(websocket, email)
     except (ConnectionClosedError, WebSocketDisconnect):
         manager.disconnect(websocket, email)
