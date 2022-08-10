@@ -70,6 +70,7 @@ async def watch(websocket, email) -> None:
                 return
             print('calling update')
             await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
+            return
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
