@@ -81,8 +81,11 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
 
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email)
+    print('doing things here')
     try:
+        print('not failed')
         while True:
+            print('in da loop')
             await watch()
     except (ConnectionClosedError, WebSocketDisconnect):
         manager.disconnect(websocket, email)
