@@ -4,6 +4,7 @@ from utilities import authenticated, analytics, configure_data
 import random, string, asyncio
 from constants import db, encoder
 from websocket import manager
+from pymongo import ReturnDocument
 
 
 async def register(request: Request) -> Response:
@@ -109,7 +110,11 @@ async def disable(request: Request) -> Response:
     email = data.get('email')
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
-                                     {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
+                                {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
+    while link == db.links.find_one({"username": email, 'id': int(data.get("id"))}):
+        print('waiting')
+        await asyncio.sleep(0.1)
+    print('done')
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
