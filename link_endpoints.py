@@ -44,20 +44,21 @@ async def register(request: Request) -> Response:
 
 async def delete(request: Request) -> Response:
     data = await request.json()
+    email = data.get('email').lower()
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
-    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
+    links = list(db.links.find({'username': email}))
     if data.get('permanent') == 'true':
-        db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
+        db.deleted_links.find_one_and_delete({'username': email, 'id': int(data.get('id'))})
     else:
         try:
-            db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+            db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'username': email, 'id': int(data.get('id'))})))
         except TypeError:
             pass
 
-    while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
+    while links == list(db.links.find({'username': email})):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(email), email)
     return PlainTextResponse('done')
 
 
