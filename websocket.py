@@ -3,6 +3,7 @@ from starlette.responses import JSONResponse, Response
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 import urllib.parse
 from utilities import authenticated, configure_data, verify_session_utility
+from constants import motor
 
 
 class WebSocketManager:
@@ -56,6 +57,16 @@ class WebSocketManager:
 manager = WebSocketManager()
 
 
+async def watch(websocket, email) -> None:
+    while websocket in manager.connections[email]:
+        async with motor.links.watch(full_document='updateLookup') as change_stream:
+            d = await change_stream.next()
+            if 'fullDocument' not in d:
+                return
+            await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
+            return
+
+
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     email = urllib.parse.unquote(websocket.query_params.get('email'))
     if websocket.query_params.get('session_id'):
@@ -68,6 +79,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email)
     print('doing things here')
+    await watch(websocket, email)
     try:
         while True:
             await websocket.receive_text()
