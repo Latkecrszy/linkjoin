@@ -30,9 +30,13 @@ async def register(request: Request) -> Response:
         insert['password'] = encoder.encrypt(data.get('password').encode())
     if data.get('repeats')[0].isdigit():
         insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
+    links = list(db.links.find({'username': email}))
     db.links.insert_one(insert)
     db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
     analytics('links_made')
+
+    while links == list(db.links.find({'username': email})):
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -42,6 +46,7 @@ async def delete(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
+    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
     if data.get('permanent') == 'true':
         db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})
     else:
@@ -49,6 +54,9 @@ async def delete(request: Request) -> Response:
             db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
         except TypeError:
             pass
+
+    while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -57,7 +65,12 @@ async def restore(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
+
+    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
     db.links.insert_one(dict(db.deleted_links.find_one_and_delete({'username': data.get('email').lower(), 'id': int(data.get('id'))})))
+
+    while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -97,7 +110,11 @@ async def update(request: Request) -> Response:
         if data.get('password'):
             update_link['password'] = encoder.encrypt(data.get('password').encode())
         db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
+    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
     db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+
+    while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
@@ -111,8 +128,8 @@ async def disable(request: Request) -> Response:
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                 {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
+
     while link == db.links.find_one({"username": email, 'id': int(data.get("id"))}):
-        print('waiting')
         await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
@@ -122,8 +139,13 @@ async def change_var(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
+
+    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
     db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {data.get('variable'): data.get(data.get('variable'))}})
+
+    while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
+        await asyncio.sleep(0.1)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
