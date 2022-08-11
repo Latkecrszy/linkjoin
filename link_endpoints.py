@@ -1,10 +1,9 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse
 from utilities import authenticated, analytics, configure_data
-import random, string, asyncio
+import random, string
 from constants import db, encoder
 from websocket import manager
-from pymongo import ReturnDocument
 
 
 async def register(request: Request) -> Response:
@@ -111,13 +110,7 @@ async def disable(request: Request) -> Response:
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                 {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}})
-    while link == db.links.find_one({"username": email, 'id': int(data.get("id"))}):
-        print('waiting')
-        await asyncio.sleep(0.1)
-    print('done')
-    print(data.get('email'))
     await manager.update(configure_data(data.get('email')), data.get('email'))
-    print('updated from disable')
     return PlainTextResponse('done')
 
 
@@ -127,7 +120,7 @@ async def change_var(request: Request) -> Response:
         return JSONResponse({'error': 'Forbidden'}, 403)
     db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {data.get('variable'): data.get(data.get('variable'))}})
-    JSONResponse({'error': 'Forbidden'}, 403)
+    await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 
 

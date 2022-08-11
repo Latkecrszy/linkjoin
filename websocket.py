@@ -3,7 +3,6 @@ from starlette.responses import JSONResponse, Response
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 import urllib.parse
 from utilities import authenticated, configure_data, verify_session_utility
-from constants import motor
 
 
 class WebSocketManager:
@@ -16,7 +15,7 @@ class WebSocketManager:
         if email in self.connections:
             if websocket in self.connections[email]:
                 return
-            if websocket not in self.connections[email]:
+            else:
                 self.connections[email].append(websocket)
         else:
             self.connections[email] = [websocket]
@@ -28,11 +27,9 @@ class WebSocketManager:
                 self.connections.pop(email)
 
     async def update(self, data: dict | list | str, email: str) -> None:
-        print('received')
-        print(len(self.connections))
         if email in self.connections:
             websockets_to_remove = []
-            for websocket in [i for i in self.connections[email]]:
+            for websocket in self.connections[email]:
                 try:
                     if isinstance(data, dict) or isinstance(data, list):
                         print('sending json data')
@@ -48,30 +45,15 @@ class WebSocketManager:
                     websockets_to_remove.append(websocket)
                     print('removing websocket')
                     continue
-            print(len(websockets_to_remove))
             for websocket in websockets_to_remove:
                 self.connections[email].remove(websocket)
                 print('removed websocket')
                 if len(self.connections[email]) == 0:
                     self.connections.pop(email)
-        print('completed')
 
 
 
 manager = WebSocketManager()
-
-
-async def watch(websocket, email) -> None:
-    print('watch started')
-    while websocket in manager.connections[email]:
-        print('in da new loop')
-        async with motor.links.watch(full_document='updateLookup') as change_stream:
-            d = await change_stream.next()
-            if 'fullDocument' not in d:
-                return
-            print('calling update')
-            await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
-            return
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
@@ -86,8 +68,8 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email)
     print('doing things here')
-    # try:
-        # print('not failed')
-        # await watch(websocket, email)
-    # except (ConnectionClosedError, WebSocketDisconnect):
-        # manager.disconnect(websocket, email)
+    try:
+        while True:
+            await websocket.receive_text()
+    except (ConnectionClosedError, WebSocketDisconnect):
+        manager.disconnect(websocket, email)
