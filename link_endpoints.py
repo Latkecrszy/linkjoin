@@ -116,6 +116,7 @@ async def update(request: Request) -> Response:
 
     while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
         await asyncio.sleep(0.1)
+    await asyncio.sleep(3)
     await manager.update(configure_data(data.get('email')), data.get('email'))
     return PlainTextResponse('done')
 

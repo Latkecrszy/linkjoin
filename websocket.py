@@ -26,6 +26,7 @@ class WebSocketManager:
             self.connections[email].remove(websocket)
             if len(self.connections[email]) == 0:
                 self.connections.pop(email)
+        print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str) -> None:
         if email in self.connections:
@@ -84,4 +85,5 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
         while True:
             await websocket.receive_text()
     except (ConnectionClosedError, WebSocketDisconnect):
+        print('closing websocket')
         manager.disconnect(websocket, email)
