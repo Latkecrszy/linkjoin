@@ -48,10 +48,11 @@ class WebSocketManager:
                     print('removing websocket')
                     continue
             for websocket in websockets_to_remove:
-                self.connections[email].remove(websocket)
-                print('removed websocket')
-                if len(self.connections[email]) == 0:
-                    self.connections.pop(email)
+                if websocket in self.connections[email]:
+                    self.connections[email].remove(websocket)
+                    print('removed websocket')
+                    if len(self.connections[email]) == 0:
+                        self.connections.pop(email)
 
 
 
