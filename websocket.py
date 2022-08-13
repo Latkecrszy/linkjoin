@@ -86,6 +86,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
         while True:
             await websocket.receive_text()
     except (ConnectionClosedError, WebSocketDisconnect) as e:
+        print('error :((')
         print(e)
         print('closing websocket')
         manager.disconnect(websocket, email)
