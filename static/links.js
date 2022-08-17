@@ -1,6 +1,8 @@
 let global_username, global_sort, tutorial_complete, global_links, webSocket, defaultPopup
+let timeOffPage = 0
 let tutorial_active = false;
 let connected = true;
+
 const notesInfo = {}
 
 
@@ -379,7 +381,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`wss://linkjoin-beta.herokuapp.com/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
@@ -1022,6 +1024,12 @@ function closePopup() {
         document.getElementsByClassName('active')[0].classList.remove('active')
         blur(false)
     }
-
-
 }
+
+document.addEventListener('visibilitychange', async e => {
+    if ((Date.now() - timeOffPage)/1000 > 60 && document.visibilityState === 'visible') {
+        location.reload()
+    }
+    timeOffPage = Date.now()
+
+})
