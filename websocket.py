@@ -36,6 +36,8 @@ class WebSocketManager:
                     if isinstance(data, dict) or isinstance(data, list):
                         print('sending json data')
                         await websocket.send_json(data)
+                        print(data)
+                        print(websocket.query_params.get('email'))
                         print('sent json data')
                     else:
                         print('sending text data')
@@ -53,8 +55,8 @@ class WebSocketManager:
                     print('removed websocket')
                     if len(self.connections[email]) == 0:
                         self.connections.pop(email)
-                except KeyError:
-                    continue
+                except (KeyError, ValueError) as e:
+                    print(e)
 
 
 
