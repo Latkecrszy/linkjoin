@@ -43,7 +43,11 @@ class WebSocketManager:
                         await websocket.send_text(data)
                         print('sent json data')
                     continue
-                except (RuntimeError, ConnectionClosedError, ConnectionClosedOK) as e:
+                except ConnectionClosedOK:
+                    print('connection closed with ConnectionClosedOK')
+                    websockets_to_remove.append(websocket)
+                    continue
+                except (RuntimeError, ConnectionClosedError) as e:
                     print(e)
                     websockets_to_remove.append(websocket)
                     print('removing websocket')
