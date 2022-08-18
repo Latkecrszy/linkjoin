@@ -36,7 +36,6 @@ class WebSocketManager:
                     if isinstance(data, dict) or isinstance(data, list):
                         print('sending json data')
                         await websocket.send_json(data)
-                        print(data)
                         print(websocket.query_params.get('email'))
                         print('sent json data')
                     else:
