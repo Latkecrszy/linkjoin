@@ -20,6 +20,7 @@ class WebSocketManager:
                 self.connections[email].append(websocket)
         else:
             self.connections[email] = [websocket]
+        print(len(self.connections))
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
         if email in self.connections:
@@ -47,7 +48,12 @@ class WebSocketManager:
                     print('connection closed with ConnectionClosedOK')
                     websockets_to_remove.append(websocket)
                     continue
-                except (RuntimeError, ConnectionClosedError) as e:
+                except ConnectionClosedError:
+                    print('connection closed with ConnectionClosedError')
+                    websockets_to_remove.append(websocket)
+                    continue
+                except RuntimeError as e:
+                    print('runtime error')
                     print(e)
                     websockets_to_remove.append(websocket)
                     print('removing websocket')
@@ -95,5 +101,6 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     except (ConnectionClosedError, WebSocketDisconnect) as e:
         print('error :((')
         print(e)
+        print(type(e))
         print('closing websocket')
         manager.disconnect(websocket, email)
