@@ -21,6 +21,7 @@ class WebSocketManager:
         else:
             self.connections[email] = [websocket]
         print(len(self.connections))
+        print(len(self.connections[email]))
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
         if email in self.connections:
