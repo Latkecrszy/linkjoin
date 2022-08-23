@@ -106,4 +106,4 @@ routes = [
 
 
 
-app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[lambda: print('Started.')])
+app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[lambda: print('Started app.')])
