@@ -31,6 +31,8 @@ class WebSocketManager:
         print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str) -> None:
+        print(len(self.connections))
+        print(len(self.connections[email]))
         if email in self.connections:
             websockets_to_remove = []
             for websocket in self.connections[email]:
