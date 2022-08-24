@@ -30,7 +30,8 @@ class WebSocketManager:
                 self.connections.pop(email)
         print('websocket closed')
 
-    async def update(self, data: dict | list | str, email: str) -> None:
+    async def update(self, data: dict | list | str, email: str, origin=None) -> None:
+        print(origin)
         print(len(self.connections))
         print(len(self.connections[email]))
         if email in self.connections:
@@ -81,7 +82,7 @@ async def watch(websocket, email) -> None:
             d = await change_stream.next()
             if 'fullDocument' not in d:
                 return
-            await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'])
+            await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'], 'watch')
             return
 
 
@@ -95,7 +96,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
         return JSONResponse({'error': 'Forbidden'}, 403)
 
     await manager.connect(websocket, email)
-    await manager.update((configure_data(email)), email)
+    await manager.update((configure_data(email)), email, 'database_ws')
     print('doing things here')
     await watch(websocket, email)
     try:

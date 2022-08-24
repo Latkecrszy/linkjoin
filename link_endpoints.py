@@ -37,7 +37,7 @@ async def register(request: Request) -> Response:
 
     while links == list(db.links.find({'username': email})):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'register')
     return PlainTextResponse('done')
 
 
@@ -58,7 +58,7 @@ async def delete(request: Request) -> Response:
 
     while links == list(db.links.find({'username': email})):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(email), email)
+    await manager.update(configure_data(email), email, 'delete')
     return PlainTextResponse('done')
 
 
@@ -72,7 +72,7 @@ async def restore(request: Request) -> Response:
 
     while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'restore')
     return PlainTextResponse('done')
 
 
@@ -117,7 +117,7 @@ async def update(request: Request) -> Response:
     while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
         await asyncio.sleep(0.1)
     await asyncio.sleep(3)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'update')
     return PlainTextResponse('done')
 
 
@@ -133,7 +133,7 @@ async def disable(request: Request) -> Response:
 
     while link == db.links.find_one({"username": email, 'id': int(data.get("id"))}):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'disable')
     return PlainTextResponse('done')
 
 
@@ -148,7 +148,7 @@ async def change_var(request: Request) -> Response:
 
     while link == db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))}):
         await asyncio.sleep(0.1)
-    await manager.update(configure_data(data.get('email')), data.get('email'))
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'change_var')
     return PlainTextResponse('done')
 
 
@@ -179,11 +179,11 @@ async def addlink(request: Request) -> Response:
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
     db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
     db.links.insert_one(new_link)
-    await manager.update(configure_data(request.cookies.get('email')), request.cookies.get('email'))
+    await manager.update(configure_data(request.cookies.get('email')), request.cookies.get('email'), 'addlink')
     return RedirectResponse('/links')
 
 
 async def unsubscribe(request: Request) -> Response:
     db.links.find_one_and_update({"id": int(request.query_params.get("id"))}, {"$set": {"text": "false"}})
-    await manager.update(configure_data(request.cookies.get('email')), request.cookies.get('email'))
+    await manager.update(configure_data(request.cookies.get('email')), request.cookies.get('email'), 'unsubscribe')
     return PlainTextResponse('done')
