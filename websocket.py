@@ -74,6 +74,7 @@ class WebSocketManager:
 
 
 manager = WebSocketManager()
+watching = []
 
 
 async def watch(websocket, email) -> None:
@@ -81,8 +82,10 @@ async def watch(websocket, email) -> None:
         async with motor.links.watch(full_document='updateLookup') as change_stream:
             d = await change_stream.next()
             if 'fullDocument' not in d:
+                watching.remove(email)
                 return
             await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'], 'watch')
+            watching.remove(email)
             return
 
 
@@ -98,7 +101,9 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     await manager.connect(websocket, email)
     await manager.update((configure_data(email)), email, 'database_ws')
     print('doing things here')
-    await watch(websocket, email)
+    if email not in watching:
+        watching.append(email)
+        await watch(websocket, email)
     try:
         while True:
             await websocket.receive_text()
