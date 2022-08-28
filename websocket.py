@@ -12,6 +12,7 @@ class WebSocketManager:
         self.watching = False
 
     async def connect(self, websocket: WebSocket, email: str) -> None:
+        print('connecting')
         await websocket.accept()
         if email in self.connections:
             if websocket in self.connections[email]:
@@ -22,6 +23,7 @@ class WebSocketManager:
             self.connections[email] = [websocket]
         print(len(self.connections))
         print(len(self.connections[email]))
+        print('connected')
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
         if email in self.connections:
@@ -33,6 +35,7 @@ class WebSocketManager:
     async def update(self, data: dict | list | str, email: str, origin=None) -> None:
         print(origin)
         print(len(self.connections))
+        print(self.connections)
         print(len(self.connections[email]))
         if email in self.connections:
             websockets_to_remove = []
