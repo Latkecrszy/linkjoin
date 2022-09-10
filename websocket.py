@@ -36,7 +36,6 @@ class WebSocketManager:
         print(origin)
         print(len(self.connections))
         print(self.connections)
-        print(len(self.connections[email]))
         if email in self.connections:
             websockets_to_remove = []
             for websocket in self.connections[email]:
