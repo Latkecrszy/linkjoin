@@ -13,7 +13,7 @@ class WebSocketManager:
 
     async def connect(self, websocket: WebSocket, email: str) -> None:
         print('connecting')
-        await websocket.accept()
+        await websocket.accept(headers=[(b'connection', b'keep-alive')])
         if email in self.connections:
             if websocket in self.connections[email]:
                 return
