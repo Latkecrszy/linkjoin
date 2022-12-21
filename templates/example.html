@@ -22,41 +22,12 @@
             const confirmed = "{{ confirmed }}"
             const error = "{{ error }}"
             const account = '{{ account }}'
-            let offset = (date.getTimezoneOffset()/60).toString()
-            console.log('{{ timezone }}')
-            console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
-            console.log(offset)
-            console.log('{{ offset }}')
-            if ('{{ timezone }}' === Intl.DateTimeFormat().resolvedOptions().timeZone && offset !== '{{ offset }}') {
-                fetch('/daylightsavings', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        email: '{{ username }}',
-                        shift: parseFloat(offset) - parseFloat('{{ offset }}')
-                    })
-                })
-            }
-            if ('{{ timezone }}' !== Intl.DateTimeFormat().resolvedOptions().timeZone) {
-                fetch('/updatetimezone', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                        email: '{{ username }}'
-                    })
-                })
-            }
-            if ('{{ offset }}' !== offset) {
-                if (!offset.includes(".")) {offset = `${offset}.0`}
-                fetch('/setoffset', {method: 'POST', headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({offset: offset, email: '{{username}}'})})
-            }
-
             const countryCodes = {{ country_codes|tojson|safe }}
         </script>
         <script src="../static/links.js"></script>
-        <link href="../static/globals.css" rel="stylesheet"/>
         <link href="../static/links.css" rel="stylesheet"/>
         <link href="../static/new_links.css" rel="stylesheet"/>
+        <link href="../static/globals.css" rel="stylesheet"/>
         <link href="../static/link.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
@@ -150,24 +121,29 @@
                     <path d="M53.3138 34.7562V71.3192" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M35.0327 53.0375H71.5958" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
+
                 <div id="links_menu">
-                    <a><div class="button header_button underline" onclick="openSettings()">Settings
+                    <a><div class="button header_button underline" onclick="openSettings()">
+                        Settings
                     </div></a>
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                 </div>
-
                 <div id="dropdown">
-                    <input id="dropdown-checkbox" type="checkbox"/>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <div id="hamburger_dropdown">
-                        <div class="underline" onclick="openSettings()">Settings</div>
-                        <hr class="menu_line">
-                        <div class="underline" onclick="logOut()">Log Out</div>
+                    <div id="hamburger" class="gone">
+                        <div id="line1"></div>
+                        <div id="line2"></div>
+                        <div id="line3"></div>
                     </div>
-                  </div>
+                    <div id="hamburger_dropdown">
+                        <a><div onclick="openSettings()">
+                            Settings
+                        </div></a>
+                        <hr class="menu_line">
+                        <a><div onclick="logOut()">Log Out</div></a>
+                    </div>
+                </div>
             </header>
+            <button class="show-notes" onclick="showNotes()">Meeting Notes</button>
             <div class="gone" id="disappear">
                 <img loading="lazy" src="../static/images/links_loader.svg" height="430" width="450" alt="Man with clock">
                 <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
@@ -185,22 +161,15 @@
         </div>
 
         <!--Copy share link-->
-        <div id="popup-share" class="popup invisible">
+        <div id="popup-share" class="invisible popup">
             <img loading="lazy" src="../static/images/arrow-left.svg" height="25px" width="25px" style="margin: -10px 0 -10px 20px; cursor: pointer" onclick="hide('popup-share')" alt="back to links page">
-            <p class="popup-share-text">Share your link</p>
-            <div id="popup-share-demo-link"></div>
-            <hr id="popup-share-divider">
-
-            <div id="popup-share-email-and-submit-container">
-                <div id="popup-share-emails-container" onclick="showPopupEmailsInput()">
-                    <input id="popup-share-emails-input" type="email" placeholder="Add emails" onkeyup="verifyEmail(event)"  onblur="hidePopupEmailsInput()">
-                </div>
-                <button id="popup-share-button" class="hover-arrow submit">Send <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
-            </div>
-            </div>
+            <p>Share this url with others to add your link to their list!</p>
+            <div><input id="share_link">
+            <button id="click_to_copy">Click to Copy</button></div>
+        </div>
 
         <!--Create a link-->
-        <div id="popup" class="popup invisible nobar">
+        <div id="popup" class="popup invisible">
             <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup')" alt="back to links page">
             <div id="title">Schedule a new meeting</div>
             <div id="error"></div>
@@ -269,7 +238,7 @@
                             <option value="60">60 minutes before</option>
                         </select>
                     </div>
-                    <button type="button" class="hover-arrow submit" id="submit" onclick="registerLink('register')">Create <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+                    <button type="button" class="hover-arrow" id="submit" onclick="registerLink('register')">Create <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
                 </div>
             </form>
         </div>
@@ -319,7 +288,7 @@
             <h2>Meeting notes for </h2>
             <textarea id="notes_textarea" class="notes" placeholder="What happened at your meeting? What do you want to keep track of? ..."></textarea>
             <div contenteditable="true" id="notes_div" class="notes"></div>
-            <div class="notes_buttons invisible">
+            <div class="notes_buttons">
                 <button class="notes_button back" onclick="notesNext('back')">Back</button>
                 <button class="notes_button next" onclick="notesNext('next')">Next</button>
             </div>
@@ -339,7 +308,7 @@
                 In each step, you'll find a description of a part of the page, along with a demo to play
                 around with. Without further ado, let's get started!
             </p>
-            <!--<div class="tutorial-step">
+            <div class="tutorial-step">
                 <div>
                     <h3>Take Notes</h3>
                 </div>
@@ -351,7 +320,7 @@
                     <button class="show-notes tutorial" onclick="showNotes()">Meeting Notes</button>
                 </div>
 
-            </div>-->
+            </div>
             <div class="tutorial-step">
                 <div>
                     <h3>Change Settings</h3>
@@ -612,6 +581,5 @@
             </div>
             <div id="deleted-links-body"></div>
         </div>
-
     </body>
 </html>

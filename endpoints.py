@@ -1,19 +1,19 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse, FileResponse
-import requests, smtplib, json, re, string, ssl, os, random
+import requests, json, re
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
-from utilities import gen_session, gen_id, gen_otp, analytics, authenticated, verify_session_utility, configure_data
+from utilities import *
 from constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder
 
 
-async def analytics_endpoint(request: Request) -> PlainTextResponse:
+async def analytics_endpoint(request: Request) -> JSONResponse:
     if request.method == 'POST':
         data = await request.json()
         if data.get('field') == 'links_opened':
             analytics('links_opened')
-        return PlainTextResponse('Success')
+        return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def location(request: Request) -> Response:
@@ -62,7 +62,8 @@ async def confirm_email(request: Request) -> Response:
         db.anonymous_token.insert_one({'token': token})
         return JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
-               'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token}
+               'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token,
+               'timezone': data.get('timezone')}
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:
             return JSONResponse({"error": "password_too_short", "url": redirect_link, 'token': token})
@@ -133,7 +134,7 @@ async def tutorial(request: Request) -> Response:
         return JSONResponse({'error': 'Forbidden'}, 403)
     db.login.find_one_and_update({"username": data.get('email').lower()},
                                  {"$set": {"tutorial": data.get("step")}})
-    return PlainTextResponse('done')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def tutorial_complete(request: Request) -> Response:
@@ -143,7 +144,7 @@ async def tutorial_complete(request: Request) -> Response:
     user = db.login.find_one({'username': data.get('email').lower()}, projection={'_id': 0, 'password': 0})
     if user:
         return JSONResponse(dict(user))
-    return PlainTextResponse('done')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def setoffset(request: Request) -> Response:
@@ -152,7 +153,7 @@ async def setoffset(request: Request) -> Response:
         return JSONResponse({'error': 'Forbidden'}, 403)
     db.login.find_one_and_update({"username": data.get("email").lower()},
                                  {"$set": {"offset": data.get("offset")}})
-    return PlainTextResponse('done')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def add_number(request: Request) -> Response:
@@ -165,7 +166,7 @@ async def add_number(request: Request) -> Response:
     if number.isdigit():
         number = int(number)
     db.login.find_one_and_update({"username": data.get("email")}, {"$set": {"number": number}})
-    return PlainTextResponse('done')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def receive_vonage_message(request: Request) -> Response:
@@ -177,7 +178,7 @@ async def receive_vonage_message(request: Request) -> Response:
                 "from": "18336535326", "to": str(request.query_params.get("msisdn")),
                 "text": "Ok, we won't remind you about this link again"}
         requests.post("https://rest.nexmo.com/sms/json", data=data)
-    return PlainTextResponse('done')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def notes(request: Request) -> Response:
@@ -208,7 +209,7 @@ async def tutorial_changed(request: Request) -> Response:
     else:
         db.login.find_one_and_update({'username': request.headers.get('email').lower()},
                                      {'$set': {'tutorialWidget': 'incomplete'}})
-    return PlainTextResponse('Success')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def open_early(request: Request) -> Response:
@@ -216,10 +217,10 @@ async def open_early(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
     db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'open_early': data.get('open')}})
-    return PlainTextResponse('Success')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
-async def send_message(request: Request) -> PlainTextResponse:
+async def send_message(request: Request) -> JSONResponse:
     print("sending...")
     sent = json.load(open('last-message.json'))
     data = await request.json()
@@ -243,8 +244,8 @@ async def send_message(request: Request) -> PlainTextResponse:
             requests.post("https://rest.nexmo.com/sms/json", data=content)
         sent[int(data.get('id'))] = 3
         json.dump(sent, open('last-message.json', 'w'), indent=4)
-        return PlainTextResponse('Success')
-    return PlainTextResponse('failed')
+        return JSONResponse({'error': '', 'message': 'Success'}, 200)
+    return JSONResponse({'error': 'message send failure', 'message': 'Message failed to send'}, 200)
 
 
 async def add_accounts(request: Request) -> Response | None:
@@ -274,7 +275,7 @@ async def invalidate_token(request: Request) -> Response:
     data = await request.json()
     db.tokens.find_one_and_delete({'token': data.get('token')})
     db.anonymous_token.find_one_and_delete({'token': data.get('token')})
-    return PlainTextResponse('Success')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
 async def favicon(request: Request) -> FileResponse:
@@ -319,3 +320,22 @@ async def database(request: Request) -> JSONResponse:
         return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
 
     return JSONResponse({'data': configure_data(request.headers.get('email'))})
+
+
+async def update_timezone(request: Request) -> Response:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+    db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'timezone': data.get('timezone')}}, upsert=True)
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
+
+
+async def daylight_savings(request: Request) -> Response:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+    for link in db.links.find({'username': data.get('email')}):
+        hour = int(link['time'].split(':')[0]) - int(data.get('shift'))
+        time = convert_time(hour, int(link['time'].split(':')[1]), link)
+        db.links.find_one_and_update({'id': link['id']}, {'$set': {'time': time[0], 'days': time[1]}})
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)

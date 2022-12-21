@@ -1,14 +1,13 @@
-from starlette.responses import Response, JSONResponse, RedirectResponse, PlainTextResponse
+from starlette.responses import Response, JSONResponse, RedirectResponse
 from starlette.requests import Request
 from starlette.background import BackgroundTask
 from starlette.templating import Jinja2Templates
 from background import message
 from argon2 import exceptions
 from google.auth import jwt
-from email.message import EmailMessage
-import json, smtplib, ssl, os
-from utilities import gen_session, analytics, authenticated, gen_otp
-from constants import db, hasher
+import json
+from utilities import gen_session, analytics, authenticated, gen_otp, send_email
+from constants import db, hasher, encoder
 
 templates = Jinja2Templates(directory='templates')
 started = False
@@ -107,9 +106,9 @@ async def links(request: Request) -> Response:
     if not authenticated(request.cookies, email):
         return RedirectResponse('/login?error=not_logged_in')
     email = email.lower()
-    user = db.login.find_one({"username": email})
+    user = dict(db.login.find_one({"username": email}))
     try:
-        number = dict(user).get('number')
+        number = user.get('number')
     except TypeError:
         return RedirectResponse('/links')
     premium = user['premium']
@@ -126,7 +125,8 @@ async def links(request: Request) -> Response:
         'username': email, 'link_names': link_names, 'sort': sort_pref, 'premium': premium, 'style': 'old',
         'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
         'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
-        'tutorial': dict(user).get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request})
+        'tutorial': user.get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request,
+        'timezone': user.get('timezone'), 'offset': int(float(user.get('offset')))})
 
 
 async def send_reset_email(request: Request) -> Response:
@@ -139,19 +139,10 @@ async def send_reset_email(request: Request) -> Response:
         db.anonymous_token.find_one_and_delete({'token': data.get('token')})
         otp = gen_otp()
         db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
-        content = EmailMessage()
-        content.set_content(f'''Hey there, LinkJoin knocking!
-To reset your password, head over to https://linkjoin.xyz/reset?pw={otp} and enter your new password. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in 15 minutes.
-
-Happy passwording,
-LinkJoin''')
-        content['Subject'] = 'LinkJoin password reset'
-        content['From'] = "noreply@linkjoin.xyz"
-        content['To'] = email
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
-            server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
-            server.send_message(content)
-            return PlainTextResponse('Success')
+        send_email(open('templates/reset-password-email.html').read().replace('{{otp}}', otp),
+                   [{'path': 'static/images/logo-text.png', 'type': 'png', 'name': 'logo-text', 'displayName': 'LinkJoin Logo'}],
+                   'Reset your LinkJoin password', email)
+        return JSONResponse({'error': '', 'message': 'Success'}, 200)
     else:
         token = gen_session()
         db.anonymous_token.insert_one({'token': token})
@@ -174,7 +165,7 @@ async def reset_password(request: Request) -> Response:
             db.tokens.find_one_and_delete({'email': data.get('email'), 'token': data.get('token')})
             db.login.find_one_and_update({'username': data.get('email')},
                                          {'$set': {'password': hasher.hash(data.get('password'))}})
-            return PlainTextResponse('Success')
+            return JSONResponse({'error': '', 'message': 'Success'}, 200)
         return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
 
 
@@ -190,5 +181,12 @@ async def link(request: Request) -> Response:
     requested_link = db.links.find_one({'id': int(request.query_params.get('id'))})
     if not authenticated(request.cookies, requested_link['username']):
         return RedirectResponse('/login?error=not_logged_in')
-
+    if 'password' in requested_link:
+        if hasattr(encoder.decrypt(requested_link['password']), 'decode'):
+            requested_link['password'] = str(encoder.decrypt(requested_link['password']).decode())
     return templates.TemplateResponse('opened-link.html', {'request': request, 'link': dict(requested_link)})
+
+
+async def pricing(request: Request) -> Response:
+    return templates.TemplateResponse('pricing.html', {'request': request})
+

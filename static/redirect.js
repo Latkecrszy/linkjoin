@@ -19,7 +19,6 @@ async function start(username, links, sort) {
         return
     }
     openInterval = setInterval(async () => {
-        console.log('starting loop')
         const newDate = new Date((Date.now() + 60000*open_early))
         const day = {0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"}[newDate.getDay()]
         let minute = newDate.getMinutes()
@@ -27,14 +26,6 @@ async function start(username, links, sort) {
         const time = `${newDate.getHours()}:${minute}`
         for (let link of global_links['links']) {
             let days = link['days']
-            console.log(link)
-            console.log(link['active'] !== "false")
-            console.log(link['time'] === time)
-            console.log(link['time'])
-            console.log(time)
-            console.log((days.includes(day)))
-            console.log(!(link['activated'] === 'false' &&
-                new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString()))
             if (link['active'] === "false" || link['time'] !== time || !(days.includes(day)) || (link['activated'] === 'false' &&
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
@@ -65,12 +56,9 @@ async function start(username, links, sort) {
 
 
 async function pause(username, links, sort, wait) {
-    console.log('testing')
     paused = true
     clearInterval(openInterval)
-    console.log('sleeping')
     await sleep(wait)
-    console.log('done sleeping')
     paused = false
     start(username, links, sort)
 }

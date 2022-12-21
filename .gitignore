@@ -5,3 +5,12 @@
 env
 encrypt.key
 __pycache__
+.gcloudignore
+app.yaml
+nginx.conf
+google-cloud-sdk
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+.elasticbeanstalk

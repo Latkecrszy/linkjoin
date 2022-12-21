@@ -23,6 +23,13 @@
         <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
         <meta name=”robots” content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        {% if 'password' not in link %}
+            <style>
+                #content {
+                    top: 50%;
+                }
+            </style>
+        {% endif %}
     </head>
 
     <body>
@@ -46,6 +53,18 @@
         </header>
         <div id="content">
             {{ link['name'] }}
+            {% if 'password' in link %}
+                <button id="copy-button" onclick="copyLink('copy-button')">Copy Password</button>
+            {% endif %}
         </div>
     </body>
+    <script>
+        function copyLink(id) {
+            navigator.clipboard.writeText("{{ link['password'] }}").then(async () => {
+            document.getElementById(id).innerText = "Copied!"
+            await sleep(2000)
+            document.getElementById(id).innerText = "Copy password"
+        })
+        }
+    </script>
 </html>

@@ -28,6 +28,7 @@ function createElement(tag, classList=[], id='', text='', other={}) {
         } else if (key === 'style') {
             for (const [name, style] of Object.entries(value)) {
                 el.style[name] = style
+                console.log(el.style)
             }
         } else if (key === 'attrs') {
             for (const [name, attr] of Object.entries(value)) {
@@ -191,12 +192,21 @@ async function delete_(link) {
     blur(true)
 }
 
-function share(link) {
+function share(link, link_el) {
     document.getElementById("popup-share").style.zIndex = "11"
     document.getElementById("popup-share").classList.remove('invisible')
     document.getElementById("popup-share").classList.add('active')
     document.getElementById("popup-share").style.display = {"none": "flex", "flex": "none"}[document.getElementById("popup-share").style.display]
-    document.getElementById("share_link").value = link === 'tutorial' ? 'https://linkjoin.xyz/addlink?id=tutorial' : link['share']
+    // document.getElementById("share_link").value = link === 'tutorial' ? 'https://linkjoin.xyz/addlink?id=tutorial' : link['share']
+    let demoLink = document.getElementById('popup-share-demo-link')
+    if (demoLink.firstChild) {demoLink.removeChild(demoLink.firstChild)}
+    demoLink.appendChild(link_el.cloneNode(true))
+    demoLink.children[0].classList.remove('expanded')
+    demoLink.children[0].removeChild(demoLink.children[0].getElementsByClassName('switch-checkbox')[0])
+    demoLink.children[0].removeChild(demoLink.children[0].getElementsByClassName('switch')[0])
+    demoLink.children[0].removeChild(demoLink.children[0].getElementsByClassName('dot-menu')[0])
+    console.log(link)
+    document.getElementById('popup-share-button').onclick = () => {shareLink(link)}
     blur(true)
     window.scrollTo({top: 0, left: 0, behavior: 'smooth'})
 }
@@ -251,10 +261,93 @@ async function restore(id, email) {
         body: JSON.stringify({id: id, email: email})
     })
     location.reload()
+
+
 }
 
 
-async function createLinks(username, links, id="insert") {
+function createLink(link, id="insert", iterator=0) {
+    let hour = link["time"].split(":")[0]
+    let meridian = "am"
+    if (parseInt(hour) === 12) {meridian = "pm"}
+    else if (parseInt(hour) === 0) {hour = 12}
+    else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
+    const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
+    let link_event;
+
+    link_event = createElement('div', ['link'])
+    if (link['active'] === 'false' && id === 'insert') {
+        link_event.classList.add('link-disabled')
+    }
+    if (id === 'pending-links') {
+        link_event.classList.add('pending-link')
+    }
+    link_event.appendChild(createElement('p', ['time'], '', time))
+    const joinMeeting = createElement('div', ['join-meeting'], '', '',
+        {'events': {'onclick': () => {window.open(link['link'])}}})
+    joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
+    joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
+    link_event.appendChild(joinMeeting)
+    let linkDaysValue = link['days'].join(", ")
+    if ('date' in link && link['date'] !== '') {
+        linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
+    }
+    link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
+    if (id === "insert") {
+        link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
+            '', {'attrs': {'type': 'checkbox'}}))
+        link_event.appendChild(createElement('label', ['switch'], '', '',
+            {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link)}}}))
+    }
+
+    link_event.appendChild(createElement('img', ['link-expand'], '', '',
+        {'events': {'onclick': () => link_event.classList.toggle('expanded')},
+            'attrs': {'src': 'static/images/angle-down.svg', 'alt': 'down arrow'}}))
+
+    if (id === 'pending-links') {
+        link_event.appendChild(createElement('button', ['pending-link-buttons', 'accept'], '', 'Accept',
+            {'events': {'onclick': async () => {await acceptLink(link)}}}))
+        link_event.appendChild(createElement('button', ['pending-link-buttons', 'decline'], '', 'Ignore',
+            {'events': {'onclick': async () => {await acceptLink(link, false)}}}))
+    }
+    else {
+        link_event.appendChild(createElement('img', ['dot-menu'], '', '',
+        {'attrs': {'src': 'static/images/ellipsis.svg', 'alt': '3 dots'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
+        const menu = createElement('div', ['menu'])
+        let buttons;
+        if (id === 'insert') {
+            buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link, link_event),
+        'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
+        'Password': () => copyPassword(link['id'], link['password'])}
+        } else {
+            buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
+                'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
+                'Password': () => copyPassword(link['id'], link['password'])}
+        }
+        for (const [key, value] of Object.entries(buttons)) {
+            if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
+            else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
+            else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
+            menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+            key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
+        }
+        link_event.appendChild(menu)
+    }
+    return link_event
+}
+
+
+function createPendingLinks(username, links) {
+    const pendingLinks = createElement('div', ['pending-links'], 'pending-links')
+    for (const link of links) {
+        pendingLinks.appendChild(createLink(link, 'pending-links'))
+    }
+    pendingLinks.appendChild(createElement('hr', ['hr-pending-links'], 'hr-pending-links', ''))
+    document.getElementById('insert').prepend(pendingLinks)
+}
+
+
+function createLinks(username, links, id="insert") {
     let final = []
     const new_links = []
     if (global_sort === "day") {
@@ -297,59 +390,7 @@ async function createLinks(username, links, id="insert") {
     const checked = []
     final.reverse()
     for (const link of final) {
-        let hour = link["time"].split(":")[0]
-        let meridian = "am"
-        if (parseInt(hour) === 12) {meridian = "pm"}
-        else if (parseInt(hour) === 0) {hour = 12}
-        else if (parseInt(hour) > 12) {hour = parseInt(hour) - 12; meridian = "pm"}
-        const time = `${hour}:${link["time"].split(":")[1]} ${meridian}`
-        let link_event;
-
-        link_event = createElement('div', ['link'])
-        if (link['active'] === 'false' && id === 'insert') {
-            link_event.classList.add('link-disabled')
-        }
-        link_event.appendChild(createElement('p', ['time'], '', time))
-        const joinMeeting = createElement('div', ['join-meeting'], '', '',
-            {'events': {'onclick': () => {window.open(link['link'])}}})
-        joinMeeting.appendChild(createElement('p', ['name'], '', link['name']))
-        joinMeeting.appendChild(createElement('p', ['description'], '', 'Click to join the meeting now'))
-        link_event.appendChild(joinMeeting)
-        let linkDaysValue = link['days'].join(", ")
-        if ('date' in link && link['date'] !== '') {
-            linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
-        }
-        link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
-        if (id === "insert") {
-            link_event.appendChild(createElement('input', ['switch-checkbox'], `switch${iterator}`,
-                '', {'attrs': {'type': 'checkbox'}}))
-            link_event.appendChild(createElement('label', ['switch'], '', '',
-                {'attrs': {'for': `switch${iterator}`}, 'events': {'onclick': () => {disable(link)}}}))
-        }
-        link_event.appendChild(createElement('img', ['dot-menu'], '', '',
-            {'attrs': {'src': 'static/images/ellipsis.svg', 'alt': '3 dots'}, 'events': {'onclick': () => {openMenu(link_event)}}}))
-        link_event.appendChild(createElement('img', ['link-expand'], '', '',
-            {'events': {'onclick': () => link_event.classList.toggle('expanded')},
-                'attrs': {'src': 'static/images/angle-down.svg', 'alt': 'down arrow'}}))
-        const menu = createElement('div', ['menu'])
-        let buttons;
-        if (id === "insert") {
-            buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link),
-        'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
-        'Password': () => copyPassword(link['id'], link['password'])}
-        } else {
-            buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
-                'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
-                'Password': () => copyPassword(link['id'], link['password'])}
-        }
-        for (const [key, value] of Object.entries(buttons)) {
-            if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
-            else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
-            else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
-            menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
-            key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
-        }
-        link_event.appendChild(menu)
+        let link_event = createLink(link, id, iterator)
         checked.push(link['active'] === 'true')
         new_links.push(link_event)
         iterator += 1
@@ -374,6 +415,9 @@ async function createLinks(username, links, id="insert") {
         checked.forEach((Checked, index) => {if (Checked) {document.getElementById('switch'+index).checked = 'checked'}})
     }
     catch {}
+    if (global_links['pending-links'].length > 0) {
+        createPendingLinks(username, global_links['pending-links'])
+    }
 }
 
 async function load_links(username, sort, id="insert") {
@@ -403,8 +447,11 @@ async function load_links(username, sort, id="insert") {
             location.reload()
             return
         }
-        await createLinks(username, links['links'], 'insert')
         global_links = links
+        if (links['links'].length === 0 && !insert.classList.contains('empty')) {
+            location.reload()
+        }
+        await createLinks(username, links['links'], 'insert')
     }
     webSocket.onclose = () => {
         connected = false
@@ -427,6 +474,7 @@ async function load_links(username, sort, id="insert") {
     while (global_links === undefined) {
         await sleep(500)
     }
+
     if (id === "insert") {
         links = global_links['links']
     }
@@ -438,7 +486,7 @@ async function load_links(username, sort, id="insert") {
     if (id !== 'insert') {
         blur(true)
     }
-    if (links.toString() === '' && id === 'insert') {
+    if (links.toString() === '' && id === 'insert' && global_links['pending-links'].length === 0) {
         await refresh(id)
         document.getElementById("header-links").style.margin = "0 0 0 0"
         document.getElementById("disappear").classList.remove("gone")
@@ -452,14 +500,7 @@ async function load_links(username, sort, id="insert") {
     else {
         await createLinks(username, links, id)
     }
-    const clickToCopy = document.getElementById("click_to_copy")
-    clickToCopy.addEventListener('click', async () => {
-        navigator.clipboard.writeText(document.getElementById("share_link").value).then(async () => {
-            clickToCopy.innerText = "Copied!"
-            await sleep(2000)
-            clickToCopy.innerText = "Click to Copy"
-        })
-    })
+
     let tutorial_completed = await fetch('/tutorial_complete', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -771,19 +812,17 @@ document.addEventListener("click", event => {
         event.target.value !== day)) {
         event.target.classList.toggle("selected")
     }
-    // Fix by finding day of date inputted and not allowing it to be deselected.
 })
 
-function pageSetup(username) {
+function pageSetup() {
     document.getElementById('notes_div').addEventListener('click', unRenderNotes)
     document.getElementById('notes_textarea').addEventListener('focusout', renderNotes)
     document.getElementById('notes_textarea').addEventListener('change', saveNotes)
     Array.from(document.getElementsByClassName('popup-time')).forEach(timeListener)
-    document.getElementById('hamburger').classList.remove('gone')
     document.addEventListener("click", (e) => {
-        if (e.target.id !== "hamburger_dropdown" && e.target.id !== "hamburger" &&
-            !document.getElementById("hamburger").contains(e.target)) {
-            document.getElementById("hamburger").classList.remove("expand")
+        if (e.target.id !== "hamburger_dropdown" && e.target.id !== "dropdown" &&
+            !document.getElementById("dropdown").contains(e.target)) {
+            document.getElementById("dropdown-checkbox").checked = false
             document.getElementById("hamburger_dropdown").classList.remove("expand")
         }
 
@@ -805,7 +844,6 @@ function pageSetup(username) {
     document.getElementById('blur').addEventListener('click', () => {
         closePopup()
     })
-
 }
 
 function openTutorial() {
@@ -813,7 +851,6 @@ function openTutorial() {
     if (document.getElementById('open-tutorial') !== null) {
         document.getElementById('open-tutorial').classList.toggle('open')
     }
-
 }
 
 function closeTutorial() {
@@ -1036,3 +1073,130 @@ document.addEventListener('visibilitychange', async e => {
     timeOffPage = Date.now()
 
 })
+
+
+function verifyEmail(e) {
+    let container = document.getElementById('popup-share-emails-container')
+    if (e.keyCode === 13 && e.target.value !== '') {
+        let color
+        let textDecoration
+        if (/\S+@\S+\.\S+/.test(e.target.value)) {
+            color = ''
+            textDecoration = ''
+        } else {
+            color = 'red'
+            textDecoration = 'bold'
+        }
+        container.insertBefore(createElement('div', ['popup-share-email'], '', e.target.value,
+                {'style': {'color': color, 'textDecoration': textDecoration}, 'events': {'onclick': removeEmail}}),
+            container.children[container.children.length-1])
+        e.target.value = ''
+        e.target.placeholder = ''
+        // Verify if email is valid, if not, make text red.
+        // write email regex
+
+    }
+}
+
+function removeEmail() {
+    event.target.remove()
+    if (document.getElementById('popup-share-emails-container').children.length === 1) {
+        document.getElementById('popup-share-emails-container').children[0].placeholder = 'Add email'
+    }
+}
+
+
+document.addEventListener('scroll', e => {
+    console.log('start')
+    document.getElementById('insert').classList.add('show')
+
+})
+
+const onScrollStop = callback => {
+  let isScrolling;
+  document.addEventListener(
+    'scroll',
+    e => {
+      clearTimeout(isScrolling);
+      isScrolling = setTimeout(() => {
+        callback();
+      }, 150);
+    },
+    false
+  );
+};
+
+
+onScrollStop(() => {
+    console.log('stopped')
+  document.getElementById('insert').classList.remove('show')
+});
+
+
+function hidePopupEmailsInput() {
+    if (document.getElementById('popup-share-emails-container').children.length >= 2) {
+        document.getElementById('popup-share-emails-input').classList.add('gone')
+    }
+}
+
+function showPopupEmailsInput() {
+    document.getElementById('popup-share-emails-input').classList.remove('gone')
+    document.getElementById('popup-share-emails-input').focus()
+}
+
+
+function shareLink(link) {
+    document.getElementById('popup-share-button').innerHTML = document.getElementById('popup-share-button').innerHTML.replace('Send', 'Sent!')
+    let emails = []
+    for (let i = 0; i < document.getElementById('popup-share-emails-container').children.length-1; i++) {
+        if (document.getElementById('popup-share-emails-container').children[i].style.color !== 'red') {
+            emails.push(document.getElementById('popup-share-emails-container').children[i].innerText)
+        }
+    }
+    let UTCInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]), parseInt(link['time'].split(':')[1]))
+    link['days'] = UTCInfo['days']
+    link['time'] = `${UTCInfo['hour']}:${UTCInfo['minute']}`
+    let data = {
+        'email': global_username,
+        'emails': emails,
+        'link': link
+    }
+    fetch('/share-link', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(async () => {
+        hide('popup-share')
+        while (document.getElementById('popup-share-emails-container').children.length > 1) {
+            document.getElementById('popup-share-emails-container').children[0].remove()
+        }
+        document.getElementById('popup-share-emails-container').children[0].placeholder = 'Add email'
+    })
+    .catch(error => {
+        console.log(error)
+    })
+}
+
+
+async function acceptLink(link, accept=true) {
+    let data = {
+        email: global_username,
+        link: link,
+        accept: accept
+    }
+    await fetch('/accept-link', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .catch(error => {
+        console.log(error)
+    })
+}

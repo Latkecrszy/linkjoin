@@ -3,56 +3,8 @@
 }
 
 
-/*Hamburger Menu*/
-#hamburger {cursor: pointer; margin: 25px 30px 0 auto;}
-
-#hamburger_dropdown.expand {display: flex}
-
-#hamburger_dropdown.expand a {
-    display: block;
-    padding: 5px;
-    cursor: pointer;
-    border-radius: 2px;
-}
-
-#hamburger_dropdown.expand a:hover {
-    background: #1c2f45;
-}
-
 #dropdown {display: none; flex-direction: column}
 
-#line1, #line2, #line3 {
-  width: 35px;
-  height: 5px;
-  background-color: white;
-  margin: 6px 0;
-  transition: 0.4s ease-in-out;
-  border-radius: 5px;
-}
-
-#hamburger_dropdown {
-    display: none;
-    width: 84px;
-    height: 120px;
-    text-align: center;
-    flex-direction: column;
-    background: var(--blue);
-    border-radius: 4px;
-    padding: 8px;
-    box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.25)
-}
-
-.expand #line1 {
-    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-    transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.expand #line2 {opacity: 0}
-
-.expand #line3 {
-    -webkit-transform: rotate(45deg) translate(-8px, -8px);
-    transform: rotate(45deg) translate(-8px, -8px);
-}
 
 .plus {
     display: none;
@@ -61,7 +13,7 @@
     right: 20px;
     z-index: 2;
     cursor: pointer;
-    box-shadow: -3px 3px 12px rgba(255, 255, 255, 0.25);
+    box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.25);
     border-radius: 100px;
     height: 70px;
     width: 70px;
@@ -257,7 +209,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 #open-tutorial {
     position: fixed;
     bottom: 20px;
-    right: 10px;
+    right: 0;
     background: var(--lightblue);
     width: 60px;
     height: 60px;
@@ -312,6 +264,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 #tutorial h1 {
     text-align: center;
 }
+
 
 #tutorial.open {
     height: min(600px, calc(95vh - 70px));

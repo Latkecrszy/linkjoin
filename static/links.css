@@ -175,7 +175,7 @@ input {color: white; font-family: Montserrat;}
     font: 400 18px Roboto;
 }
 
-#submit, #add_number {
+.submit, #add_number {
     width: max(10vw, 150px);
     min-width: 150px;
     height: max(4vw, 65px);
@@ -230,7 +230,7 @@ input {color: white; font-family: Montserrat;}
      background-color: var(--lightblue);
 }
 
-#button_yes {background-color: #A40606 !important;}
+#button_yes {background-color: #eb4236 !important;}
 
 #insert, #deleted-links {
     display: flex;
@@ -303,21 +303,88 @@ input {color: white; font-family: Montserrat;}
 
 #popup-share {
     width: 600px;
-    height: 250px;
+    height: unset;
     background-color: var(--darkblue);
-    padding-top: 30px;
+    padding-top: 15px;
+    padding-bottom: 20px;
     position: absolute;
     border-radius: 5px;
     flex-direction: column;
-    top: 50%;
-    transform: translate(-50%, -75%);
+}
+
+
+#popup-share-emails-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px solid white;
+    border-radius: 3px;
+    padding: 10px 5px;
+    margin: 20px 0 0 10%;
+    width: 50%;
+    background: var(--blue);
+    cursor: text;
+}
+
+#popup-share-email-and-submit-container {
+    display: flex;
+}
+
+.popup-share-email {
+    height: 15px;
+    border-radius: 5px;
+    border: none;
+    margin: 5px 0;
+    padding: 5px 8px 8px 8px;
+    font-size: 14px;
+    background: var(--darkblue);
+    cursor: pointer;
+}
+
+.popup-share-text {
+    margin-top: 5px;
+}
+
+.popup-share-email:hover {
+    text-decoration: line-through;
+    color: red;
+}
+
+#popup-share-emails-input {
+    border-radius: 5px;
+    border: none;
+    margin: 5px 0;
+    padding: 5px;
+    font-size: 14px;
+    background: var(--blue);
+    width: 100%;
+    text-align: center;
+}
+
+#popup-share-demo-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0 0 10px;
+}
+
+#popup-share-divider {
+    width: 85%;
+    opacity: 0.3;
 
 }
 
-#popup-share p {
-    font-size: 20px;
+#popup-share-button {
+    position: absolute;
+    right: 10px;
+    bottom: 19px;
+}
+
+.popup-share-text {
+    font-size: 24px;
     color: white;
-    margin: 30px 0 70px 40px;
+    width: 100%;
+    text-align: center;
 }
 
 #share_link {
@@ -416,8 +483,6 @@ option {color: black}
     max-width: 95vw;
 }
 
-.underline:after {left: -8px}
-
 .date {
     width: 102px;
     margin-right: 15px;
@@ -438,4 +503,42 @@ option {color: black}
     display: inline;
     cursor: pointer;
 }
+
+.pending-link {
+    filter: brightness(0.95);
+    opacity: 0.7;
+}
+
+.hr-pending-links {
+    width: 60%;
+    opacity: 0.2;
+    margin-bottom: 30px;
+}
+
+#pending-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.pending-link-buttons {
+    border: none;
+    font-family: Montserrat, sans-serif;
+    padding: 10px 12px;
+    box-shadow: 1px 1px 3px rgb(0 0 0 / 60%);
+    font-size: 15px;
+    border-radius: 3px;
+}
+
+.pending-link-buttons.accept {
+    background: var(--switch);
+    filter: brightness(1.7)
+}
+
+.pending-link-buttons.decline {
+    background: #eb4236;
+}
+
+
 

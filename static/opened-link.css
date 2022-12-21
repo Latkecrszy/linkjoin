@@ -1,8 +1,32 @@
 #content {
     text-align: center;
-    font-size: 30px;
+    font-size: 40px;
+    font-weight: bold;
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+#name {
+
+}
+
+#copy-button {
+    display: block;
+    border: none;
+    background: var(--lightblue);
+    position: absolute;
+    top: 200%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 200px;
+    height: 60px;
+    border-radius: 8px;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+#copy-button:hover {
+    background: var(--darkblue);
 }

@@ -2,28 +2,55 @@
 <html lang="en" class="nobar">
     <head>
         <title>LinkJoin Pricing</title>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/pricing.css" rel="stylesheet"/>
+        <script src="../static/globals.js"></script>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     </head>
 
     <body>
-        <p id="pick-a-plan">Pick the plan that's best for you!</p>
+        <header>
+            <img id="logo" src="../static/images/logo-text.svg" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <a href="/links" class="underline">Links</a>
+            <a href="/login" class="underline">Log In</a>
+            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+            <div id="dropdown">
+                <div id="hamburger">
+                    <div id="line1"></div>
+                    <div id="line2"></div>
+                    <div id="line3"></div>
+                </div>
+                <div id="hamburger_dropdown">
+                    <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/login" class="underline">Log In</a>
+                    <a href="/links" class="underline">Links</a>
+                </div>
+            </div>
+        </header>
+        <p id="pick-a-plan">Choose the plan that best applies.</p>
         <div id="plans">
             <!--Plans: Free ($0), Basic ($5), Extra ($10), Pro ($15), School (contact)-->
+            <!-- Current plans: Individual ($0), Mini School ($5/user/month), Small School ($3/user/month),
+            Medium School ($2/user/month), Large School ($1/user/month)-->
             <div class="plan">
-                <p class="name">Free</p>
-                <p class="cost">$0 per month</p>
+                <p class="name">Individual</p>
+                <p class="limit">1 user</p>
+                <p class="price"><a>$0</a> per month</p>
                 <p class="description">
-                    Keep track of all your virtual meetings with 5 free links!
-                    Get access to all of the crucial features of LinkJoin like automatically opening meetings, sorting
-                    links by date and time, and texting reminders ahead of time, all for free!
+                    Full access to LinkJoin forever. No fees. No ads. No limits.
                 </p>
+                <button onclick="window.open('/signup')" class="action hover-arrow">Get started! <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
             <div class="plan">
-                <p class="name">Basic</p>
-                <p class="cost">$4.95 per month</p>
+                <p class="name">School</p>
+                <p class="limit">Unlimited users</p>
+                <p class="price"><a>$1-5</a> per user per month</p>
                 <p class="description">
-                    With the Basic plan, you have the ability to schedule 10 links instead of 5! Become the master of
-                    your meetings with meeting notes
+                    Automatic account and class setup for your school.
                 </p>
+                <button onclick="window.open('https://mail.google.com/mail/u/0/?fs=1&to=seth@linkjoin.xyz&tf=cm')" class="action hover-arrow">Get in touch! <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
     </body>

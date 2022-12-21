@@ -4,7 +4,7 @@ from cryptography.fernet import Fernet
 from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
-
+import jinja2
 
 dotenv.load_dotenv()
 hasher = PasswordHasher()
@@ -15,3 +15,4 @@ VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)
 TWILIO_SID = os.environ.get('TWILIO_SID', None)
 TWILIO_TOKEN = os.environ.get('TWILIO_TOKEN', None)
+environment = jinja2.Environment()

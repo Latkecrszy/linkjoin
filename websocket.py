@@ -27,9 +27,11 @@ class WebSocketManager:
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
         if email in self.connections:
-            self.connections[email].remove(websocket)
-            if len(self.connections[email]) == 0:
-                self.connections.pop(email)
+            print(f'Websocket able to be removed: {websocket in self.connections[email]}')
+            if websocket in self.connections[email]:
+                self.connections[email].remove(websocket)
+                if len(self.connections[email]) == 0:
+                    self.connections.pop(email)
         print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str, origin=None) -> None:
