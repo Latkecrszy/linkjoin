@@ -217,11 +217,12 @@ async def share_link(request: Request) -> Response:
         return JSONResponse({'error': 'Forbidden'}, 403)
     link = data['link']
     for email in data['emails']:
-        new_link = {key: value for key, value in dict(link).items() if key not in ('_id', 'username', 'share', 'link')}
+        new_link = {key: value for key, value in dict(link).items() if key not in ('_id', 'username', 'share', 'link', 'password')}
         new_link['username'] = email
         new_link['share_id'] = link['id']
         new_link['id'] = int(db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})['id'])
         new_link['link'] = encoder.encrypt(link['link'].encode())
+        new_link['password'] = encoder.encrypt(link['password'].encode())
         db.pending_links.insert_one(new_link)
         send_email(open('templates/shared-link-email.html').read().replace('{{email}}', link['username']).replace('{{link}}', link['name']),
                    [{'path': 'static/images/logo-text.png', 'type': 'png', 'name': 'logo-text', 'displayName': 'LinkJoin Logo'}],
