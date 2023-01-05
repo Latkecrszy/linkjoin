@@ -43,6 +43,8 @@ routes = [
     Route('/daylightsavings', endpoint=daylight_savings, methods=['POST']),
     Route('/share-link', endpoint=share_link, methods=['POST']),
     Route('/accept-link', endpoint=accept_link, methods=['POST']),
+    Route('/disable-all', endpoint=disable_all, methods=['POST']),
+    Route('/org_disabled', endpoint=org_disabled, methods=['GET']),
     Mount('/static', StaticFiles(directory='static'), name='globals.js'),
     Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
     Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),
@@ -108,6 +110,7 @@ routes = [
     Mount('/static/images', StaticFiles(directory='static'), name='loading2.gif'),
     Mount('/static/images', StaticFiles(directory='static'), name='undo.svg')
 ]
+
 
 
 

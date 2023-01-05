@@ -346,6 +346,38 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     position: static;
 }
 
+.settings-page {
+    display: none;
+}
+
+.active {
+    display: block;
+}
+
+.settings-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    margin-left: 15%;
+    height: 50px;
+}
+
+.settings-option {
+    font-size: 17px;
+    height: 30px;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.7;
+    font-weight: bold;
+    border-bottom: 2px solid transparent;
+}
+
+.settings-option.selected {
+    border-bottom: 2px solid white;
+    opacity: 1;
+}
+
 .reset-password {
     border: none;
     background: var(--lightblue);
@@ -434,6 +466,12 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     margin: 22px 0 0 0;
 }
 
+
+.superDisabled {
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+}
 
 @keyframes bob {
     from {

@@ -333,6 +333,13 @@ function createLink(link, id="insert", iterator=0) {
         }
         link_event.appendChild(menu)
     }
+    //TODO: Make hoverable and make links not open (actually disable them in redirect.js (or here))
+    console.log('checking superdisabled')
+    if (link['superDisabled']) {
+        console.log('disabled better')
+        link_event.classList.add('superDisabled')
+        link_event.title = 'This link has been disabled by your organization administrator'
+    }
     return link_event
 }
 
@@ -425,7 +432,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
@@ -440,6 +447,7 @@ async function load_links(username, sort, id="insert") {
                 }
                 link['days'] = newInfo['days']
                 link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
+                link['superDisabled'] = org_disabled === 'true';
             })
         }
         if (((global_links !== undefined && global_links['links'].length === 0) && links['links'].length === 1) ||
@@ -844,6 +852,12 @@ function pageSetup() {
     document.getElementById('blur').addEventListener('click', () => {
         closePopup()
     })
+
+    Array.from(document.getElementsByClassName('superDisabled')).forEach(e => {
+        e.addEventListener('click', () => {
+            document.getElementById('popup-org-disabled').classList.toggle('gone')
+        })
+    })
 }
 
 function openTutorial() {
@@ -1199,4 +1213,32 @@ async function acceptLink(link, accept=true) {
     .catch(error => {
         console.log(error)
     })
+}
+
+
+function showPersonalSettings() {
+    document.getElementById('settings-page-personal').classList.add('active')
+    document.getElementById('settings-page-admin').classList.remove('active')
+    document.getElementById('settings-option-personal').classList.add('selected')
+    document.getElementById('settings-option-admin').classList.remove('selected')
+}
+
+function showAdminSettings() {
+    document.getElementById('settings-page-personal').classList.remove('active')
+    document.getElementById('settings-page-admin').classList.add('active')
+    document.getElementById('settings-option-personal').classList.remove('selected')
+    document.getElementById('settings-option-admin').classList.add('selected')
+}
+
+
+async function disableAll(checked) {
+    console.log('disabling')
+    await fetch('/disable-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'email': global_username, 'disable': checked})
+    })
+    location.reload()
 }

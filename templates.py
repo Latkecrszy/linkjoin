@@ -126,7 +126,8 @@ async def links(request: Request) -> Response:
         'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
         'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
         'tutorial': user.get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request,
-        'timezone': user.get('timezone'), 'offset': int(float(user.get('offset')))})
+        'timezone': user.get('timezone'), 'offset': int(float(user.get('offset'))), 'org_disabled': user.get('org_disabled'),
+        'admin': user.get('admin')})
 
 
 async def send_reset_email(request: Request) -> Response:

@@ -1,11 +1,12 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse, FileResponse
-import requests, json, re
+import requests, json, re, asyncio
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
 from utilities import *
 from constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder
+from websocket import manager
 
 
 async def analytics_endpoint(request: Request) -> JSONResponse:
@@ -63,7 +64,7 @@ async def confirm_email(request: Request) -> Response:
         return JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token,
-               'timezone': data.get('timezone')}
+               'timezone': data.get('timezone'), 'org_name': email.split('@')[1]}
     if data.get("password") or data.get('password') == '':
         if len(data.get('password')) < 5:
             return JSONResponse({"error": "password_too_short", "url": redirect_link, 'token': token})
@@ -339,3 +340,31 @@ async def daylight_savings(request: Request) -> Response:
         time = convert_time(hour, int(link['time'].split(':')[1]), link)
         db.links.find_one_and_update({'id': link['id']}, {'$set': {'time': time[0], 'days': time[1]}})
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
+
+
+async def disable_all(request: Request) -> Response:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+    elif db.login.find_one({'username': data.get('email')})['admin'] != 'true' or db.login.find_one({'username': data.get('email')})['org_name'] == 'gmail.com':
+        return JSONResponse({'error': 'Not allowed'}, 403)
+    print(data.get('disable'))
+
+    org_name = db.login.find_one({'username': data.get('email')})['org_name']
+    for user in db.login.find({'org_name': org_name}):
+        print(f'User: {dict(user)}')
+        if data.get('disable'):
+            db.login.find_one_and_update({'org_name': org_name, 'username': user['username']}, {'$set': {'org_disabled': 'true'}})
+        else:
+            db.login.find_one_and_update({'org_name': org_name, 'username': user['username']}, {'$set': {'org_disabled': 'false'}})
+        await manager.update(configure_data(user.get('username')), user.get('username'), 'disable_all')
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
+
+
+async def org_disabled(request: Request) -> JSONResponse:
+    if not db.sessions.find_one(
+            {'username': request.headers.get('email'), 'session_id': request.headers.get('session_id')}):
+        return JSONResponse({'error': 'Not authenticated', 'code': 403}, 403)
+    return JSONResponse({'disabled': db.login.find_one({'username': request.headers.get('email')}).get('org_disabled')})
+
+

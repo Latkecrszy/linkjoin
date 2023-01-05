@@ -30,6 +30,10 @@ async function start(username, links, sort) {
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
             }
+            console.log(org_disabled)
+            if (org_disabled === 'true') {
+                continue
+            }
             window.open(`/link?id=${link['id']}`)
             await sleep(3000)
             window.open(link['link'])

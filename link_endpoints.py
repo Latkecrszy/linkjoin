@@ -25,12 +25,12 @@ async def register(request: Request) -> Response:
               'name': data.get('name'), 'active': 'true',
               'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode()),
               'repeat': data.get('repeats'), 'days': data.get('days'), 'text': data.get('text'),
-              'date': data.get('date'), 'activated': str(data.get('activated')).lower()}
+              'date': data.get('date'), 'activated': str(data.get('activated')).lower(),
+              'org_name': email.split('@')[1]}
     if data.get('password'):
         insert['password'] = encoder.encrypt(data.get('password').encode())
     if data.get('repeats')[0].isdigit():
         insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-    links = list(db.links.find({'username': email}))
     db.links.insert_one(insert)
     db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
     analytics('links_made')
