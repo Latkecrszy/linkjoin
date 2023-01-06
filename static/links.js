@@ -432,7 +432,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
@@ -1090,32 +1090,38 @@ document.addEventListener('visibilitychange', async e => {
 
 
 function verifyEmail(e) {
-    let container = document.getElementById('popup-share-emails-container')
     if (e.keyCode === 13 && e.target.value !== '') {
-        let color
-        let textDecoration
-        if (/\S+@\S+\.\S+/.test(e.target.value)) {
-            color = ''
-            textDecoration = ''
-        } else {
-            color = 'red'
-            textDecoration = 'bold'
-        }
-        container.insertBefore(createElement('div', ['popup-share-email'], '', e.target.value,
-                {'style': {'color': color, 'textDecoration': textDecoration}, 'events': {'onclick': removeEmail}}),
-            container.children[container.children.length-1])
-        e.target.value = ''
-        e.target.placeholder = ''
-        // Verify if email is valid, if not, make text red.
-        // write email regex
-
+        createShareEmail()
     }
 }
 
-function removeEmail() {
-    event.target.remove()
-    if (document.getElementById('popup-share-emails-container').children.length === 1) {
-        document.getElementById('popup-share-emails-container').children[0].placeholder = 'Add email'
+
+function createShareEmail() {
+    let input = document.getElementById('popup-share-emails-input')
+    let container = document.getElementById('popup-share-emails-container')
+    let color
+    let textDecoration
+    if (/\S+@\S+\.\S+/.test(input.value)) {
+        color = ''
+        textDecoration = ''
+    } else {
+        color = 'red'
+        textDecoration = 'bold'
+    }
+    let newEmail = createElement('div', ['popup-share-email'], '', input.value,
+            {'style': {'color': color, 'textDecoration': textDecoration}})
+    newEmail.addEventListener('click', e => {removeEmail(e.target)})
+    container.insertBefore(newEmail, container.children[container.children.length-1])
+    input.value = ''
+    input.placeholder = ''
+
+}
+
+function removeEmail(el) {
+    let shareEmails = document.getElementById('popup-share-emails-container').children
+    el.remove()
+    if (shareEmails.length === 1) {
+        shareEmails[0].placeholder = 'Add email'
     }
 }
 
@@ -1151,6 +1157,11 @@ function hidePopupEmailsInput() {
     if (document.getElementById('popup-share-emails-container').children.length >= 2) {
         document.getElementById('popup-share-emails-input').classList.add('gone')
     }
+    if (document.getElementById('popup-share-emails-input').value) {
+        createShareEmail()
+        document.getElementById('popup-share-emails-input').classList.add('gone')
+    }
+
 }
 
 function showPopupEmailsInput() {
