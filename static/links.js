@@ -432,7 +432,7 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
