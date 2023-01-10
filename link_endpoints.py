@@ -110,7 +110,7 @@ async def update(request: Request) -> Response:
         db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
     db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(3)
     await manager.update(configure_data(data.get('email')), data.get('email'), 'update')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
