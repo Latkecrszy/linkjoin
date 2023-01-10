@@ -26,6 +26,7 @@ class WebSocketManager:
         print('connected')
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
+        print(self.connections)
         if email in self.connections:
             print(f'Websocket able to be removed: {websocket in self.connections[email]}')
             if websocket in self.connections[email]:
