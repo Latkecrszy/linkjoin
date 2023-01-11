@@ -9,18 +9,23 @@ from constants import motor
 class WebSocketManager:
     def __init__(self):
         self.connections: dict[str, list[WebSocket]] = {}
+        self.connections_origins = []
         self.watching = False
 
-    async def connect(self, websocket: WebSocket, email: str) -> None:
+    async def connect(self, websocket: WebSocket, email: str, origin) -> None:
         print('connecting')
         await websocket.accept(headers=[(b'connection', b'keep-alive')])
         if email in self.connections:
             if websocket in self.connections[email]:
+                print('websocket already registered')
                 return
             else:
                 self.connections[email].append(websocket)
         else:
             self.connections[email] = [websocket]
+        print(origin)
+        self.connections_origins.append(origin)
+        print(self.connections_origins)
         print(len(self.connections))
         print(len(self.connections[email]))
         print('connected')
@@ -51,7 +56,7 @@ class WebSocketManager:
                     else:
                         print('sending text data')
                         await websocket.send_text(data)
-                        print('sent json data')
+                        print('sent text data')
                     continue
                 except ConnectionClosedOK:
                     print('connection closed with ConnectionClosedOK')
@@ -67,6 +72,8 @@ class WebSocketManager:
                     websockets_to_remove.append(websocket)
                     print('removing websocket')
                     continue
+            print('removing')
+            print(websockets_to_remove)
             for websocket in websockets_to_remove:
                 try:
                     self.connections[email].remove(websocket)
@@ -103,7 +110,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     elif not authenticated(websocket.cookies, email):
         return JSONResponse({'error': 'Forbidden'}, 403)
 
-    await manager.connect(websocket, email)
+    await manager.connect(websocket, email, websocket.query_params.get('origin'))
     await manager.update((configure_data(email)), email, 'database_ws')
     print('doing things here')
     if email not in watching:
