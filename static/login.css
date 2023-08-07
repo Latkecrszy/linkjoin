@@ -104,17 +104,13 @@
 }
 
 #keep_div, .keep_div {
+    margin-top: -20px;
     display: flex
 }
 
 #keep_text, .keep_text {
     font: 500 15px Montserrat;
-    margin-top: 0;
     margin-left: 5px;
-}
-
-.keep {
-    margin-top: -10px;
 }
 
 @-moz-document url-prefix() {
@@ -155,5 +151,11 @@
 @media (max-width: 350px) {
     #password, #email, #phone {
         max-width: 50vw;
+    }
+}
+
+@media (max-width: 870px) {
+    .login_button, #back {
+        display: block !important
     }
 }

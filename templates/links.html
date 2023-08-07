@@ -4,9 +4,6 @@
         <link rel="manifest" href="../static/manifest.json">
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
-        <script type="application/javascript">
-          (function(b,o,n,g,s,r,c){if(b[s])return;b[s]={};b[s].scriptToken="XzE3MDA3NTg5Mzg";b[s].callsQueue=[];b[s].api=function(){b[s].callsQueue.push(arguments);};r=o.createElement(n);c=o.getElementsByTagName(n)[0];r.async=1;r.src=g;r.id=s+n;c.parentNode.insertBefore(r,c);})(window,document,"script","https://cdn.oribi.io/XzE3MDA3NTg5Mzg/oribi.js","ORIBI");
-        </script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
@@ -22,13 +19,14 @@
             const confirmed = "{{ confirmed }}"
             const error = "{{ error }}"
             const account = '{{ account }}'
+            const admin_view = '{{ admin_view }}'
             let offset = (date.getTimezoneOffset()/60).toString()
             let org_disabled = "{{ org_disabled }}"
             console.log('{{ timezone }}')
             console.log(Intl.DateTimeFormat().resolvedOptions().timeZone)
             console.log(offset)
             console.log('{{ offset }}')
-            if ('{{ timezone }}' === Intl.DateTimeFormat().resolvedOptions().timeZone && offset !== '{{ offset }}') {
+            if (offset !== '{{ offset }}') {
                 fetch('/daylightsavings', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -76,7 +74,10 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="theme-color" content="#091B30">
         <script>
-            console.log("{{ company }}")
+            console.log("{{ org }}")
+            if ("{{ org }}" === "greathearts") {
+
+            }
             if ("{{ company }}" === 'google') {
                 document.documentElement.style.setProperty('--lightblue', '#4285f4')
                 document.documentElement.style.setProperty('--darkblue', '#202124')
@@ -117,30 +118,27 @@
     </svg>
     <body id="links_body" onload="pageSetup('{{ username }}'); load_links('{{ username }}', '{{ sort }}')">
         <div id="page">
-            <header id="header-links" style="margin-bottom: 100px;">
-                {% if company == 'aa4e' %}
+            {% if admin_view == 'true' %}
+                <div class="banner" id="admin-view-banner">
+                    You are currently in admin view. <p onclick="adminView(!document.getElementById('settings-admin-view').checked)">Click here</p> to go back to your personal view.
+                </div>
+            {% endif %}
+            <header id="header-links">
+                {% if org_name == 'greatheartsonline.org' %}
                     <div id="company-container">
                         <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
                         <p>for</p>
-                        <img class="company-logo" src="../static/images/logos/accessalliancelogo.png" width="80px" height="80px">
+                        <a href="https://greatheartsonline.org" target="_blank" class="company-logo-large"><img width="255px" height="60px"  src="../static/images/logos/greathearts-logo.png"></a>
+                        <a href="https://greatheartsonline.org" target="_blank" class="company-logo-small"><img width="75px" height="60px" src="../static/images/logos/greathearts-logo-square.png"></a>
+
                     </div>
-                {% elif company == 'google' %}
+                {% elif org_name == 'linkjoin.xyz' %}
                     <div id="company-container">
                         <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
                         <p>for</p>
-                        <img class="company-logo" src="../static/images/logos/google.svg" width="80px" height="80px">
-                    </div>
-                {% elif company == 'amazon' %}
-                    <div id="company-container" class="amazon">
-                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
-                        <p>for</p>
-                        <img class="company-logo amazon" src="../static/images/logos/amazon.png" width="80px" height="80px">
-                    </div>
-                {% elif company == 'discord' %}
-                    <div id="company-container">
-                        <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
-                        <p>for</p>
-                        <img class="company-logo" src="../static/images/logos/discord-logo.svg" width="80px" height="80px">
+                        <a href="https://linkjoin.xyz" target="_blank" class="company-logo-large"><img width="225px" height="50px"  src="../static/images/logo-text.svg"></a>
+                        <a href="https://linkjoin.xyz" target="_blank" class="company-logo-small"><img width="75px" height="75px" src="../static/images/logo-rounded.png"></a>
+
                     </div>
                 {% else %}
                     <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
@@ -152,8 +150,8 @@
                     <path d="M35.0327 53.0375H71.5958" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <div id="links_menu">
-                    <a><div class="button header_button underline" onclick="openSettings()">Settings
-                    </div></a>
+                    <a href="/bookmarks"><div class="button header_button underline">Bookmarks</div></a>
+                    <a><div class="button header_button underline" onclick="openSettings()">Settings</div></a>
                     <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
                 </div>
 
@@ -169,9 +167,16 @@
                     </div>
                   </div>
             </header>
-            <div class="gone" id="disappear">
-                <img loading="lazy" src="../static/images/links_loader.svg" height="430" width="450" alt="Man with clock">
-                <div id="click_the_plus">Click the + button to start scheduling your meetings!</div>
+            <div class="gone no-links" id="no-links-made">
+                <img loading="lazy" src="../static/images/no-links-made.svg" height="430" width="450" alt="Man with clock">
+                <div>Click the + button to start scheduling your meetings!</div>
+            </div>
+            <div class="gone no-links" id="no-links-search">
+                <img loading="lazy" src="../static/images/no-links-found.svg" height="315" width="450" alt="Empty folder">
+                <div>No links found.</div>
+            </div>
+            <div id="links-search-container">
+                <input id="links-search" type="text" placeholder="Search for links" onkeyup="searchLinks(this.value)">
             </div>
             <div id="insert"></div>
         </div>
@@ -198,7 +203,7 @@
                 </div>
                 <button id="popup-share-button" class="hover-arrow submit">Send <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
-            </div>
+        </div>
 
         <!--Create a link-->
         <div id="popup" class="popup invisible nobar">
@@ -362,7 +367,7 @@
                     hide and show this tutorial, change how your links are sorted, and adjust many other settings.
                 </p>
                 <div class="demo">
-                    <a class="button header_button underline" style="margin: 0; height: unset;" onclick="openSettings()">Settings</a>
+                    <a class="button header_button underline close-on-click" style="margin: 0; height: unset;" onclick="openSettings()">Settings</a>
                 </div>
             </div>
             <div class="tutorial-step">
@@ -373,7 +378,7 @@
                     To schedule a link, all you need to do is click the plus button and fill in the info.
                 </p>
                 <div class="demo">
-                    <svg onclick='openTutorial(); popUp("popup")' class="plus_button tutorial" viewBox="0 0 279 279" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg onclick='openTutorial(); popUp("popup")' class="plus_button tutorial close-on-click" viewBox="0 0 279 279" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M278.614 139.325C278.614 216.258 216.248 278.625 139.314 278.625C62.3809 278.625 0.0141602 216.258 0.0141602 139.325C0.0141602 62.3917 62.3809 0.0249634 139.314 0.0249634C216.248 0.0249634 278.614 62.3917 278.614 139.325Z" fill="var(--lightblue)"/>
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M139.313 71.7727C142.992 71.7727 145.974 74.7551 145.974 78.434V200.214C145.974 203.892 142.992 206.875 139.313 206.875C135.634 206.875 132.651 203.892 132.651 200.214V78.434C132.651 74.7551 135.634 71.7727 139.313 71.7727Z" fill="white"/>
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M71.7627 139.323C71.7627 135.644 74.7451 132.662 78.424 132.662H200.204C203.882 132.662 206.865 135.644 206.865 139.323C206.865 143.002 203.882 145.984 200.204 145.984H78.424C74.7451 145.984 71.7627 143.002 71.7627 139.323Z" fill="white"/>
@@ -405,13 +410,13 @@
                 </p>
                 <div class="demo">
                     <div class="menu tutorial" style="height: 190px" id="tutorial-menu">
-                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link">Delete</div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link">Delete</div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 0)" title="Copy your meeting link">Copy link</div>
                     </div>
@@ -428,13 +433,13 @@
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
-                        <div onclick="edit('tutorial')" title="Edit your link settings"><b>Edit</b></div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings"><b>Edit</b></div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link">Delete</div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link">Delete</div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 1)" title="Copy your meeting link">Copy link</div>
                     </div>
@@ -451,13 +456,13 @@
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
-                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link"><b>Delete</b></div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link"><b>Delete</b></div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
                     </div>
@@ -475,13 +480,13 @@
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
-                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link">Delete</div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link">Delete</div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people"><b>Share</b></div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people"><b>Share</b></div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
                     </div>
@@ -499,13 +504,13 @@
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
-                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link">Delete</div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link">Delete</div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting"><b>Notes</b></div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting"><b>Notes</b></div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link">Copy link</div>
                     </div>
@@ -522,13 +527,13 @@
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
-                        <div onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
+                        <div class="close-on-click" onclick="edit('tutorial')" title="Edit your link settings">Edit</div>
                         <hr class="menu_line">
-                        <div onclick="delete_('tutorial')" title="Delete your link">Delete</div>
+                        <div class="close-on-click" onclick="delete_('tutorial')" title="Delete your link">Delete</div>
                         <hr class="menu_line">
-                        <div onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
+                        <div class="close-on-click" onclick="share('tutorial')" title="Share your scheduled link with other people">Share</div>
                         <hr class="menu_line">
-                        <div onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
+                        <div class="close-on-click" onclick="createNote('tutorial', -1)" title="Take notes on your meeting">Notes</div>
                         <hr class="menu_line">
                         <div class="tutorial-copylink" onclick="copyLink('tutorial', 2)" title="Copy your meeting link"><b>Copy link</b></div>
                     </div>
@@ -580,7 +585,7 @@
                         <h3>Phone number</h3>
                         <p>Change the phone number reminders are texted to.</p>
                     </div>
-                    <input class="number" type="text" placeholder="Phone number" id="settings-phone-number">
+                    <input class="number" type="text" placeholder="Phone number" id="settings-phone-number" {% if number %} value="{{ number }}" {% endif %}>
                     <svg onclick="add_number('settings-phone-number')" id="settings-change-number" class="settings-change-number" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path class="fa-secondary" fill="var(--lightblue)" d="M384 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V96C448 60.65 419.3 32 384 32zM339.8 211.8l-128 128C206.3 345.3 199.2 348 192 348s-14.34-2.719-19.81-8.188l-64-64c-10.91-10.94-10.91-28.69 0-39.63c10.94-10.94 28.69-10.94 39.63 0L192 280.4l108.2-108.2c10.94-10.94 28.69-10.94 39.63 0C350.7 183.1 350.7 200.9 339.8 211.8z"></path><path class="fa-primary" fill="white" d="M339.8 211.8l-128 128C206.3 345.3 199.2 348 192 348s-14.34-2.719-19.81-8.188l-64-64c-10.91-10.94-10.91-28.69 0-39.63c10.94-10.94 28.69-10.94 39.63 0L192 280.4l108.2-108.2c10.94-10.94 28.69-10.94 39.63 0C350.7 183.1 350.7 200.9 339.8 211.8z"></path></svg>
                 </div>
                 <div class="settings-row">
@@ -619,8 +624,16 @@
                         <h3>Disable all</h3>
                         <p>Temporarily disable every link within your organization.</p>
                     </div>
-                    <input onclick="console.log('clicked'); disableAll(this.checked)" class="switch-checkbox" type="checkbox" id="settings-disable-all" {% if org_disabled == 'true' %} checked="checked" {% endif %}>
+                    <input onclick="disableAll(this.checked)" class="switch-checkbox" type="checkbox" id="settings-disable-all" {% if org_disabled == 'true' %} checked="checked" {% endif %}>
                     <label class="switch" for="settings-disable-all"></label>
+                </div>
+                <div class="settings-row">
+                    <div class="settings-name">
+                        <h3>Admin view</h3>
+                        <p>View and manage all of your organization's links.</p>
+                    </div>
+                    <input onclick="adminView(this.checked)" class="switch-checkbox" type="checkbox" id="settings-admin-view" {% if admin_view == 'true' %} checked="checked" {% endif %}>
+                    <label class="switch" for="settings-admin-view"></label>
                 </div>
             </div>
         </div>

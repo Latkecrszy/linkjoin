@@ -1,12 +1,12 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse, FileResponse
-import requests, json, re, asyncio
+import requests, json, re
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
-from utilities import *
-from constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder
-from websocket import manager
+from app.utilities import *
+from app.constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder, text_messages
+from app.websocket import manager
 
 
 async def analytics_endpoint(request: Request) -> JSONResponse:
@@ -36,14 +36,7 @@ async def confirm_email(request: Request) -> Response:
     if not db.anonymous_token.find_one({'token': data.get('token')}):
         return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
     db.anonymous_token.find_one_and_delete({'token': data.get('token')})
-    """
-    Order of steps:
-    Google 1. Decode JWT and get email
 
-    Email 1. Check if email is valid
-    Email 2. 
-
-    """
     if data.get('jwt'):
         try:
             email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
@@ -62,6 +55,8 @@ async def confirm_email(request: Request) -> Response:
         db.tokens.find_one_and_delete({'email': email, 'token': token})
         db.anonymous_token.insert_one({'token': token})
         return JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
+    print(data.get('offset'))
+    print(data.get('timezone'))
     account = {'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1,
                'offset': data.get('offset'), 'notes': {}, 'confirmed': 'false', 'token': account_token,
                'timezone': data.get('timezone'), 'org_name': email.split('@')[1]}
@@ -123,12 +118,6 @@ async def verify_session(request: Request) -> Response:
     return JSONResponse(verify_session_utility(request.headers.get('session_id'), request.headers.get('email')))
 
 
-async def sort(request: Request) -> Response:
-    response = RedirectResponse('/links')
-    response.set_cookie('sort', request.query_params.get('sort'))
-    return response
-
-
 async def tutorial(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email').lower()):
@@ -170,15 +159,19 @@ async def add_number(request: Request) -> Response:
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
-async def receive_vonage_message(request: Request) -> Response:
-    text = request.query_params.get("text")
-    user = db.login.find_one({'number': int(request.query_params.get('msisdn'))})
+async def receive_message(request: Request) -> Response:
+    body = await request.json()
+    text = body.get('Body')
+    # TODO: Figure out how to get this information (might be async with request.form()?)
+    user = db.login.find_one({'number': int(body.get('From'))})
     if text.isdigit() and user:
         db.links.find_one_and_update({"id": int(text), 'username': user['username']}, {"$set": {"text": "false"}})
-        data = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                "from": "18336535326", "to": str(request.query_params.get("msisdn")),
-                "text": "Ok, we won't remind you about this link again"}
-        requests.post("https://rest.nexmo.com/sms/json", data=data)
+        message = client.messages.create(
+            from_='+18552861505',
+            body="Ok, we won't remind you about this link again.",
+            to=str(request.query_params.get("msisdn"))
+        )
+        print(message.sid)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -221,32 +214,23 @@ async def open_early(request: Request) -> Response:
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
-async def send_message(request: Request) -> JSONResponse:
+async def web_send_message(request: Request) -> JSONResponse:
     print("sending...")
-    sent = json.load(open('last-message.json'))
     data = await request.json()
-    if int(data.get('id')) not in sent and os.environ.get('TEXT_KEY') == data.get('key'):
-        if data.get('active') == "false":
-            messages = [
-                'LinkJoin Reminder: Your meeting, {name}, starts in {text} minutes. Text {id} to stop receiving reminders for this link, or log into your LinkJoin account and manually change your settings.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your meeting, {name}, is starting in {text} minutes. To stop being texted a reminder for this link, text {id}, or log into your LinkJoin account and manually change your settings.',
-            ]
-        else:
-            messages = [
-                'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link, or log into your LinkJoin account and manually change your settings.',
-                'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}, or log into your LinkJoin account and manually change your settings.',
-            ]
+    if os.environ.get('TEXT_KEY') == data.get('key'):
+        messages = [
+            'LinkJoin Reminder: Your link, {name}, will open in {text} minutes. Text {id} to stop receiving reminders for this link, or log into your LinkJoin account and manually change your settings.',
+            'Hey there! LinkJoin here. We\'d like to remind you that your link, {name}, will open in {text} minutes. To stop being texted a reminder for this link, text {id}, or log into your LinkJoin account and manually change your settings.',
+        ]
         print("Sending...")
-        content = {"api_key": VONAGE_API_KEY, "api_secret": VONAGE_API_SECRET,
-                   "from": "18336535326", "to": data.get('number'), "text":
-                       random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id'))}
-        # Send the text message
-        if int(data.get('id')) not in sent:
-            requests.post("https://rest.nexmo.com/sms/json", data=content)
-        sent[int(data.get('id'))] = 3
-        json.dump(sent, open('last-message.json', 'w'), indent=4)
+        message = client.messages.create(
+            from_='+18552861505',
+            body=random.choice(messages).format(name=data.get('name'), text=data.get('text'), id=data.get('id')),
+            to=data.get('number')
+        )
+        print(message.sid)
         return JSONResponse({'error': '', 'message': 'Success'}, 200)
-    return JSONResponse({'error': 'message send failure', 'message': 'Message failed to send'}, 200)
+    return JSONResponse({'error': 'invalid text key'}, 200)
 
 
 async def add_accounts(request: Request) -> Response | None:
@@ -266,7 +250,6 @@ async def add_accounts(request: Request) -> Response | None:
         # Provided with: link, days (in a list), email, name, time
         link = {'username': link['email'], 'id': int(dict(db.id.find_one({'_id': 'id'}))['id']),
                 'time': link['time'], 'link': encoder.encrypt(link['link'].encode()), 'active': 'true',
-                'share': encoder.encrypt(f'https://linkjoin.xyz/addlink?id={link["id"]}'.encode()),
                 'repeat': 'week', 'days': link['days'], 'text': 'none'}
         db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
         db.links.insert_one(link)
@@ -327,7 +310,8 @@ async def update_timezone(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
-    db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'timezone': data.get('timezone')}}, upsert=True)
+    db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'timezone': data.get('timezone')}},
+                                 upsert=True)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -336,8 +320,12 @@ async def daylight_savings(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
     for link in db.links.find({'username': data.get('email')}):
+        print(int(link['time'].split(':')[0]))
         hour = int(link['time'].split(':')[0]) - int(data.get('shift'))
+        print(hour)
+        print(int(data.get('shift')))
         time = convert_time(hour, int(link['time'].split(':')[1]), link)
+        print(time)
         db.links.find_one_and_update({'id': link['id']}, {'$set': {'time': time[0], 'days': time[1]}})
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
@@ -346,17 +334,17 @@ async def disable_all(request: Request) -> Response:
     data = await request.json()
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
-    elif db.login.find_one({'username': data.get('email')})['admin'] != 'true' or db.login.find_one({'username': data.get('email')})['org_name'] == 'gmail.com':
+    elif db.login.find_one({'username': data.get('email')})['admin'] != 'true' or \
+            db.login.find_one({'username': data.get('email')})['org_name'] == 'gmail.com':
         return JSONResponse({'error': 'Not allowed'}, 403)
     print(data.get('disable'))
 
     org_name = db.login.find_one({'username': data.get('email')})['org_name']
     for user in db.login.find({'org_name': org_name}):
         print(f'User: {dict(user)}')
-        if data.get('disable'):
-            db.login.find_one_and_update({'org_name': org_name, 'username': user['username']}, {'$set': {'org_disabled': 'true'}})
-        else:
-            db.login.find_one_and_update({'org_name': org_name, 'username': user['username']}, {'$set': {'org_disabled': 'false'}})
+        db.login.find_one_and_update({'org_name': org_name, 'username': user['username']},
+                                     {'$set': {'org_disabled': str(data.get('disable')).lower()}})
+
         await manager.update(configure_data(user.get('username')), user.get('username'), 'disable_all')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
@@ -368,3 +356,55 @@ async def org_disabled(request: Request) -> JSONResponse:
     return JSONResponse({'disabled': db.login.find_one({'username': request.headers.get('email')}).get('org_disabled')})
 
 
+async def admin_view(request: Request) -> JSONResponse:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+    elif db.login.find_one({'username': data.get('email')})['admin'] != 'true' or \
+            db.login.find_one({'username': data.get('email')})['org_name'] == 'gmail.com':
+        return JSONResponse({'error': 'Not allowed'}, 403)
+
+    db.login.find_one_and_update({'username': data.get('email')},
+                                 {'$set': {'admin_view': str(data.get('admin_view')).lower()}})
+
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
+
+
+async def sort(request: Request) -> JSONResponse:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+
+    db.login.find_one_and_update({'username': data.get('email')}, {'$set': {'sort': data.get('sort')}})
+    return JSONResponse({'error': '', 'message': 'Success'}, 200)
+
+
+
+
+def create_accounts(accounts):
+    for account in accounts:
+        data = {'grade': account['grade'], 'username': account['email'], 'premium': 'false', 'refer': None, 'tutorial': -1,
+                'offset': 0, 'notes': {}, 'confirmed': 'true', 'token': gen_otp(),
+                'timezone': '', 'org_name': account['email'].split('@')[1]}
+
+        if account.get('number'):
+            number = ''.join([i for i in account.get('number') if i in string.digits])
+            if len(number) < 11:
+                number = "1" + str(number)
+            data['number'] = int(number)
+        print(data)
+        db.login.insert_one(data)
+    return 'success'
+
+
+def create_account(email, admin, org=None):
+    refer_id = gen_id()
+    account_token = gen_otp()
+    org_name = email.split('@')[1] if not org else org
+    account = {
+        'username': email, 'premium': 'false', 'refer': refer_id, 'tutorial': -1, 'offset': '0', 'notes': {},
+        'confirmed': 'true', 'token': account_token, 'org_name': org_name, 'admin': admin, 'number': '', 'timezone': ''
+    }
+    db.login.insert_one(account)
+    print('created account')
+    print(account)

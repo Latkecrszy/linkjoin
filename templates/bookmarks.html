@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html id="links_html" lang="en">
+    <head>
+        <link rel="manifest" href="../static/manifest.json">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-MR5B009GBF');
+        </script>
+        <script>
+            let date = new Date()
+            const token = "{{ token }}"
+            const confirmed = "{{ confirmed }}"
+            const error = "{{ error }}"
+            const account = '{{ account }}'
+            const admin_view = '{{ admin_view }}'
+            let org_disabled = "{{ org_disabled }}"
+        </script>
+        <script src="../static/bookmarks.js"></script>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/links.css" rel="stylesheet"/>
+        <link href="../static/new_links.css" rel="stylesheet"/>
+        <link href="../static/link.css" rel="stylesheet"/>
+        <link href="../static/bookmarks.css" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
+        <script src="../static/globals.js"></script>
+        <title>LinkJoin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name=”robots” content="index, follow"/>
+        <meta name="description" content="View, schedule, and organize all your links in one conveniently accessible website">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#091B30">
+    </head>
+    <svg onclick='popUp("popup")' id="plus" class="plus" viewBox="0 0 279 279" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M278.614 139.325C278.614 216.258 216.248 278.625 139.314 278.625C62.3809 278.625 0.0141602 216.258 0.0141602 139.325C0.0141602 62.3917 62.3809 0.0249634 139.314 0.0249634C216.248 0.0249634 278.614 62.3917 278.614 139.325Z" fill="var(--lightblue)"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M139.313 71.7727C142.992 71.7727 145.974 74.7551 145.974 78.434V200.214C145.974 203.892 142.992 206.875 139.313 206.875C135.634 206.875 132.651 203.892 132.651 200.214V78.434C132.651 74.7551 135.634 71.7727 139.313 71.7727Z" fill="white"/>
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M71.7627 139.323C71.7627 135.644 74.7451 132.662 78.424 132.662H200.204C203.882 132.662 206.865 135.644 206.865 139.323C206.865 143.002 203.882 145.984 200.204 145.984H78.424C74.7451 145.984 71.7627 143.002 71.7627 139.323Z" fill="white"/>
+    </svg>
+    <body id="links_body" onload="loadBookmarks('{{ username }}')">
+        <div id="page">
+            {% if admin_view == 'true' %}
+                <div class="banner" id="admin-view-banner">
+                    You are currently in admin view. <p onclick="adminView(!document.getElementById('settings-admin-view').checked)">Click here</p> to go back to your personal view.
+                </div>
+            {% endif %}
+            <header id="header-links">
+                <a href="/" id="home" target="_blank"><img src="../static/images/logo-text.svg" id="home_img" width="225px" height="50px" alt="home page"></a>
+                <svg class="plus_button" viewBox="0 0 107 106" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    onclick='popUp("popup")'>
+                    <circle cx="53.3142" cy="53.0381" r="47.3235" fill="var(--lightblue)" stroke="var(--darkblue)" stroke-width="11"/>
+                    <path d="M53.3138 34.7562V71.3192" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M35.0327 53.0375H71.5958" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div id="links_menu">
+                    <a href="/links"><div class="button header_button underline">Meetings</div></a>
+                    <a><div class="button header_button underline" onclick="logOut()">Log Out</div></a>
+                </div>
+
+                <div id="dropdown">
+                    <input id="dropdown-checkbox" type="checkbox"/>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <div id="hamburger_dropdown">
+                        <div class="underline" onclick="window.open('/links')">Meetings</div>
+                        <hr class="menu_line">
+                        <div class="underline" onclick="logOut()">Log Out</div>
+                    </div>
+                  </div>
+            </header>
+            <div class="gone no-links" id="no-links-made">
+                <img loading="lazy" src="../static/images/no-links-made.svg" height="430" width="450" alt="Man with clock">
+                <div>Click the + button to add your first bookmark!</div>
+            </div>
+            <div class="gone no-links" id="no-links-search">
+                <img loading="lazy" src="../static/images/no-links-found.svg" height="315" width="450" alt="Empty folder">
+                <div>No links found.</div>
+            </div>
+            <div id="links-search-container">
+                <input id="links-search" type="text" placeholder="Search for links" onkeyup="searchBookmarks(this.value)">
+            </div>
+            <div id="insert"></div>
+        </div>
+
+        <!--Delete link-->
+        <div class="popup-delete" id="popup-delete">
+            <div>Are you sure you want to delete</div>
+            <div id="delete_buttons_container">
+                <a><button id="button_no" onclick="hide('popup-delete')">No</button></a>
+                <a id="delete_button"><button id="button_yes">Yes</button></a>
+            </div>
+        </div>
+
+        <!--Copy share link-->
+        <div id="popup-share" class="popup invisible">
+            <img loading="lazy" src="../static/images/arrow-left.svg" height="25px" width="25px" style="margin: -10px 0 -10px 20px; cursor: pointer" onclick="hide('popup-share')" alt="back to links page">
+            <p class="popup-share-text">Share your bookmark</p>
+            <div id="popup-share-demo-link"></div>
+            <hr id="popup-share-divider">
+
+            <div id="popup-share-email-and-submit-container">
+                <div id="popup-share-emails-container" onclick="showPopupEmailsInput()">
+                    <input id="popup-share-emails-input" type="email" placeholder="Add emails" onkeyup="verifyEmail(event)"  onblur="hidePopupEmailsInput()">
+                </div>
+                <button id="popup-share-button" class="hover-arrow submit">Send <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+            </div>
+            </div>
+
+        <!--Create a link-->
+        <div id="popup" class="popup invisible nobar">
+            <img loading="lazy" src="../static/images/arrow-left.svg" class="back_arrow" onclick="hide('popup')" alt="back to main page">
+            <div id="title">Add a new bookmark</div>
+            <div id="error"></div>
+            <form id="create" autocomplete="off">
+                <div class="flex">
+                    <img id="name_img" src="../static/images/text.svg" height="15px" width="20px" alt="text symbol">
+                    <input type="text" placeholder="Bookmark Name" id="name" required>
+                </div>
+                <div class="flex">
+                    <img id="link_img" src="../static/images/link.svg" height="13px" width="18px;" alt="link symbol" style="margin-top: 33px">
+                    <input type="text" placeholder="Bookmark Link" id="link" required>
+                </div>
+                <button type="button" class="hover-arrow submit" id="submit" onclick="registerBookmark('register')">Create <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+            </form>
+        </div>
+        <div id="blur"></div>
+        <div id="notif"></div>
+    </body>
+</html>

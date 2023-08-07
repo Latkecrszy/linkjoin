@@ -46,3 +46,18 @@ html {
 header a {
     margin: 15px 40px 10px 40px;
 }
+
+
+@media (max-width: 870px) {
+    #hamburger_dropdown {
+        display: none;
+        height: fit-content;
+        width: 150px;
+    }
+
+    #hamburger_dropdown a {
+        display: block;
+        margin-left: unset;
+        margin-right: unset;
+    }
+}

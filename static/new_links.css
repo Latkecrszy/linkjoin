@@ -209,7 +209,7 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 #open-tutorial {
     position: fixed;
     bottom: 20px;
-    right: 0;
+    right: 10px;
     background: var(--lightblue);
     width: 60px;
     height: 60px;
@@ -430,7 +430,6 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 }
 
 #company-container {
-    width: 370px;
     justify-content: space-evenly;
     display: flex
 }
@@ -441,10 +440,13 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     opacity: 0.7;
 }
 
-#company-container .company-logo {
-    width: 65px;
-    height: 65px;
-    margin-top: 18px;
+.company-logo-small {
+    display: none;
+    margin-top: 10px;
+}
+
+.company-logo-large img {
+    margin-left: 5px !important
 }
 
 .company-logo.amazon {
@@ -459,18 +461,69 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
 
 #company-container.amazon p {
     margin: 40px 5px 0 5px;
-
 }
 
 #company-container a {
     margin: 22px 0 0 0;
 }
 
+#company-container img {
+    margin-left: 10px;
+}
 
 .superDisabled {
     opacity: 0.5;
     pointer-events: none;
     z-index: -1;
+}
+
+#admin-view-toggle:hover {
+    filter: brightness(0.9)
+}
+
+.banner {
+    width: 100%;
+    padding: 3px 5px 1px 0;
+    margin-bottom: 8px;
+    min-height: 20px;
+    background: #801f27;
+    border-radius: 3px;
+    text-align: center;
+    font: 400 14px Montserrat, sans-serif;
+    color: white;
+}
+
+.banner p {
+    color: var(--lightblue);
+    cursor: pointer;
+    display: inline;
+}
+
+#links-search-container {
+    margin-top: 30px;
+    margin-left: 40px;
+    transition: 0.5s;
+}
+
+#links-search {
+    background: var(--blue);
+    border-radius: 3px;
+    width: 130px;
+    height: 30px;
+    filter: brightness(1.1);
+    border: 2px solid var(--blue);
+    padding: 1px 1px 1px 5px;
+    font-size: 15px;
+    transition: 0.25s;
+}
+
+#links-search:focus {
+    filter: unset;
+    background: var(--darkblue);
+}
+
+#links-search::placeholder {
+    font-size: 14px;
 }
 
 @keyframes bob {
@@ -501,11 +554,9 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
         height: 150px;
         width: 100%;
     }
-
-    #blur {height: calc(100% + 250px) !important}
-}
-
-@media (max-width: 900px) {
+    #blur {
+        height: calc(100% + 250px) !important
+    }
     #hamburger {
         display: inline-block;
     }
@@ -515,11 +566,23 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     #hamburger a {
         display: block;
     }
-    #header-links a {display: none;}
-    .plus_button {display: flex}
-    #home {display: inline-block !important}
-
+    #header-links a {
+        display: none;
+    }
+    .company-logo-large {
+        display: none;
+    }
+    .company-logo-small {
+        display: inline !important;
+    }
+    .plus_button {
+        display: flex
+    }
+    #home {
+        display: inline-block !important
+    }
 }
+
 
 @media (max-width: 730px) {
     .plus {display: flex !important}
@@ -534,6 +597,10 @@ html, body {scroll-behavior: smooth; overflow-x: visible;}
     #tutorial {
         right: unset;
         left: 15px;
+    }
+    #links-search-container {
+        margin-top: 25px;
+        margin-left: 20px;
     }
 }
 

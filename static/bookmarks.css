@@ -1,0 +1,64 @@
+.link {
+    position: relative;
+    justify-content: center;
+    width: calc(50% - 40px);
+    margin: 10px 15px;
+    padding: 15px 50px;
+    height: unset;
+    min-height: 100px;
+}
+
+.name {
+    word-break: break-word;
+}
+
+.join-meeting {
+    width: 90%;
+}
+
+#insert {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.dot-menu {
+    position: absolute;
+    right: 40px;
+}
+
+#links-search-container {
+    margin-left: 15px;
+}
+
+@media (max-width: 730px) {
+    .link .dot-menu {
+        opacity: 1;
+        display: initial;
+    }
+
+    .link {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    #insert {
+        flex-direction: column;
+    }
+}
+
+#popup {
+    height: 300px;
+}
+
+.submit {
+    margin-left: 65px;
+    margin-top: 30px;
+}
+
+.submit:hover {
+    margin-left: 80px;
+}
+
+.pending-link-buttons.accept {
+    margin-right: 20px;
+}

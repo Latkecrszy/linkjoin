@@ -1,10 +1,12 @@
 from starlette.applications import Starlette
 from starlette.routing import Route, Mount, WebSocketRoute
 from starlette.staticfiles import StaticFiles
-from endpoints import *
-from link_endpoints import *
-from templates import *
-from websocket import *
+from app.endpoints import *
+from app.link_endpoints import *
+from app.bookmark_endpoints import *
+from app.templates import *
+from app.websocket import *
+from app.scheduler import *
 
 
 routes = [
@@ -15,15 +17,15 @@ routes = [
     Route('/signup', endpoint=signup, methods=['GET']), Route('/set_cookie', endpoint=set_cookie, methods=['GET']),
     Route('/get_session', endpoint=get_session, methods=['GET']), Route('/register', endpoint=register, methods=['POST']),
     Route('/links', endpoint=links, methods=['GET']), Route('/delete', endpoint=delete, methods=['POST']),
-    Route('/restore', endpoint=restore, methods=['POST']), Route('/update', endpoint=update, methods=['POST']),
-    Route('/disable', endpoint=disable, methods=['POST']),
-    Route('/sort', endpoint=sort, methods=['GET']), Route('/changevar', endpoint=change_var, methods=['POST']),
-    Route('/addlink', endpoint=addlink, methods=['GET']), Route('/tutorial', endpoint=tutorial, methods=['POST']),
+    Route('/bookmarks', endpoint=bookmarks, methods=['GET']), Route('/restore', endpoint=restore, methods=['POST']),
+    Route('/update', endpoint=update, methods=['POST']), Route('/disable', endpoint=disable, methods=['POST']),
+    Route('/sort', endpoint=sort, methods=['POST']), Route('/changevar', endpoint=change_var, methods=['POST']),
+    Route('/tutorial', endpoint=tutorial, methods=['POST']),
     Route('/tutorial_complete', endpoint=tutorial_complete, methods=['POST']),
     Route('/ads.txt', endpoint=ads, methods=['GET']), Route('/privacy', endpoint=privacy, methods=['GET']),
     Route('/unsubscribe', endpoint=unsubscribe, methods=['POST']), Route('/setoffset', endpoint=setoffset, methods=['POST']),
     Route('/add_number', endpoint=add_number, methods=['POST']), Route('/notes', endpoint=notes, methods=['GET', 'POST']),
-    Route('/receive_vonage_message', endpoint=receive_vonage_message, methods=['GET', 'POST']),
+    Route('/receive_vonage_message', endpoint=receive_message, methods=['GET', 'POST']),
     Route('/markdown_to_html', endpoint=markdown_to_html, methods=['POST']),
     Route('/reset', endpoint=reset_password, methods=['GET', 'POST']),
     Route('/reset-password', endpoint=send_reset_email, methods=['POST', 'GET']),
@@ -45,6 +47,9 @@ routes = [
     Route('/accept-link', endpoint=accept_link, methods=['POST']),
     Route('/disable-all', endpoint=disable_all, methods=['POST']),
     Route('/org_disabled', endpoint=org_disabled, methods=['GET']),
+    Route('/admin-view', endpoint=admin_view, methods=['POST']),
+    Route('/create-bookmark', endpoint=create_bookmark, methods=['POST']),
+    Route('/edit-bookmark', endpoint=edit_bookmark, methods=['POST']),
     Mount('/static', StaticFiles(directory='static'), name='globals.js'),
     Mount('/static', StaticFiles(directory='static'), name='redirect.js'),
     Mount('/static', StaticFiles(directory='static'), name='.DS_Store'),
@@ -76,7 +81,7 @@ routes = [
     Mount('/static/images', StaticFiles(directory='static'), name='calendar_guy.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='website.png'),
     Mount('/static/images', StaticFiles(directory='static'), name='angle-down.svg'),
-    Mount('/static/images', StaticFiles(directory='static'), name='links_loader.svg'),
+    Mount('/static/images', StaticFiles(directory='static'), name='no-links-made.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='lock.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='pen.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='link.svg'),
@@ -109,7 +114,7 @@ routes = [
     Mount('/static/images', StaticFiles(directory='static'), name='heart.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='loading2.gif'),
     Mount('/static/images', StaticFiles(directory='static'), name='undo.svg')
+
 ]
 
-
-app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[lambda: print('Started app.')])
+app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[create_text_jobs, lambda: print('Started app.')])

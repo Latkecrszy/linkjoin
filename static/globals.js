@@ -9,13 +9,13 @@ function sleep(ms) {
 }
 
 window.addEventListener('beforeunload', async () => {
-    if (!['login', 'signup'].includes(location.href.split('/')[location.href.split('/').length-1])) {
-        await fetch('/invalidate-token', {method: 'POST', headers:  {'Content-Type': 'application/json'},
-        body: JSON.stringify({'token': token})})
-    }})
-    if (typeof webSocket !== 'undefined') {
-        webSocket.close()
+    if (!['login', 'signup'].some(i => location.href.split('/')[location.href.split('/').length - 1].includes(i))) {
+        await fetch('/invalidate-token', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({'token': token})
+        })
     }
+})
 
 function disableButton(e, loader=true) {
     e.classList.add(loader ? 'disabled' : 'disabled-no-loader')

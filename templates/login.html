@@ -144,7 +144,7 @@
             data = await data.json()
             token = data['token']
             if (data['error'] === '') {
-                location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
+                location.assign(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
             }
             else {
                 enableButton('submit')

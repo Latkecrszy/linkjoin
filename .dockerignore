@@ -1,0 +1,10 @@
+venv
+env
+.idea
+.gcloudignore
+.gitignore
+.vscode
+__pycache__
+.DS_Store
+Procfile
+runtime.txt

@@ -30,10 +30,40 @@ async function start(username, links, sort) {
                 new Date(link['date']).toLocaleDateString() !== new Date().toLocaleDateString())) {
                 continue
             }
-            console.log(org_disabled)
+
             if (org_disabled === 'true') {
                 continue
             }
+
+            if ('occurrences' in link) {
+                let max_num_occurrences = parseInt(link['repeat'].split(' ')[0])*days.length
+                let acceptable_occurrences = []
+                for (let i = max_num_occurrences; i > max_num_occurrences-link['days'].length; i--) {
+                    acceptable_occurrences.push(i)
+                }
+
+                if (link['occurrences'] === 1) {
+                    await fetch('/changevar', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({id: link['id'], email: link['username'],
+                            variable: 'occurrences', occurrences: parseInt(link['repeat'].split(' ')[0])*days.length})
+                    })
+                } else {
+                     await fetch('/changevar', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({id: link['id'], email: link['username'],
+                            variable: 'occurrences', occurrences: link['occurrences']-1})
+                    })
+                }
+
+                if (!acceptable_occurrences.includes(link['occurrences'])) {
+                    await pause(username, user_links, sort, 43000)
+                    continue
+                }
+            }
+
             window.open(`/link?id=${link['id']}`)
             await sleep(3000)
             window.open(link['link'])

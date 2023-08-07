@@ -1,13 +1,11 @@
 from starlette.responses import Response, JSONResponse, RedirectResponse
 from starlette.requests import Request
-from starlette.background import BackgroundTask
 from starlette.templating import Jinja2Templates
-from background import message
 from argon2 import exceptions
 from google.auth import jwt
 import json
-from utilities import gen_session, analytics, authenticated, gen_otp, send_email
-from constants import db, hasher, encoder
+from app.utilities import gen_session, analytics, authenticated, gen_otp, send_email
+from app.constants import db, hasher, encoder
 
 templates = Jinja2Templates(directory='templates')
 started = False
@@ -20,10 +18,8 @@ async def main(request: Request) -> Response:
     logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
     if not started:
         started = True
-        task = BackgroundTask(message)
         return templates.TemplateResponse('website.html',
-                                          {'token': 'token', 'logged_in': logged_in, 'request': request},
-                                          background=task)
+                                          {'token': 'token', 'logged_in': logged_in, 'request': request})
     else:
         return templates.TemplateResponse('website.html',
                                           {'token': 'token', 'logged_in': logged_in, 'request': request})
@@ -53,7 +49,8 @@ async def login(request: Request) -> Response:
                 db.anonymous_token.insert_one({'token': token})
                 return JSONResponse({'redirect': data['redirect'], "error": 'google_login_failed', 'token': token})
         else:
-            email = data.get('email')
+            email = data.get('email').lower()
+            print(email, token)
             db.tokens.insert_one({'email': email, 'token': token})
             db.anonymous_token.insert_one({'token': token})
             try:
@@ -98,7 +95,7 @@ async def signup(request: Request) -> Response:
             'error': request.query_params.get('error'), 'token': token,
             'redirect': request.query_params.get('redirect') if request.query_params.get('redirect') else '/links',
             'refer': request.query_params.get('refer') if request.query_params.get('refer') else 'none',
-            'country_codes': json.load(open("country_codes.json")), 'request': request})
+            'country_codes': json.load(open("app/country_codes.json")), 'request': request})
 
 
 async def links(request: Request) -> Response:
@@ -117,17 +114,38 @@ async def links(request: Request) -> Response:
         {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
         for link in db.links.find({'username': email})]
     link_names = [link['name'] for link in links_list]
-    sort_pref = request.cookies.get('sort') if request.cookies.get('sort') and request.cookies.get('sort') in ['time', 'day', 'datetime'] else 'no'
     token = gen_session()
     db.tokens.insert_one({'email': email, 'token': token})
     analytics('users', email=email)
     return templates.TemplateResponse('links.html', {
-        'username': email, 'link_names': link_names, 'sort': sort_pref, 'premium': premium, 'style': 'old',
-        'number': number, 'country_codes': json.load(open("country_codes.json")), 'open_early': str(early_open),
+        'username': email, 'link_names': link_names, 'sort': user.get('sort'), 'premium': premium, 'style': 'old',
+        'number': number, 'country_codes': json.load(open("app/country_codes.json")), 'open_early': str(early_open),
         'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
         'tutorial': user.get('tutorialWidget'), 'confirmed': user.get('confirmed'), 'request': request,
         'timezone': user.get('timezone'), 'offset': int(float(user.get('offset'))), 'org_disabled': user.get('org_disabled'),
-        'admin': user.get('admin')})
+        'admin': user.get('admin'), 'org_name': user.get('org_name'), 'admin_view': user.get('admin_view')})
+
+
+async def bookmarks(request: Request) -> Response:
+    email = request.cookies.get('email')
+    if not authenticated(request.cookies, email):
+        return RedirectResponse('/login?error=not_logged_in')
+    email = email.lower()
+    user = dict(db.login.find_one({"username": email}))
+    premium = user['premium']
+    early_open = db.login.find_one({'username': email}).get('open_early')
+    links_list = [
+        {str(i): str(j) for i, j in link.items() if i != '_id' and i != 'username' and i != 'password'}
+        for link in db.links.find({'username': email})]
+    link_names = [link['name'] for link in links_list]
+    token = gen_session()
+    db.tokens.insert_one({'email': email, 'token': token})
+    analytics('users', email=email)
+    return templates.TemplateResponse('bookmarks.html', {
+        'username': email, 'link_names': link_names, 'premium': premium, 'style': 'old',
+        'error': request.query_params.get('error'), 'highlight': request.query_params.get('id'), 'token': token,
+        'confirmed': user.get('confirmed'), 'request': request, 'org_disabled': user.get('org_disabled'),
+        'admin': user.get('admin'), 'org_name': user.get('org_name'), 'admin_view': user.get('admin_view')})
 
 
 async def send_reset_email(request: Request) -> Response:

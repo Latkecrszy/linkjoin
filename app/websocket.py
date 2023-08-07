@@ -2,14 +2,14 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from starlette.responses import JSONResponse, Response
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 import urllib.parse
-from utilities import authenticated, configure_data, verify_session_utility
-from constants import motor
+from app.utilities import authenticated, configure_data, verify_session_utility
+from app.constants import motor
+from app.scheduler import create_text_job
 
 
 class WebSocketManager:
     def __init__(self):
         self.connections: dict[str, list[WebSocket]] = {}
-        self.connections_origins = []
         self.watching = False
 
     async def connect(self, websocket: WebSocket, email: str, origin) -> None:
@@ -23,12 +23,6 @@ class WebSocketManager:
                 self.connections[email].append(websocket)
         else:
             self.connections[email] = [websocket]
-        print(origin)
-        self.connections_origins.append(origin)
-        print(self.connections_origins)
-        print(len(self.connections))
-        print(len(self.connections[email]))
-        print('connected')
 
     def disconnect(self, websocket: WebSocket, email: str) -> None:
         print(self.connections)
@@ -38,25 +32,19 @@ class WebSocketManager:
                 self.connections[email].remove(websocket)
                 if len(self.connections[email]) == 0:
                     self.connections.pop(email)
+        if email in watching:
+            watching.remove(email)
         print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str, origin=None) -> None:
-        print(origin)
-        print(len(self.connections))
-        print(self.connections)
         if email in self.connections:
             websockets_to_remove = []
             for websocket in self.connections[email]:
                 try:
                     if isinstance(data, dict) or isinstance(data, list):
-                        print('sending json data')
                         await websocket.send_json(data)
-                        print(websocket.query_params.get('email'))
-                        print('sent json data')
                     else:
-                        print('sending text data')
                         await websocket.send_text(data)
-                        print('sent text data')
                     continue
                 except ConnectionClosedOK:
                     print('connection closed with ConnectionClosedOK')
@@ -70,14 +58,11 @@ class WebSocketManager:
                     print('runtime error')
                     print(e)
                     websockets_to_remove.append(websocket)
-                    print('removing websocket')
                     continue
-            print('removing')
             print(websockets_to_remove)
             for websocket in websockets_to_remove:
                 try:
                     self.connections[email].remove(websocket)
-                    print('removed websocket')
                     if len(self.connections[email]) == 0:
                         self.connections.pop(email)
                 except (KeyError, ValueError) as e:
@@ -94,11 +79,14 @@ async def watch(websocket, email) -> None:
         async with motor.links.watch(full_document='updateLookup') as change_stream:
             d = await change_stream.next()
             if 'fullDocument' not in d:
-                watching.remove(email)
-                return
+                continue
             await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'], 'watch')
-            watching.remove(email)
-            return
+            link = d['fullDocument']
+            link['number'] = (await motor.login.find_one({'username': link['username']})).get('number')
+            print('watching')
+            if link.get('number') and link.get('text') != 'false':
+                create_text_job(link, True)
+                print('created job')
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:

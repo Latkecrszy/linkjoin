@@ -1,5 +1,5 @@
 import random, string, smtplib, ssl, os
-from constants import db, encoder
+from app.constants import db, encoder, client, text_messages, scheduler
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
@@ -17,9 +17,11 @@ def analytics(_type: str, **kwargs) -> None:
         signups[-1] += 1
         db.new_analytics.find_one_and_update({'id': 'signups'}, {'$set': {'value': signups}})
     elif _type == 'users':
-        if kwargs['email'] not in db.new_analytics.find_one({'id': 'monthly_users'}, {'value': {'$slice': -1}})['value'][0]:
+        if kwargs['email'] not in \
+                db.new_analytics.find_one({'id': 'monthly_users'}, {'value': {'$slice': -1}})['value'][0]:
             db.new_analytics.find_one_and_update({'id': 'monthly_users'}, {'$push': {'value': kwargs['email']}})
-        if kwargs['email'] not in db.new_analytics.find_one({'id': 'daily_users'}, {'value': {'$slice': -1}})['value'][0]:
+        if kwargs['email'] not in db.new_analytics.find_one({'id': 'daily_users'}, {'value': {'$slice': -1}})['value'][
+            0]:
             db.new_analytics.find_one_and_update({'id': 'daily_users'}, {'$push': {'value': kwargs['email']}})
     elif _type == 'links_opened':
         db.new_analytics.find_one_and_update({'id': 'links_opened'}, {'$inc': {'value': 1}})
@@ -48,16 +50,34 @@ def gen_otp() -> str:
 
 def authenticated(cookies: dict, email: str) -> bool:
     try:
-        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in db.sessions.find({'username': email})]
+        return cookies.get('email') == email and cookies.get('session_id') in [i['session_id'] for i in
+                                                                               db.sessions.find({'username': email})]
     except TypeError:
         return False
 
 
 def configure_data(email: str) -> dict[str, list[dict]]:
-    links_list = {'links': list(db.links.find({'username': email})),
-                  'deleted-links': list(db.deleted_links.find({'username': email})),
-                  'pending-links': list(db.pending_links.find({'username': email}))}
-    links_list = {key: [{i: j for i, j in link.items() if i != '_id'} for link in links] for key, links in links_list.items()}
+    admin_view = db.login.find_one({'username': email}).get('admin_view')
+    if admin_view == 'true':
+        links_list = {
+            'links': get_org_links(email),
+            'pending-links': [],
+            'deleted-links': list(db.deleted_links.find()),
+            'bookmarks': list(db.bookmarks.find()),
+            'pending-bookmarks': [],
+            'deleted-bookmarks': list(db.deleted_bookmarks.find())
+        }
+    else:
+        links_list = {
+            'links': list(db.links.find({'username': email})),
+            'pending-links': list(db.pending_links.find({'username': email})),
+            'deleted-links': list(db.deleted_links.find({'username': email})),
+            'bookmarks': list(db.bookmarks.find({'username': email})),
+            'pending-bookmarks': list(db.pending_bookmarks.find({'username': email})),
+            'deleted-bookmarks': list(db.deleted_bookmarks.find({'username': email}))
+        }
+    links_list = {key: [{i: j for i, j in link.items() if i != '_id'} for link in links] for key, links in
+                  links_list.items()}
     for name in links_list:
         for index, i in enumerate(links_list[name]):
             if 'password' in i.keys():
@@ -67,6 +87,20 @@ def configure_data(email: str) -> dict[str, list[dict]]:
             if 'share' in i.keys():
                 links_list[name][index]['share'] = str(encoder.decrypt(i['share']).decode())
     return links_list
+
+
+def get_org_links(email):
+    org_name = db.login.find_one({'username': email})['org_name']
+    links = {'links': [], 'link_info': []}
+    for link in db.links.find({'org_name': org_name}):
+        info_dict = {'link': str(encoder.decrypt(link['link']).decode()), 'hour': int(link['time'].split(':')[0]),
+               'minute': int(link['time'].split(':')[1]), 'days': link['days'], 'repeat': link['repeat']}
+        print(info_dict)
+        print(links['link_info'])
+        if info_dict not in links['link_info']:
+            links['links'].append(link)
+            links['link_info'].append(info_dict)
+    return links['links']
 
 
 def verify_session_utility(session_id: str, email: str) -> dict[str, str]:
@@ -106,6 +140,29 @@ def convert_time(hour, minute, link):
     return f"{hour}:{minute}", link['days']
 
 
+def get_text_time(days, time, before):
+    weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    hour = int(float(time.split(':')[0]))
+    minute = int(float(time.split(':')[1]))
+    if before:
+        minute -= before
+        if minute < 0:
+            hour -= 1
+            minute += 60
+
+        if hour < 0:
+            hour += 24
+            for index, day in enumerate(days):
+                days[index] = weekdays[(weekdays.index(day) + 6) % 7]
+        if hour == 24:
+            hour = 0
+            print(days)
+            for index, day in enumerate(days):
+                days[index] = weekdays[(weekdays.index(day) + 1) % 7]
+            print(days)
+    return {'hour': hour, 'minute': minute, 'days': days}
+
+
 def send_email(content, images, subject, to):
     msg = MIMEMultipart('related')
     alternative = MIMEMultipart('alternative')
@@ -122,3 +179,36 @@ def send_email(content, images, subject, to):
         server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
         server.sendmail('noreply@linkjoin.xyz', to, msg.as_string())
     return 'Success'
+
+
+def acceptable_occurrences(repeat, days):
+    max_num_occurrences = int(repeat.split(' ')[0])*len(days)
+    occurrences = []
+    for i in range(max_num_occurrences):
+        if max_num_occurrences-i > max_num_occurrences-len(days):
+            occurrences.append(max_num_occurrences-i)
+        else:
+            break
+    return occurrences
+
+
+def send_message(link, id, repeat, occurrences):
+    print('gonna send')
+    if repeat not in ['week', 'month']:
+        scheduler.remove_job(id)
+        if repeat != 'never':
+            if occurrences not in acceptable_occurrences(repeat, link['days']):
+                return
+    number = db.login.find_one({'username': link['username']}).get('number')
+    if number:
+        print("Sending...")
+        print(link)
+
+        message = client.messages.create(
+            from_='+18552861505',
+            body=random.choice(text_messages).format(name=link.get('name'), text=link.get('text'), id=link.get('id')),
+            to=number
+        )
+
+        print(message.sid)
+        return {'error': '', 'message': 'Success'}

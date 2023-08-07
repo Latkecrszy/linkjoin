@@ -55,8 +55,6 @@ header img {margin: 0 auto 0 20px}
 
 #hamburger_dropdown.expand a {display: block; text-align: center}
 
-#dropdown {display: none; flex-direction: column}
-
 #line1, #line2, #line3 {
     height: 5px;
     width: 32px;
@@ -396,33 +394,14 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-
     height: inherit;
 }
 
-@media (max-width: 870px) {
-    header a {display: none;}
-    #hamburger {display: flex;}
-    #motto, #description {margin-left: -30px;}
-    #dropdown {display: flex;}
-    #hamburger_dropdown {
-        display: none;
-        flex-direction: column;
-        z-index: 9;
-        background: var(--blue);
-        border-radius: 3px;
-        margin-right: 30px;
-        padding: 10px;
-        box-sizing: border-box;
-        justify-content: center;
-        align-content: center;
-        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.25)
-    }
-}
-
 #dropdown {
-    display: block;
+    display: none;
     position: relative;
     top: 50%;
     z-index: 1;
     -webkit-user-select: none;
     user-select: none;
+    flex-direction: column;
 }
 
 #dropdown input {
@@ -479,3 +458,26 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-
     transform: rotate(-45deg) translate(0, -1px);
 }
 
+
+@media (max-width: 900px) {
+    header a {display: none;}
+    #hamburger_dropdown a {
+        display: block;
+    }
+    #hamburger {display: flex;}
+    #motto, #description {margin-left: -30px !important}
+    #dropdown {display: block;}
+    #hamburger_dropdown {
+        display: none;
+        flex-direction: column;
+        z-index: 9;
+        background: var(--blue);
+        border-radius: 3px;
+        margin-right: 30px;
+        padding: 10px;
+        box-sizing: border-box;
+        justify-content: center;
+        align-content: center;
+        box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.25)
+    }
+}

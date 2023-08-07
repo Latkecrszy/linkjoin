@@ -2,7 +2,7 @@ let global_username, global_sort, tutorial_complete, global_links, webSocket, de
 let timeOffPage = 0
 let tutorial_active = false;
 let connected = true;
-
+var pageLoaded = false
 const notesInfo = {}
 
 
@@ -138,7 +138,7 @@ function edit(link) {
     document.getElementById("text_select").value = link["text"].toString()
     if (link['date']) {
         changeDateSelect()
-        let date = new Date(link['date']).toLocaleDateString()
+        let date = new Date(link['date']).toLocaleDateString("en-US")
         document.getElementById("date-select").value = addZeroes(date)
     }
 
@@ -261,8 +261,6 @@ async function restore(id, email) {
         body: JSON.stringify({id: id, email: email})
     })
     location.reload()
-
-
 }
 
 
@@ -290,7 +288,7 @@ function createLink(link, id="insert", iterator=0) {
     link_event.appendChild(joinMeeting)
     let linkDaysValue = link['days'].join(", ")
     if ('date' in link && link['date'] !== '') {
-        linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString()
+        linkDaysValue += ' - ' + new Date(link['date']).toLocaleDateString("en-US")
     }
     link_event.appendChild(createElement('p', ['days'], '', linkDaysValue))
     if (id === "insert") {
@@ -432,36 +430,44 @@ async function load_links(username, sort, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}`)
+    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}&origin=links`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }
     webSocket.onmessage = async (e) => {
         let links = JSON.parse(e.data)
-        for (const linkCategory of Object.values(links)) {
-            linkCategory.forEach(link => {
-                let newInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]),
-                    parseInt(link['time'].split(':')[1]), true)
-                if (newInfo['minute'] < 10) {
-                    newInfo['minute'] = `0${newInfo['minute']}`
-                }
-                link['days'] = newInfo['days']
-                link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
-                link['superDisabled'] = org_disabled === 'true';
-            })
-        }
+        Object.entries(links).forEach(([categoryName, linkCategory]) => {
+            if (!['bookmarks', 'pending-bookmarks', 'deleted-bookmarks'].includes(categoryName)) {
+                linkCategory.forEach(link => {
+                    console.log(link['time'])
+                    console.log(link)
+                    let newInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]),
+                        parseInt(link['time'].split(':')[1]), true)
+                    if (newInfo['minute'] < 10) {
+                        newInfo['minute'] = `0${newInfo['minute']}`
+                    }
+                    link['days'] = newInfo['days']
+                    link['time'] = `${newInfo['hour']}:${newInfo['minute']}`
+                    link['superDisabled'] = org_disabled === 'true';
+                })
+            }
+        })
         if (((global_links !== undefined && global_links['links'].length === 0) && links['links'].length === 1) ||
             (global_links !== undefined && global_links['links'].length === 1 && links['links'].length === 0)) {
             location.reload()
             return
         }
         global_links = links
-        if (links['links'].length === 0 && !insert.classList.contains('empty')) {
+
+        if (links['links'].length === 0 && !document.getElementById(id).classList.contains('empty') && pageLoaded) {
             location.reload()
         }
         await createLinks(username, links['links'], 'insert')
     }
     webSocket.onclose = () => {
+        if (connected) {
+            location.reload()
+        }
         connected = false
     }
     webSocket.onerror = (e) => {
@@ -497,7 +503,8 @@ async function load_links(username, sort, id="insert") {
     if (links.toString() === '' && id === 'insert' && global_links['pending-links'].length === 0) {
         await refresh(id)
         document.getElementById("header-links").style.margin = "0 0 0 0"
-        document.getElementById("disappear").classList.remove("gone")
+        document.getElementById('links-search-container').classList.add('gone')
+        document.getElementById("no-links-made").classList.remove("gone")
     }
     else if (links.toString() === '' && id !== 'insert') {
         insert.classList.add('empty')
@@ -528,6 +535,7 @@ async function load_links(username, sort, id="insert") {
         await sleep(3000)
         document.getElementsByClassName('highlight')[0].style.background = 'none'
     }
+    pageLoaded = true
     await start(username, links, sort)
 }
 
@@ -543,7 +551,17 @@ async function check_day(username) {
 }
 
 async function sort() {
-    location.replace("/sort?sort="+document.getElementsByClassName("sort")[0].value.toString())
+    await fetch('/sort', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            'email': global_username,
+            'sort': document.getElementsByClassName("sort")[0].value.toString()
+        })
+    })
+    location.reload()
 }
 
 
@@ -578,7 +596,6 @@ async function registerLink(parameter) {
     if (parameter === 'tutorial') {location.reload()}
     let hour = parseInt(document.getElementById("hour").value || document.getElementById("hour").placeholder)
     let minute = parseInt(document.getElementById("minute").value || document.getElementById("minute").placeholder)
-    if (minute.toString().length === 1) {minute = '0' + minute}
     if (document.getElementById("am").innerText === "PM" && hour !== 12) {hour += 12}
     else if (hour === 12 && document.getElementById("am").innerText === "AM") {hour += 12}
     let days = Array.from(document.getElementById("days").children).map(i => {
@@ -591,9 +608,11 @@ async function registerLink(parameter) {
         date = document.getElementById('date-select').value
         let hour = new Date().getHours().toString().length === 1 ? `0${new Date().getHours().toString()}` : new Date().getHours().toString()
         let minute = new Date().getMinutes().toString().length === 1 ? `0${new Date().getMinutes().toString()}` : new Date().getMinutes().toString()
+        let year = date.split('/')[2].length === 2 ? `20${date.split('/')[2]}` : date.split('/')[2]
         date = new Date(
-            `${date.split('/')[2]}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}`)
+            `${year}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}:00`)
             .toISOString()
+        //TODO: Check why thursday isn't working when day is set to wednesday, time at 5:00pm, date at 03/23/2023
     }
     let UTCInfo = toUTC(days, hour, minute)
     days = UTCInfo['days']
@@ -724,7 +743,6 @@ async function refresh(id="insert") {
     if (insert) {
         while (insert.firstChild) {insert.removeChild(insert.firstChild)}
     }
-
 }
 
 async function addNumberShow() {
@@ -838,14 +856,12 @@ function pageSetup() {
             document.getElementById('tutorial-menu').style.display !== 'none') {
             document.getElementById('tutorial-menu').style.display = 'none'
         }
-        else if (!e.target.classList.contains('menu_buttons') && e.target.id !== 'open-tutorial' && (e.target.parentElement && e.target.parentElement.id !== 'open-tutorial')) {
+
+        if (document.getElementById('tutorial').classList.contains('open') && (!document.getElementById('tutorial').contains(e.target) && e.target.id !== 'open-tutorial') ||
+            (e.target.classList.contains('close-on-click') || (e.target.parentElement && e.target.parentElement.classList.contains('close-on-click')))) {
             closeTutorial()
         }
-        if ((e.target.id !== 'open-tutorial' && !document.getElementById('tutorial').contains(e.target) &&
-            e.target.id !== 'tutorial') || (e.target.parentElement.classList.value === 'menu tutorial' ||
-            e.target.parentElement.parentElement.classList.value === 'menu tutorial') && e.target.innerText !== 'Copy link'){
-            closeTutorial()
-        }
+
 
     })
 
@@ -1040,6 +1056,15 @@ async function formatDate(el) {
 
 function timeListener(e, index, arr) {
     e.addEventListener('keypress', i => {
+        if (i.key === ':') {
+            i.preventDefault()
+            document.getElementsByClassName('popup-time')[2].focus()
+            return
+        }
+        if (!(i.code.includes('Digit'))) {
+            i.preventDefault()
+            return
+        }
         if (index === 0) {
             if (parseInt(i.key) > 1 || parseInt(e.value.length) === 1) {
                 e.value += i.key
@@ -1049,6 +1074,7 @@ function timeListener(e, index, arr) {
              if (!i.code.includes('Digit') || e.value.length > 1 || (e.value.length === 1 && (parseInt(e.value) > 1 || parseInt(i.key) > 2))) {
                 i.preventDefault()
              }
+
              if (parseInt(e.value) > 12) {
                  e.value = e.value.slice(0, -1)
              }
@@ -1114,7 +1140,6 @@ function createShareEmail() {
     container.insertBefore(newEmail, container.children[container.children.length-1])
     input.value = ''
     input.placeholder = ''
-
 }
 
 function removeEmail(el) {
@@ -1173,11 +1198,15 @@ function showPopupEmailsInput() {
 function shareLink(link) {
     document.getElementById('popup-share-button').innerHTML = document.getElementById('popup-share-button').innerHTML.replace('Send', 'Sent!')
     let emails = []
-    for (let i = 0; i < document.getElementById('popup-share-emails-container').children.length-1; i++) {
-        if (document.getElementById('popup-share-emails-container').children[i].style.color !== 'red') {
-            emails.push(document.getElementById('popup-share-emails-container').children[i].innerText)
+    for (const i of document.getElementsByClassName('popup-share-email')) {
+        if (i.style.color !== 'red') {
+            emails.push(i.innerText)
+        }
+        else {
+            console.log(`invalid email ${i.innerText}`)
         }
     }
+    console.log(emails)
     let UTCInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]), parseInt(link['time'].split(':')[1]))
     link['days'] = UTCInfo['days']
     link['time'] = `${UTCInfo['hour']}:${UTCInfo['minute']}`
@@ -1253,3 +1282,37 @@ async function disableAll(checked) {
     })
     location.reload()
 }
+
+
+async function adminView(checked) {
+    await fetch('/admin-view', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({'email': global_username, 'admin_view': checked})
+    })
+    location.reload()
+}
+
+
+function searchLinks(value) {
+    let visible = []
+    for (const link of global_links['links']) {
+        console.log(link['time'])
+        if (link['name'].toLowerCase().includes(value.toLowerCase()) || link['link'].toLowerCase().includes(value.toLowerCase())
+         || (admin_view === 'true' && link['username'].toLowerCase().includes(value.toLowerCase()))) {
+            visible.push(link)
+        }
+    }
+    if (visible.length === 0) {
+        document.getElementById('no-links-search').classList.remove('gone')
+    }
+    else if (!document.getElementById('no-links-search').classList.contains('gone')) {
+        document.getElementById('no-links-search').classList.add('gone')
+    }
+    createLinks(global_username, visible)
+}
+
+/*export {createElement, sendNotif, copyLink, logOut, refresh, createShareEmail, removeEmail, hidePopupEmailsInput,
+showPopupEmailsInput, verifyEmail}*/

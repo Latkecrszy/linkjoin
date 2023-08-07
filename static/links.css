@@ -19,14 +19,6 @@
     width: 100px;
 }
 
-
-#click_the_plus {
-    font-weight: 500;
-    font-size: 16px;
-    width: 100%;
-    text-align: center;
-}
-
 .sort {
     border-radius: 3px;
     background-color: var(--lightblue);
@@ -45,7 +37,12 @@
 
 #home {margin: 22px min(140px, 5vw) 0 0;}
 
-.header_button {margin-top: 17px;}
+.header_button {
+    margin-top: 17px;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: normal;
+}
 
 #popup, #popup-notes, .popup {
     background-color: var(--darkblue);
@@ -238,6 +235,10 @@ input {color: white; font-family: Montserrat;}
     align-items: center;
     margin: 0;
     width: 100vw;
+}
+
+#insert {
+    margin-top: 40px;
 }
 
 #deleted-links {
@@ -469,7 +470,7 @@ input {color: white; font-family: Montserrat;}
 
 option {color: black}
 
-#disappear {
+.no-links {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -478,9 +479,20 @@ option {color: black}
 
 }
 
-#disappear img {
+.no-links img {
     margin-top: 100px;
     max-width: 95vw;
+}
+
+.no-links div {
+    font-weight: 500;
+    font-size: 16px;
+    width: 100%;
+    text-align: center;
+}
+
+#no-links-search img {
+    margin-top: 50px;
 }
 
 .date {

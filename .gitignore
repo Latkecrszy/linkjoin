@@ -9,6 +9,7 @@ __pycache__
 app.yaml
 nginx.conf
 google-cloud-sdk
+venv
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
