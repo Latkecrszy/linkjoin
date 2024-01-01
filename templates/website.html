@@ -21,8 +21,9 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
         <title>LinkJoin - Auto Join and Organize Virtual Meetings</title>
-        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
-        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
+        <link rel="shortcut icon" href="../logo.svg">
+        <link rel="icon" type="image/svg" href="../logo.svg">
+        <link rel="apple-touch-icon" href="../logo.svg">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://linkjoin.xyz">
         <meta property="og:title" content="LinkJoin">
@@ -41,7 +42,8 @@
         </svg>
         <header>
             <img id="logo" src="../static/images/logo-text.svg" height="40" alt="LinkJoin Logo">
-            <a href="/links" class="underline">My Links</a>
+            <a href="/links" class="underline">Meetings</a>
+            <a href="/bookmarks" class="underline">Bookmarks</a>
             <a href="/pricing" class="underline">Pricing</a>
             <a href="/signup" class="underline">Sign Up</a>
             <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
@@ -53,9 +55,14 @@
                 <span></span>
                 <div id="hamburger_dropdown">
                     <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <hr class="menu_line">
                     <a href="/signup" class="underline">Sign Up</a>
+                    <hr class="menu_line">
                     <a href="/pricing" class="underline">Pricing</a>
-                    <a href="/links" class="underline">Links</a>
+                    <hr class="menu_line">
+                    <a href="/bookmarks" class="underline">Bookmarks</a>
+                    <hr class="menu_line">
+                    <a href="/links" class="underline">Meetings</a>
                 </div>
               </div>
 
@@ -77,10 +84,9 @@
             <h1 class="what-is-linkjoin">What is LinkJoin?</h1>
             <div class="description desktop">
                 <div class="background"></div>
-                COVID-19 catapulted millions of students into virtual learning and introduced us all to the future of
-                work, school, and productivity: virtual meetings. While virtual meetings have huge advantages over their
-                physical counterparts, one thing that all meetings lack is a system for ensuring that everyone can arrive
-                right on time. LinkJoin organizes and automatically opens virtual meetings to ensure that you're never late again.
+                In our modern world, there's no need to lose track of links, search through your email for
+                appointment details, or forget to join a meeting. Let LinkJoin handle the little things so you can focus
+                on that important meeting instead.
             </div>
 
             <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
@@ -198,7 +204,8 @@
                 <p class="title">Pages</p>
                 <a href="/login">Login</a>
                 <a href="/signup">Signup</a>
-                <a href="/links">Links</a>
+                <a href="/links">Meetings</a>
+                <a href="/bookmarks">Bookmarks</a>
                 <a href="/privacy">Privacy Policy</a>
                 <a href="/reset-password">Reset Password</a>
                 <a href="https://storyset.com" target="_blank" rel="noreferrer">Graphics Source</a>

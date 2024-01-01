@@ -373,7 +373,9 @@ iframe {
     margin-top: 150px;
 }
 
-
+#hamburger_dropdown a {
+    margin: 5px 20px;
+}
 
 
 
@@ -405,7 +407,7 @@ iframe {
     #main_html {margin-right: 3vw}
 }
 
-@media (max-width: 870px) {
+@media (max-width: 900px) {
     #hamburger_dropdown {
         display: none;
         height: fit-content;

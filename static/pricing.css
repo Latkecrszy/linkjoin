@@ -48,7 +48,7 @@ header a {
 }
 
 
-@media (max-width: 870px) {
+@media (max-width: 900px) {
     #hamburger_dropdown {
         display: none;
         height: fit-content;

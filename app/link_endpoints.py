@@ -35,10 +35,6 @@ async def register(request: Request) -> Response:
     db.links.insert_one(insert)
     db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
     analytics('links_made')
-
-    await manager.update(configure_data(data.get('email')), email, 'register')
-    if insert['text'] != 'false':
-        create_text_job(link, True)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -122,10 +118,7 @@ async def update(request: Request) -> Response:
         if data.get('password'):
             update_link['password'] = encoder.encrypt(data.get('password').encode())
         db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
-    link = db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert, return_document=ReturnDocument.AFTER)
-    await manager.update(configure_data(data.get('email')), email, 'update')
-    if link['text'] != 'false':
-        create_text_job(link, True)
+    db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -138,11 +131,7 @@ async def disable(request: Request) -> Response:
     link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
     db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
                                 {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}},
-                                 return_document=ReturnDocument.AFTER)
-
-    await manager.update(configure_data(data.get('email')), data.get('email'), 'disable')
-    if link['text'] != 'false':
-        create_text_job(link, True)
+                                return_document=ReturnDocument.AFTER)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -151,14 +140,9 @@ async def change_var(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
 
-    link = db.links.find_one({"username": data.get('email').lower(), 'id': int(data.get("id"))})
     db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {data.get('variable'): data.get(data.get('variable'))}},
                                  return_document=ReturnDocument.AFTER)
-
-    await manager.update(configure_data(data.get('email')), data.get('email'), 'change_var')
-    if link['text'] != 'false':
-        create_text_job(link, True)
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 

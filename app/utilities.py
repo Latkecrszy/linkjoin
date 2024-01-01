@@ -56,7 +56,7 @@ def authenticated(cookies: dict, email: str) -> bool:
         return False
 
 
-def configure_data(email: str) -> dict[str, list[dict]]:
+def configure_data(email: str, source="unimportant") -> dict[str, list[dict]]:
     admin_view = db.login.find_one({'username': email}).get('admin_view')
     if admin_view == 'true':
         links_list = {
@@ -65,7 +65,7 @@ def configure_data(email: str) -> dict[str, list[dict]]:
             'deleted-links': list(db.deleted_links.find()),
             'bookmarks': list(db.bookmarks.find()),
             'pending-bookmarks': [],
-            'deleted-bookmarks': list(db.deleted_bookmarks.find())
+            'deleted-bookmarks': list(db.deleted_bookmarks.find()),
         }
     else:
         links_list = {
@@ -74,7 +74,7 @@ def configure_data(email: str) -> dict[str, list[dict]]:
             'deleted-links': list(db.deleted_links.find({'username': email})),
             'bookmarks': list(db.bookmarks.find({'username': email})),
             'pending-bookmarks': list(db.pending_bookmarks.find({'username': email})),
-            'deleted-bookmarks': list(db.deleted_bookmarks.find({'username': email}))
+            'deleted-bookmarks': list(db.deleted_bookmarks.find({'username': email})),
         }
     links_list = {key: [{i: j for i, j in link.items() if i != '_id'} for link in links] for key, links in
                   links_list.items()}

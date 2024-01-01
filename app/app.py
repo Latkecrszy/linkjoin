@@ -16,7 +16,8 @@ routes = [
     Route('/logout', endpoint=logout, methods=['GET']), Route('/confirm_email', endpoint=confirm_email, methods=['POST']),
     Route('/signup', endpoint=signup, methods=['GET']), Route('/set_cookie', endpoint=set_cookie, methods=['GET']),
     Route('/get_session', endpoint=get_session, methods=['GET']), Route('/register', endpoint=register, methods=['POST']),
-    Route('/links', endpoint=links, methods=['GET']), Route('/delete', endpoint=delete, methods=['POST']),
+    Route('/links', endpoint=links, methods=['GET']), Route('/meetings', endpoint=links, methods=['GET']),
+    Route('/delete', endpoint=delete, methods=['POST']),
     Route('/bookmarks', endpoint=bookmarks, methods=['GET']), Route('/restore', endpoint=restore, methods=['POST']),
     Route('/update', endpoint=update, methods=['POST']), Route('/disable', endpoint=disable, methods=['POST']),
     Route('/sort', endpoint=sort, methods=['POST']), Route('/changevar', endpoint=change_var, methods=['POST']),
@@ -114,7 +115,6 @@ routes = [
     Mount('/static/images', StaticFiles(directory='static'), name='heart.svg'),
     Mount('/static/images', StaticFiles(directory='static'), name='loading2.gif'),
     Mount('/static/images', StaticFiles(directory='static'), name='undo.svg')
-
 ]
 
 app = Starlette(routes=routes, debug=False, exception_handlers={404: not_found}, on_startup=[create_text_jobs, lambda: print('Started app.')])

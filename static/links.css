@@ -552,5 +552,7 @@ option {color: black}
     background: #eb4236;
 }
 
-
-
+#hamburger_dropdown {
+    height: 120px;
+    width: 115px;
+}

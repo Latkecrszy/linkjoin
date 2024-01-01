@@ -332,9 +332,7 @@ function createLink(link, id="insert", iterator=0) {
         link_event.appendChild(menu)
     }
     //TODO: Make hoverable and make links not open (actually disable them in redirect.js (or here))
-    console.log('checking superdisabled')
     if (link['superDisabled']) {
-        console.log('disabled better')
         link_event.classList.add('superDisabled')
         link_event.title = 'This link has been disabled by your organization administrator'
     }
@@ -439,8 +437,9 @@ async function load_links(username, sort, id="insert") {
         Object.entries(links).forEach(([categoryName, linkCategory]) => {
             if (!['bookmarks', 'pending-bookmarks', 'deleted-bookmarks'].includes(categoryName)) {
                 linkCategory.forEach(link => {
-                    console.log(link['time'])
-                    console.log(link)
+                    if ('source' in link) {
+                        console.log('source: ' + link['source'])
+                    }
                     let newInfo = toUTC(link['days'], parseInt(link['time'].split(':')[0]),
                         parseInt(link['time'].split(':')[1]), true)
                     if (newInfo['minute'] < 10) {
@@ -1108,7 +1107,9 @@ function closePopup() {
 
 document.addEventListener('visibilitychange', async e => {
     if ((Date.now() - timeOffPage)/1000 > 60 && document.visibilityState === 'visible') {
-        location.reload()
+        if (!connected) {
+            location.reload()
+        }
     }
     timeOffPage = Date.now()
 

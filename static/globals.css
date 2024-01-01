@@ -458,6 +458,12 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-
     transform: rotate(-45deg) translate(0, -1px);
 }
 
+.menu_line {
+    width: 90%;
+    opacity: 0.1;
+    border-radius: 10px;
+}
+
 
 @media (max-width: 900px) {
     header a {display: none;}

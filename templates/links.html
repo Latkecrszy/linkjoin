@@ -161,6 +161,8 @@
                     <span></span>
                     <span></span>
                     <div id="hamburger_dropdown">
+                        <div class="underline" onclick="location.replace('/bookmarks')">Bookmarks</div>
+                        <hr class="menu_line">
                         <div class="underline" onclick="openSettings()">Settings</div>
                         <hr class="menu_line">
                         <div class="underline" onclick="logOut()">Log Out</div>
@@ -345,19 +347,6 @@
                 In each step, you'll find a description of a part of the page, along with a demo to play
                 around with. Without further ado, let's get started!
             </p>
-            <!--<div class="tutorial-step">
-                <div>
-                    <h3>Take Notes</h3>
-                </div>
-                <p>
-                    You can take notes on your meetings right in LinkJoin!
-                    Click on this box to view your meeting notes, if you have any.
-                </p>
-                <div class="demo">
-                    <button class="show-notes tutorial" onclick="showNotes()">Meeting Notes</button>
-                </div>
-
-            </div>-->
             <div class="tutorial-step">
                 <div>
                     <h3>Change Settings</h3>
@@ -390,8 +379,8 @@
                     <h3>Disable and Enable Links</h3>
                 </div>
                 <p>
-                    Near the right side of your link, you'll see a blue switch. You can use this to change whether or not
-                    your link will open automatically (blue means it will, gray means it will not).
+                    Near the right side of your link, you'll see a blue switch. This controls whether your link will open
+                    automatically and text you (blue means it will, gray means it will not).
                 </p>
                 <div class="demo">
                     <div>
@@ -429,7 +418,7 @@
                 </div>
                 <p>
                     In the dot menu of your links, you'll see a variety of options, the first of which is the edit button.
-                    This lets you adjust your link's settings if you made a mistake, or just want to change something.
+                    This lets you adjust your link's settings.
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
@@ -450,8 +439,7 @@
                     <h3>Delete Links</h3>
                 </div>
                 <p>
-                    The second button of the dot menu is the delete button. This allows you to delete links
-                    from your LinkJoin. After links are deleted, they are moved into the deleted links section,
+                    The second button of the dot menu is the delete button. After links are deleted, they are moved into the deleted links section,
                     which can be access through settings.
                 </p>
                 <div class="demo" style="height: 220px;">
@@ -473,10 +461,9 @@
                     <h3>Share Links</h3>
                 </div>
                 <p>
-                    Below the delete button of the dot menu, you'll find the share button. This lets you copy a link
-                    that you can send to others that will add your link with all its information to their LinkJoin.
-                    This feature is especially useful for sending a link out to large volumes of people, because it
-                    guarantees that they have the correct time and date with just the click of a link.
+                    Below the delete button of the dot menu, you'll find the share button. This allows you to send your
+                    link to anyone by entering their email address. The link will show up in their LinkJoin with an option
+                    to accept or decline, and they will receive an email informing them that they've received your link.
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
@@ -497,10 +484,8 @@
                     <h3>Take Notes</h3>
                 </div>
                 <p>
-                    The penultimate button in the dot menu is the notes button. This button creates a note for your meeting,
-                    letting you take notes about it right in LinkJoin. These notes are auto-saved within LinkJoin, and
-                    can be accessed by clicking the notes button again, or by clicking the <i>Meeting Notes</i> button
-                    and searching for the meeting.
+                    The notes button creates a note for your meeting, letting you take notes about it right in LinkJoin.
+                    These notes can be accessed by clicking the notes button again.
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">
@@ -521,9 +506,8 @@
                     <h3>Copy Link</h3>
                 </div>
                 <p>
-                    The last button you will always see in the dot menu of your links is the copy link button. All this
-                    button does is copy your meeting link. This is <b><u>not</u></b> the same as the Share button, which
-                    copies a link that will add your scheduled meeting to someone else's LinkJoin.
+                    The last button you will always see in the dot menu of your links is the copy link button. This button
+                    copies your meeting link.
                 </p>
                 <div class="demo" style="height: 220px;">
                     <div class="menu tutorial" style="height: 190px; display: flex;">

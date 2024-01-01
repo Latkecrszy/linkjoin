@@ -37,6 +37,7 @@ class WebSocketManager:
         print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str, origin=None) -> None:
+        print("origin: " + origin)
         if email in self.connections:
             websockets_to_remove = []
             for websocket in self.connections[email]:
@@ -80,7 +81,7 @@ async def watch(websocket, email) -> None:
             d = await change_stream.next()
             if 'fullDocument' not in d:
                 continue
-            await manager.update((configure_data(d['fullDocument']['username'])), d['fullDocument']['username'], 'watch')
+            await manager.update((configure_data(d['fullDocument']['username'], 'watch')), d['fullDocument']['username'], 'watch')
             link = d['fullDocument']
             link['number'] = (await motor.login.find_one({'username': link['username']})).get('number')
             print('watching')
@@ -99,7 +100,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
         return JSONResponse({'error': 'Forbidden'}, 403)
 
     await manager.connect(websocket, email, websocket.query_params.get('origin'))
-    await manager.update((configure_data(email)), email, 'database_ws')
+    await manager.update((configure_data(email, 'database_ws')), email, 'database_ws')
     print('doing things here')
     if email not in watching:
         watching.append(email)
