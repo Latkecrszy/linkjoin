@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="canonical">
+        <link rel="manifest" href="../static/manifest.json">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="../static/globals.js"></script>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-MR5B009GBF');
+        </script>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <link href="../static/globals.css" rel="stylesheet"/>
+         <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <img id="logo" src="../static/images/logo-text.svg" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <a href="/links" class="underline">Meetings</a>
+            <a href="/bookmarks" class="underline">Bookmarks</a>
+            <a href="/login" class="underline">Log In</a>
+            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+
+            <div id="dropdown">
+                <input id="dropdown-checkbox" type="checkbox"/>
+                <span></span>
+                <span></span>
+                <span></span>
+                <div id="hamburger_dropdown">
+                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <a href="/signup" class="underline">Sign Up</a>
+                    <a href="/links" class="underline">Meetings</a>
+                    <a href="/bookmarks" class="underline">Bookmarks</a>
+                </div>
+              </div>
+        </header>
+
+        <p style="color: white; font-size: 20px;" id="links-opened">Links opened: {{ links_opened }}</p>
+        <p style="color: white; font-size: 20px;" id="links-made">Links made: {{ links_made }}</p>
+        <p style="color: white; font-size: 20px;" id="users">Users: {{ users }}</p>
+        <p style="color: white; font-size: 20px;" id="signups">Signups: {{ signups }}</p>
+        <p style="color: white; font-size: 20px;" id="logins">Logins: {{ logins }}</p>
+    </body>
+</html>

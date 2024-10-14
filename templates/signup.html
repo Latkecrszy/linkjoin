@@ -57,12 +57,19 @@
                 <div class="error" id="other_error" style="display: none">Something went wrong, please refresh the page and try again.</div>
                 <div class="error" id="google_signup_failed" style="display: none">Google signup failed, please refresh the page and try again.</div>
                 <div id="gsignin">Log In With Google</div>
-                <div style="width: 100%; height: 10px; border-bottom: 2px solid white; text-align: center; opacity: 0.4; margin-top: 20px;">
+                <div id="or-div">
                     <span style="font-size: 20px; background-color: var(--blue); padding: 0 4px;"> Or </span>
                 </div>
                 <input type="email" name="email" id="email" placeholder="Email" required>
                 <input id="password" name="password" placeholder="Password" type="password" required>
-                <input id="phone" name="phone" placeholder="Phone Number (Optional)" type="text"><br>
+                <span id="phone-container">
+                    <select id="phone-select" onchange="adjustNumberPadding(this)" style="width: 54px">
+                        {% for country, number in country_codes.items() %}
+                        <option name="{{ country }}" value="{{ number }}">{{ country }}, +{{ number }}</option>
+                        {% endfor %}
+                    </select>
+                    <input id="phone" name="phone" type="text">
+                </span><br>
                 <div class="keep_div" id="keep_div"><input type="checkbox" name="keep" class="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
                 <div class="keep_div"><input type="checkbox" class="keep" name="keep"><p class="keep_text">Sign me up for emails and updates</p></div>
                 <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="../static/images/right-angle.svg" alt="right arrow"></button>
@@ -78,7 +85,7 @@
             }
         });
 
-        document.addEventListener('visibilitychange', async () => {
+        /*document.addEventListener('visibilitychange', async () => {
             const tokenStatus = await fetch(`/validatetoken`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -88,7 +95,7 @@
             if (tokenStatus['status'] !== 'valid') {
                 location.reload()
             }
-        })
+        })*/
 
         window.addEventListener('load', () => {
             google.accounts.id.initialize({
@@ -103,11 +110,8 @@
         const date = new Date()
         let offset = (date.getTimezoneOffset()/60).toString()
         if (!offset.includes(".")) {offset = `${offset}.0`}
-        const countryCodes = {{ country_codes|tojson|safe }}
-        let country = fetch('https://linkjoin.xyz/location').then(response => response.json())
         let timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
         async function signUp() {
-
             console.log(offset)
             console.log(timezone)
             const data = await fetch('/confirm_email', {
@@ -117,7 +121,7 @@
                     email: document.getElementById("email").value, redirect: "{{ redirect }}",
                     keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
                     offset: offset, timezone: timezone, password: document.getElementById("password").value,
-                    countrycode: countryCodes[country['country']]['code'], token: token
+                    countrycode: document.getElementById('phone-select').value, token: token
                 }),
             })
             await processData(data)
@@ -127,11 +131,12 @@
             disableButton(document.getElementById('submit'))
             disableButton(document.getElementById('gsignin'))
             let country = await fetch('https://linkjoin.xyz/location').then(response => response.json())
+            console.log(country)
             const data = await fetch('/confirm_email', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
                 body: JSON.stringify({redirect: "{{ redirect }}", keep: document.getElementById("keep").checked,
-                    jwt: r.credential.toString(), token: token, countrycode: countryCodes[country['country']]['code'],
+                    jwt: r.credential.toString(), token: token, countrycode: document.getElementById('phone-select').value,
                     offset: offset, timezone: timezone})
             })
             await processData(data)
@@ -146,7 +151,6 @@
         document.getElementById('email').style.border = "none"
         document.getElementById('password').style.border = "none"
         data = await data.json()
-        token = data['token']
         if (data['error'] === '') {
             location.replace(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
         } else {
@@ -165,6 +169,14 @@
             }
 
         }
+    }
+
+
+    function adjustNumberPadding(el) {
+        let selectedText = el.options[el.selectedIndex].text;
+        el.style.width = `${selectedText.length*9}px`
+        document.getElementById('phone').style.paddingLeft = `${selectedText.length*10}px`
+        document.getElementById('phone').focus()
     }
 
   </script>

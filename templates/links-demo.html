@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>LinkJoin Bookmarks</title>
+        <link rel="manifest" href="../static/manifest.json">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MR5B009GBF"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-MR5B009GBF');
+        </script>
+        <link href="../static/globals.css" rel="stylesheet"/>
+        <link href="../static/link.css" rel="stylesheet"/>
+        <link href="../static/demo.css" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&display=swap" rel="stylesheet">
+        <link rel="shortcut icon" href="../static/images/logo.svg" class="logo">
+        <link rel="apple-touch-icon" href="../static/images/logo.svg" class="logo">
+        <script src="../static/globals.js"></script>
+        <script src="../static/demo.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name=”robots” content="index, follow"/>
+        <meta name="description" content="View, schedule, and organize all your links all in one place">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="theme-color" content="#091B30">
+    </head>
+    <body>
+        <header>
+            <img id="logo" src="../static/images/logo-text.svg" height="40" alt="LinkJoin Logo" onclick="location.replace('/')">
+            <a href="/bookmarks" class="underline header_button">Bookmarks</a>
+            <a href="/pricing" class="underline header_button">Pricing</a>
+            <a href="/signup" class="underline header_button">Sign Up</a>
+            <a href="/login" class="login_button">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+
+            <div id="dropdown">
+                <input id="dropdown-checkbox" type="checkbox"/>
+                <span></span>
+                <span></span>
+                <span></span>
+                <div id="hamburger_dropdown">
+                    <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <hr class="menu_line">
+                    <a href="/signup" class="underline">Sign Up</a>
+                    <hr class="menu_line">
+                    <a href="/pricing" class="underline">Pricing</a>
+                    <hr class="menu_line">
+                    <a href="/bookmarks" class="underline">Bookmarks</a>
+                </div>
+              </div>
+        </header>
+        <div id="page">
+            <div id="left" class="meetings">
+                <h1 id="left-header">Meetings</h1>
+                <div id="left-content">
+                    <div id="why-bookmarks">
+                        <p><b>Why use LinkJoin Meetings? </b> It's easy for meeting links to get buried in your texts or emails.
+                        Here's how LinkJoin helps:</p><br>
+                         <div id="info-boxes">
+                             <div class="info-box">
+                                <img src="../static/images/mouse-pointer.svg" alt="pointer" class="info-image">
+                                <h2>Auto-join Meetings</h2>
+                                <p>
+                                    Meetings automatically open on your computer, so you don't even have to look for the link.
+                                </p>
+                            </div>
+                            <div class="info-box">
+                                <img alt="1" src="../static/images/circle-1-light.svg" class="info-image">
+                                <h2>One Location</h2>
+                                <p>
+                                    Regardless of what device you're on or what browser you're using, your links are easily findable.
+                                </p>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="divider" class="meetings">
+                <div class="link">
+                    <div class="join-meeting">
+                        <p class="name"></p>
+                        <p class="description"></p>
+                    </div>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots">
+                </div>
+                <div class="link">
+                    <div class="join-meeting">
+                        <p class="name"></p>
+                        <p class="description"></p>
+                    </div>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots">
+                    <div class="menu" style="height: 150px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+                <div class="link">
+                    <div class="join-meeting">
+                        <p class="name"></p>
+                        <p class="description"></p>
+                    </div>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots">
+                    <div class="menu" style="height: 150px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+                <div class="link">
+                    <div class="join-meeting">
+                        <p class="name"></p>
+                        <p class="description"></p>
+                    </div>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots">
+                    <div class="menu" style="height: 150px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+            </div>
+            <div id="right" class="meetings">
+                <div class="link">
+                    <p class="time">1:00 pm</p>
+                    <div class="join-meeting">
+                        <p class="name">Meeting 1</p>
+                        <p class="description">Click to open bookmark</p>
+                    </div>
+                    <p class="days">Sun</p>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots" onclick="this.parentElement.getElementsByClassName('menu')[0].style.display = 'block'">
+                    <div class="menu meetings" style="height: 190px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Notes</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+                <div class="link">
+                    <p class="time">2:00 pm</p>
+                    <div class="join-meeting">
+                        <p class="name">Meeting 2</p>
+                        <p class="description">Click to open bookmark</p>
+                    </div>
+                    <p class="days">Sun</p>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots" onclick="this.parentElement.getElementsByClassName('menu')[0].style.display = 'block'">
+                    <div class="menu meetings" style="height: 190px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Notes</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+                <div class="link">
+                   <p class="time">3:00 pm</p>
+                    <div class="join-meeting">
+                        <p class="name">Meeting 3</p>
+                        <p class="description">Click to open bookmark</p>
+                    </div>
+                    <p class="days">Sun</p>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots" onclick="this.parentElement.getElementsByClassName('menu')[0].style.display = 'block'">
+                    <div class="menu meetings" style="height: 190px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Notes</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+                <div class="link">
+                    <p class="time">4:00 pm</p>
+                    <div class="join-meeting">
+                        <p class="name">Meeting 4</p>
+                        <p class="description">Click to open bookmark</p>
+                    </div>
+                    <p class="days">Sun</p>
+                    <img class="dot-menu" src="../static/images/ellipsis.svg" alt="3 dots" onclick="this.parentElement.getElementsByClassName('menu')[0].style.display = 'block'">
+                    <div class="menu meetings" style="height: 190px;">
+                        <div>Edit</div>
+                        <hr class="menu_line">
+                        <div>Delete</div>
+                        <hr class="menu_line">
+                        <div>Share</div>
+                        <hr class="menu_line">
+                        <div>Notes</div>
+                        <hr class="menu_line">
+                        <div>Copy link</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-logo">
+                <img src="../static/images/logo-text.svg" alt="LinkJoin Logo">
+                <p>Never be late again</p>
+            </div>
+            <div class="column-container">
+                <div class="footer-column">
+                <p class="title">Contact</p>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=seth@linkjoin.xyz&tf=cm">seth@linkjoin.xyz</a>
+                <p style="margin: 0;">(925) 360-3457</p>
+            </div>
+            <div class="footer-column">
+                <p class="title">Pages</p>
+                <a href="/login">Login</a>
+                <a href="/signup">Signup</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/links">Meetings</a>
+                <a href="/bookmarks">Bookmarks</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/reset-password">Reset Password</a>
+                <a href="https://storyset.com" target="_blank" rel="noreferrer">Graphics Source</a>
+            </div>
+            </div>
+            <div class="copyright">
+                <hr>
+                <p>© Copyright 2024 LinkJoin. All rights reserved.</p>
+            </div>
+        </footer>
+    </body>
+    <script>
+        document.addEventListener('click', e => {
+            if (!e.target.classList.contains('dot-menu')) {
+                Array.from(document.getElementsByClassName('menu')).forEach(e => e.style.display = 'none')
+            }
+        })
+    </script>
+</html>

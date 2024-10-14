@@ -2,6 +2,7 @@ let global_username, global_sort, tutorial_complete, global_links, webSocket, de
 let timeOffPage = 0
 let tutorial_active = false;
 let connected = true;
+let update_id = ''
 var pageLoaded = false
 const notesInfo = {}
 
@@ -105,6 +106,7 @@ async function popUp(popup) {
         }
     }
     document.getElementById("0").selected = "selected"
+    document.getElementById('date-select').addEventListener('keydown', formatDate)
 }
 
 function hide(popup, showBlur=false) {
@@ -434,8 +436,15 @@ async function load_links(username, sort, id="insert") {
     }
     webSocket.onmessage = async (e) => {
         let links = JSON.parse(e.data)
+        console.log(update_id)
+        console.log(links['update_id'])
+        if (links['update_id'] === update_id) {
+            return
+        }
+        console.log(links)
+        update_id = links['update_id']
         Object.entries(links).forEach(([categoryName, linkCategory]) => {
-            if (!['bookmarks', 'pending-bookmarks', 'deleted-bookmarks'].includes(categoryName)) {
+            if (!['bookmarks', 'pending-bookmarks', 'deleted-bookmarks', 'update_id'].includes(categoryName)) {
                 linkCategory.forEach(link => {
                     if ('source' in link) {
                         console.log('source: ' + link['source'])
@@ -611,7 +620,6 @@ async function registerLink(parameter) {
         date = new Date(
             `${year}-${date.split('/')[0]}-${date.split('/')[1]}T${hour}:${minute}:00`)
             .toISOString()
-        //TODO: Check why thursday isn't working when day is set to wednesday, time at 5:00pm, date at 03/23/2023
     }
     let UTCInfo = toUTC(days, hour, minute)
     days = UTCInfo['days']
@@ -992,64 +1000,71 @@ function checkDate(el) {
     }
 }
 
-async function formatDate(el) {
+
+function formatDate(e) {
+    console.log(e.code)
+    console.log(['Digit', 'Left', 'Right', 'Backspace', 'Escape', 'Shift'].some(el => {return e.code.includes(el)}))
     const monthLengths = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
-    el.addEventListener('keypress', e => {
-        if (!(e.code.includes('Digit') || e.key === '/')) {
+    let el = document.getElementById('date-select')
+    if (['Left', 'Right', 'Backspace', 'Escape', 'Shift'].some(el => {return e.code.includes(el)}) || e.altKey ||
+        e.metaKey || e.ctrlKey) {
+        return
+    }
+    if (!(e.key === '/' || e.code.includes('Digit'))) {
+        e.preventDefault()
+        return
+    }
+    let input = (el.value + e.key).split('/')
+    if (input[input.length - 1] === '') {
+        input.pop()
+    }
+    // Month:
+    if (input.length === 1) {
+        input = input[0]
+        if (input.length === 1 && parseInt(input) > 1) {
+            el.value = `0${input}/`
             e.preventDefault()
-            return
-        }
-        let input = (el.value + e.key).split('/')
-        if (input[input.length - 1] === '') {
-            input.pop()
-        }
-        // Month:
-        if (input.length === 1) {
-            input = input[0]
-            if (input.length === 1 && parseInt(input) > 1) {
-                el.value = `0${input}/`
-                e.preventDefault()
-            } else if (input.length === 2 && parseInt(input) <= 12) {
-                el.value += `${e.key}/`
-                e.preventDefault()
-            }
-
-            if (input.length > 2) {
-                e.preventDefault()
-            } else if (parseInt(input) > 12) {
-                e.preventDefault()
-            }
+        } else if (input.length === 2 && parseInt(input) <= 12) {
+            el.value += `${e.key}/`
+            e.preventDefault()
         }
 
+        if (input.length > 2) {
+            e.preventDefault()
+        } else if (parseInt(input) > 12) {
+            e.preventDefault()
+        }
+    }
 
-        else if (input.length === 2) {
-            let month = input[0]
-            input = input[1]
-            if (input.length === 1 && parseInt(input) > 3) {
-                el.value = `${month}/0${input}/`
-                e.preventDefault()
-            } else if (input.length === 2 && parseInt(input) <= monthLengths[parseInt(month)]) {
-                el.value += `${e.key}/`
-                e.preventDefault()
-            }
-
-            if (input.length > 2) {
-                e.preventDefault()
-            } else if (parseInt(input) > monthLengths[parseInt(month)]) {
-                e.preventDefault()
-            }
+    // Day:
+    else if (input.length === 2) {
+        let month = input[0]
+        input = input[1]
+        if (input.length === 1 && parseInt(input) > 3) {
+            el.value = `${month}/0${input}/`
+            e.preventDefault()
+        } else if (input.length === 2 && parseInt(input) <= monthLengths[parseInt(month)]) {
+            el.value += `${e.key}/`
+            e.preventDefault()
         }
 
-        else if (input.length === 3) {
-            if (parseInt(input[input.length-1]) === 22) {
-                el.value = `${el.value.substring(0, el.value.length-2)}/202`
-            }
+        if (input.length > 2) {
+            e.preventDefault()
+        } else if (parseInt(input) > monthLengths[parseInt(month)]) {
+            e.preventDefault()
         }
-        if ((el.value+e.key)[(el.value+e.key).length-1] === (el.value+e.key)[(el.value+e.key).length-2] &&
-            (el.value+e.key)[(el.value+e.key).length-1] === '/') {
-            el.value = el.value.substring(0, el.value.length-1)
+    }
+
+    // Year:
+    else if (input.length === 3) {
+        if (input[input.length-1].length === 2 && parseInt(input[input.length-1]) !== 20) {
+            el.value = `${el.value.substring(0, el.value.length-2)}/202`
         }
-    })
+    }
+    if ((el.value+e.key)[(el.value+e.key).length-1] === (el.value+e.key)[(el.value+e.key).length-2] &&
+        (el.value+e.key)[(el.value+e.key).length-1] === '/') {
+        el.value = el.value.substring(0, el.value.length-1)
+    }
 }
 
 

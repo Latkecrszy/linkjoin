@@ -3,32 +3,26 @@ from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 from argon2 import exceptions
 from google.auth import jwt
-import json
+import json, datetime
 from app.utilities import gen_session, analytics, authenticated, gen_otp, send_email
-from app.constants import db, hasher, encoder
+from app.constants import db, hasher, encoder, tokens
+from bson.datetime_ms import DatetimeMS
 
 templates = Jinja2Templates(directory='templates')
-started = False
 
 
 async def main(request: Request) -> Response:
-    global started
     token = gen_session()
-    db.anonymous_token.insert_one({'token': token})
+    tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
     logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
-    if not started:
-        started = True
-        return templates.TemplateResponse('website.html',
-                                          {'token': 'token', 'logged_in': logged_in, 'request': request})
-    else:
-        return templates.TemplateResponse('website.html',
+    return templates.TemplateResponse('website.html',
                                           {'token': 'token', 'logged_in': logged_in, 'request': request})
 
 
 async def login(request: Request) -> Response:
     if request.method == 'GET':
         token = gen_session()
-        db.anonymous_token.insert_one({'token': token})
+        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
         return templates.TemplateResponse('login.html', {
             'error': request.query_params.get('error'), 'email': request.query_params.get('email'), 'token': token,
             'request': request,
@@ -36,23 +30,24 @@ async def login(request: Request) -> Response:
     else:
         data = await request.json()
         redirect_link = data.get('redirect') if data.get('redirect') else "/links"
+        print(redirect_link)
         token = gen_session()
-        if not db.anonymous_token.find_one({'token': data.get('token')}):
+        if not tokens.find_one({'token': data.get('token')}):
             return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
-        db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+        # tokens.find_one_and_delete({'token': data.get('token')})
 
         if data.get('jwt'):
             try:
                 email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
                 db.tokens.insert_one({'email': email, 'token': token})
             except UnicodeDecodeError:
-                db.anonymous_token.insert_one({'token': token})
+                tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
                 return JSONResponse({'redirect': data['redirect'], "error": 'google_login_failed', 'token': token})
         else:
             email = data.get('email').lower()
             print(email, token)
             db.tokens.insert_one({'email': email, 'token': token})
-            db.anonymous_token.insert_one({'token': token})
+            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
             try:
                 hasher.verify(db.login.find_one({'username': email})['password'], data.get('password'))
             except exceptions.VerifyMismatchError:
@@ -67,8 +62,12 @@ async def login(request: Request) -> Response:
             return JSONResponse({'redirect': data['redirect'], "error": 'email_not_found', 'token': token})
         elif db.login.find_one({'username': email}).get('confirmed') == "false":
             return JSONResponse({'redirect': data['redirect'], "error": 'not_confirmed', 'token': token})
-        db.anonymous_token.find_one_and_delete({'token': token})
+        # tokens.find_one_and_delete({'token': token})
+        token = gen_session()
+        db.tokens.insert_one({'token': token, 'email': email})
         analytics('logins')
+        print(token)
+        print(email)
         return JSONResponse(
             {"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
 
@@ -90,7 +89,7 @@ async def signup(request: Request) -> Response:
             analytics('signups')
             return RedirectResponse('/links')
         token = gen_session()
-        db.anonymous_token.insert_one({'token': token})
+        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
         return templates.TemplateResponse('signup.html', {
             'error': request.query_params.get('error'), 'token': token,
             'redirect': request.query_params.get('redirect') if request.query_params.get('redirect') else '/links',
@@ -101,7 +100,7 @@ async def signup(request: Request) -> Response:
 async def links(request: Request) -> Response:
     email = request.cookies.get('email')
     if not authenticated(request.cookies, email):
-        return RedirectResponse('/login?error=not_logged_in')
+        return templates.TemplateResponse('links-demo.html', {'request': request})
     email = email.lower()
     user = dict(db.login.find_one({"username": email}))
     try:
@@ -129,7 +128,7 @@ async def links(request: Request) -> Response:
 async def bookmarks(request: Request) -> Response:
     email = request.cookies.get('email')
     if not authenticated(request.cookies, email):
-        return RedirectResponse('/login?error=not_logged_in')
+        return templates.TemplateResponse('bookmarks-demo.html', {'request': request})
     email = email.lower()
     user = dict(db.login.find_one({"username": email}))
     premium = user['premium']
@@ -152,10 +151,10 @@ async def send_reset_email(request: Request) -> Response:
     if request.method == 'POST':
         data = await request.json()
         email = data.get('email').lower()
-        if not db.tokens.find_one({'email': email, 'token': data.get('token')}) and not db.anonymous_token.find_one(
+        if not db.tokens.find_one({'email': email, 'token': data.get('token')}) and not tokens.find_one(
                 {'token': data.get('token')}) or not db.login.find_one({'username': email}):
             return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
-        db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+        # tokens.find_one_and_delete({'token': data.get('token')})
         otp = gen_otp()
         db.otp.find_one_and_update({'email': email}, {'$set': {'pw': otp, 'time': 15}}, upsert=True)
         send_email(open('templates/reset-password-email.html').read().replace('{{otp}}', otp),
@@ -164,7 +163,7 @@ async def send_reset_email(request: Request) -> Response:
         return JSONResponse({'error': '', 'message': 'Success'}, 200)
     else:
         token = gen_session()
-        db.anonymous_token.insert_one({'token': token})
+        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
         return templates.TemplateResponse('forgot-password-email.html', {'token': token, 'request': request})
 
 
@@ -208,4 +207,17 @@ async def link(request: Request) -> Response:
 
 async def pricing(request: Request) -> Response:
     return templates.TemplateResponse('pricing.html', {'request': request})
+
+
+async def analytics_view(request: Request) -> Response:
+    if request.query_params.get('pwd') != 'password':
+        return templates.TemplateResponse('404.html', {'request': request}, status_code=404)
+    links_made = db.new_analytics.find_one({'id': 'links_made'})['value']
+    users = len(db.new_analytics.find_one({'id': 'daily_users'}))
+    logins = len(db.new_analytics.find_one({'id': 'logins'}))
+    signups = len(db.new_analytics.find_one({'id': 'signups'}))
+    links_opened = db.new_analytics.find_one({'id': 'links_opened'})['value']
+    return templates.TemplateResponse('analytics.html', {'request': request, 'links_made': links_made,
+                                                         'users': users, 'logins': logins, 'signups': signups,
+                                                         'links_opened': links_opened})
 

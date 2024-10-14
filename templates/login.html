@@ -76,7 +76,7 @@
         document.getElementById('email').value = "{{ email }}" === "None" ? "" : "{{ email }}"
         try {document.getElementById('{{ error }}').style.display = "block"} catch {}
 
-        document.addEventListener('visibilitychange', async () => {
+        /*document.addEventListener('visibilitychange', async () => {
             const tokenStatus = await fetch(`/validatetoken`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -86,7 +86,7 @@
             if (tokenStatus['status'] !== 'valid') {
                 location.reload()
             }
-        })
+        })*/
 
         document.addEventListener("keyup", e => {
             if (e.key === "Enter" || e.keyCode === 13) {
@@ -142,8 +142,9 @@
             document.getElementById('email').style.border = "none"
             document.getElementById('password').style.border = "none"
             data = await data.json()
-            token = data['token']
             if (data['error'] === '') {
+                console.log(data['email'])
+                console.log(data['token'])
                 location.assign(`/set_cookie?email=${data['email']}&keep=${data['keep']}&url=${data['url']}&token=${data['token']}`)
             }
             else {

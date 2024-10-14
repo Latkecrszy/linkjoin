@@ -3,7 +3,7 @@ from pymongo import ReturnDocument
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, RedirectResponse, PlainTextResponse
 from app.utilities import authenticated, analytics, configure_data, send_email
-from app.constants import db, encoder
+from app.constants import db, encoder, motor
 from app.websocket import manager
 from app.scheduler import create_text_job, delete_text_job
 
@@ -32,8 +32,10 @@ async def register(request: Request) -> Response:
         insert['password'] = encoder.encrypt(data.get('password').encode())
     if data.get('repeats')[0].isdigit():
         insert['occurrences'] = (int(data.get('repeats')[0])) * len(data.get('days'))
-    db.links.insert_one(insert)
-    db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    await motor.links.insert_one(insert)
+    await motor.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    await manager.update(configure_data(email), email, 'register')
+    create_text_job(insert)
     analytics('links_made')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
@@ -50,19 +52,20 @@ async def delete(request: Request) -> Response:
         link = db.links.find_one({'id': int(data.get('id'))})
     if data.get('permanent') == 'true':
         if data.get('type') == 'bookmark':
-            db.deleted_bookmarks.find_one_and_delete({'id': int(data.get('id'))})
+            await motor.deleted_bookmarks.find_one_and_delete({'id': int(data.get('id'))})
         else:
-            db.deleted_links.find_one_and_delete({'id': int(data.get('id'))})
+            await motor.deleted_links.find_one_and_delete({'id': int(data.get('id'))})
     else:
         try:
             if data.get('type') == 'bookmark':
-                db.deleted_bookmarks.insert_one(dict(db.bookmarks.find_one_and_delete({'id': int(data.get('id'))})))
+                await motor.deleted_bookmarks.insert_one(dict(db.bookmarks.find_one_and_delete({'id': int(data.get('id'))})))
             else:
-                db.deleted_links.insert_one(dict(db.links.find_one_and_delete({'id': int(data.get('id'))})))
+                await motor.deleted_links.insert_one(dict(db.links.find_one_and_delete({'id': int(data.get('id'))})))
         except TypeError:
             return JSONResponse({'error': 'TypeError', 'message': 'Failure'}, 500)
     await manager.update(configure_data(email), email, 'delete')
     delete_text_job(link)
+    analytics('links_deleted')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -117,8 +120,13 @@ async def update(request: Request) -> Response:
         }
         if data.get('password'):
             update_link['password'] = encoder.encrypt(data.get('password').encode())
-        db.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
-    db.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+        await motor.links.find_one_and_update({'username': shared_link['username'], 'id': shared_link['id']}, {'$set': update_link})
+    old_link = await motor.links.find_one({'username': email, 'id': int(data.get('id'))})
+    await motor.links.find_one_and_replace({'username': email, 'id': int(data.get('id'))}, insert)
+    await manager.update(configure_data(email), email, 'update')
+    delete_text_job(old_link)
+    create_text_job(insert, True)
+    analytics('links_edited')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -128,10 +136,17 @@ async def disable(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email')):
         return JSONResponse({'error': 'Forbidden'}, 403)
     email = data.get('email')
-    link = db.links.find_one({"username": email, 'id': int(data.get("id"))})
-    db.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
-                                {'$set': {'active': {'true': 'false', 'false': 'true'}[link['active']]}},
-                                return_document=ReturnDocument.AFTER)
+    link = await motor.links.find_one({"username": email, 'id': int(data.get("id"))})
+    active = data.get('active')
+    if active is None:
+        active = {'true': 'false', 'false': 'true'}[link['active']]
+    await motor.links.find_one_and_update({"username": email, 'id': int(data.get("id"))},
+                                          {'$set': {'active': active}}, return_document=ReturnDocument.AFTER)
+    print('might remove u')
+    delete_text_job(link)
+    print('did i remove?')
+    await manager.update(configure_data(email), email, 'disable')
+    analytics('links_edited')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -140,9 +155,10 @@ async def change_var(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
 
-    db.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
+    await motor.links.find_one_and_update({'username': data.get('email').lower(), 'id': int(data.get('id'))},
                                  {'$set': {data.get('variable'): data.get(data.get('variable'))}},
                                  return_document=ReturnDocument.AFTER)
+    await manager.update(configure_data(data.get('email')), data.get('email'), 'update')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -170,8 +186,8 @@ async def share(request: Request) -> Response:
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
-    db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-    db.pending_links.insert_one(new_link)
+    await motor.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    await motor.pending_links.insert_one(new_link)
 
 
 async def addlink(request: Request) -> Response:
@@ -199,8 +215,8 @@ async def addlink(request: Request) -> Response:
     while f'https://linkjoin.xyz/addlink?id={id}' in ids:
         id = ''.join([random.choice([char for char in string.ascii_letters]) for _ in range(16)])
     new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={id}'.encode())
-    db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
-    db.links.insert_one(new_link)
+    await motor.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})
+    await motor.links.insert_one(new_link)
 
     await manager.update(configure_data(request.cookies.get('email')), request.cookies.get('email'), 'addlink')
     return RedirectResponse('/links')
@@ -233,9 +249,9 @@ async def share_link(request: Request) -> Response:
         if 'password' in link:
             new_link['password'] = encoder.encrypt(link['password'].encode())
         if data.get('type') == 'bookmark':
-            db.pending_bookmarks.insert_one(new_link)
+            await motor.pending_bookmarks.insert_one(new_link)
         else:
-            db.pending_links.insert_one(new_link)
+            await motor.pending_links.insert_one(new_link)
         send_email(open('templates/shared-link-email.html').read().replace('{{email}}', link['username']).replace('{{link}}', link['name']),
                    [{'path': 'static/images/logo-text.png', 'type': 'png', 'name': 'logo-text', 'displayName': 'LinkJoin Logo'}],
                    f'LinkJoin - {link["name"]} shared with you', email)
@@ -255,9 +271,9 @@ async def accept_link(request: Request) -> Response:
     if data['accept']:
         link = {key: value for key, value in dict(link).items() if key != '_id'}
         if data.get('type') == 'bookmark':
-            db.bookmarks.insert_one(link)
+            await motor.bookmarks.insert_one(link)
         else:
-            db.links.insert_one(link)
+            await motor.links.insert_one(link)
     await manager.update(configure_data(data.get('email')), data.get('email'), 'accept_link')
     if link['text'] != 'false' and not data.get('type'):
         create_text_job(link, True)

@@ -203,7 +203,7 @@ async function loadBookmarks(username, id="insert") {
     webSocket.onmessage = async (e) => {
         let bookmarks = JSON.parse(e.data)
         Object.entries(bookmarks).forEach(([categoryName, bookmarkCategory]) => {
-            if (!['links', 'pending-links', 'deleted-links'].includes(categoryName)) {
+            if (!['links', 'pending-links', 'deleted-links', 'update_id'].includes(categoryName)) {
                 bookmarkCategory.forEach(bookmark => {
                     bookmark['superDisabled'] = org_disabled === 'true';
                 })

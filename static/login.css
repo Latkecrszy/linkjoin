@@ -25,17 +25,28 @@
 #right_content {margin: 0 13vh 13vh max(50px, 5vw);}
 
 #email, #password, #phone {
-    width: 28vw;
+    color: white;
+    width: 410px;
     font: 500 15px Montserrat;
     height: 40px;
-    padding: 16px 61px 16px 28px;
-    background-color: white;
-    opacity: 0.4;
+    padding: 5px 30px 0 2px;
     border: none;
-    color: black;
-    border-radius: 7px;
-    margin-top: 30px;
+    margin-top: 20px;
+    background: none;
+    border-bottom: 3px solid white;
+    border-radius: 0;
+    transition: 0.25s;
+    box-sizing: border-box;
 }
+
+#email:focus, #password:focus, #phone:focus {
+    border-bottom: 3px solid rgba(255, 255, 255, 0.7);
+}
+
+#phone {
+    padding-left: 53px;
+}
+
 
 #password, #phone {margin-top: 20px}
 
@@ -55,7 +66,10 @@
 #welcome {font-size: 40px}
 
 @media(min-width: 1600px) {
-    #submit img {height: 1.1vw; width: 1.1vw; margin-left: 0.1vw}
+    #submit img {
+        height: 1.1vw;
+        width: 1.1vw;
+        margin-left: 0.1vw}
     #welcome {font-size: 2.4vw}
     #submit {
         height: 5vw;
@@ -87,7 +101,12 @@
     margin-top: 10px;
 }
 
-#login_body {margin: 0; display: flex; flex-direction: column; overflow-x: hidden;}
+#login_body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
 
 #gsignin {margin-top: 20px;}
 
@@ -113,6 +132,37 @@
     margin-left: 5px;
 }
 
+
+#phone-select {
+    background: none;
+    color: white;
+    border: none;
+    position: absolute;
+    bottom: 10px;
+    font-size: 15px;
+    font-family: Montserrat, sans-serif;
+}
+
+#phone-select:focus {
+    outline: none;
+}
+
+#phone-container {
+    position: relative;
+}
+
+
+#or-div {
+    width: 100%;
+    height: 10px;
+    border-bottom: 2px solid white;
+    text-align: center;
+    opacity: 0.4;
+    margin-top: 20px;
+}
+
+
+
 @-moz-document url-prefix() {
     #keep_text {
         margin-top: 14px
@@ -131,8 +181,18 @@
 
 @media (max-width: 985px) {
     #left_content {display: none}
-    #password, #email, #phone {width: 70vw; margin-right: 5vw; max-width: 300px; min-width: 150px;}
-    #gsignin {width: 70vw; max-width: 300px; min-width: 150px;}
+    #password, #email, #phone {
+        width: 70vw;
+        margin-right: 5vw;
+        max-width: 300px;
+        min-width: 150px;
+    }
+    #gsignin {
+        width: 70vw;
+        max-width: 300px;
+        min-width: 150px;
+    }
+    #or-div {max-width: 300px}
     #welcome {margin-right: 0}
 
 }

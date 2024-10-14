@@ -11,6 +11,7 @@ dotenv.load_dotenv()
 hasher = PasswordHasher()
 encoder = Fernet(os.environ.get('ENCRYPT_KEY', None).encode())
 db = MongoClient(os.environ.get('MONGO_URI', None)).zoom_opener
+tokens = MongoClient(os.environ.get('MONGO_URI', None)).anonymous_tokens.tokens
 motor = AsyncIOMotorClient(os.environ.get('MONGO_URI', None)).zoom_opener
 VONAGE_API_KEY = os.environ.get("VONAGE_API_KEY", None)
 VONAGE_API_SECRET = os.environ.get("VONAGE_API_SECRET", None)

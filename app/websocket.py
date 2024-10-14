@@ -2,9 +2,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 from starlette.responses import JSONResponse, Response
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 import urllib.parse
-from app.utilities import authenticated, configure_data, verify_session_utility
-from app.constants import motor
-from app.scheduler import create_text_job
+from app.utilities import authenticated, configure_data, verify_session_utility, gen_session
 
 
 class WebSocketManager:
@@ -37,6 +35,8 @@ class WebSocketManager:
         print('websocket closed')
 
     async def update(self, data: dict | list | str, email: str, origin=None) -> None:
+        data['update_id'] = gen_session()
+        print('update_id: ' + data['update_id'])
         print("origin: " + origin)
         if email in self.connections:
             websockets_to_remove = []
@@ -70,24 +70,8 @@ class WebSocketManager:
                     print(e)
 
 
-
 manager = WebSocketManager()
 watching = []
-
-
-async def watch(websocket, email) -> None:
-    while websocket in manager.connections[email]:
-        async with motor.links.watch(full_document='updateLookup') as change_stream:
-            d = await change_stream.next()
-            if 'fullDocument' not in d:
-                continue
-            await manager.update((configure_data(d['fullDocument']['username'], 'watch')), d['fullDocument']['username'], 'watch')
-            link = d['fullDocument']
-            link['number'] = (await motor.login.find_one({'username': link['username']})).get('number')
-            print('watching')
-            if link.get('number') and link.get('text') != 'false':
-                create_text_job(link, True)
-                print('created job')
 
 
 async def database_ws(websocket: WebSocket) -> JSONResponse | None:
@@ -104,7 +88,7 @@ async def database_ws(websocket: WebSocket) -> JSONResponse | None:
     print('doing things here')
     if email not in watching:
         watching.append(email)
-        await watch(websocket, email)
+        # await watch(websocket, email)
     try:
         while True:
             await websocket.receive_text()

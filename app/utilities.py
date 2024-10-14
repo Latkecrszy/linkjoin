@@ -3,28 +3,43 @@ from app.constants import db, encoder, client, text_messages, scheduler
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
+from datetime import datetime
 
 
 def analytics(_type: str, **kwargs) -> None:
+    """month = str(datetime.now().month)
     if _type == 'links_made':
-        db.new_analytics.find_one_and_update({'id': 'links_made'}, {'$inc': {'value': 1}})
+        links_made = db.analytics.find_one({'id': 'links_made'})
+        links_made[month] += 1
+        db.analytics.find_one_and_update({'id': 'links_made'}, {'$set': {month: links_made[month]}})
+    elif _type == 'links_edited':
+        links_edited = db.analytics.find_one({'id': 'links_edited'})
+        links_edited[month] += 1
+        db.analytics.find_one_and_update({'id': 'links_edited'}, {'$set': {month: links_edited[month]}})
+    elif _type == 'links_deleted':
+        links_deleted = db.analytics.find_one({'id': 'links_deleted'})
+        links_deleted[month] += 1
+        db.analytics.find_one_and_update({'id': 'links_deleted'}, {'$set': {month: links_deleted[month]}})
     elif _type == 'logins':
-        logins = db.new_analytics.find_one({'id': 'logins'})['value']
-        logins[-1] += 1
-        db.new_analytics.find_one_and_update({'id': 'logins'}, {'$set': {'value': logins}})
+        logins = db.analytics.find_one({'id': 'logins'})
+        logins[month] += 1
+        db.analytics.find_one_and_update({'id': 'logins'}, {'$set': {month: logins[month]}})
     elif _type == 'signups':
-        signups = db.new_analytics.find_one({'id': 'signups'})['value']
-        signups[-1] += 1
-        db.new_analytics.find_one_and_update({'id': 'signups'}, {'$set': {'value': signups}})
+        signups = db.analytics.find_one({'id': 'signups'})
+        signups[month] += 1
+        db.analytics.find_one_and_update({'id': 'signups'}, {'$set': {month: signups[month]}})
     elif _type == 'users':
-        if kwargs['email'] not in \
-                db.new_analytics.find_one({'id': 'monthly_users'}, {'value': {'$slice': -1}})['value'][0]:
-            db.new_analytics.find_one_and_update({'id': 'monthly_users'}, {'$push': {'value': kwargs['email']}})
-        if kwargs['email'] not in db.new_analytics.find_one({'id': 'daily_users'}, {'value': {'$slice': -1}})['value'][
-            0]:
-            db.new_analytics.find_one_and_update({'id': 'daily_users'}, {'$push': {'value': kwargs['email']}})
+        users = db.analytics.find_one({'id': 'users'})
+        monthly_users = users[month]
+        if kwargs['email'] not in monthly_users:
+            monthly_users[kwargs['email']] = 1
+        else:
+            monthly_users[kwargs['email']] += 1
+        db.analytics.find_one_and_update({'id': 'users'}, {'$set': {month: monthly_users}})
     elif _type == 'links_opened':
-        db.new_analytics.find_one_and_update({'id': 'links_opened'}, {'$inc': {'value': 1}})
+        links_opened = db.analytics.find_one({'id': 'links_opened'})
+        links_opened[month] += 1
+        db.analytics.find_one_and_update({'id': 'links_opened'}, {'$set': {month: links_opened[month]}})"""
 
 
 def gen_id() -> str:

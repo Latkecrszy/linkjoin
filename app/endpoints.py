@@ -1,12 +1,13 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse, FileResponse
-import requests, json, re
+import requests, json, re, datetime
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
 from app.utilities import *
-from app.constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder, text_messages
+from app.constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder, text_messages, tokens
 from app.websocket import manager
+from bson.datetime_ms import DatetimeMS
 
 
 async def analytics_endpoint(request: Request) -> JSONResponse:
@@ -33,27 +34,24 @@ async def confirm_email(request: Request) -> Response:
     token = gen_session()
     refer_id = gen_id()
     account_token = gen_otp()
-    if not db.anonymous_token.find_one({'token': data.get('token')}):
+    if not tokens.find_one({'token': data.get('token')}):
         return JSONResponse({'error': 'Invalid token', 'code': 403}, 403)
-    db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+    # tokens.find_one_and_delete({'token': data.get('token')})
 
     if data.get('jwt'):
         try:
             email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
-            db.tokens.insert_one({'email': email, 'token': token})
         except UnicodeDecodeError:
-            db.anonymous_token.insert_one({'token': token})
+            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
             return JSONResponse({'redirect': data['redirect'], "error": 'google_signup_failed', 'token': token})
     else:
-        email = data.get('email')
+        email = data.get('email').lower()
         if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-            db.anonymous_token.insert_one({'email': email, 'token': token})
+            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
             return JSONResponse({"error": "invalid_email", "url": redirect_link, 'token': token})
-        db.tokens.insert_one({'email': email, 'token': token})
 
     if db.login.find_one({'username': email}) is not None:
-        db.tokens.find_one_and_delete({'email': email, 'token': token})
-        db.anonymous_token.insert_one({'token': token})
+        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
         return JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
     print(data.get('offset'))
     print(data.get('timezone'))
@@ -73,29 +71,37 @@ async def confirm_email(request: Request) -> Response:
     db.login.insert_one(account)
     content = EmailMessage()
 
-    content.set_content(f'''LinkJoin here!
-To confirm your email, go to https://linkjoin.xyz/signup?tk={account_token}. Do not send this link to anyone, regardless of their supposed intentions. This link will expire in one hour.
+    content.set_content(f'''Use the following link to confirm your email:
+https://linkjoin.xyz/signup?tk={account_token}
+Do not send this link to anyone. This link will expire in one hour.
 
-Yours truly,
-LinkJoin''')
+The LinkJoin Team''')
     content['Subject'] = 'LinkJoin: Confirm email address'
     content['From'] = "noreply@linkjoin.xyz"
     content['To'] = email
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=ssl.create_default_context()) as server:
         server.login('noreply@linkjoin.xyz', os.environ.get('GMAIL_PWD'))
         server.send_message(content)
+    print(email)
+    print(token)
+    db.tokens.insert_one({'email': email, 'token': token})
+    analytics('signups')
     return JSONResponse({"url": redirect_link, "error": '', 'email': email, 'keep': data.get('keep'), 'token': token})
 
 
 async def set_cookie(request: Request) -> Response:
     email = request.query_params.get('email').lower()
     if not db.tokens.find_one({'email': email, 'token': request.query_params.get('token')}):
+        print('problem')
+        print(email)
+        print(request.query_params.get('token'))
         return RedirectResponse('/login')
     db.tokens.find_one_and_delete({'email': email, 'token': request.query_params.get('token')})
     response = RedirectResponse(request.query_params.get('url'))
     response.set_cookie('email', email)
     session_id = gen_session()
     db.sessions.insert_one({'username': email, 'session_id': session_id})
+    analytics('logins')
     if request.query_params.get('keep') == 'true':
         response.set_cookie('session_id', session_id, max_age=3153600000)
     else:
@@ -258,7 +264,7 @@ async def add_accounts(request: Request) -> Response | None:
 async def invalidate_token(request: Request) -> Response:
     data = await request.json()
     db.tokens.find_one_and_delete({'token': data.get('token')})
-    db.anonymous_token.find_one_and_delete({'token': data.get('token')})
+    # tokens.find_one_and_delete({'token': data.get('token')})
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
 
@@ -280,8 +286,7 @@ async def robots(request: Request) -> FileResponse:
 
 async def validatetoken(request: Request) -> JSONResponse:
     data = await request.json()
-    tokens = [dict(value)['token'] for value in db.anonymous_token.find()]
-    if data.get('token') in tokens:
+    if tokens.find_one({'token': data.get('token')}):
         return JSONResponse({'status': 'valid'})
     else:
         return JSONResponse({'status': 'invalid'})

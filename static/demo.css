@@ -1,0 +1,202 @@
+html {
+    overflow-x: hidden;
+    margin-left: 10px;
+    background: var(--darkblue);
+}
+
+body {
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+
+#page {
+    margin: 50px 0 0 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+header {
+    background: var(--blue);
+    margin-top: 8px;
+    height: 100px;
+}
+
+header a {
+    font: 400 18px Montserrat;
+}
+
+#logo {
+    margin-top: 5px;
+    height: 45px;
+    cursor: pointer;
+}
+
+.login_button {
+    margin-top: 2px;
+    margin-right: 0;
+}
+
+#hamburger_dropdown a {
+    margin: 5px 20px;
+}
+
+#left, #right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#divider {
+    width: 1px;
+    pointer-events: none;
+    z-index: -1;
+    border-left: 2px solid var(--blue);
+    filter: brightness(1.2);
+    margin-bottom: 40px;
+}
+
+#divider .link {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+}
+
+footer {
+    background: var(--blue);
+    margin: 50px 20px 0 -10px;
+}
+
+
+/* Right */
+
+#right {
+    width: 40%;
+}
+
+.link {
+    width: 80%;
+}
+
+#right.meetings {
+    min-width: 575px;
+}
+
+
+/* Left */
+
+#left {
+    width: 60%;
+    height: calc(100vh - 150px);
+    overflow: scroll;
+}
+
+#left-header {
+    font-size: 50px;
+    margin-top: 0;
+}
+
+#left-content {
+    display: flex;
+    width: 90%;
+    margin: 0 5%;
+}
+
+#why-bookmarks {
+    text-align: center;
+    width: 96%;
+    margin-left: 2%;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+}
+
+#why-bookmarks b {
+    color: rgba(255, 255, 255, 1);
+    font-size: 22px;
+}
+
+#questioning-image {
+    margin: -25px -50px 0 0;
+    width: 40%;
+}
+
+.info-box h2 {
+    font-size: 25px;
+}
+
+.info-box p {
+    font-size: 18px;
+}
+
+.info-box ~ .info-box {
+    margin-left: 10px;
+}
+
+.menu {
+    right: -20px;
+}
+
+.menu.meetings {
+    right: 20px;
+}
+
+
+
+@media (max-width: 1310px) {
+    .info-box ~ .info-box {
+        margin-top: 100px;
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        width: calc(70% - 30px);
+    }
+}
+
+
+@media (max-width: 900px) {
+    #hamburger_dropdown {
+        display: none;
+        height: fit-content;
+        width: 150px;
+    }
+
+    #hamburger_dropdown a {
+        display: block;
+    }
+}
+
+
+@media (max-width: 688px) {
+    #right {
+        display: none;
+    }
+
+    #left {
+        width: 100%;
+        height: unset;
+        overflow: unset;
+    }
+
+    #divider {
+        display: none;
+    }
+}
+
+
+@media (max-width: 950px) {
+    #right.meetings {
+        display: none;
+    }
+
+    #left.meetings {
+        width: 100%;
+        height: unset;
+        overflow: unset;
+    }
+
+    #divider.meetings {
+        display: none;
+    }
+}

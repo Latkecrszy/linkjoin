@@ -79,7 +79,7 @@ async function start(username, links, sort) {
                 await fetch('/disable', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({id: link['id'], email: link['username']})
+                    body: JSON.stringify({id: link['id'], email: link['username'], active: 'false'})
                 })
             }
             await fetch('/analytics', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({'field': 'links_opened'})})
