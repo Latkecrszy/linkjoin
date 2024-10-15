@@ -317,18 +317,34 @@ function createLink(link, id="insert", iterator=0) {
         let buttons;
         if (id === 'insert') {
             buttons = {'Edit': () => edit(link), 'Delete': () => delete_(link), 'Share': () => share(link, link_event),
-        'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], link['id']),
-        'Password': () => copyPassword(link['id'], link['password'])}
+        'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['link'], `copy${link['id']}`),
+        'Password': () => copyPassword(`password${link['id']}`, link['password'])}
         } else {
             buttons = {'Restore': () => restore(link['id'], link['username']), 'Delete': () => permDelete(link),
-                'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], link['id']),
-                'Password': () => copyPassword(link['id'], link['password'])}
+                'Notes': () => createNote(link['name'], link['id']), 'Copy link': () => copyLink(link['name'], `restorecopy${link['id']}`),
+                'Password': () => copyPassword(`restorepassword${link['id']}`, link['password'])}
         }
         for (const [key, value] of Object.entries(buttons)) {
             if (key === 'Password' && link['password'] === undefined && id === 'insert') {continue}
             else if (key === 'Password' && link['password'] === undefined) {menu.style.height = '145px'; continue}
             else if (key === 'Password' && id === "insert") {menu.style.height = '230px'}
-            menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+            if (id === 'insert') {
+                if (key === 'Copy link') {
+                    menu.appendChild(createElement('div', [], `copy${link['id']}`, key, {'events': {'onclick': value}}))
+                } else if (key === 'Password') {
+                    menu.appendChild(createElement('div', [], `password${link['id']}`, key, {'events': {'onclick': value}}))
+                } else {
+                    menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+                }
+            } else {
+                if (key === 'Copy link') {
+                    menu.appendChild(createElement('div', [], `restorecopy${link['id']}`, key, {'events': {'onclick': value}}))
+                } else if (key === 'Password') {
+                    menu.appendChild(createElement('div', [], `restorepassword${link['id']}`, key, {'events': {'onclick': value}}))
+                } else {
+                    menu.appendChild(createElement('div', [], '', key, {'events': {'onclick': value}}))
+                }
+            }
             key !== (link['password'] !== undefined ? 'Password' : 'Copy link') ? menu.appendChild(createElement('hr', ['menu_line'])) : null
         }
         link_event.appendChild(menu)
