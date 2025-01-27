@@ -573,7 +573,6 @@ footer {
         display: block;
     }
     #hamburger {display: flex;}
-    #motto, #description {margin-left: -30px !important}
     #dropdown {display: block;}
     #hamburger_dropdown {
         display: none;

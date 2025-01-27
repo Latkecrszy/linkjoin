@@ -50,30 +50,31 @@
                 <div id="signup_text">Never be late again</div>
             </div>
             <div id="right_content">
-                <div id="welcome">Create an Account</div>
-                <div class="error" id="invalid_email" style="display: none">Invalid email.</div>
-                <div class="error" id="password_too_short" style="display: none">Password must be at least 5 characters.</div>
-                <div class="error" id="signup_failed" style="display: none">Signup failed, please refresh the page and try again.</div>
-                <div class="error" id="other_error" style="display: none">Something went wrong, please refresh the page and try again.</div>
-                <div class="error" id="google_signup_failed" style="display: none">Google signup failed, please refresh the page and try again.</div>
-                <div id="gsignin">Log In With Google</div>
-                <div id="or-div">
-                    <span style="font-size: 20px; background-color: var(--blue); padding: 0 4px;"> Or </span>
+                <div id="right_container">
+                    <div id="welcome">Create an Account</div>
+                    <div class="error" id="invalid_email" style="display: none">Invalid email.</div>
+                    <div class="error" id="password_too_short" style="display: none">Password must be at least 5 characters.</div>
+                    <div class="error" id="signup_failed" style="display: none">Signup failed, please refresh the page and try again.</div>
+                    <div class="error" id="other_error" style="display: none">Something went wrong, please refresh the page and try again.</div>
+                    <div class="error" id="google_signup_failed" style="display: none">Google signup failed, please refresh the page and try again.</div>
+                    <div id="gsignin" style="width: 300px;">Log In With Google</div>
+                    <div id="or-div">
+                        <span> OR </span>
+                    </div>
+                    <input type="email" name="email" id="email" placeholder="Email" required>
+                    <input id="password" name="password" placeholder="Password" type="password" required>
+                    <span id="phone-container">
+                        <select id="phone-select" onchange="adjustNumberPadding(this)" style="width: 54px">
+                            {% for country, number in country_codes.items() %}
+                            <option name="{{ country }}" value="{{ number }}">{{ country }}, +{{ number }}</option>
+                            {% endfor %}
+                        </select>
+                        <input id="phone" name="phone" type="text" placeholder="(123) 456-7890">
+                    </span><br>
+                    <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="../static/images/right-angle.svg" alt="right arrow"></button>
+
+                    </div>
                 </div>
-                <input type="email" name="email" id="email" placeholder="Email" required>
-                <input id="password" name="password" placeholder="Password" type="password" required>
-                <span id="phone-container">
-                    <select id="phone-select" onchange="adjustNumberPadding(this)" style="width: 54px">
-                        {% for country, number in country_codes.items() %}
-                        <option name="{{ country }}" value="{{ number }}">{{ country }}, +{{ number }}</option>
-                        {% endfor %}
-                    </select>
-                    <input id="phone" name="phone" type="text">
-                </span><br>
-                <div class="keep_div" id="keep_div"><input type="checkbox" name="keep" class="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
-                <div class="keep_div"><input type="checkbox" class="keep" name="keep"><p class="keep_text">Sign me up for emails and updates</p></div>
-                <button id="submit" class="hover-arrow" onclick="disableButton(this); signUp()">Sign Up <img src="../static/images/right-angle.svg" alt="right arrow"></button>
-            </div>
         </div>
     </body>
     <script>
@@ -119,7 +120,7 @@
                 method: "POST",
                 body: JSON.stringify({
                     email: document.getElementById("email").value, redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, number: document.getElementById("phone").value,
+                    keep: true, number: document.getElementById("phone").value,
                     offset: offset, timezone: timezone, password: document.getElementById("password").value,
                     countrycode: document.getElementById('phone-select').value, token: token
                 }),
@@ -135,7 +136,7 @@
             const data = await fetch('/confirm_email', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
-                body: JSON.stringify({redirect: "{{ redirect }}", keep: document.getElementById("keep").checked,
+                body: JSON.stringify({redirect: "{{ redirect }}", keep: true,
                     jwt: r.credential.toString(), token: token, countrycode: document.getElementById('phone-select').value,
                     offset: offset, timezone: timezone})
             })

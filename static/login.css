@@ -1,3 +1,11 @@
+svg {
+    right: 1vw;
+}
+
+header a {
+    display: block !important;
+}
+
 #header-links {display: flex; width: 100%; background: none;}
 
 #header-links div {margin-top: 30px;}
@@ -16,35 +24,56 @@
     margin: 10px 0 0 39px;
 }
 
-#left_content, #right_content {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto 0 13%;
+#left_content {
+    margin: 0 auto 0 8vw;
 }
 
-#right_content {margin: 0 13vh 13vh max(50px, 5vw);}
+#right_content {
+    display: flex;
+    justify-content: center;
+    width: 52vw;
+}
+
+#right_container {
+    display: flex;
+    flex-direction: column;
+    width: 510px;
+    height: 530px;
+    box-sizing: border-box;
+    padding: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 15px;
+}
+
+#right_container.login {
+    height: 490px;
+}
 
 #email, #password, #phone {
     color: white;
     width: 410px;
-    font: 500 15px Montserrat;
+    font: 500 18px Montserrat;
     height: 40px;
     padding: 5px 30px 0 2px;
     border: none;
     margin-top: 20px;
     background: none;
-    border-bottom: 3px solid white;
+    border-bottom: 2px solid white;
     border-radius: 0;
     transition: 0.25s;
     box-sizing: border-box;
 }
 
+#email::placeholder, #password::placeholder, #phone::placeholder {
+    color: rgba(255, 255, 255, 0.3)
+}
+
 #email:focus, #password:focus, #phone:focus {
-    border-bottom: 3px solid rgba(255, 255, 255, 0.7);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 #phone {
-    padding-left: 53px;
+    padding-left: 57px;
 }
 
 
@@ -63,35 +92,7 @@
 
 #main_page {display: flex}
 
-#welcome {font-size: 40px}
-
-@media(min-width: 1600px) {
-    #submit img {
-        height: 1.1vw;
-        width: 1.1vw;
-        margin-left: 0.1vw}
-    #welcome {font-size: 2.4vw}
-    #submit {
-        height: 5vw;
-        width: 12vw;
-        border-radius: 0.7vw;
-        font: 800 1.4vw Montserrat;
-        margin-top: 1vw;
-    }
-    #email::placeholder, #password::placeholder, #phone::placeholder {font-size: 1vw}
-    #email, #password, #phone {
-        width: 28vw;
-        font: 500 1vw Montserrat;
-        height: 3vw;
-        padding: 16px 61px 16px 28px;
-        background-color: white;
-        opacity: 0.4;
-        border: none;
-        border-radius: 0.4vw;
-        margin-top: 20px;
-    }
-
-}
+#welcome {font-size: 45px}
 
 .error {
     font-size: 14px;
@@ -138,8 +139,8 @@
     color: white;
     border: none;
     position: absolute;
-    bottom: 10px;
-    font-size: 15px;
+    bottom: 7px;
+    font-size: 18px;
     font-family: Montserrat, sans-serif;
 }
 
@@ -153,14 +154,19 @@
 
 
 #or-div {
-    width: 100%;
     height: 10px;
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
     text-align: center;
     opacity: 0.4;
     margin-top: 20px;
+    width: 410px;
 }
 
+#or-div span {
+    font-size: 16px;
+    background-color: var(--blue);
+    padding: 0 4px;
+}
 
 
 @-moz-document url-prefix() {
@@ -179,43 +185,91 @@
     border-bottom: 2px solid white;
 }
 
-@media (max-width: 985px) {
-    #left_content {display: none}
-    #password, #email, #phone {
-        width: 70vw;
-        margin-right: 5vw;
-        max-width: 300px;
-        min-width: 150px;
+@media(min-width: 1600px) {
+    #submit img {
+        height: 1.1vw;
+        width: 1.1vw;
+        margin-left: 0.1vw}
+    #welcome {font-size: 2.4vw}
+    #submit {
+        height: 5vw;
+        width: 12vw;
+        border-radius: 0.7vw;
+        font: 800 1.4vw Montserrat;
+        margin-top: 1vw;
     }
+    #email::placeholder, #password::placeholder, #phone::placeholder {font-size: 1vw}
+    #email, #password, #phone {
+        width: 28vw;
+        font: 500 1vw Montserrat;
+        height: 3vw;
+        padding: 16px 61px 16px 28px;
+        background-color: white;
+        opacity: 0.4;
+        border: none;
+        border-radius: 0.4vw;
+        margin-top: 20px;
+    }
+
+}
+
+@media (max-width: 1000px) {
+    #left_content {display: none}
+    #right_content {
+        width: 94vw;
+        margin-left: 2vw;
+        margin-right: 2vw;
+    }
+
+    #right_container {
+        width: min(100%, 510px);
+        margin-left: 2vw;
+        margin-right: 2vw;
+    }
+
     #gsignin {
         width: 70vw;
         max-width: 300px;
         min-width: 150px;
     }
-    #or-div {max-width: 300px}
-    #welcome {margin-right: 0}
 
-}
-
-@media (max-width: 730px) {
     svg {display: none}
     #login_html, #login_body {background: var(--darkblue)}
+
+    #email, #password, #phone, #or-div {
+        width: min(410px, 100%);
+    }
+
 }
 
-@media (max-width: 500px) {
-    #password, #email, #phone {
-        max-width: 60vw;
+@media (max-width: 600px) {
+    header div {
+        display: none;
     }
 }
 
-@media (max-width: 350px) {
-    #password, #email, #phone {
-        max-width: 50vw;
+@media (max-width: 556px) {
+    #right_container {
+        height: 580px;
+    }
+
+    #right_container.login {
+        height: 490px;
     }
 }
 
-@media (max-width: 870px) {
-    .login_button, #back {
-        display: block !important
+@media (max-width: 471px) {
+    #right_container.login {
+        height: 540px;
+    }
+}
+
+@media (max-width: 321px) {
+    #right_container {
+        height: 630px;
+        border: none;
+    }
+    #right_container.login {
+        height: 540px;
     }
 }

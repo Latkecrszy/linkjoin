@@ -19,7 +19,9 @@
         <link href="../static/website.css" rel="stylesheet"/>
         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
         <title>LinkJoin: Organize Virtual Meetings</title>
         <link rel="shortcut icon" href="../static/images/logo-rounded.png">
         <link rel="icon" type="image/svg" href="../static/images/logo-rounded.png">
@@ -69,9 +71,9 @@
         </header>
         <div id="page">
             <div id="left_content">
-                <h1 id="motto">Never Be Late Again.</h1>
+                <h1 id="motto">Always On Time.</h1>
                 <h4 id="description">LinkJoin helps you join meetings at exactly the right time, even when you forget.</h4>
-                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="../static/images/arrow-right.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Right arrow"></button></a>
+                <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="../static/images/arrow-right.svg" width="25px" height="25px" alt="Right arrow"></button></a>
                 <a href="https://chromewebstore.google.com/detail/add-to-linkjoin/mhncphjlaeeglmjpgdmclklebdfomele" target="_blank"><button style="background: var(--blue)" class="get_started" id="get_it_on_chrome">Add to Chrome <img src="../static/images/logos/chrome-logo.svg" style="top: 5px; left: 8px; position: relative;" width="25px" height="25px" alt="Chrome logo"></button></a>
                 <a onclick="document.getElementById('scrollTo').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="../static/images/arrow-down.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Down arrow"></button></a>
             </div>
@@ -81,12 +83,9 @@
         </div>
         <div id="scrollTo" style="height: 150px"></div>
         <div id="what">
-            <h1 class="what-is-linkjoin">What is LinkJoin?</h1>
+            <h1 class="what-is-linkjoin">LinkJoin streamlines meetings</h1>
             <div class="description desktop">
-                <div class="background"></div>
-                In our modern world, there's no need to lose track of links, search through your email for
-                appointment details, or forget to join a meeting. Let LinkJoin handle the little things so you can focus
-                on that important meeting instead.
+                LinkJoin keeps track of your meeting links and times so you don't have to. When your meeting starts, LinkJoin will open it automatically.
             </div>
 
             <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
@@ -252,10 +251,10 @@
 
 
         document.addEventListener('scroll', () => {
-            document.getElementById('curve').style.filter = `blur(${window.scrollY*0.075}px)`
+            document.getElementById('curve').style.filter = `blur(${window.scrollY*0.08}px)`
             document.getElementById('what').style.opacity = `${(window.scrollY-250)/500}`
             document.getElementById('info-boxes').style.opacity = `${(window.scrollY-1000)/500}`
-            document.getElementById('info').style.opacity = `${(window.scrollY-1700)/500}`
+            document.getElementById('info').style.opacity = `${(window.scrollY-1400)/500}`
         })
 
         if (document.cookie.includes('cookies=accepted')) {

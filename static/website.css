@@ -6,9 +6,14 @@
 #page {display: flex; flex-direction: row; margin-bottom: max(15vh, 150px);}
 
 #left_content {
-    margin: 100px auto 0 max(10vw, 100px);
+    margin: 50px 0 0 max(10vw, 100px);
     display: flex;
     flex-direction: column;
+    width: 40vw;
+}
+
+#left_content a {
+    width: 275px;
 }
 
 #right_content {
@@ -35,6 +40,12 @@
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)
 }
 
+.get_started img {
+    top: 5px;
+    left: 8px;
+    position: relative;
+}
+
 #learn_more:hover {
     margin: 45px 0 0 0;
 }
@@ -44,9 +55,20 @@
 }
 
 
-#motto {font-weight: 100; font-size: 46px; max-width: 500px; margin-bottom: 10px}
+#motto {
+    font-size: 55px;
+    max-width: 500px;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
 
-#description {font: 400 20px Roboto; margin: 0; max-width: 450px; line-height: 30px}
+#description {
+    font: 300 20px Montserrat;
+    margin: 0;
+    max-width: 450px;
+    line-height: 30px;
+    color: rgba(255, 255, 255, 0.8);
+}
 
 #learn_more {background-color: var(--blue);}
 
@@ -197,20 +219,18 @@
 .right {margin-left: auto}
 
 .what-is-linkjoin {
-    font-size: 45px;
+    font-size: 60px;
     text-align: center;
 }
 
 .description {
-    width: 80%;
-    padding: 30px;
-    margin: 40px 0 0 10%;
-    border-radius: 10px;
+    width: 60%;
+    margin: 0 0 0 20%;
     font-size: 20px;
-    line-height: 28px;
-    box-sizing: border-box;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -2px -3px 10px rgba(255, 255, 255, 0.1);
     text-align: center;
+    line-height: 28px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 200;
 }
 
 .description .background {
@@ -294,7 +314,7 @@ iframe {
     #faq {width: 80vw;}
 }
 @media (max-width: 450px) {
-    .get_started {width: 200px}
+    .get_started {width: 300px}
 }
 
 @media (max-width: 380px) {
@@ -330,6 +350,13 @@ iframe {
     #main_html {background: var(--darkblue);}
     footer {background: var(--blue)}
     #right_content {display: none;}
+    #left_content {
+        align-items: center;
+        width: 96vw;
+        text-align: center;
+        margin: 50px 0 0 2vw;
+
+    }
     #faq {background: var(--blue); box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
 }
 

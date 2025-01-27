@@ -49,26 +49,27 @@
                 <div id="signup_text">Never be late again</div>
             </div>
             <div id="right_content">
-                <div id="welcome">Welcome Back</div>
-                <div class="error" id="email_not_found" style="display: none">No account is associated with this email.</div>
-                <div class="error" id="incorrect_password" style="display: none">Incorrect Password.</div>
-                <div class="error" id="no_password" style="display: none">Please log in with Google.</div>
-                <div class="error" id="login_failed" style="display: none">Login failed, please refresh the page and try again.</div>
-                <div class="error" id="not_confirmed" style="display: none">Please confirm your email before logging in.</div>
-                <div class="error" id="google_login_failed" style="display: none">Google Login failed, please refresh the page and try again.</div>
-                {% if error == "not_logged_in" %}
-                    <div class="error" style="font-size: 17px" id="not_logged_in">Log in to view your links</div>
-                {% endif %}
-                <div id="gsignin">Log In With Google</div>
-                <div style="width: 100%; height: 10px; border-bottom: 2px solid white; text-align: center; opacity: 0.4; margin-top: 20px;">
-                    <span style="font-size: 20px; background-color: var(--blue); padding: 0 4px;"> Or </span>
+                <div id="right_container" class="login">
+                    <div id="welcome">Welcome Back</div>
+                    <div class="error" id="email_not_found" style="display: none">No account is associated with this email.</div>
+                    <div class="error" id="incorrect_password" style="display: none">Incorrect Password.</div>
+                    <div class="error" id="no_password" style="display: none">Please log in with Google.</div>
+                    <div class="error" id="login_failed" style="display: none">Login failed, please refresh the page and try again.</div>
+                    <div class="error" id="not_confirmed" style="display: none">Please confirm your email before logging in.</div>
+                    <div class="error" id="google_login_failed" style="display: none">Google Login failed, please refresh the page and try again.</div>
+                    {% if error == "not_logged_in" %}
+                        <div class="error" style="font-size: 17px" id="not_logged_in">Log in to view your links</div>
+                    {% endif %}
+                    <div id="gsignin">Log In With Google</div>
+                    <div id="or-div">
+                        <span> OR </span>
+                    </div>
+                    <input type="email" name="email" id="email" placeholder="Email" required><br>
+                    <input id="password" name="password" placeholder="Password" type="password" required><br>
+                    <a href="/reset-password" id="reset">Forgot password?</a>
+                    <button id="submit" class="hover-arrow" onclick="disableButton(this); logIn()">Log In <img src="../static/images/right-angle.svg" alt="right arrow"></button>
                 </div>
-                <input type="email" name="email" id="email" placeholder="Email" required><br>
-                <input id="password" name="password" placeholder="Password" type="password" required><br>
-                <a href="/reset-password" id="reset">Forgot password?</a>
-                <div id="keep_div"><input type="checkbox" name="keep" class="keep" id="keep" checked><p id="keep_text">Keep me logged in</p></div>
-                <button id="submit" class="hover-arrow" onclick="disableButton(this); logIn()">Log In <img src="../static/images/right-angle.svg" alt="right arrow"></button>
-            </div>
+                </div>
         </div>
     </body>
     <script>
@@ -117,7 +118,7 @@
                     headers: {'Content-Type': 'application/json'},
                     method: "POST",
                     body: JSON.stringify({email: document.getElementById("email").value, redirect: "{{ redirect }}",
-                    keep: document.getElementById("keep").checked, password: document.getElementById("password").value,
+                    keep: true, password: document.getElementById("password").value,
                     token: token})
 
                 })
@@ -130,7 +131,7 @@
             const data = await fetch('/login', {
                 headers: {'Content-Type': 'application/json'},
                 method: "POST",
-                body: JSON.stringify({redirect: "{{ redirect }}", keep: document.getElementById("keep").checked,
+                body: JSON.stringify({redirect: "{{ redirect }}", keep: true,
                     jwt: r.credential.toString(), token: token})
             })
             await processData(data)
