@@ -65,7 +65,6 @@ async def login(request: Request) -> Response:
         # tokens.find_one_and_delete({'token': token})
         token = gen_session()
         db.tokens.insert_one({'token': token, 'email': email})
-        analytics('logins')
         print(token)
         print(email)
         return JSONResponse(

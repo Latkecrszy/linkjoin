@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 def analytics(_type: str, **kwargs) -> None:
-    """month = str(datetime.now().month)
+    month = str(datetime.now().month)
     if _type == 'links_made':
         links_made = db.analytics.find_one({'id': 'links_made'})
         links_made[month] += 1
@@ -39,7 +39,7 @@ def analytics(_type: str, **kwargs) -> None:
     elif _type == 'links_opened':
         links_opened = db.analytics.find_one({'id': 'links_opened'})
         links_opened[month] += 1
-        db.analytics.find_one_and_update({'id': 'links_opened'}, {'$set': {month: links_opened[month]}})"""
+        db.analytics.find_one_and_update({'id': 'links_opened'}, {'$set': {month: links_opened[month]}})
 
 
 def gen_id() -> str:
