@@ -16,7 +16,7 @@ async def main(request: Request) -> Response:
     tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
     logged_in = bool(request.cookies.get('session_id')) and bool(request.cookies.get('email'))
     return templates.TemplateResponse('website.html',
-                                          {'token': 'token', 'logged_in': logged_in, 'request': request})
+                                {'token': 'token', 'logged_in': logged_in, 'request': request})
 
 
 async def login(request: Request) -> Response:

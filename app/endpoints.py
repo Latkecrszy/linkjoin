@@ -1,11 +1,11 @@
 from starlette.requests import Request
 from starlette.responses import Response, JSONResponse, PlainTextResponse, RedirectResponse, FileResponse
-import requests, json, re, datetime
+import re, datetime
 from google.auth import jwt
 from email.message import EmailMessage
 from mistune import html
 from app.utilities import *
-from app.constants import db, hasher, VONAGE_API_KEY, VONAGE_API_SECRET, encoder, text_messages, tokens
+from app.constants import db, hasher, encoder, tokens
 from app.websocket import manager
 from bson.datetime_ms import DatetimeMS
 
@@ -42,16 +42,16 @@ async def confirm_email(request: Request) -> Response:
         try:
             email = jwt.decode(data.get('jwt'), verify=False).get('email').lower()
         except UnicodeDecodeError:
-            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
+            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.now())})
             return JSONResponse({'redirect': data['redirect'], "error": 'google_signup_failed', 'token': token})
     else:
         email = data.get('email').lower()
         if not re.search('^[^@ ]+@[^@ ]+\.[^@ .]{2,}$', email):
-            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
+            tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.now())})
             return JSONResponse({"error": "invalid_email", "url": redirect_link, 'token': token})
 
     if db.login.find_one({'username': email}) is not None:
-        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.datetime.now())})
+        tokens.insert_one({'token': token, 'timeField': DatetimeMS(datetime.now())})
         return JSONResponse({'email': email, 'error': 'email_in_use', 'url': redirect_link, 'token': token})
     print(data.get('offset'))
     print(data.get('timezone'))
