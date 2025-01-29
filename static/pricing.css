@@ -1,5 +1,6 @@
 html {
-    background: var(--darkblue)
+    background: var(--darkblue);
+    overflow-x: hidden;
 }
 
 #pick-a-plan {
@@ -11,20 +12,22 @@ html {
 
 #plans {
     display: flex;
-    justify-content: center;
-    margin-top: 40px;
+    justify-content: space-evenly;
+    width: 70vw;
+    margin: 40px 0 0 15vw;
     flex-wrap: wrap;
+
 }
 
 .plan {
-    background: var(--darkblue);
+    background: var(--blue);
     text-align: center;
     width: 280px;
     height: 300px;
     border-radius: 5px;
     margin: 20px 20px;
-    padding: 0 10px;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.4), -2px -3px 10px rgba(255, 255, 255, 0.1);
+    padding: 10px 10px 5px 10px;
+    border: 3px solid white;
 }
 
 .price a {
@@ -40,11 +43,13 @@ html {
     padding: 20px;
     cursor: pointer;
     font: 400 18px Montserrat, sans-serif;
-    margin-left: 8%;
+    margin-left: 15px;
 }
 
-header a {
-    margin: 15px 40px 10px 40px;
+
+footer {
+    background: var(--blue);
+    margin-top: 200px;
 }
 
 

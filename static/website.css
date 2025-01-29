@@ -35,6 +35,31 @@
     transition: 0.3s;
 }
 
+#get_started {
+    padding-bottom: 4px;
+}
+
+#get_it_on_chrome {
+    background: var(--blue);
+    padding-bottom: 10px;
+}
+
+#get_it_on_chrome img {
+    top: 8px;
+    left: 10px;
+    position: relative;
+}
+
+#learn_more {
+    padding-bottom: 5px;
+}
+
+#learn_more img {
+    top: 5px;
+    left: 12px;
+    position: relative;
+}
+
 .get_started:hover {
     margin: 35px 0 0 10px;
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)
@@ -106,7 +131,12 @@
 .main_answer {font-size: 22px; max-width: 550px; opacity: 0.9; line-height: 32px;}
 
 /*FAQ*/
-#info {width: 100vw; background: none; min-height: 500px; padding-top: 75px; margin-top: 200px;}
+#info {
+    width: 100vw;
+    background: none;
+    min-height: 500px;
+    padding-top: 75px;
+    margin-top: 300px;}
 
 
 #faq {
@@ -171,9 +201,15 @@
     display: inline;
 }
 
-#faq-intro h1, #faq-intro p {text-align: center}
+#faq-intro h1, #faq-intro p {
+    text-align: center
+}
 
-#faq-intro h1 {font-size: 45px; margin-top: -20px;}
+#faq-intro h1 {
+    font-size: 60px;
+    margin-top: -20px;
+
+}
 
 #faq-intro p {
     font-size: 20px;
@@ -251,7 +287,7 @@
 }
 
 #info-boxes {
-    margin: 200px 0 0 2%;
+    margin: 150px 0 0 2%;
     width: 96%;
 }
 
@@ -304,7 +340,6 @@ iframe {
 #hamburger_dropdown a {
     margin: 5px 20px;
 }
-
 
 
 

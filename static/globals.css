@@ -259,7 +259,7 @@ input:invalid {box-shadow: none}
     min-width: 100px;
     text-align: center;
     box-sizing: border-box;
-    padding-top: 11.5px;
+    padding-top: 12px;
     transition: 0.5s;
 }
 
@@ -530,7 +530,7 @@ footer {
 
 .footer-logo p {
     font-size: 18px;
-    margin: -5px 0 0 65px;
+    margin: -5px 0 0 35px;
     color: rgba(255, 255, 255, 0.7)
 }
 

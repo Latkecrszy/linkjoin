@@ -12,11 +12,12 @@
 
     <body>
         <header>
-            <img id="logo" src="../static/images/logo-text.svg" height="50" alt="LinkJoin Logo" onclick="window.open('https://linkjoin.xyz')" style="cursor: pointer;">
+            <img id="logo" src="../static/images/logo-text.svg" height="40" alt="LinkJoin Logo">
             <a href="/links" class="underline">Meetings</a>
             <a href="/bookmarks" class="underline">Bookmarks</a>
-            <a href="/login" class="underline">Log In</a>
-            <a href="/signup" class="login_button" style="margin-top: 5px">Sign Up <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/pricing" class="underline">Pricing</a>
+            <a href="/signup" class="underline">Sign Up</a>
+            <a href="/login" class="login_button" style="margin-top: 1px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
 
             <div id="dropdown">
                 <input id="dropdown-checkbox" type="checkbox"/>
@@ -25,11 +26,17 @@
                 <span></span>
                 <div id="hamburger_dropdown">
                     <a href="/login" class="login_button" style="margin: 5px 25px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+                    <hr class="menu_line">
                     <a href="/signup" class="underline">Sign Up</a>
-                    <a href="/links" class="underline">Meetings</a>
+                    <hr class="menu_line">
+                    <a href="/pricing" class="underline">Pricing</a>
+                    <hr class="menu_line">
                     <a href="/bookmarks" class="underline">Bookmarks</a>
+                    <hr class="menu_line">
+                    <a href="/links" class="underline">Meetings</a>
                 </div>
               </div>
+
         </header>
         <p id="pick-a-plan">Choose the plan that best applies.</p>
         <div id="plans">
@@ -55,5 +62,33 @@
                 <button onclick="window.open('https://mail.google.com/mail/u/0/?fs=1&to=seth@linkjoin.xyz&tf=cm')" class="action hover-arrow">Get in touch! <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
             </div>
         </div>
+         <footer>
+            <div class="footer-logo">
+                <img src="../static/images/logo-text.svg" alt="LinkJoin Logo">
+                <p>Always on time.</p>
+            </div>
+            <div class="column-container">
+                <div class="footer-column">
+                <p class="title">Contact</p>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&to=seth@linkjoin.xyz&tf=cm">seth@linkjoin.xyz</a>
+                <p style="margin: 0;">(925) 360-3457</p>
+            </div>
+            <div class="footer-column">
+                <p class="title">Pages</p>
+                <a href="/login">Login</a>
+                <a href="/signup">Signup</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/links">Meetings</a>
+                <a href="/bookmarks">Bookmarks</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/reset-password">Reset Password</a>
+                <a href="https://storyset.com" target="_blank" rel="noreferrer">Graphics Source</a>
+            </div>
+            </div>
+            <div class="copyright">
+                <hr>
+                <p>© Copyright 2025 LinkJoin. All rights reserved.</p>
+            </div>
+        </footer>
     </body>
 </html>

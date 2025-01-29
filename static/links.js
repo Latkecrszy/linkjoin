@@ -1218,7 +1218,6 @@ function hidePopupEmailsInput() {
         createShareEmail()
         document.getElementById('popup-share-emails-input').classList.add('gone')
     }
-
 }
 
 function showPopupEmailsInput() {

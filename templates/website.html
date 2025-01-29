@@ -48,7 +48,7 @@
             <a href="/bookmarks" class="underline">Bookmarks</a>
             <a href="/pricing" class="underline">Pricing</a>
             <a href="/signup" class="underline">Sign Up</a>
-            <a href="/login" class="login_button" style="margin-top: 5px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
+            <a href="/login" class="login_button" style="margin-top: 1px">Log In <img src="../static/images/right-angle.svg" height="12px" width="8px" alt="Right facing arrow"></a>
 
             <div id="dropdown">
                 <input id="dropdown-checkbox" type="checkbox"/>
@@ -74,8 +74,8 @@
                 <h1 id="motto">Always On Time.</h1>
                 <h4 id="description">LinkJoin helps you join meetings at exactly the right time, even when you forget.</h4>
                 <a href="/signup"><button class="get_started" id="get_started">Get started for free! <img src="../static/images/arrow-right.svg" width="25px" height="25px" alt="Right arrow"></button></a>
-                <a href="https://chromewebstore.google.com/detail/add-to-linkjoin/mhncphjlaeeglmjpgdmclklebdfomele" target="_blank"><button style="background: var(--blue)" class="get_started" id="get_it_on_chrome">Add to Chrome <img src="../static/images/logos/chrome-logo.svg" style="top: 5px; left: 8px; position: relative;" width="25px" height="25px" alt="Chrome logo"></button></a>
-                <a onclick="document.getElementById('scrollTo').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="../static/images/arrow-down.svg" style="top: 3px; left: 8px; position: relative;" width="25px" height="25px" alt="Down arrow"></button></a>
+                <a href="https://chromewebstore.google.com/detail/add-to-linkjoin/mhncphjlaeeglmjpgdmclklebdfomele" target="_blank"><button class="get_started" id="get_it_on_chrome">Add to Chrome <img src="../static/images/logos/chrome-logo.svg" width="30px" height="30px" alt="Chrome logo"></button></a>
+                <a onclick="document.getElementById('scrollTo').scrollIntoView()"><button class="get_started" id="learn_more">Learn more <img src="../static/images/arrow-down.svg" width="25px" height="25px" alt="Down arrow"></button></a>
             </div>
             <div id="right_content">
                 <img src="../static/images/calendar_guy.svg" id="calendar_guy" alt="Man surrounded by calendars">
@@ -89,7 +89,6 @@
             </div>
 
             <img alt="down arrows" class="down" onclick="document.getElementById('info-boxes').scrollIntoView()" src="../static/images/arrows-down.svg">
-
             <div id="info-boxes">
                 <div class="info-box">
                     <img alt="pointer" src="../static/images/mouse-pointer.svg" class="info-image">
@@ -124,18 +123,18 @@
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Will my meeting open if I'm not at my computer?</p>
                     <div class="faq-answer">
-                        It depends. If your computer is off or asleep, then your meeting will not open. But if your
-                        computer is turned on when the meeting is scheduled to open, then it will start on its own. To
-                        help with this, LinkJoin can send you text reminders between 5 and 60 minutes before your meeting.
+                        <p>It depends.</p> If your computer is off or asleep, then your meeting will not open. But if your
+                        computer is turned on when the meeting is scheduled to open, it will start on its own. To
+                        help with this, LinkJoin sends text reminders before your meeting.
                     </div>
                 </div>
                 <div class="faq-question" onclick="this.classList.toggle('faq-open')">
                     <img class="faq-down" src="../static/images/angle-down.svg" alt="down arrow">
                     <p>Will my camera/mic turn on automatically?</p>
                     <div class="faq-answer">
-                        All meeting platforms require confirmation before fully entering the meeting. In web-based systems,
+                        <p>No.</p> All meeting platforms require confirmation before fully entering the meeting. In web-based systems,
                         you do not enter the meeting at all without confirming, and desktop-based systems require confirmation
-                        before enabling your microphone and camera. So no, you won't be caught off guard and thrown into
+                        before enabling your microphone and camera. Rest assured, you won't be caught off guard and thrown into
                         a meeting at embarrassing moments.
                     </div>
                 </div>
@@ -145,8 +144,8 @@
                     <div class="faq-answer">
                         The most common reason for meetings not opening is popups being disabled. To enable popups in
                         your browser, see the faq questions below. If popups are enabled and your meeting is still not
-                        opening, check that the switch on your link is flipped to blue. If your meetings still won't open
-                        automatically, please contact support at <p>seth@linkjoin.xyz</p>.
+                        opening, check that the switch on your link is flipped to blue. If you continue experiencing
+                        difficulties, please contact support at <p>seth@linkjoin.xyz</p>.
                     </div>
                 </div>
                 <div class="faq-question" onclick="this.classList.toggle('faq-open')">
@@ -154,9 +153,9 @@
                     <p>How do I enable pop-ups in Google Chrome?</p>
                     <div class="faq-answer">
                         Start by opening the Chrome settings by clicking on the three dots in the upper right. Select
-                        <p>Settings</p>, and navigate to the privacy and security tab. Select <p>Site settings</p>,
+                        <p>Settings</p> and navigate to the <p>privacy and security</p> tab. Select <p>Site settings</p>,
                         scroll down, and click on <p>Pop-ups and redirects</p>. At the top, select
-                        <p>Sites can send pop-ups and use redirects</p>, and you're all good to go!
+                        <p>Sites can send pop-ups and use redirects</p>, and you're good to go!
                     </div>
                 </div>
                 <div class="faq-question" onclick="this.classList.toggle('faq-open')">
@@ -191,7 +190,7 @@
         <footer>
             <div class="footer-logo">
                 <img src="../static/images/logo-text.svg" alt="LinkJoin Logo">
-                <p>Never be late again</p>
+                <p>Always on time.</p>
             </div>
             <div class="column-container">
                 <div class="footer-column">
@@ -213,7 +212,7 @@
             </div>
             <div class="copyright">
                 <hr>
-                <p>© Copyright 2024 LinkJoin. All rights reserved.</p>
+                <p>© Copyright 2025 LinkJoin. All rights reserved.</p>
             </div>
         </footer>
     </body>
@@ -253,8 +252,8 @@
         document.addEventListener('scroll', () => {
             document.getElementById('curve').style.filter = `blur(${window.scrollY*0.08}px)`
             document.getElementById('what').style.opacity = `${(window.scrollY-250)/500}`
-            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-1000)/500}`
-            document.getElementById('info').style.opacity = `${(window.scrollY-1400)/500}`
+            document.getElementById('info-boxes').style.opacity = `${(window.scrollY-900)/500}`
+            document.getElementById('info').style.opacity = `${(window.scrollY-1300)/500}`
         })
 
         if (document.cookie.includes('cookies=accepted')) {
