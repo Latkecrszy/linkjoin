@@ -196,7 +196,7 @@ async function loadBookmarks(username, id="insert") {
         return
     }
     global_username = username
-    webSocket = new WebSocket(`wss://linkjoin.xyz/database_ws?email=${encodeURIComponent(username)}&origin=bookmarks`)
+    webSocket = new WebSocket(`ws://127.0.0.1:8000/database_ws?email=${encodeURIComponent(username)}&origin=bookmarks`)
     webSocket.onopen = () => {
         webSocket.send(JSON.stringify({'email': username}))
     }

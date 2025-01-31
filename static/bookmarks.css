@@ -37,12 +37,16 @@
     }
 
     .link {
-        width: 100%;
+        width: 98%;
         margin: 10px 0;
     }
 
     #insert {
         flex-direction: column;
+    }
+
+    .menu {
+        right: 5vw !important;
     }
 }
 
