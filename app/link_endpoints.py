@@ -99,7 +99,7 @@ async def update(request: Request) -> Response:
     insert = {'username': email, 'id': int(data.get('id')),
               'time': data.get('time'), 'link': encoder.encrypt(link.encode()),
               'name': data.get('name'), 'active': active,
-              'share': db.links.find_one({'id': int(data.get('id'))})['share'],
+              'share': db.links.find_one({'id': int(data.get('id'))}).get('share'),
               'repeat': data.get('repeats'), 'days': data.get('days'),
               'text': data.get('text'),
               'date': data.get('date'), 'activated': str(data.get('activated')).lower()}
@@ -238,21 +238,27 @@ async def share_link(request: Request) -> Response:
     if not authenticated(request.cookies, data.get('email').lower()):
         return JSONResponse({'error': 'Forbidden'}, 403)
     link = data['link']
-    print('emails')
-    print(data['emails'])
     for email in data['emails']:
         new_link = {key: value for key, value in dict(link).items() if key not in ('_id', 'username', 'share', 'link', 'password')}
         new_link['username'] = email
         new_link['share_id'] = link['id']
-        new_link['id'] = int(db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})['id'])
+        new_link['id'] = db.id.find_one_and_update({'_id': 'id'}, {'$inc': {'id': 1}})['id']
         new_link['link'] = encoder.encrypt(link['link'].encode())
+        new_link['share'] = encoder.encrypt(f'https://linkjoin.xyz/addlink?id={new_link["id"]}'.encode())
         if 'password' in link:
             new_link['password'] = encoder.encrypt(link['password'].encode())
         if data.get('type') == 'bookmark':
             await motor.pending_bookmarks.insert_one(new_link)
+            redirect = '/bookmarks'
         else:
             await motor.pending_links.insert_one(new_link)
-        send_email(open('templates/shared-link-email.html').read().replace('{{email}}', link['username']).replace('{{link}}', link['name']),
+            redirect = '/links'
+        account = await motor.login.find_one({'username': email})
+        if account:
+            fileName = 'templates/shared-link-email.html'
+        else:
+            fileName = 'templates/shared-link-sign-up-email.html'
+        send_email(open(fileName).read().replace('{{email}}', link['username']).replace('{{link}}', link['name']).replace('{{redirect}}', redirect),
                    [{'path': 'static/images/logo-text.png', 'type': 'png', 'name': 'logo-text', 'displayName': 'LinkJoin Logo'}],
                    f'LinkJoin - {link["name"]} shared with you', email)
         await manager.update(configure_data(email), email, 'share_link')

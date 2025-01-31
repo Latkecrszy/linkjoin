@@ -226,10 +226,10 @@ select {-webkit-appearance:none}
 #header-links {
     background-color: var(--blue);
     height: 80px;
-    padding: 0 40px 20px 0px;
+    padding: 0 40px 20px 0;
     display: flex;
     justify-content: space-between;
-    width: 98% !important;
+    width: unset;
     box-sizing: unset;
 }
 
@@ -564,6 +564,11 @@ footer {
 .info-image {
     height: 30px;
     width: 30px;
+}
+
+.center-container {
+    width: 100%;
+    position: relative;
 }
 
 

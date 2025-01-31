@@ -158,7 +158,16 @@
 
     .link {
         height: 150px;
-        width: 100%;
+        width: 80%;
+        padding: 0 30px;
+    }
+
+    .time {
+        margin-right: 10px;
+    }
+
+    .join-meeting {
+        margin-right: 10px;
     }
 
     .link-expand {

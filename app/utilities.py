@@ -72,6 +72,7 @@ def authenticated(cookies: dict, email: str) -> bool:
 
 
 def configure_data(email: str, source="unimportant") -> dict[str, list[dict]]:
+    print(email)
     admin_view = db.login.find_one({'username': email}).get('admin_view')
     if admin_view == 'true':
         links_list = {

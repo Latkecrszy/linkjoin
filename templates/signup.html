@@ -86,18 +86,6 @@
             }
         });
 
-        /*document.addEventListener('visibilitychange', async () => {
-            const tokenStatus = await fetch(`/validatetoken`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({'token': token})
-            }).then(response => response.json())
-            console.log(tokenStatus)
-            if (tokenStatus['status'] !== 'valid') {
-                location.reload()
-            }
-        })*/
-
         window.addEventListener('load', () => {
             google.accounts.id.initialize({
                 client_id: "656426026470-8tkb2jklkpvsovbdvmrjpqv4crsilt93.apps.googleusercontent.com",

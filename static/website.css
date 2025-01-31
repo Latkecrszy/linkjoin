@@ -24,7 +24,7 @@
 
 
 /*Left Content*/
-.get_started {
+.get_started, .signup-button {
     border-radius: 10px;
     font: 600 20px Montserrat;
     height: 75px;
@@ -33,6 +33,18 @@
     width: 275px;
     margin-top: 35px;
     transition: 0.3s;
+}
+
+.signup-button {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-bottom: 50px;
+    padding-bottom: 5px;
+}
+
+.signup-button:hover {
+    filter: brightness(1.2)
 }
 
 #get_started {
@@ -65,11 +77,17 @@
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)
 }
 
-.get_started img {
+.get_started img, .signup-button img {
     top: 5px;
     left: 8px;
     position: relative;
 }
+
+/*.signup-button img {
+    top: 12px;
+    left: -8px;
+    position: relative;
+}*/
 
 #learn_more:hover {
     margin: 45px 0 0 0;
@@ -220,10 +238,15 @@
 .down {
     height: 50px;
     display: block;
-    margin: 50px auto -50px auto;
+    padding-top: 50px;
     cursor: pointer;
     animation: bounce 1.2s ease-in-out alternate infinite;
 }
+
+#down-arrows-1 {
+    padding-top: 100px;
+}
+
 
 @keyframes bounce {
     from {
@@ -279,7 +302,6 @@
 
 @media (max-width: 600px) {
     .description {
-        padding: 15px;
         text-align: center;
         width: 96%;
         margin: 40px 2% 0 2%;
@@ -390,8 +412,12 @@ iframe {
         width: 96vw;
         text-align: center;
         margin: 50px 0 0 2vw;
-
     }
+
+    #left_content a {
+        margin-left: -15px;
+    }
+
     #faq {background: var(--blue); box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);}
 }
 
@@ -408,6 +434,21 @@ iframe {
     .column-container {justify-content: flex-start;}
 }
 
-@media (max-width: 370px) {
+@media (max-width: 415px) {
+    #what {
+        width: 100vw;
+        margin-left: 0;
+    }
 
+    .what-is-linkjoin {
+        font-size: 50px;
+    }
+
+}
+
+@media (max-width: 350px) {
+    #info-boxes {
+        width: 100vw;
+        margin: 150px 0 0 0;
+    }
 }

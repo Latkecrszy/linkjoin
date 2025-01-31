@@ -545,7 +545,7 @@ async function load_links(username, sort, id="insert") {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: username})})
     tutorial_completed = await tutorial_completed.json()
-    if (tutorial_completed['tutorial'] !== "done") {await popupWarn(tutorial_completed['tutorial'])}
+    if (tutorial_completed['tutorial'] !== "done" && !isMobile()) {await popupWarn(tutorial_completed['tutorial'])}
     await check_day(username)
     await checkTutorial()
     clearInterval(openInterval)
