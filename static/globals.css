@@ -8,7 +8,7 @@
     --switch: #1A5E8F
 }
 
-button:focus{outline: none}
+button:focus {outline: none}
 
 input:focus {outline: none}
 
@@ -460,6 +460,35 @@ html::-webkit-scrollbar-thumb, .notes::-webkit-scrollbar-thumb, .popup::-webkit-
     width: 90%;
     opacity: 0.1;
     border-radius: 10px;
+}
+
+.get_started img, .big-blue-button img {
+    top: 5px;
+    left: 8px;
+    position: relative;
+}
+
+.get_started, .big-blue-button {
+    border-radius: 10px;
+    font: 600 20px Montserrat;
+    height: 75px;
+    background-color: var(--lightblue);
+    border: none;
+    width: 275px;
+    margin-top: 35px;
+    transition: 0.3s;
+}
+
+.big-blue-button {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    margin-bottom: 50px;
+    padding-bottom: 5px;
+}
+
+.big-blue-button:hover {
+    filter: brightness(1.2)
 }
 
 /* Footer */

@@ -24,28 +24,7 @@
 
 
 /*Left Content*/
-.get_started, .signup-button {
-    border-radius: 10px;
-    font: 600 20px Montserrat;
-    height: 75px;
-    background-color: var(--lightblue);
-    border: none;
-    width: 275px;
-    margin-top: 35px;
-    transition: 0.3s;
-}
 
-.signup-button {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-    margin-bottom: 50px;
-    padding-bottom: 5px;
-}
-
-.signup-button:hover {
-    filter: brightness(1.2)
-}
 
 #get_started {
     padding-bottom: 4px;
@@ -77,13 +56,24 @@
     box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3)
 }
 
-.get_started img, .signup-button img {
+.get_started img, .big-blue-button img {
     top: 5px;
     left: 8px;
     position: relative;
 }
 
-/*.signup-button img {
+.get_started, .big-blue-button {
+    border-radius: 10px;
+    font: 600 20px Montserrat;
+    height: 75px;
+    background-color: var(--lightblue);
+    border: none;
+    width: 275px;
+    margin-top: 35px;
+    transition: 0.3s;
+}
+
+/*.big-blue-button img {
     top: 12px;
     left: -8px;
     position: relative;

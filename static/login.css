@@ -14,8 +14,6 @@ header a {
 
 #logo {height: 300px; width: 300px;}
 
-#page {width: 100vw}
-
 #signup_title {font: 500 45px Montserrat; margin: 20px 0 0 50px;}
 
 #signup_text {
@@ -90,7 +88,10 @@ header a {
     transition: 0.5s
 }
 
-#main_page {display: flex}
+#main_page {
+    display: flex;
+    align-items: center;
+}
 
 #welcome {font-size: 45px}
 

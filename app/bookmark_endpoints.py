@@ -43,3 +43,10 @@ async def edit_bookmark(request: Request) -> Response:
     await manager.update(configure_data(data.get('email')), email, 'edit_bookmark')
     return JSONResponse({'error': '', 'message': 'Success'}, 200)
 
+
+async def add_tag(request: Request) -> Response:
+    data = await request.json()
+    if not authenticated(request.cookies, data.get('email')):
+        return JSONResponse({'error': 'Forbidden'}, 403)
+    email = data.get('email').lower()
+    link = data.get('link')

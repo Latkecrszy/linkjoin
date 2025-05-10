@@ -131,6 +131,12 @@
                     <input type="text" placeholder="Bookmark Link" id="link" required>
                 </div>
                 <button type="button" class="hover-arrow submit" id="submit" onclick="registerBookmark('register')">Create <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+                <div id="tags-create-and-submit-container">
+                    <div id="tags-container" onclick="showPopupEmailsInput()">
+                        <input id="tags-input" type="email" placeholder="Add emails" onkeyup="checkTags(event)"  onblur="hidePopupEmailsInput()">
+                    </div>
+                    <button id="tags-button" class="hover-arrow submit">Send <img loading="lazy" src="../static/images/right-angle.svg" alt="right arrow"></button>
+                </div>
             </form>
         </div>
         <div id="blur"></div>

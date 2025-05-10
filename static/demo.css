@@ -98,6 +98,8 @@ footer {
 
 #left-content {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 90%;
     margin: 0 5%;
 }
@@ -141,6 +143,11 @@ footer {
     right: 20px;
 }
 
+.big-blue-button.demo {
+    position: static;
+    transform: none;
+    margin-top: 50px;
+}
 
 
 @media (max-width: 1310px) {
